@@ -1,4 +1,4 @@
-/* $Id: AppExit.java 665 2013-05-26 21:50:41Z Michael $
+/* $Id$
  *
  * Mack II
  *
@@ -15,7 +15,7 @@ import org.bsaf192.application.Application;
 /**
  * The MACK standard application exit action.
  *
- * @version $Rev: 665 $
+ * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")

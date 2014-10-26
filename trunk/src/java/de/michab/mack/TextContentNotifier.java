@@ -1,4 +1,4 @@
-/* $Id: TextContentNotifier.java 483 2011-04-19 12:53:40Z Michael $
+/* $Id$
  *
  * Mack
  *
@@ -41,7 +41,7 @@ import de.michab.util.StringUtils;
  * <p>The validation behavior can be adjusted by overriding
  * {@link #isValidContent(String)}.</p>
  *
- * @version $Rev: 483 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class TextContentNotifier

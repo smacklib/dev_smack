@@ -1,4 +1,4 @@
-/* $Id: Transformer.java 678 2013-06-09 11:50:51Z Michael $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @param <T> The transformation target type.
  * @param <F> The transformation source type.
  *
- * @version $Rev: 678 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class Transformer<T, F>

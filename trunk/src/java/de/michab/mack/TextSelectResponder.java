@@ -1,4 +1,4 @@
-/* $Id: TextSelectResponder.java 481 2011-04-10 13:30:50Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -18,7 +18,7 @@ import javax.swing.text.JTextComponent;
  * A focus listener that can be added to a text component to select
  * the text content if the component receives the focus.
  *
- * @version $Rev: 481 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class TextSelectResponder implements FocusListener

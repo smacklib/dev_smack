@@ -1,4 +1,4 @@
-/* $Id: CollectionUtils.java 605 2012-09-21 17:40:41Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Collection utilities.
  *
- * @version $Rev: 605 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class CollectionUtils

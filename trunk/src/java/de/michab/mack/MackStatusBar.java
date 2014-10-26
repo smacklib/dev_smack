@@ -1,4 +1,4 @@
-/* $Id: MackStatusBar.java 735 2014-02-22 20:17:15Z michab $
+/* $Id$
  *
  * Mack.
  *
@@ -39,7 +39,7 @@ import de.michab.util.StringUtils;
  * This class loads resources from the ResourceBundle called {@code
  * resources.StatusBar}.
  * </p>
- * @version $Rev: 735 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class MackStatusBar extends JPanel implements PropertyChangeListener

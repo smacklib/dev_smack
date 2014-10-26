@@ -1,4 +1,4 @@
-/* $Id: ReflectionUtils.java 735 2014-02-22 20:17:15Z michab $
+/* $Id$
  *
  * Common.
  *
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 /**
  * Reflection helpers.
  *
- * @version $Rev: 735 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class ReflectionUtils

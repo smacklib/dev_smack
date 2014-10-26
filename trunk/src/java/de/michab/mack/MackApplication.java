@@ -1,4 +1,4 @@
-/* $Id: MackApplication.java 725 2014-01-12 13:42:20Z michab $
+/* $Id$
  *
  * Mack II -- Michael's Application Construction Kit.
  *
@@ -32,7 +32,7 @@ import de.michab.util.StringUtils;
  * the creation of common ui components like menu, toolbar
  * and status bar.
  *
- * @version $Revision: 725 $
+ * @version $Revision$
  * @author Michael Binz
  */
 public abstract class MackApplication<MC extends Component>

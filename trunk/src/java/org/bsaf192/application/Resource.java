@@ -1,4 +1,4 @@
-/* $Id: Resource.java 762 2014-04-05 20:42:57Z michab $
+/* $Id$
  *
  * Mack. Michael's Application Construction Kit.
  *

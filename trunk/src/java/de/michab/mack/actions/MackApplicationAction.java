@@ -1,4 +1,4 @@
-/* $Id: MackApplicationAction.java 766 2014-05-03 15:27:15Z michab $
+/* $Id$
  *
  * Mack II
  *
@@ -14,7 +14,7 @@ import de.michab.mack.MackAction;
 /**
  * Mack's common base class for all application wide actions.
  *
- * @version $Rev: 766 $
+ * @version $Rev$
  * @author Michael Binz
  */
 abstract class MackApplicationAction

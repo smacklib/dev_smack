@@ -54,7 +54,7 @@ import javax.swing.JToolBar;
  * @see JRootPane
  * @see Application#show(View)
  * @see Application#hide(View)
- * @version $Rev: 721 $
+ * @version $Rev$
  */
 public class View extends AbstractBean {
 

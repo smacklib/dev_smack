@@ -1,4 +1,4 @@
-/* $Id: TableColumnWidthHandler.java 200 2009-10-11 12:05:24Z Michael $
+/* $Id$
  *
  * UI general
  *
@@ -26,7 +26,7 @@ import javax.swing.table.TableColumn;
 /**
  * Fits a table column's width to its content.
  *
- * @version $Rev: 200 $
+ * @version $Rev$
  * @author Michael Binz
  * @deprecated Use JXTable instead.
  */

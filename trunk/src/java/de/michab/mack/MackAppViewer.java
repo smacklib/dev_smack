@@ -1,4 +1,4 @@
-/* $Id: MackAppViewer.java 691 2013-12-22 11:06:09Z michab $
+/* $Id$
  *
  * Mack II -- Michael's Application Construction Kit.
  *
@@ -26,7 +26,7 @@ import de.michab.util.Transformer;
  * @param FT This application's file type. (document type)
  * @param MC The main component.
  *
- * @version $Revision: 691 $
+ * @version $Revision$
  * @author Michael Binz
  */
 public abstract class MackAppViewer<FT, MC extends Component>

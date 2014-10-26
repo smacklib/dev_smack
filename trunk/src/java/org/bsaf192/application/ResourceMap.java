@@ -85,7 +85,7 @@ import de.michab.util.StringUtils;
  * the <tt>&#064;Resource</tt> annotation to the value of resources
  * with the same name.
  *
- * @version $Rev: 768 $
+ * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see #injectComponents

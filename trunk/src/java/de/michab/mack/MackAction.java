@@ -1,4 +1,4 @@
-/* $Id: MackAction.java 755 2014-04-04 20:40:36Z michab $
+/* $Id$
  *
  * Mack
  *
@@ -75,7 +75,7 @@ import de.michab.util.StringUtils;
  * We'll set the Action property in Java SE 5 too.
  * </ul>
  *
- * @version $Rev: 755 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public abstract class MackAction extends AbstractActionExt

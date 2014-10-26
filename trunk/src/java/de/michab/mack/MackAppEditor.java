@@ -1,4 +1,4 @@
-/* $Id: MackAppEditor.java 676 2013-06-05 23:04:04Z Michael $
+/* $Id$
  *
  * Mack II -- Michael's Application Construction Kit.
  *
@@ -17,7 +17,7 @@ import java.awt.Component;
  * @param FT This application's file type. (document type)
  * @param MC The main component.
  *
- * @version $Revision: 676 $
+ * @version $Revision$
  * @author Michael Binz
  */
 // TODO base on MackApplication

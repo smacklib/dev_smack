@@ -1,4 +1,4 @@
-/* $Id: ErrorDialog.java 771 2014-05-11 19:50:47Z michab $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -24,7 +24,7 @@ import de.michab.util.StringUtils;
  * Represents a singular error dialog that can be loaded with a resource
  * file.
  *
- * @version $Revision: 771 $
+ * @version $Revision$
  * @author michab
  */
 public class ErrorDialog

@@ -1,4 +1,4 @@
-/* $Id: AppOpen.java 678 2013-06-09 11:50:51Z Michael $
+/* $Id$
  *
  * Mp3 tagger.
  *
@@ -47,7 +47,7 @@ import de.michab.util.Transformer;
  *
  * @param FT Document type
  *
- * @version $Rev: 678 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class AppOpen<FT, MC extends Component>

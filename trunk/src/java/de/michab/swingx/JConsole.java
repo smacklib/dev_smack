@@ -1,4 +1,4 @@
-/* $Id: JConsole.java 652 2013-05-04 07:38:18Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -43,7 +43,7 @@ import org.bsaf192.application.Application;
 /**
  * A console ui component. Connects stream oriented in- and output to a text component.
  *
- * @version $Rev: 652 $
+ * @version $Rev$
  */
 @SuppressWarnings("serial")
 public class JConsole extends JPanel implements KeyListener {

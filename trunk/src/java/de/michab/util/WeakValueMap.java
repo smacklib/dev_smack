@@ -1,4 +1,4 @@
-/* $Id: WeakValueMap.java 24 2008-09-21 19:30:58Z binzm $
+/* $Id$
  *
  * Utilities
  *

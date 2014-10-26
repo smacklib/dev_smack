@@ -1,4 +1,4 @@
-/* $Id: EnumEditor.java 84 2008-11-28 20:18:55Z binzm $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -24,7 +24,7 @@ import javax.swing.JTree;
 
 /**
  *
- * @version $Rev: 84 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class EnumEditor extends DefaultCellEditor

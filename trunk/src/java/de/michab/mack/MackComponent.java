@@ -1,4 +1,4 @@
-/* $Id: MackComponent.java 662 2013-05-25 20:04:49Z Michael $
+/* $Id$
  *
  * Mack
  *
@@ -18,7 +18,7 @@ import org.bsaf192.application.Application;
 /**
  * A component that offers typed model access.
  *
- * @version $Rev: 662 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public abstract class MackComponent<MT>

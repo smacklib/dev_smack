@@ -1,4 +1,4 @@
-/* $Id: Utilities.java 481 2011-04-10 13:30:50Z Michael $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *

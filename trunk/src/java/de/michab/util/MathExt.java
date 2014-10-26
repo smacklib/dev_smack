@@ -1,4 +1,4 @@
-/* $Id: MathExt.java 648 2013-04-28 18:35:13Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -13,7 +13,7 @@ import java.awt.Point;
 /**
  * Math utilities.
  *
- * @version $Revision: 648 $
+ * @version $Revision$
  * @author Michael Binz
  */
 public class MathExt

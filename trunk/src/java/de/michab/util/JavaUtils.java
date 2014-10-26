@@ -1,4 +1,4 @@
-/* $Id: JavaUtils.java 461 2011-01-29 17:20:11Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -13,7 +13,7 @@ package de.michab.util;
 /**
  * General utilities.
  *
- * @version $Rev: 461 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class JavaUtils

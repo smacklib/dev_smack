@@ -96,7 +96,7 @@ import de.michab.util.StringUtils;
  * }
  * </pre>
  *
- * @version $Rev: 693 $
+ * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see ApplicationContext#getActionMap(Object)

@@ -1,4 +1,4 @@
-/* $Id: JavaBeanTableModel.java 218 2010-01-02 13:20:17Z binzm $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -37,7 +37,7 @@ import de.michab.util.Localiser;
  *
  * @param <B> The Java Bean class.
  *
- * @version $Rev: 218 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class JavaBeanTableModel<B> extends AbstractTableModel

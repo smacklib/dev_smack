@@ -1,4 +1,4 @@
-/* $Id: Localiser.java 47 2008-10-26 15:49:35Z Michael $
+/* $Id$
  *
  * Common utils.
  *
@@ -18,7 +18,7 @@ import java.util.Vector;
 /**
  * A support class for localisation purposes.
  *
- * @version $Revision: 47 $
+ * @version $Revision$
  */
 public class Localiser
 {
