@@ -1,4 +1,4 @@
-/* $Id: StringUtils.java 744 2014-02-23 18:03:48Z michab $
+/* $Id$
  *
  * Utilities
  *
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Helper operations for strings.
  *
- * @version $Rev: 744 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class StringUtils

@@ -1,4 +1,4 @@
-/* $Id: DropTableListener.java 691 2013-12-22 11:06:09Z michab $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -40,7 +40,7 @@ import de.michab.util.Transformer;
  * to the addressed column class and if so accepts the drop, performs
  * the transformation and sets the new cell value.</p>
  *
- * @version $Rev: 691 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class DropTableListener implements DropTargetListener

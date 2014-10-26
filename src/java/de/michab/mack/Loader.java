@@ -1,4 +1,4 @@
-/* $Id: Loader.java 280 2010-04-18 08:57:17Z Michael $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -12,7 +12,7 @@ package de.michab.mack;
 /**
  *
  * @param <T>
- * @version $Rev: 280 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public interface Loader<T>

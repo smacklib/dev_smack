@@ -1,4 +1,4 @@
-/* $Id: CommonVersion.java 40 2008-10-26 11:14:43Z Michael $
+/* $Id$
  *
  * Michael's commons.
  *

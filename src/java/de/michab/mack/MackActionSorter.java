@@ -1,4 +1,4 @@
-/* $Id: MackActionSorter.java 696 2013-12-23 13:27:07Z michab $
+/* $Id$
  *
  * Common.
  *
@@ -19,7 +19,7 @@ import de.michab.util.StringUtils;
 /**
  * Utility class for sorting actions.
  *
- * @version $Rev: 696 $
+ * @version $Rev$
  * @author Michael Binz
  */
 class MackActionSorter

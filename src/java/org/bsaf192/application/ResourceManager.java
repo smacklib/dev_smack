@@ -47,7 +47,7 @@ import de.michab.util.StringUtils;
  * @see ApplicationContext#getResourceMap
  * @see ResourceMap
  *
- * @version $Rev: 766 $
+ * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */

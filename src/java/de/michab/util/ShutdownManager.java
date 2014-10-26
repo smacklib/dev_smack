@@ -1,4 +1,4 @@
-/* $Id: ShutdownManager.java 290 2010-04-24 13:11:42Z Michael $
+/* $Id$
  *
  * Lichen CosExplorer / CosNaming
  *
@@ -16,7 +16,7 @@ import java.util.Stack;
  * <code>Runtime.addShutdownHook()</code> is that this happens in LIFO order.
  *
  * @see java.awt.Runtime#addShutdownHook()
- * @version $Rev: 290 $
+ * @version $Rev$
  */
 public final class ShutdownManager
 {

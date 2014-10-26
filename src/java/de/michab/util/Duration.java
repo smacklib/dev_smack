@@ -1,4 +1,4 @@
-/* $Id: Duration.java 648 2013-04-28 18:35:13Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -16,7 +16,7 @@ import java.text.MessageFormat;
  * A time duration.  Used for printing and for splitting millisecond times
  * into their day, hour, minute etc. units.
  *
- * @version $Rev: 648 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public final class Duration

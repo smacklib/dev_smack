@@ -1,4 +1,4 @@
-/* $Id: MackActionManager.java 764 2014-04-18 09:13:44Z michab $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -32,7 +32,7 @@ import de.michab.util.StringUtils;
  * menu and a menu bar.
  * </p>
  *
- * @version $Rev: 764 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public final class MackActionManager

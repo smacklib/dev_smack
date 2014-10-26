@@ -1,4 +1,4 @@
-/* $Id: MultiMap.java 478 2011-03-27 16:52:15Z Michael $
+/* $Id$
  *
  * Michael's Utilities
  *
@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * A double key map.  The map allows to store a single value for key pairs.
  *
- * @version $Revision: 478 $
+ * @version $Revision$
  * @author Michael Binz
  */
 public class MultiMap<KT1, KT2, VT>

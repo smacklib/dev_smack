@@ -1,4 +1,4 @@
-/* $Id: AppAbout.java 766 2014-05-03 15:27:15Z michab $
+/* $Id$
  *
  * MACK
  *
@@ -35,7 +35,7 @@ import de.michab.mack.MackApplication;
  * of the Java system properties.
  * </p>
  *
- * @version $Revision: 766 $
+ * @version $Revision$
  * @author Michael G. Binz
  */
 public final class AppAbout

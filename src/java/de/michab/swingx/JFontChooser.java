@@ -62,7 +62,7 @@ import javax.swing.text.Position;
  *
  * <pre>
  *
- * @version $Rev: 607 $
+ * @version $Rev$
  * @author Masahiko SAWAI
  */
 @SuppressWarnings("serial")

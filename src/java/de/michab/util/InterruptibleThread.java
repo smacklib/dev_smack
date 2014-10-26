@@ -1,4 +1,4 @@
-/* $Id: InterruptibleThread.java 656 2013-05-09 09:02:01Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -17,7 +17,7 @@ package de.michab.util;
  * {@link #interrupt()} this will return {@code true} and allow the thread to
  * terminate.
  *
- * @version $Rev: 656 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class InterruptibleThread

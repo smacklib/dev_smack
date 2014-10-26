@@ -1,4 +1,4 @@
-/* $Id: TestMdiFrame.java 588 2012-07-03 09:55:45Z Michael $
+/* $Id$
  *
  * Application framework
  *

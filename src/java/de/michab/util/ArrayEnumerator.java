@@ -1,4 +1,4 @@
-/* $Id: ArrayEnumerator.java 536 2011-12-05 21:45:46Z Michael $
+/* $Id$
  *
  * Utilities
  *
@@ -16,7 +16,7 @@ import java.util.Enumeration;
  * Supports enumerating the whole array, a subset and a copy of the array.
  * Enumerating on a copy prevents concurrent array access and modification.</p>
  *
- * @version $Rev: 536 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class ArrayEnumerator<T>

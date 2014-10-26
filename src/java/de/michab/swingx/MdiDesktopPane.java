@@ -1,4 +1,4 @@
-/* $Id: MdiDesktopPane.java 652 2013-05-04 07:38:18Z Michael $
+/* $Id$
  *
  * Common.
  *
@@ -41,7 +41,7 @@ import org.bsaf192.application.Application;
  * be as similar as possible to what is usually implemented in Windows for MDI
  * support.
  *
- * @version $Rev: 652 $
+ * @version $Rev$
  * @author micbinz
  */
 @SuppressWarnings("serial")

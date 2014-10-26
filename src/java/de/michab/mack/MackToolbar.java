@@ -1,4 +1,4 @@
-/* $Id: MackToolbar.java 729 2014-01-19 13:34:57Z michab $
+/* $Id$
  *
  * Mack.
  *
@@ -30,7 +30,7 @@ import org.jdesktop.swingx.action.ActionContainerFactory;
  * An extended toolbar that offers a popup menu allowing to select whether
  * the buttons show only an icon or an icon and text.
  *
- * @version $Rev: 729 $
+ * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")

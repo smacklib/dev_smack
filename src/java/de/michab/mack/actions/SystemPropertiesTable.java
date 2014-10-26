@@ -1,4 +1,4 @@
-/* $Id: SystemPropertiesTable.java 1 2008-09-19 16:30:02Z binzm $
+/* $Id$
  *
  * MACK
  *

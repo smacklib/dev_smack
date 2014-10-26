@@ -1,4 +1,4 @@
-/* $Id: ResourceUtils.java 733 2014-02-09 19:08:59Z michab $
+/* $Id$
  *
  * Common.
  *
@@ -18,7 +18,7 @@ import java.util.ResourceBundle.Control;
 /**
  * Resource Bundle helpers.
  *
- * @version $Rev: 733 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class ResourceUtils

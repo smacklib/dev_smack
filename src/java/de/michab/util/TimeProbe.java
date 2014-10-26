@@ -1,4 +1,4 @@
-/* $Id: TimeProbe.java 363 2010-08-23 10:23:26Z Michael $
+/* $Id$
  *
  * Utilities
  *
@@ -14,7 +14,7 @@ package de.michab.util;
  * a millisecond timer that can be started and stopped, measuring the time
  * between these events.
  *
- * @version $Rev: 363 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class TimeProbe

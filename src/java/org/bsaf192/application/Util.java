@@ -18,7 +18,7 @@ import de.michab.util.StringUtils;
 /**
  * Helper operations.
  *
- * @version $Rev: 735 $
+ * @version $Rev$
  * @author micbinz
  */
 public class Util {

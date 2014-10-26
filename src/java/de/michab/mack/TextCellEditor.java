@@ -1,4 +1,4 @@
-/* $Id: TextCellEditor.java 550 2012-03-11 15:57:45Z Michael $
+/* $Id$
  *
  * Mp3 Tagger Hood
  *
@@ -23,7 +23,7 @@ import org.jdesktop.swingx.JXTable.GenericEditor;
  * text when input begins.  Used for excel-like input behaviour.
  *
  * @author Michael Binz
- * @version $Rev: 550 $
+ * @version $Rev$
  */
 public class TextCellEditor extends GenericEditor
 {

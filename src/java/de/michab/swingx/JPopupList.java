@@ -1,4 +1,4 @@
-/* $Id: JPopupList.java 470 2011-02-14 11:23:51Z Michael $
+/* $Id$
  *
  * UI general
  *
@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
  * stringified representation in its respective <code>source</code>,
  * <code>id</code>, and <code>command</code> arguments.</p>
  *
- * @version $Rev: 470 $
+ * @version $Rev$
  * @author Michael G. Binz
  */
 @SuppressWarnings("serial")

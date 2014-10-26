@@ -1,4 +1,4 @@
-/* $Id: FileUtils.java 478 2011-03-27 16:52:15Z Michael $
+/* $Id$
  *
  * Utilities
  *
@@ -21,7 +21,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * A library of utility routines for file handling.
  *
- * @version $Rev: 478 $s
+ * @version $Rev$s
  * @author Michael Binz
  */
 public class FileUtils

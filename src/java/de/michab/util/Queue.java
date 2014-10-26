@@ -1,4 +1,4 @@
-/* $Id: Queue.java 41 2008-10-26 11:22:08Z Michael $
+/* $Id$
  *
  * Utilities
  *

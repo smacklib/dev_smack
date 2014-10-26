@@ -1,4 +1,4 @@
-/* $Id: CombinedTableModel.java 33 2008-10-05 13:30:09Z Michael $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *

@@ -1,4 +1,4 @@
-/* $Id: Application.java 766 2014-05-03 15:27:15Z michab $
+/* $Id$
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved.
  * Copyright (C) 2010 Illya Yalovyy (yalovoy@gmail.com)
  * Use is subject to license terms.
@@ -125,7 +125,7 @@ import org.bsaf192.application.utils.PlatformType;
  * @see SingleFrameApplication
  * @see ApplicationContext
  * @see UIManager#setLookAndFeel
- * @version $Rev: 766 $
+ * @version $Rev$
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 @ProxyActions({"cut", "copy", "paste", "delete"})

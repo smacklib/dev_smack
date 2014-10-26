@@ -1,4 +1,4 @@
-/* $Id: MackBooleanPropertyAction.java 695 2013-12-22 18:41:18Z michab $
+/* $Id$
  *
  * Common.
  *
@@ -26,7 +26,7 @@ import de.michab.util.ReflectionUtils;
  * A state action that can be linked against a Java Beans boolean
  * property.
  *
- * @version $Rev: 695 $
+ * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
