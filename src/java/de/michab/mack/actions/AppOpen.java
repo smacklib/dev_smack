@@ -35,9 +35,9 @@ import org.bsaf192.application.Task;
 
 import de.michab.mack.ErrorDialog;
 import de.michab.mack.MackAppViewer;
-import de.michab.util.FileUtils;
-import de.michab.util.StringUtils;
-import de.michab.util.Transformer;
+import de.michab.mack.util.FileUtils;
+import de.michab.mack.util.StringUtils;
+import de.michab.mack.util.Transformer;
 
 
 

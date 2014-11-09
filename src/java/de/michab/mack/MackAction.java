@@ -25,7 +25,7 @@ import org.bsaf192.application.ResourceMap;
 import org.bsaf192.application.Task;
 import org.jdesktop.swingx.action.AbstractActionExt;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 
 

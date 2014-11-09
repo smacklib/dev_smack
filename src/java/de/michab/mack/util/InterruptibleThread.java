@@ -6,7 +6,7 @@
  * Copyright © 2010 Michael G. Binz
  */
 
-package de.michab.util;
+package de.michab.mack.util;
 
 /**
  * Extends a {@link Thread} with a deterministic interruption flag that is set

@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.michab.mack.MackAction;
-import de.michab.util.ReflectionUtils;
+import de.michab.mack.util.ReflectionUtils;
 
 
 

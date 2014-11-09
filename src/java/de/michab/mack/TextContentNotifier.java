@@ -23,7 +23,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 
 

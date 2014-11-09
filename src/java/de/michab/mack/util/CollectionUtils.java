@@ -6,7 +6,7 @@
  * Copyright © 2012 Michael G. Binz
  */
 
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.lang.reflect.Array;
 import java.util.Collection;

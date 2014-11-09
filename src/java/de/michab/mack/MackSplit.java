@@ -11,7 +11,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import javax.swing.JSplitPane;
-import de.michab.util.MathExt;
+
+import de.michab.mack.util.MathExt;
 
 /**
  * A JSplitPane that allows setting the proportional divider location

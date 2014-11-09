@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
-import de.michab.util.Localiser;
+import de.michab.mack.util.Localiser;
 
 
 

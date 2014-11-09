@@ -47,9 +47,9 @@ import javax.swing.border.EmptyBorder;
 import org.bsaf192.application.ResourceConverter.ResourceConverterException;
 import org.bsaf192.application.utils.PlatformType;
 
-import de.michab.util.ReflectionUtils;
-import de.michab.util.ResourceUtils;
-import de.michab.util.StringUtils;
+import de.michab.mack.util.ReflectionUtils;
+import de.michab.mack.util.ResourceUtils;
+import de.michab.mack.util.StringUtils;
 /**
  * A read-only encapsulation of one or more ResourceBundles that adds
  * automatic string conversion, support for field and Swing component

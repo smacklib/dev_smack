@@ -13,8 +13,8 @@ import java.lang.reflect.Method;
 import javax.swing.ActionMap;
 
 import de.michab.mack.MackAction;
-import de.michab.util.ReflectionUtils;
-import de.michab.util.StringUtils;
+import de.michab.mack.util.ReflectionUtils;
+import de.michab.mack.util.StringUtils;
 
 /**
  * The {@link javax.swing.Action} class used to implement the

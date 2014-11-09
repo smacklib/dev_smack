@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 import org.bsaf192.application.Application;
 import org.bsaf192.application.ResourceMap;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 
 

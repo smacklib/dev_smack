@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 /**
  * Helper operations.

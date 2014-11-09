@@ -22,8 +22,8 @@ import org.bsaf192.application.Application;
 import org.jdesktop.swingx.action.AbstractActionExt;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 
-import de.michab.util.MultiMap;
-import de.michab.util.StringUtils;
+import de.michab.mack.util.MultiMap;
+import de.michab.mack.util.StringUtils;
 
 /**
  * <p>

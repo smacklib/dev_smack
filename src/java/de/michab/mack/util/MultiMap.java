@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2008-2010 Michael G. Binz
  */
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 import org.bsaf192.application.Action;
 
 import de.michab.mack.actions.AppOpen;
-import de.michab.util.Transformer;
+import de.michab.mack.util.Transformer;
 
 
 

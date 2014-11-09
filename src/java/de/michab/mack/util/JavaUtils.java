@@ -6,7 +6,7 @@
  * Copyright © 2011 Michael G. Binz
  */
 
-package de.michab.util;
+package de.michab.mack.util;
 
 
 
