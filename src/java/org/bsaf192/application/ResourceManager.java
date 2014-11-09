@@ -13,8 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.michab.mack.util.ReflectionUtils;
-import de.michab.mack.util.StringUtils;
+import de.s.mack.util.ReflectionUtils;
+import de.s.mack.util.StringUtils;
 
 /**
  * The application's {@code ResourceManager} provides
