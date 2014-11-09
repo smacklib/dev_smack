@@ -1,7 +1,7 @@
 /************************************************************
  * Copyright 2004-2005,2007-2008 Masahiko SAWAI All Rights Reserved.
  ************************************************************/
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

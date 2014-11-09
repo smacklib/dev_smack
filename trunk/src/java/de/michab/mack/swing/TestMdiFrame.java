@@ -6,7 +6,7 @@
  * Copyright (c) 1999 Michael G. Binz
  */
 
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import java.awt.*;
 import java.awt.event.*;

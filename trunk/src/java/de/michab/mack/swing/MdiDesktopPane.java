@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import java.awt.Dimension;
 import java.awt.Point;
