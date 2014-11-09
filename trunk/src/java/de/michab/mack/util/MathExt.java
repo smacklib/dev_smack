@@ -4,7 +4,7 @@
  *
  * Copyright © 2005-2012 Michael G. Binz
  */
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.awt.Point;
 

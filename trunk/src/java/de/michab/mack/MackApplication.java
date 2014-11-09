@@ -23,7 +23,7 @@ import org.bsaf192.application.ResourceMap;
 import org.bsaf192.application.SingleFrameApplication;
 
 import de.michab.mack.actions.AppExit;
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 
 

@@ -6,7 +6,7 @@
  * Copyright © 2014 Michael G. Binz
  */
 
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.util.HashMap;
 import java.util.Locale;

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright (c) 2008 Michael G. Binz
  */
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.io.Closeable;
 import java.io.File;

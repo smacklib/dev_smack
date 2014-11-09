@@ -12,7 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 /**
  * Marks the field as a resource to be injected.

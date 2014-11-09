@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright (c) 2009 Michael G. Binz
  */
-package de.michab.util;
+package de.michab.mack.util;
 
 
 

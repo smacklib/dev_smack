@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import de.michab.util.StringUtils;
+import de.michab.mack.util.StringUtils;
 
 /**
  * Utility class for sorting actions.

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2009-2011 Michael G. Binz
  */
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;

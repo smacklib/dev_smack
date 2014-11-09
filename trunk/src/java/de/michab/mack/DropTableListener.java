@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JTable;
 
-import de.michab.util.Transformer;
+import de.michab.mack.util.Transformer;
 
 
 

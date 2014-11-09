@@ -6,7 +6,7 @@
  * Copyright © 2010 Michael G. Binz
  */
 
-package de.michab.util;
+package de.michab.mack.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
