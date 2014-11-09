@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright (c) 2008 Michael G. Binz
  */
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import java.awt.Component;
 import java.awt.Cursor;

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2002-2011 Michael G. Binz
  */
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -247,7 +247,7 @@ public final class JPopupList
    * <code>cancel()</code> places the focus to the invoker of the popup that
    * has been passed to the <code>show()</code> method.
    *
-   * @see de.michab.swingx.JPopupList#show
+   * @see de.michab.mack.swing.JPopupList#show
    */
   public void cancel()
   {

@@ -5,7 +5,7 @@
  * Unpublished work.
  * Copyright (c) 1999 Michael G. Binz
  */
-package de.michab.swingx;
+package de.michab.mack.swing;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
  * This dialog gets displayed after more than a defined number of child windows is displayed. This
  * allows to activate any available window though no menu representation exists.
  *
- * @see de.michab.swingx.MdiDesktopPane
+ * @see de.michab.mack.swing.MdiDesktopPane
  * @see de.michab.swingx.MdiFrame
  */
 class WindowsDialog {
