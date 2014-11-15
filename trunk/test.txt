@@ -1,1 +1,2 @@
-Mäh.
+webstart on linux /usr/share/icedtea-web/netx.jar
+swingx initial version  https://svn.java.net/svn/swingx~svn rev 4316
