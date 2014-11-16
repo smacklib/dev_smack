@@ -7,8 +7,10 @@
      to tools and scripts.
   -->
 
-<project name="dev_common" default="dist" basedir=".">
+<project name="dev_smack" default="dist" basedir=".">
 
+  <buildnumber/>
+	
   <property
     description =
       "Allow properties defined in a file to override the settings here."
@@ -56,10 +58,13 @@
     name="mainclass"
     value="de.michab.CommonVersion"/>
 
+
+
+	
   <import file="common_ant.xml"/>
 
   <fileset dir="${in.lib}" id="fs.common.libraries.id">
-    <include name="${common_lib.swingx}"/>
+    <include name="metainf-services-1.5.jar"/>
   </fileset>
 
   <path description="Defines the project's classpath." 
@@ -104,11 +109,49 @@
 
 
 
+  <target name="jar-bin" depends="resource">
+    <!-- Jar the project main jar directly to the final position. -->
+    <jar
+      jarfile="${out.dist}/${ant.project.name}-${build.number}.jar"
+      basedir="${out.bin}"
+      excludes="${in.src}/doc/**">
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="${ant.project.name}">
+            <attribute 
+                name="Implementation-Title" 
+                value="${ant.project.name}"/>
+            <attribute 
+                name="Implementation-Version"
+                value="${build.number}"/>
+        </section>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="jar-src" depends="resource">
+    <jar
+      jarfile="${out.dist}/${ant.project.name}-src-${build.number}.jar"
+      basedir="${in.src}"
+      excludes="${in.src}/doc/**">
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <section name="${ant.project.name}">
+            <attribute 
+                name="Implementation-Title" 
+                value="${ant.project.name}-src"/>
+            <attribute 
+                name="Implementation-Version"
+                value="${build.number}"/>
+        </section>
+      </manifest>
+    </jar>
+  </target>
+
   <target description="Copies the project libs to the dist position."
           name="dist"
-          depends="jar">
-    <copy todir="${out.dist}">
-      <fileset refid="fs.common.libraries.id"/>
-    </copy>
+          depends="jar-bin, jar-src">
   </target>
 </project>
