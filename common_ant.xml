@@ -104,7 +104,7 @@
                 value="${ant.project.name}"/>
             <attribute 
                 name="Implementation-Version"
-                value="$Rev: 674 $ ${DSTAMP} ${TSTAMP}"/>
+                value="${build.number}"/>
         </section>
       </manifest>
     </jar>
