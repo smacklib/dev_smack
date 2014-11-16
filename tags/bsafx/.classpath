@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="lib" path="lib/jhall.jar"/>
+	<classpathentry kind="lib" path="tasks/one-jar-ant-task-0.96.jar"/>
+	<classpathentry kind="lib" path="tasks/one-jar-ant-task-0.98.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/swingx-all-1.6.5-1-sources"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
