@@ -153,5 +153,6 @@
   <target description="Copies the project libs to the dist position."
           name="dist"
           depends="jar-bin, jar-src">
+  	<echo>${java.version}</echo>
   </target>
 </project>
