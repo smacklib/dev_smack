@@ -606,8 +606,7 @@ public class JXConsole extends JPanel implements KeyListener {
     /**
      * Set the font on this component.
      *
-     * @param font
-     *            The font to set.
+     * @param font The font to set.
      */
     @Override
     public void setFont(Font font) {
