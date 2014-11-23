@@ -1,7 +1,7 @@
 /************************************************************
  * Copyright 2004-2005,2007-2008 Masahiko SAWAI All Rights Reserved.
  ************************************************************/
-package org.jdesktop.smack.swing;
+package org.jdesktop.swingx;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -62,11 +62,11 @@ import javax.swing.text.Position;
  *
  * <pre>
  *
- * @version $Rev$
+ * @version $Rev: 48 $
  * @author Masahiko SAWAI
  */
 @SuppressWarnings("serial")
-public class JFontChooser extends JComponent {
+public class JXFontChooser extends JComponent {
     // class variables
     /**
      * Return value from <code>showDialog()</code>.
@@ -94,7 +94,7 @@ public class JFontChooser extends JComponent {
         "22", "24", "26", "28", "36", "48", "72",           };
 
     // instance variables
-    protected int                 dialogResultValue         = JFontChooser.ERROR_OPTION;
+    protected int                 dialogResultValue         = JXFontChooser.ERROR_OPTION;
 
     private String[]              fontStyleNames            = null;
     private String[]              fontFamilyNames           = null;
@@ -114,8 +114,8 @@ public class JFontChooser extends JComponent {
     /**
      * Constructs a <code>JFontChooser</code> object.
      **/
-    public JFontChooser() {
-        this(JFontChooser.DEFAULT_FONT_SIZE_STRINGS);
+    public JXFontChooser() {
+        this(JXFontChooser.DEFAULT_FONT_SIZE_STRINGS);
     }
 
     /**
@@ -124,9 +124,9 @@ public class JFontChooser extends JComponent {
      * @param fontSizeStrings
      *            the array of font size string.
      **/
-    public JFontChooser(String[] fontSizeStrings) {
+    public JXFontChooser(String[] fontSizeStrings) {
         if (fontSizeStrings == null) {
-            fontSizeStrings = JFontChooser.DEFAULT_FONT_SIZE_STRINGS;
+            fontSizeStrings = JXFontChooser.DEFAULT_FONT_SIZE_STRINGS;
         }
         this.fontSizeStrings = fontSizeStrings;
 
@@ -144,7 +144,7 @@ public class JFontChooser extends JComponent {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.add(contentsPanel);
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        this.setSelectedFont(JFontChooser.DEFAULT_SELECTED_FONT);
+        this.setSelectedFont(JXFontChooser.DEFAULT_SELECTED_FONT);
     }
 
     public JTextField getFontFamilyTextField() {
@@ -156,7 +156,7 @@ public class JFontChooser extends JComponent {
                 getFontFamilyList()));
             this.fontFamilyTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
-            this.fontFamilyTextField.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontFamilyTextField.setFont(JXFontChooser.DEFAULT_FONT);
 
         }
         return this.fontFamilyTextField;
@@ -171,7 +171,7 @@ public class JFontChooser extends JComponent {
                 getFontStyleList()));
             this.fontStyleTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontStyleList()));
-            this.fontStyleTextField.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontStyleTextField.setFont(JXFontChooser.DEFAULT_FONT);
         }
         return this.fontStyleTextField;
     }
@@ -185,7 +185,7 @@ public class JFontChooser extends JComponent {
                 .addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontSizeList()));
             this.fontSizeTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontSizeList()));
-            this.fontSizeTextField.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontSizeTextField.setFont(JXFontChooser.DEFAULT_FONT);
         }
         return this.fontSizeTextField;
     }
@@ -196,7 +196,7 @@ public class JFontChooser extends JComponent {
             this.fontNameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             this.fontNameList.addListSelectionListener(new ListSelectionHandler(getFontFamilyTextField()));
             this.fontNameList.setSelectedIndex(0);
-            this.fontNameList.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontNameList.setFont(JXFontChooser.DEFAULT_FONT);
             this.fontNameList.setFocusable(false);
         }
         return this.fontNameList;
@@ -208,7 +208,7 @@ public class JFontChooser extends JComponent {
             this.fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             this.fontStyleList.addListSelectionListener(new ListSelectionHandler(getFontStyleTextField()));
             this.fontStyleList.setSelectedIndex(0);
-            this.fontStyleList.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontStyleList.setFont(JXFontChooser.DEFAULT_FONT);
             this.fontStyleList.setFocusable(false);
         }
         return this.fontStyleList;
@@ -220,7 +220,7 @@ public class JFontChooser extends JComponent {
             this.fontSizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             this.fontSizeList.addListSelectionListener(new ListSelectionHandler(getFontSizeTextField()));
             this.fontSizeList.setSelectedIndex(0);
-            this.fontSizeList.setFont(JFontChooser.DEFAULT_FONT);
+            this.fontSizeList.setFont(JXFontChooser.DEFAULT_FONT);
             this.fontSizeList.setFocusable(false);
         }
         return this.fontSizeList;
@@ -249,7 +249,7 @@ public class JFontChooser extends JComponent {
      **/
     public int getSelectedFontStyle() {
         int index = getFontStyleList().getSelectedIndex();
-        return JFontChooser.FONT_STYLE_CODES[index];
+        return JXFontChooser.FONT_STYLE_CODES[index];
     }
 
     /**
@@ -317,8 +317,8 @@ public class JFontChooser extends JComponent {
      * @see #getSelectedFontStyle
      **/
     public void setSelectedFontStyle(int style) {
-        for (int i = 0; i < JFontChooser.FONT_STYLE_CODES.length; i++) {
-            if (JFontChooser.FONT_STYLE_CODES[i] == style) {
+        for (int i = 0; i < JXFontChooser.FONT_STYLE_CODES.length; i++) {
+            if (JXFontChooser.FONT_STYLE_CODES[i] == style) {
                 getFontStyleList().setSelectedIndex(i);
                 break;
             }
@@ -374,11 +374,11 @@ public class JFontChooser extends JComponent {
      * @see #ERROR_OPTION
      **/
     public int showDialog(Component parent) {
-        this.dialogResultValue = JFontChooser.ERROR_OPTION;
+        this.dialogResultValue = JXFontChooser.ERROR_OPTION;
         JDialog dialog = createDialog(parent);
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                JFontChooser.this.dialogResultValue = JFontChooser.CANCEL_OPTION;
+                JXFontChooser.this.dialogResultValue = JXFontChooser.CANCEL_OPTION;
             }
         });
 
@@ -531,7 +531,7 @@ public class JFontChooser extends JComponent {
         }
 
         public void actionPerformed(ActionEvent e) {
-            JFontChooser.this.dialogResultValue = JFontChooser.OK_OPTION;
+            JXFontChooser.this.dialogResultValue = JXFontChooser.OK_OPTION;
             this.dialog.setVisible(false);
         }
     }
@@ -548,7 +548,7 @@ public class JFontChooser extends JComponent {
         }
 
         public void actionPerformed(ActionEvent e) {
-            JFontChooser.this.dialogResultValue = JFontChooser.CANCEL_OPTION;
+            JXFontChooser.this.dialogResultValue = JXFontChooser.CANCEL_OPTION;
             this.dialog.setVisible(false);
         }
     }
@@ -562,9 +562,9 @@ public class JFontChooser extends JComponent {
         Action cancelAction = new DialogCancelAction(dialog);
 
         JButton okButton = new JButton(okAction);
-        okButton.setFont(JFontChooser.DEFAULT_FONT);
+        okButton.setFont(JXFontChooser.DEFAULT_FONT);
         JButton cancelButton = new JButton(cancelAction);
-        cancelButton.setFont(JFontChooser.DEFAULT_FONT);
+        cancelButton.setFont(JXFontChooser.DEFAULT_FONT);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(2, 1));

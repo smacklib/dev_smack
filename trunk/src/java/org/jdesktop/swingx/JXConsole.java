@@ -1,11 +1,11 @@
-/* $Id$
+/* $Id: JConsole.java 48 2014-11-23 10:28:59Z michab66 $
  *
  * Common.
  *
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
-package org.jdesktop.smack.swing;
+package org.jdesktop.swingx;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,11 +44,10 @@ import org.jdesktop.swingx.JXFontChooser;
 /**
  * A console ui component. Connects stream oriented in- and output to a text component.
  *
- * @version $Rev$
- * @deprecated Use JXConsole.
+ * @version $Rev: 48 $
  */
 @SuppressWarnings("serial")
-public class JConsole extends JPanel implements KeyListener {
+public class JXConsole extends JPanel implements KeyListener {
 
     private final Logger LOG = Logger.getLogger( getClass().getName() );
 
@@ -136,7 +135,7 @@ public class JConsole extends JPanel implements KeyListener {
     /**
      * Creates a console.
      */
-    public JConsole() {
+    public JXConsole() {
 
         super( new BorderLayout() );
 
@@ -357,7 +356,7 @@ public class JConsole extends JPanel implements KeyListener {
         int documentLength = d.getLength();
 
         // Check if we reached our maximum buffer size and release data if this is the case.
-        if (documentLength + string.length() > JConsole.MAX_TEXT_LENGTH) {
+        if (documentLength + string.length() > JXConsole.MAX_TEXT_LENGTH) {
             documentRemove(
                     d,
                     0,
@@ -408,7 +407,7 @@ public class JConsole extends JPanel implements KeyListener {
 
         _history.remove( commandLine );
 
-        if ( _history.size() >= JConsole.maximumHistoryLength ) {
+        if ( _history.size() >= JXConsole.maximumHistoryLength ) {
             _history.remove(0);
         }
 
@@ -663,10 +662,10 @@ public class JConsole extends JPanel implements KeyListener {
 
     @Action
     public void actSave( ActionEvent ae ) {
-        if (JConsole.saveChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+        if (JXConsole.saveChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        File f = JConsole.saveChooser.getSelectedFile();
+        File f = JXConsole.saveChooser.getSelectedFile();
         if (f.exists()) {
             int result = JOptionPane.showOptionDialog(
                 // Parent.
