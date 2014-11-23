@@ -96,20 +96,20 @@ public class JXFontChooser extends JComponent {
     // instance variables
     protected int                 dialogResultValue         = JXFontChooser.ERROR_OPTION;
 
-    private String[]              fontStyleNames            = null;
-    private String[]              fontFamilyNames           = null;
-    private String[]              fontSizeStrings           = null;
-    private JTextField            fontFamilyTextField       = null;
-    private JTextField            fontStyleTextField        = null;
-    private JTextField            fontSizeTextField         = null;
-    private JList                 fontNameList              = null;
-    private JList                 fontStyleList             = null;
-    private JList                 fontSizeList              = null;
-    private JPanel                fontNamePanel             = null;
-    private JPanel                fontStylePanel            = null;
-    private JPanel                fontSizePanel             = null;
-    private JPanel                samplePanel               = null;
-    private JTextField            sampleText                = null;
+    private String[]              _fontStyleNames            = null;
+    private String[]              _fontFamilyNames           = null;
+    private String[]              _fontSizeStrings           = null;
+    private JTextField            _fontFamilyTextField       = null;
+    private JTextField            _fontStyleTextField        = null;
+    private JTextField            _fontSizeTextField         = null;
+    private JList<String> _fontNameList = null;
+    private JList<String>                 _fontStyleList             = null;
+    private JList<String>                 _fontSizeList              = null;
+    private JPanel                _fontNamePanel             = null;
+    private JPanel                _fontStylePanel            = null;
+    private JPanel                _fontSizePanel             = null;
+    private JPanel                _samplePanel               = null;
+    private JTextField            _sampleText                = null;
 
     /**
      * Constructs a <code>JFontChooser</code> object.
@@ -128,7 +128,7 @@ public class JXFontChooser extends JComponent {
         if (fontSizeStrings == null) {
             fontSizeStrings = JXFontChooser.DEFAULT_FONT_SIZE_STRINGS;
         }
-        this.fontSizeStrings = fontSizeStrings;
+        _fontSizeStrings = fontSizeStrings;
 
         JPanel selectPanel = new JPanel();
         selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
@@ -148,82 +148,82 @@ public class JXFontChooser extends JComponent {
     }
 
     public JTextField getFontFamilyTextField() {
-        if (this.fontFamilyTextField == null) {
-            this.fontFamilyTextField = new JTextField();
-            this.fontFamilyTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
-                this.fontFamilyTextField));
-            this.fontFamilyTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(
+        if (_fontFamilyTextField == null) {
+            _fontFamilyTextField = new JTextField();
+            _fontFamilyTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
+                _fontFamilyTextField));
+            _fontFamilyTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(
                 getFontFamilyList()));
-            this.fontFamilyTextField.getDocument().addDocumentListener(
+            _fontFamilyTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
-            this.fontFamilyTextField.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontFamilyTextField.setFont(JXFontChooser.DEFAULT_FONT);
 
         }
-        return this.fontFamilyTextField;
+        return _fontFamilyTextField;
     }
 
     public JTextField getFontStyleTextField() {
-        if (this.fontStyleTextField == null) {
-            this.fontStyleTextField = new JTextField();
-            this.fontStyleTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
-                this.fontStyleTextField));
-            this.fontStyleTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(
+        if (_fontStyleTextField == null) {
+            _fontStyleTextField = new JTextField();
+            _fontStyleTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
+                _fontStyleTextField));
+            _fontStyleTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(
                 getFontStyleList()));
-            this.fontStyleTextField.getDocument().addDocumentListener(
+            _fontStyleTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontStyleList()));
-            this.fontStyleTextField.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontStyleTextField.setFont(JXFontChooser.DEFAULT_FONT);
         }
-        return this.fontStyleTextField;
+        return _fontStyleTextField;
     }
 
     public JTextField getFontSizeTextField() {
-        if (this.fontSizeTextField == null) {
-            this.fontSizeTextField = new JTextField();
-            this.fontSizeTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
-                this.fontSizeTextField));
-            this.fontSizeTextField
+        if (_fontSizeTextField == null) {
+            _fontSizeTextField = new JTextField();
+            _fontSizeTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(
+                _fontSizeTextField));
+            _fontSizeTextField
                 .addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontSizeList()));
-            this.fontSizeTextField.getDocument().addDocumentListener(
+            _fontSizeTextField.getDocument().addDocumentListener(
                 new ListSearchTextFieldDocumentHandler(getFontSizeList()));
-            this.fontSizeTextField.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontSizeTextField.setFont(JXFontChooser.DEFAULT_FONT);
         }
-        return this.fontSizeTextField;
+        return _fontSizeTextField;
     }
 
-    public JList getFontFamilyList() {
-        if (this.fontNameList == null) {
-            this.fontNameList = new JList(getFontFamilies());
-            this.fontNameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            this.fontNameList.addListSelectionListener(new ListSelectionHandler(getFontFamilyTextField()));
-            this.fontNameList.setSelectedIndex(0);
-            this.fontNameList.setFont(JXFontChooser.DEFAULT_FONT);
-            this.fontNameList.setFocusable(false);
+    public JList<String> getFontFamilyList() {
+        if (_fontNameList == null) {
+            _fontNameList = new JList<String>(getFontFamilies());
+            _fontNameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            _fontNameList.addListSelectionListener(new ListSelectionHandler(getFontFamilyTextField()));
+            _fontNameList.setSelectedIndex(0);
+            _fontNameList.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontNameList.setFocusable(false);
         }
-        return this.fontNameList;
+        return _fontNameList;
     }
 
-    public JList getFontStyleList() {
-        if (this.fontStyleList == null) {
-            this.fontStyleList = new JList(getFontStyleNames());
-            this.fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            this.fontStyleList.addListSelectionListener(new ListSelectionHandler(getFontStyleTextField()));
-            this.fontStyleList.setSelectedIndex(0);
-            this.fontStyleList.setFont(JXFontChooser.DEFAULT_FONT);
-            this.fontStyleList.setFocusable(false);
+    public JList<String> getFontStyleList() {
+        if (_fontStyleList == null) {
+            _fontStyleList = new JList<String>(getFontStyleNames());
+            _fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            _fontStyleList.addListSelectionListener(new ListSelectionHandler(getFontStyleTextField()));
+            _fontStyleList.setSelectedIndex(0);
+            _fontStyleList.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontStyleList.setFocusable(false);
         }
-        return this.fontStyleList;
+        return _fontStyleList;
     }
 
-    public JList getFontSizeList() {
-        if (this.fontSizeList == null) {
-            this.fontSizeList = new JList(this.fontSizeStrings);
-            this.fontSizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            this.fontSizeList.addListSelectionListener(new ListSelectionHandler(getFontSizeTextField()));
-            this.fontSizeList.setSelectedIndex(0);
-            this.fontSizeList.setFont(JXFontChooser.DEFAULT_FONT);
-            this.fontSizeList.setFocusable(false);
+    public JList<String> getFontSizeList() {
+        if (_fontSizeList == null) {
+            _fontSizeList = new JList<String>(_fontSizeStrings);
+            _fontSizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            _fontSizeList.addListSelectionListener(new ListSelectionHandler(getFontSizeTextField()));
+            _fontSizeList.setSelectedIndex(0);
+            _fontSizeList.setFont(JXFontChooser.DEFAULT_FONT);
+            _fontSizeList.setFocusable(false);
         }
-        return this.fontSizeList;
+        return _fontSizeList;
     }
 
     /**
@@ -335,8 +335,8 @@ public class JXFontChooser extends JComponent {
      **/
     public void setSelectedFontSize(int size) {
         String sizeString = String.valueOf(size);
-        for (int i = 0; i < this.fontSizeStrings.length; i++) {
-            if (this.fontSizeStrings[i].equals(sizeString)) {
+        for (int i = 0; i < _fontSizeStrings.length; i++) {
+            if (_fontSizeStrings[i].equals(sizeString)) {
                 getFontSizeList().setSelectedIndex(i);
                 break;
             }
@@ -374,7 +374,7 @@ public class JXFontChooser extends JComponent {
      * @see #ERROR_OPTION
      **/
     public int showDialog(Component parent) {
-        this.dialogResultValue = JXFontChooser.ERROR_OPTION;
+        dialogResultValue = JXFontChooser.ERROR_OPTION;
         JDialog dialog = createDialog(parent);
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -596,11 +596,11 @@ public class JXFontChooser extends JComponent {
     }
 
     protected JPanel getFontFamilyPanel() {
-        if (this.fontNamePanel == null) {
-            this.fontNamePanel = new JPanel();
-            this.fontNamePanel.setLayout(new BorderLayout());
-            this.fontNamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            this.fontNamePanel.setPreferredSize(new Dimension(180, 130));
+        if (_fontNamePanel == null) {
+            _fontNamePanel = new JPanel();
+            _fontNamePanel.setLayout(new BorderLayout());
+            _fontNamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            _fontNamePanel.setPreferredSize(new Dimension(180, 130));
 
             JScrollPane scrollPane = new JScrollPane(getFontFamilyList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
@@ -617,19 +617,19 @@ public class JXFontChooser extends JComponent {
             label.setLabelFor(getFontFamilyTextField());
             label.setDisplayedMnemonic('F');
 
-            this.fontNamePanel.add(label, BorderLayout.NORTH);
-            this.fontNamePanel.add(p, BorderLayout.CENTER);
+            _fontNamePanel.add(label, BorderLayout.NORTH);
+            _fontNamePanel.add(p, BorderLayout.CENTER);
 
         }
-        return this.fontNamePanel;
+        return _fontNamePanel;
     }
 
     protected JPanel getFontStylePanel() {
-        if (this.fontStylePanel == null) {
-            this.fontStylePanel = new JPanel();
-            this.fontStylePanel.setLayout(new BorderLayout());
-            this.fontStylePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-            this.fontStylePanel.setPreferredSize(new Dimension(140, 130));
+        if (_fontStylePanel == null) {
+            _fontStylePanel = new JPanel();
+            _fontStylePanel.setLayout(new BorderLayout());
+            _fontStylePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            _fontStylePanel.setPreferredSize(new Dimension(140, 130));
 
             JScrollPane scrollPane = new JScrollPane(getFontStyleList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
@@ -646,18 +646,18 @@ public class JXFontChooser extends JComponent {
             label.setLabelFor(getFontStyleTextField());
             label.setDisplayedMnemonic('Y');
 
-            this.fontStylePanel.add(label, BorderLayout.NORTH);
-            this.fontStylePanel.add(p, BorderLayout.CENTER);
+            _fontStylePanel.add(label, BorderLayout.NORTH);
+            _fontStylePanel.add(p, BorderLayout.CENTER);
         }
-        return this.fontStylePanel;
+        return _fontStylePanel;
     }
 
     protected JPanel getFontSizePanel() {
-        if (this.fontSizePanel == null) {
-            this.fontSizePanel = new JPanel();
-            this.fontSizePanel.setLayout(new BorderLayout());
-            this.fontSizePanel.setPreferredSize(new Dimension(70, 130));
-            this.fontSizePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        if (_fontSizePanel == null) {
+            _fontSizePanel = new JPanel();
+            _fontSizePanel.setLayout(new BorderLayout());
+            _fontSizePanel.setPreferredSize(new Dimension(70, 130));
+            _fontSizePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
             JScrollPane scrollPane = new JScrollPane(getFontSizeList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
@@ -674,55 +674,55 @@ public class JXFontChooser extends JComponent {
             label.setLabelFor(getFontSizeTextField());
             label.setDisplayedMnemonic('S');
 
-            this.fontSizePanel.add(label, BorderLayout.NORTH);
-            this.fontSizePanel.add(p, BorderLayout.CENTER);
+            _fontSizePanel.add(label, BorderLayout.NORTH);
+            _fontSizePanel.add(p, BorderLayout.CENTER);
         }
-        return this.fontSizePanel;
+        return _fontSizePanel;
     }
 
     protected JPanel getSamplePanel() {
-        if (this.samplePanel == null) {
+        if (_samplePanel == null) {
             Border titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), ("Sample"));
             Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
             Border border = BorderFactory.createCompoundBorder(titledBorder, empty);
 
-            this.samplePanel = new JPanel();
-            this.samplePanel.setLayout(new BorderLayout());
-            this.samplePanel.setBorder(border);
+            _samplePanel = new JPanel();
+            _samplePanel.setLayout(new BorderLayout());
+            _samplePanel.setBorder(border);
 
-            this.samplePanel.add(getSampleTextField(), BorderLayout.CENTER);
+            _samplePanel.add(getSampleTextField(), BorderLayout.CENTER);
         }
-        return this.samplePanel;
+        return _samplePanel;
     }
 
     protected JTextField getSampleTextField() {
-        if (this.sampleText == null) {
+        if (_sampleText == null) {
             Border lowered = BorderFactory.createLoweredBevelBorder();
 
-            this.sampleText = new JTextField(("AaBbYyZz"));
-            this.sampleText.setBorder(lowered);
-            this.sampleText.setPreferredSize(new Dimension(300, 100));
+            _sampleText = new JTextField(("AaBbYyZz"));
+            _sampleText.setBorder(lowered);
+            _sampleText.setPreferredSize(new Dimension(300, 100));
         }
-        return this.sampleText;
+        return _sampleText;
     }
 
     protected String[] getFontFamilies() {
-        if (this.fontFamilyNames == null) {
+        if (_fontFamilyNames == null) {
             GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            this.fontFamilyNames = env.getAvailableFontFamilyNames();
+            _fontFamilyNames = env.getAvailableFontFamilyNames();
         }
-        return this.fontFamilyNames;
+        return _fontFamilyNames;
     }
 
     protected String[] getFontStyleNames() {
-        if (this.fontStyleNames == null) {
+        if (_fontStyleNames == null) {
             int i = 0;
-            this.fontStyleNames = new String[4];
-            this.fontStyleNames[i++] = ("Plain");
-            this.fontStyleNames[i++] = ("Bold");
-            this.fontStyleNames[i++] = ("Italic");
-            this.fontStyleNames[i++] = ("BoldItalic");
+            _fontStyleNames = new String[4];
+            _fontStyleNames[i++] = ("Plain");
+            _fontStyleNames[i++] = ("Bold");
+            _fontStyleNames[i++] = ("Italic");
+            _fontStyleNames[i++] = ("BoldItalic");
         }
-        return this.fontStyleNames;
+        return _fontStyleNames;
     }
 }
