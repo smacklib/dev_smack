@@ -20,9 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.Resource;
-import org.bsaf192.application.ResourceMap;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.ResourceMap;
 
 import de.s.mack.MackApplication;
 

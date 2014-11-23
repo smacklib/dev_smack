@@ -13,7 +13,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import org.bsaf192.application.Action;
+import org.jdesktop.application.Action;
 
 import de.s.mack.actions.AppOpen;
 import de.s.mack.util.Transformer;

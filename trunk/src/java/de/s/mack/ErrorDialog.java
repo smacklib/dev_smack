@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.ResourceMap;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import de.s.mack.util.StringUtils;
 

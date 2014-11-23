@@ -48,7 +48,7 @@ public final class JPopupList
   /**
    * This component's <code>JList</code>.
    */
-  private final JList _list;
+  private final JList<String> _list;
 
 
 
@@ -73,7 +73,7 @@ public final class JPopupList
    */
   public JPopupList( String[] choices )
   {
-    _list = new JList( choices );
+    _list = new JList<String>( choices );
     // If we have the focus we never release it.
     _list.setNextFocusableComponent( _list );
 

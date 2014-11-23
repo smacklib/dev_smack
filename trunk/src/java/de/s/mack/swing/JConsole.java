@@ -36,8 +36,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import org.bsaf192.application.Action;
-import org.bsaf192.application.Application;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 
 /**
