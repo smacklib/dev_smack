@@ -13,7 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import de.s.mack.util.StringUtils;
+import org.jdesktop.smack.util.StringUtils;
+
 
 /**
  * Helper operations.

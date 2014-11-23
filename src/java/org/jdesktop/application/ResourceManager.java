@@ -13,8 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.s.mack.util.ReflectionUtils;
-import de.s.mack.util.StringUtils;
+import org.jdesktop.smack.util.ReflectionUtils;
+import org.jdesktop.smack.util.StringUtils;
+
 
 /**
  * The application's {@code ResourceManager} provides

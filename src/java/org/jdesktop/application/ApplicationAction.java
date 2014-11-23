@@ -12,9 +12,10 @@ import java.lang.reflect.Method;
 
 import javax.swing.ActionMap;
 
-import de.s.mack.MackAction;
-import de.s.mack.util.ReflectionUtils;
-import de.s.mack.util.StringUtils;
+import org.jdesktop.smack.MackAction;
+import org.jdesktop.smack.util.ReflectionUtils;
+import org.jdesktop.smack.util.StringUtils;
+
 
 /**
  * The {@link javax.swing.Action} class used to implement the
