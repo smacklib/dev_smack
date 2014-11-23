@@ -46,10 +46,10 @@ import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.ResourceConverter.ResourceConverterException;
 import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.smack.util.ReflectionUtils;
+import org.jdesktop.smack.util.ResourceUtils;
+import org.jdesktop.smack.util.StringUtils;
 
-import de.s.mack.util.ReflectionUtils;
-import de.s.mack.util.ResourceUtils;
-import de.s.mack.util.StringUtils;
 /**
  * A read-only encapsulation of one or more ResourceBundles that adds
  * automatic string conversion, support for field and Swing component
