@@ -20,9 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.ResourceMap;
-import org.bsaf192.application.Task;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.action.AbstractActionExt;
 
 import de.s.mack.util.StringUtils;

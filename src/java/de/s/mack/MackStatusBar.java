@@ -23,9 +23,9 @@ import javax.swing.JSeparator;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.Resource;
-import org.bsaf192.application.TaskMonitor;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Resource;
+import org.jdesktop.application.TaskMonitor;
 
 import de.s.mack.util.StringUtils;
 

@@ -22,8 +22,8 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.ResourceMap;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 
 /**

@@ -32,8 +32,8 @@ import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.bsaf192.application.Action;
-import org.bsaf192.application.Application;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 
 /**
  * A special desktop pane, providing the ability to tile the existing child

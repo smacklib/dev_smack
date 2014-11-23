@@ -28,10 +28,10 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.bsaf192.application.Application;
-import org.bsaf192.application.ResourceMap;
-import org.bsaf192.application.SingleFrameApplication;
-import org.bsaf192.application.Task;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.Task;
 
 import de.s.mack.ErrorDialog;
 import de.s.mack.MackAppViewer;

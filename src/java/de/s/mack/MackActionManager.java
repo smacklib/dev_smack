@@ -18,7 +18,7 @@ import javax.swing.Action;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 
-import org.bsaf192.application.Application;
+import org.jdesktop.application.Application;
 import org.jdesktop.swingx.action.AbstractActionExt;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 

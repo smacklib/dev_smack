@@ -16,11 +16,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
-import org.bsaf192.application.Action;
-import org.bsaf192.application.Application;
-import org.bsaf192.application.FrameView;
-import org.bsaf192.application.ResourceMap;
-import org.bsaf192.application.SingleFrameApplication;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 
 import de.s.mack.actions.AppExit;
 import de.s.mack.util.StringUtils;
