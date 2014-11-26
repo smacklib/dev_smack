@@ -19,6 +19,7 @@ import java.util.Vector;
  * A support class for localisation purposes.
  *
  * @version $Revision$
+ * @deprecated Use SMACK resource support.
  */
 public class Localiser
 {

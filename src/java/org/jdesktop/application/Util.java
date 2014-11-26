@@ -1,9 +1,9 @@
-/*
- * Copyright � 2012 Daimler TSS. All Rights Reserved.
+/* $Id$
  *
- * Reproduction or transmission in whole or in part, in any form or by any
- * means, is prohibited without the prior written consent of the copyright
- * owner.
+ * Michael's Application Construction Kit (MACK)
+ *
+ * Released under Gnu Public License
+ * Copyright (c) 2008 Michael G. Binz
  */
 package org.jdesktop.application;
 
