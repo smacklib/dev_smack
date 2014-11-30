@@ -1095,7 +1095,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
      * @see TaskService
      * @see Action
      */
-    public static abstract class InputBlocker extends AbstractBean {
+    public static abstract class InputBlocker extends AbstractBeanEdt {
 
         private final Task<?,?> task;
         private final BlockingScope scope;

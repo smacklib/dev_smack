@@ -56,7 +56,7 @@ import javax.swing.JToolBar;
  * @see Application#hide(View)
  * @version $Rev$
  */
-public class View extends AbstractBean {
+public class View extends AbstractBeanEdt {
 
 //    private static final Logger logger = Logger.getLogger(View.class.getName());
     private final Application application;

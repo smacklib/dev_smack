@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
  * Methods descriptions are copied from {@link ExecutorService}
  * <p>
  */
-public class TaskService extends AbstractBean {
+public class TaskService extends AbstractBeanEdt {
     public static final String DEFAULT_NAME = "default";
 
     private final String name;

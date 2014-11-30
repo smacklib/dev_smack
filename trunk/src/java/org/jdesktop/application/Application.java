@@ -129,7 +129,7 @@ import org.jdesktop.application.utils.PlatformType;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 @ProxyActions({"cut", "copy", "paste", "delete"})
-public abstract class Application
+public abstract class Application extends AbstractBeanEdt
 {
     public static final String KEY_APPLICATION_TITLE = "Application.title";
     public static final String KEY_APPLICATION_ICON = "Application.icon";
