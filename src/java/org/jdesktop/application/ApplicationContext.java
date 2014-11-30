@@ -27,7 +27,7 @@ import javax.swing.JComponent;
  * @see Application
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class ApplicationContext extends AbstractBean {
+public class ApplicationContext extends AbstractBeanEdt {
 
     private static final Logger logger = Logger.getLogger(ApplicationContext.class.getName());
     private final List<TaskService> taskServices;

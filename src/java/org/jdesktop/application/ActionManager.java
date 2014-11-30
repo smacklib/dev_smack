@@ -29,7 +29,7 @@ import javax.swing.JComponent;
  * @see ApplicationAction
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class ActionManager extends AbstractBean {
+public class ActionManager extends AbstractBeanEdt {
 
     private static final Logger logger = Logger.getLogger(ActionManager.class.getName());
     private final ApplicationContext context;

@@ -17,11 +17,11 @@ import javax.swing.event.SwingPropertyChangeSupport;
  * still fails to correctly document public methods inherited from a package
  * private class.
  */
-public class AbstractBean {
+public class AbstractBeanEdt {
 
     private final PropertyChangeSupport pcs;
 
-    public AbstractBean() {
+    public AbstractBeanEdt() {
         pcs = new SwingPropertyChangeSupport(this, true);
     }
 

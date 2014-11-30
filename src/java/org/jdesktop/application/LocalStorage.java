@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * @see SessionStorage
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class LocalStorage extends AbstractBean {
+public class LocalStorage extends AbstractBeanEdt {
 
     private static Logger logger = Logger.getLogger(LocalStorage.class.getName());
     private final ApplicationContext context;

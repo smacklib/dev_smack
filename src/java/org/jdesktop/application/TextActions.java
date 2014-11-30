@@ -39,7 +39,7 @@ import java.beans.PropertyChangeListener;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @author Scott Violet (Scott.Violet@Sun.COM)
  */
-class TextActions extends AbstractBean {
+class TextActions extends AbstractBeanEdt {
     private static final String MARKER_ACTION_KEY = "TextActions.markerAction";
     private final ApplicationContext context;
     private final CaretListener textComponentCaretListener;

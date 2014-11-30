@@ -61,7 +61,7 @@ import javax.swing.SwingWorker.StateValue;
  * @see TaskService#getTasks
  * @see TaskService#execute
  */
-public class TaskMonitor extends AbstractBean {
+public class TaskMonitor extends AbstractBeanEdt {
 
     public static final String PROP_FOREGROUND_TASK = "foregroundTask";
     private final PropertyChangeListener applicationPCL;
