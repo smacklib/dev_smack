@@ -96,7 +96,11 @@ public class ResourceUtils
      *
      * Given the following resources:
      *
-     * hello = Hello world = World place = ${world}
+     * <pre><code>
+     * hello = Hello 
+     * world = World 
+     * place = ${world}
+     * </code></pre>
      *
      * The value of evaluateStringExpression("${hello} ${place}") would be
      * "Hello World". The value of ${null} is null.
@@ -127,9 +131,9 @@ public class ResourceUtils
                     {
                         String resolved = env.getObject( k ).toString();
                         // The resolved string is again evaluated.
-                        result
-                                .append( evaluateStringExpression( resolved,
-                                        env ) );
+                        result.append( evaluateStringExpression( 
+                        		resolved,
+                        		env ) );
                     }
                     else
                     {
