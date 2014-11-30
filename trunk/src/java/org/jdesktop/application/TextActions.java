@@ -11,6 +11,9 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.Caret;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
+
+import org.jdesktop.beans.AbstractBeanEdt;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;

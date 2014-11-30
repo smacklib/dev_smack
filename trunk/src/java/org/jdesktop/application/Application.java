@@ -31,6 +31,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.jdesktop.application.utils.AppHelper;
 import org.jdesktop.application.utils.OSXAdapter;
 import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.beans.AbstractBeanEdt;
 
 /**
  * The base class for Swing applications.

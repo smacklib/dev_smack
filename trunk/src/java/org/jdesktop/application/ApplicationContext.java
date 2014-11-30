@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * A singleton that manages shared objects, like actions, resources, and tasks,
  * for {@code Applications}.

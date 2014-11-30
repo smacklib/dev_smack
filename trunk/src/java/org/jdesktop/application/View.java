@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JToolBar;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * A View encapsulates a top-level Application GUI component, like a JFrame
  * or an Applet, and its main GUI elements: a menu bar, tool bar, component,

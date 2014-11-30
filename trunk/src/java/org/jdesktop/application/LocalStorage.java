@@ -8,6 +8,7 @@ import static org.jdesktop.application.Application.KEY_APPLICATION_VENDOR_ID;
 
 import org.jdesktop.application.utils.AppHelper;
 import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.beans.AbstractBeanEdt;
 
 import javax.jnlp.*;
 import java.awt.*;
