@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * The application's {@code ActionManager} provides read-only cached
  * access to {@code ActionMaps} that contain one entry for each method

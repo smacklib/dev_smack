@@ -16,6 +16,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * The service for executing tasks
  * <p>

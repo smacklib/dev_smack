@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.SwingWorker.StateValue;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * This class is intended to serve as the model for GUI components,
  * like status bars, that display the state of an application's

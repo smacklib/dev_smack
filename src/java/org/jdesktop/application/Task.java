@@ -17,6 +17,8 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.jdesktop.beans.AbstractBeanEdt;
+
 /**
  * A type of {@link SwingWorker} that represents an application
  * background task.  Tasks add descriptive properties that can

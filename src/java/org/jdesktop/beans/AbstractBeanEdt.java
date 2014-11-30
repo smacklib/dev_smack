@@ -1,4 +1,4 @@
-package org.jdesktop.application;
+package org.jdesktop.beans;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
