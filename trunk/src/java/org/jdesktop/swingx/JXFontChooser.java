@@ -102,9 +102,9 @@ public class JXFontChooser extends JComponent {
     private JTextField            _fontFamilyTextField       = null;
     private JTextField            _fontStyleTextField        = null;
     private JTextField            _fontSizeTextField         = null;
-    private JList<String> _fontNameList = null;
-    private JList<String>                 _fontStyleList             = null;
-    private JList<String>                 _fontSizeList              = null;
+    private JList _fontNameList = null;
+    private JList                 _fontStyleList             = null;
+    private JList                 _fontSizeList              = null;
     private JPanel                _fontNamePanel             = null;
     private JPanel                _fontStylePanel            = null;
     private JPanel                _fontSizePanel             = null;
@@ -190,9 +190,9 @@ public class JXFontChooser extends JComponent {
         return _fontSizeTextField;
     }
 
-    public JList<String> getFontFamilyList() {
+    public JList getFontFamilyList() {
         if (_fontNameList == null) {
-            _fontNameList = new JList<String>(getFontFamilies());
+            _fontNameList = new JList(getFontFamilies());
             _fontNameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             _fontNameList.addListSelectionListener(new ListSelectionHandler(getFontFamilyTextField()));
             _fontNameList.setSelectedIndex(0);
@@ -202,9 +202,9 @@ public class JXFontChooser extends JComponent {
         return _fontNameList;
     }
 
-    public JList<String> getFontStyleList() {
+    public JList getFontStyleList() {
         if (_fontStyleList == null) {
-            _fontStyleList = new JList<String>(getFontStyleNames());
+            _fontStyleList = new JList(getFontStyleNames());
             _fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             _fontStyleList.addListSelectionListener(new ListSelectionHandler(getFontStyleTextField()));
             _fontStyleList.setSelectedIndex(0);
@@ -214,9 +214,9 @@ public class JXFontChooser extends JComponent {
         return _fontStyleList;
     }
 
-    public JList<String> getFontSizeList() {
+    public JList getFontSizeList() {
         if (_fontSizeList == null) {
-            _fontSizeList = new JList<String>(_fontSizeStrings);
+            _fontSizeList = new JList(_fontSizeStrings);
             _fontSizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             _fontSizeList.addListSelectionListener(new ListSelectionHandler(getFontSizeTextField()));
             _fontSizeList.setSelectedIndex(0);
