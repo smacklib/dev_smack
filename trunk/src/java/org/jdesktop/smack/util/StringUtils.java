@@ -10,7 +10,9 @@ package org.jdesktop.smack.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 
@@ -134,57 +136,35 @@ public class StringUtils
      * elements 'Donald', 'Daisy' and 'Scrooge' and a delimiter of '+' this
      * will result in "Donald+Daisy+Scrooge".
      *
-     * @param delimiter The delimiter to use.  Must not be {@code null}.
+     * @param delimiter The delimiter to use.  {@code null} is allowed and
+     * results in a concatenation without delimiters.
      * @param iterable The container used for building the delimited list.
      * {@code null} is allowed, resulting in an empty string.
      * @return The result string.
      */
-    public static String buildDelimitedString( String delimiter, Iterable<?> iterable )
+    public static String concatenate( String delimiter, Iterable<?> iterable )
     {
         if ( delimiter == null )
-            throw new NullPointerException( "delimiter == null" );
+            delimiter = EMPTY_STRING;
 
         if ( iterable == null )
             return EMPTY_STRING;
 
-        boolean first = true;
-
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = null; 
 
         for ( Object c : iterable )
         {
-            if ( !first )
-                result.append( delimiter );
+            if ( result == null )
+                result = new StringBuilder();
             else
-                first = false;
+                result.append( delimiter );
 
             result.append( String.valueOf( c ) );
         }
 
         return result.toString();
     }
-
-
-
-    /**
-     * Creates a delimited string from the elements in the passed container.
-     * Each element is converted to a string using the
-     * {@link String#valueOf(Object)} operation and the resulting strings are
-     * concatenated using the delimiter ', '.  For a container holding the elements
-     * 'Donald', 'Daisy' and 'Scrooge' this will result in "Donald,
-     * Daisy, Scrooge".
-     *
-     * @param iterable The container used for building the delimited list.
-     * {@code null} is allowed, resulting in an empty string.
-     * @return The result string.
-     */
-    public static String buildDelimitedString( Iterable<?> iterable )
-    {
-        return buildDelimitedString( ", ", iterable );
-    }
-
-
-
+    
     /**
      * Creates a delimited string from the elements in the passed array.
      * Each element is converted to a string using the
@@ -198,37 +178,13 @@ public class StringUtils
      * {@code null} is allowed, resulting in an empty string.
      * @return The result string.
      */
-    public static <T> String buildDelimitedString( String delimiter, T[] array )
+    public static <T> String concatenate( String delimiter, T[] array )
     {
         if ( array == null )
             return EMPTY_STRING;
 
-        return buildDelimitedString( delimiter, Arrays.asList( array ) );
+        return concatenate( delimiter, Arrays.asList( array ) );
     }
-
-
-
-    /**
-     * Creates a delimited string from the elements in the passed array.
-     * Each element is converted to a string using the
-     * {@link String#valueOf(Object)} operation and the resulting strings are
-     * concatenated using the delimiter ', '.  For an array holding the elements
-     * 'Donald', 'Daisy' and 'Scrooge' this will result in "Donald,
-     * Daisy, Scrooge".
-     *
-     * @param iterable The array used for building the delimited list.
-     * {@code null} is allowed, resulting in an empty string.
-     * @return The result string.
-     */
-    public static <T> String buildDelimitedString( T[] array )
-    {
-        if ( array == null )
-            return EMPTY_STRING;
-
-        return buildDelimitedString( Arrays.asList( array ) );
-    }
-
-
 
     /**
      * Ensures that a string that is to be displayed to a human starts with
@@ -305,7 +261,7 @@ public class StringUtils
         return result.toString();
     }
 
-    public static void main ( String[ ] argv )
+    public static void testQuote ( String[ ] argv )
     {
 //        System.err.println( quote( "Michael" ) );
 //        System.err.println( quote( "Michael Binz" ) );
@@ -428,53 +384,5 @@ public class StringUtils
             for ( String c1 : splitQuoted( c ) )
                 System.err.println( "'" + c1 + "'" );
         }
-    }
-
-    /**
-     * Concatenates the strings in the passed list using the passed delimiter. For example:
-     * '#', [Tick Trick Track] -> "Tick#Trick#Track".
-     *
-     * @param delimiter The delimiter to use.
-     * @param list The list of strings.
-     * @return A concatenated string.
-     */
-    public static String concat( char delimiter, String[] list )
-    {
-        if ( list.length == 0 )
-            return "";
-
-        StringBuilder result = null;
-
-        for ( String c : list )
-        {
-            if ( result == null )
-                result = new StringBuilder();
-            else
-                result.append( delimiter );
-
-            result.append( c );
-        }
-
-        return result.toString();
-    }
-    public static String concat( char delimiter, Collection<String> list )
-    {
-        return concat( delimiter, list.toArray( new String[list.size()] ) );
-    }
-
-    public static void testConcat()
-    {
-        String[] nephewsArray = new String[]{ "Huey", "Dewey", "Louie" };
-        List<String> nephewsList = Arrays.asList( nephewsArray );
-        String[] uncaArray = new String[]{ "Donald" };
-
-        String result;
-
-        result = concat( ';', nephewsArray );
-        System.err.println( result);
-        result = concat( '_', nephewsList );
-        System.err.println( result);
-        result = concat( '_', uncaArray );
-        System.err.println( result);
     }
 }
