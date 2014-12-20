@@ -73,36 +73,6 @@ public class ResourceUtils
     }
 
     /**
-     * Get class specific resources.
-     *
-     * @param c The class for which the resources should be loaded.
-     * @return A resource bundle reference or null if no resources were found
-     * for this class.
-     */
-    public static ResourceBundle getClassResources( Class<?> c )
-    {
-        String name = c.getName();
-
-        int lastDotIdx = name.lastIndexOf( '.' );
-
-        if ( lastDotIdx > 0 )
-        {
-            StringBuilder sb = new StringBuilder( name ) ;
-            sb.insert( lastDotIdx, ".resources" );
-            name = sb.toString();
-        }
-
-        try
-        {
-            return ResourceBundle.getBundle( name );
-        }
-        catch ( MissingResourceException e )
-        {
-            return EMPTY_RESOURCE_BUNDLE;
-        }
-    }
-
-    /**
      * Populates the passed Map with the preprocessed values from the named
      * resource bundle.
      *
@@ -259,32 +229,33 @@ public class ResourceUtils
      * the resource bundle "org/good/resources/Class.properties".
      *
      * @param c The class for which the resources should be loaded.
-     * @return A resource bundle reference or null if no resources were found
-     * for this class.
+     * @return A ResourceBundle. If no resource bundle was found
+     * for the passed class, then the returned resource bundle is
+     * empty.
      */
    public static ResourceBundle getClassResources( Class<?> c )
     {
         String name = c.getName();
- 
+
         int lastDotIdx = name.lastIndexOf( '.' );
- 
+
         if ( lastDotIdx > 0 )
         {
             StringBuilder sb = new StringBuilder( name ) ;
             sb.insert( lastDotIdx, ".resources" );
             name = sb.toString();
         }
- 
+
         try
         {
             return ResourceBundle.getBundle( name );
         }
         catch ( MissingResourceException e )
         {
-            return null;
+            return EMPTY_RESOURCE_BUNDLE;
         }
     }
- 
+
     /**
      * Forbid instantiation.
      */
