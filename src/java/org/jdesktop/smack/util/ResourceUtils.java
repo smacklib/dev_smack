@@ -4,6 +4,7 @@
  */
 package org.jdesktop.smack.util;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -19,6 +20,35 @@ import java.util.ResourceBundle.Control;
  */
 public class ResourceUtils
 {
+    private static ResourceBundle EMPTY_RESOURCE_BUNDLE = new ResourceBundle()
+    {
+
+        @Override
+        protected Object handleGetObject( String key )
+        {
+            return null;
+        }
+
+        @Override
+        public Enumeration<String> getKeys()
+        {
+            return new Enumeration<String>()
+            {
+                @Override
+                public boolean hasMoreElements()
+                {
+                    return false;
+                }
+
+                @Override
+                public String nextElement()
+                {
+                    throw new IllegalStateException();
+                }
+            };
+        }
+    };
+
     /**
      * Unchecked exception thrown by {@link #getObject} when resource lookup
      * fails, for example because string conversion fails.  This is
@@ -43,6 +73,36 @@ public class ResourceUtils
     }
 
     /**
+     * Get class specific resources.
+     *
+     * @param c The class for which the resources should be loaded.
+     * @return A resource bundle reference or null if no resources were found
+     * for this class.
+     */
+    public static ResourceBundle getClassResources( Class<?> c )
+    {
+        String name = c.getName();
+
+        int lastDotIdx = name.lastIndexOf( '.' );
+
+        if ( lastDotIdx > 0 )
+        {
+            StringBuilder sb = new StringBuilder( name ) ;
+            sb.insert( lastDotIdx, ".resources" );
+            name = sb.toString();
+        }
+
+        try
+        {
+            return ResourceBundle.getBundle( name );
+        }
+        catch ( MissingResourceException e )
+        {
+            return EMPTY_RESOURCE_BUNDLE;
+        }
+    }
+
+    /**
      * Populates the passed Map with the preprocessed values from the named
      * resource bundle.
      *
@@ -56,26 +116,49 @@ public class ResourceUtils
     {
         try
         {
+            ResourceBundle bundle = ResourceBundle.getBundle( bundleName, loc,
+                    cl,
+                    // We only want property resource bundles.
+                    Control.getControl( Control.FORMAT_PROPERTIES ) );
+
+            return preprocessResourceBundle( bundle );
+        }
+        catch ( MissingResourceException ignore )
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Populates the passed Map with the preprocessed values from the passed
+     * resource bundle.
+     *
+     * @param bundle
+     *            The resource bundle whose entries are processed.
+     * @param result
+     *            The map to populate.
+     */
+    public static Map<String, String> preprocessResourceBundle(
+            ResourceBundle bundle )
+    {
+        try
+        {
             Map<String, String> result = new HashMap<String, String>();
 
             // Preprocessing is currently limited to a single
             // resource bundle. A broader context may be
             // pretty confusing. michab.
 
-            ResourceBundle bundle = ResourceBundle.getBundle( bundleName, loc,
-                    cl,
-                    // We only want property resource bundles.
-                    Control.getControl( Control.FORMAT_PROPERTIES ) );
-
             for ( String key : bundle.keySet() )
             {
                 result.put( key,
                 // Note that we perform all preprocessing for the
-                        // string values in the resource bundle here.
-                        // Later stages of processing see only the evaluated
-                        // values.
-                        evaluateStringExpression( bundle.getString( key ),
-                                bundle ) );
+                // string values in the resource bundle here.
+                // Later stages of processing see only the evaluated
+                // values.
+                evaluateStringExpression(
+                        bundle.getString( key ),
+                        bundle ) );
             }
 
             return result;
@@ -93,8 +176,8 @@ public class ResourceUtils
      * Given the following resources:
      *
      * <pre><code>
-     * hello = Hello 
-     * world = World 
+     * hello = Hello
+     * world = World
      * place = ${world}
      * </code></pre>
      *
@@ -127,7 +210,7 @@ public class ResourceUtils
                     {
                         String resolved = env.getObject( k ).toString();
                         // The resolved string is again evaluated.
-                        result.append( evaluateStringExpression( 
+                        result.append( evaluateStringExpression(
                         		resolved,
                         		env ) );
                     }
@@ -156,6 +239,18 @@ public class ResourceUtils
         }
         result.append( expr.substring( i0 ) );
         return result.toString();
+    }
+
+    public static void main( String[] args )
+    {
+
+        ResourceBundle rb = getClassResources( ResourceUtils.class );
+
+        System.err.println(  rb.getKeys().hasMoreElements() );
+        System.err.println(  rb.keySet().size() );
+
+        Map<String, String> pp = preprocessResourceBundle( rb );
+        System.err.println(  pp.size() );
     }
 
     /**
