@@ -73,7 +73,7 @@ public class ReflectionUtils
 
 
     /**
-     * Normalizes primitive class instances that represent primitive types
+     * Normalizes class instances that represent primitive types
      * to their non-primitive counterparts.  If for example the class
      * {@code Integer.TYPE} is passed, then the class {@code Integer.class}
      * is returned.  For non-primitive classes the passed class is returned.

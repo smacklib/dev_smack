@@ -3,7 +3,7 @@
  * Michael's Application Construction Kit (MACK)
  *
  * Released under Gnu Public License
- * Copyright © 2007-2010 Michael G. Binz
+ * Copyright © 2007-2014 Michael G. Binz
  */
 package org.jdesktop.beans;
 
@@ -11,42 +11,38 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
-import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.jdesktop.smack.util.Localiser;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.smack.util.ReflectionUtils;
 
 
 /**
- * <p>A table model that allows to display a set of Java Beans.
+ * <p>A table model that allows to display a list of Java Beans.
  * </p><p>
  * Note that the table model supports localization.  This is done by looking up
- * a resource bundle named along the passed class parameter: If the passed class
- * is {@code de.michab.Lumumba}, then the resources are looked up in the
- * ResourceBundle {@code de/michab/resources/Lumumba.properties}.
+ * the resource map of the passed class.
+ *
+ * Key example:  "PROPERTY_DISPLAY_ORDER = PropA PropC PropB"
  * </p>
  *
  * @param <B> The Java Bean class.
  *
- * @version $Rev$
+ * @version $Rev$y
  * @author Michael Binz
  */
+@SuppressWarnings("serial")
 public class JavaBeanTableModel<B> extends AbstractTableModel
 {
     /**
-     * {@link Serializable}
-     */
-    private static final long serialVersionUID = 4673781909260947933L;
-
-    /*
      * The logger for this class.
      */
     private static final Logger _log = Logger
@@ -97,26 +93,21 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
         _readOnly = readOnly;
 
         // Check whether we have a localized description.
-        ResourceBundle resourceBundle = Localiser.loadResourceBundle(
-                makeComponentResourceBundleName( rowType.getName() ) );
+        ResourceMap rm = Application.getResourceManager().getResourceMap( rowType );
 
-        if ( resourceBundle == null )
-            return;
-
-        String[] columnList = Localiser.localiseList( resourceBundle,
-                "PROPERTY_DISPLAY_ORDER", null );
+        String[] columnList = rm.get( "PROPERTY_DISPLAY_ORDER", String[].class );
 
         if ( columnList != null )
             _columns = orderColums( _columns, columnList );
 
         for ( PropertyDescriptor pd : _columns )
         {
-            pd.setDisplayName( Localiser.localise( resourceBundle, pd
-                    .getName(), pd.getName() ) );
+            String displayName = rm.getString( pd.getName() );
+
+            if ( displayName != null )
+                pd.setDisplayName( displayName );
         }
     }
-
-
 
     /**
      * Handles unexpected exceptions by writing them to the
@@ -152,6 +143,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
     /*
      * Inherit Javadoc.
      */
+    @Override
     public int getRowCount()
     {
         return _rows.length;
@@ -162,6 +154,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
     /*
      * Inherit Javadoc.
      */
+    @Override
     public int getColumnCount()
     {
         return _columns.length;
@@ -176,6 +169,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
      * @param columnIndex The index of the column.
      * @return The localised display name for this column.
      */
+    @Override
     public String getColumnName( int columnIndex )
     {
         return _columns[columnIndex].getDisplayName();
@@ -189,36 +183,11 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
      * @param columnIndex The index of the column.
      * @return The property class that is displayed in this column.
      */
+    @Override
     public Class<?> getColumnClass( int columnIndex )
     {
-        Class<?> type = _columns[columnIndex].getPropertyType();
-        if ( type.isPrimitive() )
-        {
-            // TODO complete and move to a better more reusable position.
-            if ( type == Byte.TYPE )
-                return Byte.class;
-            else if ( type == Character.TYPE )
-                return Character.class;
-            else if ( type == Short.TYPE )
-                return Short.class;
-            else if ( type == Integer.TYPE )
-                return Integer.class;
-            else if ( type == Long.TYPE )
-                return Long.class;
-            else if ( type.equals( Boolean.TYPE ) )
-                return Boolean.class;
-            else if ( type.equals(  Float.TYPE ) )
-                return Float.class;
-            else if ( type.equals( Double.TYPE ) )
-                return Double.class;
-            else
-            {
-                _log.warning(
-                    "Unexpected primitive: " +
-                    type.getName() );
-            }
-        }
-        return type;
+        return ReflectionUtils.normalizePrimitives(
+                _columns[columnIndex].getPropertyType() );
     }
 
 
@@ -230,6 +199,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
      * @param columnIndex The cell's column index.
      * @return True if the cell is editable.
      */
+    @Override
     public boolean isCellEditable( int rowIndex, int columnIndex )
     {
         return (!_readOnly) && _columns[columnIndex].getWriteMethod() != null;
@@ -244,6 +214,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
      * @param columnIndex The cell's column index.
      * @return The cell's value.
      */
+    @Override
     public Object getValueAt( int rowIndex, int columnIndex )
     {
         Method getter = _columns[columnIndex].getReadMethod();
@@ -292,6 +263,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
      * @param rowIndex The row index.
      * @param columnIndex The column index.
      */
+    @Override
     public void setValueAt( Object aValue, int rowIndex, int columnIndex )
     {
         if ( _readOnly )
