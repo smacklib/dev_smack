@@ -24,14 +24,18 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.smack.util.ReflectionUtils;
 
-
 /**
  * <p>A table model that allows to display a list of Java Beans.
  * </p><p>
  * Note that the table model supports localization.  This is done by looking up
  * the resource map of the passed class.
  *
- * Key example:  "PROPERTY_DISPLAY_ORDER = PropA PropC PropB"
+ * The key "PROPERTY_DISPLAY_ORDER" may list the JavaBean properties in the
+ * order used for initial column ordering (example:
+ * "PROPERTY_DISPLAY_ORDER = PropA PropC PropB").
+ * </p><p>
+ * The name in the table header can be defined by adding a key
+ * propertyName=displayName to the resource map (example: PropA=Artist).
  * </p>
  *
  * @param <B> The Java Bean class.
@@ -359,29 +363,5 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
         }
 
         return result;
-    }
-
-
-
-    /**
-     * Creates a class name necessary to find resources for class
-     * {@code de.michab.Lumumba} in
-     * {@code de/michab/resources/Lumumba.properties}.
-     *
-     * @param className The name of the class resources are required for.
-     * @return The extended class name.
-     */
-    private static String makeComponentResourceBundleName( String originalName )
-    {
-        // If not found idx is -1.  Since we anyway
-        // insert AFTER the found position we have to
-        // increment in all cases the insert position.
-        int insertionIdx = originalName.lastIndexOf( '.' ) + 1;
-        StringBuilder sb = new StringBuilder(
-                originalName.substring( 0, insertionIdx ) );
-        sb.append( "resources." );
-        sb.append( originalName.substring( insertionIdx ) );
-
-        return sb.toString();
     }
 }

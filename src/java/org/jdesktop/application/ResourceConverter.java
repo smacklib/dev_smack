@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jdesktop.smack.util.StringUtils;
+
 /**
  * A base class for converting arbitrary types to and from Strings, as well as
  * a registry of ResourceConverter implementations.
@@ -156,8 +158,10 @@ public abstract class ResourceConverter {
         }
         return null;
     }
+
     private static ResourceConverter[] resourceConvertersArray = {
         new StringResourceConverter(),
+        new StringArrayResourceConverter(),
         new BooleanResourceConverter("true", "on", "yes"),
         new IntegerResourceConverter(),
         new MessageFormatResourceConverter(),
@@ -187,6 +191,20 @@ public abstract class ResourceConverter {
                 throws ResourceConverterException
         {
             return s;
+        }
+    }
+
+    private static class StringArrayResourceConverter extends ResourceConverter {
+
+        StringArrayResourceConverter() {
+            super(String[].class);
+        }
+
+        @Override
+        public Object parseString( String s, ResourceMap r )
+                throws ResourceConverterException
+        {
+            return StringUtils.splitQuoted( s );
         }
     }
 
