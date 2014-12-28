@@ -200,15 +200,15 @@ public class ResourceMap {
         return _parent;
     }
 
-    /**
-     * Returns the names of the ResourceBundles that define the
-     * resources contained by this ResourceMap.
-     *
-     * @return the names of the ResourceBundles in this ResourceMap
-     */
-    private List<String> getBundleNames() {
-        return _bundleNames;
-    }
+//    /**
+//     * Returns the names of the ResourceBundles that define the
+//     * resources contained by this ResourceMap.
+//     *
+//     * @return the names of the ResourceBundles in this ResourceMap
+//     */
+//    private List<String> getBundleNames() {
+//        return _bundleNames;
+//    }
 
     /**
      * Returns the ClassLoader used to load the ResourceBundles for this
@@ -555,32 +555,27 @@ public class ResourceMap {
 
         type = ReflectionUtils.normalizePrimitives( type );
 
-        Object value = null;
-        ResourceMap resourceMapNode = this;
+        if ( ! containsResourceKey( key ) )
+        {
+            ResourceMap parent = getParent();
+            if ( parent == null )
+                return null;
 
-        // Find the ResourceMap bundlesMap that contains a non-null
-        // value for the specified key, first check this ResourceMap,
-        // then its parents.
-        while (resourceMapNode != null) {
-            if (resourceMapNode.containsResourceKey(key)) {
-                value = resourceMapNode.getResource(key);
-                break;
-            }
-            resourceMapNode = resourceMapNode.getParent();
+            return getParent().getObject( key, type );
         }
 
+        Object value = getResource( key );
         // TODO worth a warning?
         if ( value == null )
             return null;
 
-        /* If the value we've found in resourceMapNode is
-         * the expected type, then we're done.  If the expected
-         * type is primitive and the value is the corresponding
-         * object type then we're done too.  Otherwise,
-         * if it's a String, then try and convert the String
-         * and replace the original resourceMapNode entry,
-         * otherwise return null.
-         */
+        // If the value we've found is
+        // the expected type, then we're done.  If the expected
+        // type is primitive and the value is the corresponding
+        // object type then we're done too.  Otherwise,
+        // if it's a String, then try and convert the String
+        // and replace the original entry,
+        // otherwise return null.
         if ( type.isAssignableFrom( value.getClass() ))
             return value;
 
@@ -591,10 +586,9 @@ public class ResourceMap {
         if ( stringConverter == null )
             throw new LookupException( "no StringConverter for required type", key, type);
 
-        String sValue = (String) value;
         try {
-            value = stringConverter.parseString(sValue, resourceMapNode);
-            resourceMapNode.putResource(key, value);
+            value = stringConverter.parseString((String)value, this);
+            putResource(key, value);
         } catch (ResourceConverterException e) {
             // todo better error message.
             String msg = "Conversion failed";
