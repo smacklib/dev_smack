@@ -5,6 +5,7 @@
  */
 package org.jdesktop.application;
 
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -151,17 +152,26 @@ public abstract class ResourceConverter {
         if (type == null) {
             throw new IllegalArgumentException("null type");
         }
+
+        // Check for a direct match.
         for (ResourceConverter sc : resourceConverters) {
             if (sc.supportsType(type)) {
                 return sc;
             }
         }
-        return null;
+
+        if ( ! type.isArray() )
+            return null;
+
+        ResourceConverter rc = forType( type.getComponentType() );
+        if ( rc == null )
+            return null;
+
+        return new ArrayResourceConverter( rc, type );
     }
 
     private static ResourceConverter[] resourceConvertersArray = {
         new StringResourceConverter(),
-        new StringArrayResourceConverter(),
         new BooleanResourceConverter("true", "on", "yes"),
         new IntegerResourceConverter(),
         new MessageFormatResourceConverter(),
@@ -194,17 +204,28 @@ public abstract class ResourceConverter {
         }
     }
 
-    private static class StringArrayResourceConverter extends ResourceConverter {
+    private static class ArrayResourceConverter extends ResourceConverter {
 
-        StringArrayResourceConverter() {
-            super(String[].class);
+        private final ResourceConverter _delegate;
+
+        ArrayResourceConverter( ResourceConverter delegate, Class<?> type ) {
+            super( type );
+
+            _delegate = delegate;
         }
 
         @Override
         public Object parseString( String s, ResourceMap r )
                 throws ResourceConverterException
         {
-            return StringUtils.splitQuoted( s );
+            String[] split = StringUtils.splitQuoted( s );
+            Object[] x = (Object[])Array.newInstance( _delegate.type, split.length );
+
+            int idx = 0;
+            for ( String c : split )
+                x[idx++] = _delegate.parseString( c, r );
+
+            return x;
         }
     }
 
