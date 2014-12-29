@@ -144,9 +144,10 @@ public abstract class ResourceConverter {
     }
 
     /**
-     * Returns {@code ResourceConverter} for the specified type
-     * @param type the type converter must be found for
-     * @return the converter for specified type or {@code null} if no converter is found for the {@code type}
+     * Returns {@code ResourceConverter} for the specified type.
+     * @param type the type a converter must be found for.
+     * @return the converter for specified type or {@code null} if no converter
+     * is found for the {@code type}.
      */
     public static ResourceConverter forType(Class<?> type) {
         if (type == null) {
