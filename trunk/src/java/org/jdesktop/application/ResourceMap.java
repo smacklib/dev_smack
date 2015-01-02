@@ -1186,55 +1186,6 @@ public class ResourceMap {
         }
     }
 
-//    /**
-//     * Performs array injection.
-//     *
-//     * @param field The array-typed field to set.
-//     * @param componentType The array's component type.
-//     * @param target The target object instance.
-//     * @param key The resource key.
-//     */
-//    private void injectArray(Field field, Class<?> componentType,  Object target, String key)
-//    {
-//        // Get the definition from the properties.
-//        String arrayInitialisation = getString( key );
-//        if ( arrayInitialisation == null )
-//            throw new InjectFieldException( "Property not defined", field, target, key, null );
-//
-//        // Check if we have a converter.
-//        ResourceConverter rc = ResourceConverter.forType( componentType );
-//        if ( rc == null )
-//            throw new InjectFieldException("No resource converter", field, target, key, null);
-//
-//        // Split the property string and create an object for each resulting
-//        // element.
-//        String[] tokens =
-//            Util.splitQuoted( arrayInitialisation );
-//        Object resultArray =
-//            Array.newInstance( componentType, tokens.length );
-//        try {
-//            for ( int i = 0 ; i < tokens.length ; i++ )
-//            {
-//                Object typeInstance = rc.parseString( tokens[i], this );
-//                assert componentType.isAssignableFrom( typeInstance.getClass() );
-//                Array.set( resultArray, i, typeInstance );
-//            }
-//        }
-//        catch ( ResourceConverterException e )
-//        {
-//            throw new InjectFieldException("Conversion failed.", field, target, key, e);
-//        }
-//
-//        try {
-//            field.set( target, resultArray );
-//        }
-//        // Field.set throws IllegalAccessException, IllegalArgumentException,
-//        // ExceptionInInitializerError
-//        catch (Exception e) {
-//            throw new InjectFieldException("Unable to set field's value", field, target, key, e);
-//        }
-//    }
-//
     /**
      * Inject a single field.
      *
@@ -1249,10 +1200,7 @@ public class ResourceMap {
 
         Class<?> type = field.getType();
 
-        /*if (type.isArray()) {
-            injectArray( field, type.getComponentType(), target, key );
-        }
-        else */ if ( Component.class.isAssignableFrom( type ) )
+        if ( Component.class.isAssignableFrom( type ) )
         {
             Component fieldValue = null;
             try
@@ -1283,8 +1231,6 @@ public class ResourceMap {
             try {
                 field.set(target, value);
             }
-            // Field.set throws IllegalAccessException, IllegalArgumentException,
-            // ExceptionInInitializerError
             catch (Exception e) {
                 throw new InjectFieldException("unable to set field's value", field, target, key, e);
             }
