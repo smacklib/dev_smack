@@ -24,14 +24,13 @@ import org.jdesktop.smack.util.StringUtils;
  * property of the {@code ApplicationContext} and most applications
  * look up resources relative to it, like this:
  * <pre>
- * ApplicationContext appContext = Application.getInstance().getContext();
- * ResourceMap resourceMap = appContext.getResourceMap(MyClass.class);
+ * ResourceManager appResourceManager = Application.getResourceManager();
+ * ResourceMap resourceMap = appResourceManager.getResourceMap(MyClass.class);
  * String msg = resourceMap.getString("msg");
  * Icon icon = resourceMap.getIcon("icon");
  * Color color = resourceMap.getColor("color");
  * </pre>
- * {@link ApplicationContext#getResourceMap(Class) ApplicationContext.getResourceMap()}
- * just delegates to its {@code ResourceManager}.  The {@code ResourceMap}
+ * The {@code ResourceMap}
  * in this example contains resources from the ResourceBundle named
  * {@code MyClass}, and the rest of the
  * chain contains resources shared by the entire application.
@@ -96,17 +95,6 @@ public final class ResourceManager
         if ( applicationClass == null )
             throw new IllegalArgumentException( "null applicationClass" );
         _applicationClass = applicationClass;
-    }
-
-    /**
-     * Create a ResourceManager to be used standalone
-     * to look up resources for classes.
-     *
-     * @see ResourceManager#ResourceManager(Class)
-     * @see Application#getResourceManager()
-     */
-    ResourceManager() {
-        this( Application.class );
     }
 
     /**
