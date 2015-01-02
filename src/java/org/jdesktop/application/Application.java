@@ -240,15 +240,13 @@ public abstract class Application extends AbstractBeanEdt
         }
         T application = ctor.newInstance();
 
-        /* Initialize the ApplicationContext application properties
-         */
+        // Initialize the ApplicationContext application properties.
         ApplicationContext ctx = application.getContext();
         ctx.setApplicationClass(applicationClass);
         ctx.setApplication(application);
 
-        /* Load the application resource map, notably the
-         * Application.* properties.
-         */
+        // Load the application resource map, notably the
+        // Application.* properties.s
         ResourceMap appResourceMap = ctx.getResourceMap();
         final PlatformType platform = AppHelper.getPlatform();
         appResourceMap.putResource(ResourceMap.KEY_PLATFORM, platform);
@@ -268,10 +266,9 @@ public abstract class Application extends AbstractBeanEdt
         ctx.getResourceManager().injectResources( application );
 
         if (!Beans.isDesignTime()) {
-            /* Initialize the UIManager lookAndFeel property with the
-             * Application.lookAndFeel resource.  If the the resource
-             * isn't defined we default to "system".
-             */
+            // Initialize the UIManager lookAndFeel property with the
+            // Application.lookAndFeel resource.  If the resource
+            // isn't defined we default to "system".
             String key = "Application.lookAndFeel";
             String lnfResource = appResourceMap.getString(key);
             String lnf = (lnfResource == null) ? "system" : lnfResource;
@@ -461,16 +458,6 @@ public abstract class Application extends AbstractBeanEdt
      */
     public final void exit() {
         exit(null);
-    }
-
-    /**
-     * Handles quit even on Mac Os X
-     * Developer should not use it directly
-     * @return always <tt>true</tt>
-     */
-    public boolean handleQuit() {
-        exit();
-        return false;
     }
 
     /**
@@ -751,7 +738,7 @@ public abstract class Application extends AbstractBeanEdt
         }
         catch ( Exception e )
         {
-            return new ResourceManager();
+            return new ResourceManager( Application.class );
         }
     }
 

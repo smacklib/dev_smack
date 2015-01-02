@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -31,7 +30,6 @@ import org.jdesktop.beans.AbstractBeanEdt;
  */
 public class ApplicationContext extends AbstractBeanEdt {
 
-    private static final Logger logger = Logger.getLogger(ApplicationContext.class.getName());
     private final List<TaskService> taskServices;
     private final List<TaskService> taskServicesReadOnly;
     private ResourceManager resourceManager;
