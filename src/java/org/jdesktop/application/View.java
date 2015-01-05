@@ -58,11 +58,9 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see Application#hide(View)
  * @version $Rev$
  */
-public class View extends AbstractBeanEdt {
-
-//    private static final Logger logger = Logger.getLogger(View.class.getName());
+public class View extends AbstractBeanEdt
+{
     private final Application application;
-    private final ResourceMap resourceMap = null;
     private JRootPane rootPane = null;
     private Component component = null;
     private JMenuBar _menuBar = null;
@@ -109,21 +107,6 @@ public class View extends AbstractBeanEdt {
     public final ApplicationContext getContext() {
         return getApplication().getContext();
     }
-
-    /**
-     * Gets {@code ResourceMap} for this View.
-     * This method invokes {@code getContext().getResourceMap(getClass(), View.class)}.
-     * The result is cached.
-     *
-     * @return The {@code ResourceMap} for this View
-     * @see #getContext
-     */
-//    public ResourceMap getResourceMap() {
-//        if (resourceMap == null) {
-//            resourceMap = getContext().getResourceMap(getClass(), View.class);
-//        }
-//        return resourceMap;
-//    }
 
     /**
      * Gets the {@code JRootPane} for this View.  All of the components for this
