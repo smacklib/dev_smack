@@ -9,10 +9,6 @@ package org.jdesktop.smack.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
 
@@ -39,11 +35,12 @@ public class StringUtils
      *
      * @param string The string to test.
      * @return {@code False} if the string is either {@code null} or has
-     * a length of zero.  Otherwise {@code true}.
+     * a trimmed length of zero.  Otherwise {@code true}.
+     * @see #hasContent(String, boolean)
      */
     public static boolean hasContent( String string )
     {
-        return hasContent( string, false );
+        return hasContent( string, true );
     }
 
 
@@ -55,6 +52,7 @@ public class StringUtils
      * @param trim If {@code true}, then the string is trimmed before the test.
      * @return {@code False} if the string is either {@code null} or has
      * a length of zero.  Otherwise {@code true}.
+     * @see #hasContent(String)
      * @see String#trim()
      */
     public static boolean hasContent( String string, boolean trim )
@@ -150,7 +148,7 @@ public class StringUtils
         if ( iterable == null )
             return EMPTY_STRING;
 
-        StringBuilder result = null; 
+        StringBuilder result = null;
 
         for ( Object c : iterable )
         {
@@ -164,7 +162,7 @@ public class StringUtils
 
         return result.toString();
     }
-    
+
     /**
      * Creates a delimited string from the elements in the passed array.
      * Each element is converted to a string using the
