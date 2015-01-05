@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.ActionMap;
 
 /**
@@ -43,11 +44,12 @@ import javax.swing.ActionMap;
  * @see ResourceMap
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
+@SuppressWarnings("serial")
 public class ApplicationActionMap extends ActionMap {
 
     private final ApplicationContext context;
     private final ResourceMap resourceMap;
-    private final Class actionsClass;
+    private final Class<?> actionsClass;
     private final Object actionsObject;
     private final List<ApplicationAction> proxyActions;
 
@@ -63,7 +65,7 @@ public class ApplicationActionMap extends ActionMap {
      * @param actionsObject the object to be scanned for the actions.
      * @param resourceMap the {@code ResourceMap} to be used for those actions
      */
-    public ApplicationActionMap(ApplicationContext context, Class actionsClass, Object actionsObject, ResourceMap resourceMap) {
+    public ApplicationActionMap(ApplicationContext context, Class<?> actionsClass, Object actionsObject, ResourceMap resourceMap) {
         if (context == null) {
             throw new IllegalArgumentException("null context");
         }
@@ -97,7 +99,7 @@ public class ApplicationActionMap extends ActionMap {
      * Returns the base class for actions retrieval
      * @return the base class for actions retrieval
      */
-    public final Class getActionsClass() {
+    public final Class<?> getActionsClass() {
         return actionsClass;
     }
 
@@ -185,7 +187,8 @@ public class ApplicationActionMap extends ActionMap {
         }
     }
 
-    /* If any of the ApplicationActions need to track an
+    /**
+     * If any of the ApplicationActions need to track an
      * enabled or selected property defined in actionsClass, then add our
      * PropertyChangeListener.  If none of the @Actions in actionClass
      * provide an enabledProperty or selectedProperty argument, then
@@ -208,7 +211,7 @@ public class ApplicationActionMap extends ActionMap {
             }
             if (needsPCL) {
                 try {
-                    final Class actionsClass = getActionsClass();
+                    final Class<?> actionsClass = getActionsClass();
                     final Method m = actionsClass.getMethod("addPropertyChangeListener", PropertyChangeListener.class);
                     m.invoke(getActionsObject(), new ActionsPCL());
                 } catch (Exception e) {

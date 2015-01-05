@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
-import java.util.logging.Logger;
 
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
@@ -33,7 +32,7 @@ import org.jdesktop.beans.AbstractBeanEdt;
  */
 public class ActionManager extends AbstractBeanEdt {
 
-    private static final Logger logger = Logger.getLogger(ActionManager.class.getName());
+//    private static final Logger logger = Logger.getLogger(ActionManager.class.getName());
     private final ApplicationContext context;
     private final WeakHashMap<Object, WeakReference<ApplicationActionMap>> actionMaps;
     private ApplicationActionMap globalActionMap = null;
@@ -51,10 +50,10 @@ public class ActionManager extends AbstractBeanEdt {
     }
 
     private ApplicationActionMap createActionMapChain(
-            Class startClass, Class stopClass, Object actionsObject, ResourceMap resourceMap) {
+            Class<?> startClass, Class<?> stopClass, Object actionsObject, ResourceMap resourceMap) {
         // All of the classes from stopClass to startClass, inclusive.
-        List<Class> classes = new ArrayList<Class>();
-        for (Class c = startClass;; c = c.getSuperclass()) {
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        for (Class<?> c = startClass;; c = c.getSuperclass()) {
             classes.add(c);
             if (c.equals(stopClass)) {
                 break;
@@ -64,7 +63,7 @@ public class ActionManager extends AbstractBeanEdt {
         // Create the ActionMap chain, one per class
         ApplicationContext ctx = getContext();
         ApplicationActionMap parent = null;
-        for (Class cls : classes) {
+        for (Class<?> cls : classes) {
             ApplicationActionMap appAM = new ApplicationActionMap(ctx, cls, actionsObject, resourceMap);
             appAM.setParent(parent);
             parent = appAM;
@@ -99,7 +98,7 @@ public class ActionManager extends AbstractBeanEdt {
         if (globalActionMap == null) {
             ApplicationContext ctx = getContext();
             Object appObject = ctx.getApplication();
-            Class appClass = ctx.getApplicationClass();
+            Class<?> appClass = ctx.getApplicationClass();
             ResourceMap resourceMap = ctx.getResourceMap();
             globalActionMap = createActionMapChain(appClass, Application.class, appObject, resourceMap);
             initProxyActionSupport();  // lazy initialization
@@ -154,7 +153,7 @@ public class ActionManager extends AbstractBeanEdt {
      * @see ApplicationContext#getActionMap(Object)
      * @return the {@code ApplicationActionMap} for {@code actionsClass} and {@code actionsObject}
      */
-    public ApplicationActionMap getActionMap(Class actionsClass, Object actionsObject) {
+    public ApplicationActionMap getActionMap(Class<?> actionsClass, Object actionsObject) {
         if (actionsClass == null) {
             throw new IllegalArgumentException("null actionsClass");
         }

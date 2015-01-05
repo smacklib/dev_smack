@@ -5,16 +5,8 @@
 
 package org.jdesktop.application;
 
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.Caret;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.JTextComponent;
-
-import org.jdesktop.beans.AbstractBeanEdt;
-
-import java.awt.*;
+import java.awt.AWTEvent;
+import java.awt.EventQueue;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.FlavorEvent;
@@ -23,6 +15,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+
+import org.jdesktop.beans.AbstractBeanEdt;
 
 
 /**
@@ -54,6 +56,7 @@ class TextActions extends AbstractBeanEdt {
     private boolean deleteEnabled = false;  // see setDeleteEnabled
     private boolean selectAllEnabled = false;  // see setSelectAllEnabled
 
+    @SuppressWarnings("serial")
     public TextActions(ApplicationContext context) {
         this.context = context;
         markerAction = new javax.swing.AbstractAction() {
