@@ -10,7 +10,7 @@
 <project name="dev_smack" default="dist" basedir=".">
 
   <buildnumber/>
-	
+
   <property
     description="The sourcecode position."
     name="in.src"
@@ -99,16 +99,14 @@
   </target>
 
 
-
   <target name="jdoc" depends="class"
           description="Generates the javadocs into the web area.">
     <!-- Create the jdoc directory -->
     <mkdir dir="${out.web}/javadoc"/>
-    <javadoc sourcepath="${in.src}/java"
+    <javadoc sourcepath="${in.src}"
              destdir="${out.web}/javadoc"
              use="true"/>
   </target>
-
 
 
   <target name="jar-bin" depends="resource">
