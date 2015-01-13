@@ -22,6 +22,8 @@ package org.jdesktop.swingx;
 
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -31,6 +33,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.beans.JavaBean;
+import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
 import org.jdesktop.swingx.plaf.ErrorPaneAddon;
@@ -40,7 +43,7 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
 /**
  * <p>JXErrorPane is a common error component suitable for displaying errors,
  * warnings, and exceptional application behavior to users.</p>
- * 
+ *
  * <p>User interaction with the <code>JXErrorPane</code> includes the ability to
  * view details associated with the error. This is the primary feature that differentiates
  * <code>JXErrorPane</code> from <code>JOptionPane</code>. In addition,
@@ -48,20 +51,20 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  * need an error dialog that allows the user to take some action to recover
  * from an error (such as "Repair Disk", "Replace All", etc) then you should
  * use <code>JOptionPane</code>.</p>
- * 
+ *
  * <p>Data and application state associated with an error are encapsulated
  * in the {@link org.jdesktop.swingx.error.ErrorInfo} class. The
  * {@code JXErrorPane} displays the data contained in the {@code ErrorInfo}.
  * In addition, {@code ErrorInfo} is passed to the
  * {@link org.jdesktop.swingx.error.ErrorReporter} if the user decides to report
  * the incident.</p>
- * 
+ *
  * <h2>Basic Usage</h2>
  * <p>Typically, the <code>JXErrorPane</code>
  * is not created and displayed directly. Instead, one of the static showXXX methods
- * are called that create and display the <code>JXErrorPane</code> in a 
+ * are called that create and display the <code>JXErrorPane</code> in a
  * <code>JDialog</code>, <code>JFrame</code>, or <code>JInternalFrame</code>.</p>
- * 
+ *
  * <p>These static showXXX methods all follow the same pattern, namely (
  * where XXX could be one of Dialog, Frame, or InternalFrame):
  * <ul>
@@ -79,7 +82,7 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  *      show it. This allows the developer to modify properties of the dialog
  *      prior to display</li>
  * </ul></p>
- * 
+ *
  * <p>Following are some examples and further discussion regarding some of these
  * static methods. Example of the most basic usage:
  * <pre><code>
@@ -111,7 +114,7 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  *          return false;
  *      }
  * </code></pre></p>
- * 
+ *
  * <p>Before showing the <code>JXErrorPane</code> in a frame or dialog, you may modify
  * the appearance and behavior of the <code>JXErrorPane</code> by setting one or more of its bean
  * properties. For example, to modify the icon shown with a particular
@@ -131,20 +134,20 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  *
  * <p><code>JXErrorPane</code> can also be used for displaying fatal error messages to
  * users. Fatal messages indicate a serious error in the application that cannot
- * be corrected and that must result in the termination of the application. 
+ * be corrected and that must result in the termination of the application.
  * After the close of a fatal error dialog, the application should
  * automatically exit. Fatal messages are identified by the <code>Level</code>
- * of the <code>ErrorInfo</code> being 
+ * of the <code>ErrorInfo</code> being
  * {@link org.jdesktop.swingx.error.ErrorLevel}<code>.FATAL</code>.</p>
- * 
+ *
  * <p>By default, when Fatal error dialogs are closed the application exits with
  * a code of "1". In other words, <code>System.exit(1)</code>. If you wish to implement
  * custom handling, you can replace the default fatal action in the <code>ActionMap</code>
- * of the <code>JXErrorPane</code> instance. If you specify a custom fatal 
+ * of the <code>JXErrorPane</code> instance. If you specify a custom fatal
  * action, then the default action of calling
  * System.exit will not occur. You are therefore responsible for shutting down
  * the application.</p>
- * 
+ *
  * <h2>UI Default Keys</h2>
  * <p>TODO</p>
  * JXErrorPane.errorIcon
@@ -157,10 +160,10 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  * JXErrorPane.mac.details_expand_text
  * Tree.expandedIcon (on Mac OS X)
  * Tree.collapsedIcon (on Mac OS X)
- * 
+ *
  * <h2>Customizing the Look and Feel</h2>
  * <p>TODO</p>
- * 
+ *
  *
  * @status REVIEWED
  *
@@ -169,8 +172,12 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  * @author Shai Almog
  * @author rah003
  */
+@SuppressWarnings("serial")
 @JavaBean
-public class JXErrorPane extends JComponent {
+public class JXErrorPane extends JComponent
+{
+    private static final Logger LOG =
+            Logger.getLogger( JXErrorPane.class.getName() );
     //---------------------------------------------------- static properties
     /**
      * Name of the Action used for reporting errors
@@ -184,15 +191,15 @@ public class JXErrorPane extends JComponent {
      * UI Class ID
      */
     public final static String uiClassID = "ErrorPaneUI";
-    
+
     /**
      */
     static {
         LookAndFeelAddons.contribute(new ErrorPaneAddon());
     }
-    
+
     //-------------------------------------------------- instance properties
-    
+
     /**
      * ErrorInfo that contains all the information prepared for
      * reporting.
@@ -208,7 +215,7 @@ public class JXErrorPane extends JComponent {
      * The delegate to use for reporting errors.
      */
     private ErrorReporter reporter;
-    
+
     //--------------------------------------------------------- constructors
 
     /**
@@ -218,9 +225,9 @@ public class JXErrorPane extends JComponent {
         super();
         updateUI();
     }
-    
+
     //------------------------------------------------------------- UI Logic
-    
+
     /**
      * Returns the look and feel (L&F) object that renders this component.
      *
@@ -232,7 +239,7 @@ public class JXErrorPane extends JComponent {
 
     /**
      * Sets the look and feel (L&F) object that renders this component.
-     * 
+     *
      * @param ui
      *            the ErrorPaneUI L&F object
      * @see javax.swing.UIDefaults#getUI
@@ -260,7 +267,7 @@ public class JXErrorPane extends JComponent {
      * Notification from the <code>UIManager</code> that the L&F has changed.
      * Replaces the current UI object with the latest version from the
      * <code>UIManager</code>.
-     * 
+     *
      * @see javax.swing.JComponent#updateUI
      */
     @Override
@@ -268,9 +275,9 @@ public class JXErrorPane extends JComponent {
         setUI((ErrorPaneUI) LookAndFeelAddons
                 .getUI(this, ErrorPaneUI.class));
     }
-    
+
     //-------------------------------------------- public methods/properties
-    
+
     /**
      * Sets the ErrorInfo for this dialog. ErrorInfo can't be null.
      *
@@ -284,7 +291,7 @@ public class JXErrorPane extends JComponent {
         this.errorInfo = info;
         firePropertyChange("errorInfo", old, this.errorInfo);
     }
-    
+
     /**
      * Gets the <code>JXErrorPane</code>'s <code>ErrorInfo</code>
      *
@@ -293,7 +300,7 @@ public class JXErrorPane extends JComponent {
     public ErrorInfo getErrorInfo() {
         return errorInfo;
     }
-    
+
     /**
      * Specifies the icon to use
      *
@@ -304,7 +311,7 @@ public class JXErrorPane extends JComponent {
         this.icon = icon;
         firePropertyChange("icon", old, this.icon);
     }
-    
+
     /**
      * Returns the Icon used
      *
@@ -313,11 +320,11 @@ public class JXErrorPane extends JComponent {
     public Icon getIcon() {
         return icon;
     }
-    
+
     /**
      * Sets the {@link ErrorReporter} delegate to use. This delegate is called
      * automatically when the report action is fired.
-     * 
+     *
      * @param reporter the ErrorReporter to use. If null, the report button will
      *        not be shown in the error dialog.
      */
@@ -326,44 +333,70 @@ public class JXErrorPane extends JComponent {
         this.reporter = reporter;
         firePropertyChange("errorReporter", old, getErrorReporter());
     }
-    
+
     /**
      * Gets the {@link ErrorReporter} delegate in use.
-     * 
+     *
      * @return the ErrorReporter. May be null.
      */
     public ErrorReporter getErrorReporter() {
         return reporter;
     }
-    
+
     //------------------------------------------------------- static methods
-    
+
     /**
-     * <p>Constructs and shows the error dialog for the given exception.  The 
-     * exceptions message will be the errorMessage, and the stacktrace will form 
+     * <p>Constructs and shows the error dialog for the given exception.  The
+     * exceptions message will be the errorMessage, and the stacktrace will form
      * the details for the error dialog.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the dialog shown will be modal. Otherwise, this thread will
      * block until the error dialog has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param e Exception that contains information about the error cause and stack trace
      */
     public static void showDialog(Throwable e) {
-        ErrorInfo ii = new ErrorInfo(null, null, null, null, e, null, null);
-        showDialog(null, ii);
+        showDialog( null, e );
     }
-    
+
     /**
-     * <p>Constructs and shows the error dialog, using the given
-     * <code>ErrorInfo</code> to initialize the view.</p>
-     * 
+     * <p>Constructs and shows the error dialog for the given exception.  The
+     * exception's message will be the errorMessage, and the stacktrace will form
+     * the details for the error dialog.</p>
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the dialog shown will be modal. Otherwise, this thread will
      * block until the error dialog has been shown and hidden on the EDT.</p>
-     * 
+     *
+     * @param parent The dialog parent component.
+     * @param e Exception that contains information about the error cause and stack trace
+     */
+    public static void showDialog( Component parent, Throwable e ) {
+        String message = e.getMessage();
+
+        // If there's no message...
+        if ( ! StringUtils.hasContent( message ) )
+            // ...we use the exception's class name.
+            message = e.getClass().getSimpleName();
+
+        ErrorInfo ii = new ErrorInfo("Error", message, null, null, e, Level.INFO, null);
+        showDialog(parent, ii);
+
+        LOG.log( Level.INFO, message, e );
+    }
+
+    /**
+     * <p>Constructs and shows the error dialog, using the given
+     * <code>ErrorInfo</code> to initialize the view.</p>
+     *
+     * <p>This method may be called from any thread. It will actually show the error
+     * dialog on the AWT event dispatch thread. This method blocks. If called
+     * on the EDT, the dialog shown will be modal. Otherwise, this thread will
+     * block until the error dialog has been shown and hidden on the EDT.</p>
+     *
      * @param owner Owner of this error dialog. Determines the Window in which the dialog
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -374,16 +407,16 @@ public class JXErrorPane extends JComponent {
         pane.setErrorInfo(info);
         showDialog(owner, pane);
     }
-    
+
     /**
      * <p>Constructs and shows the error dialog, using the given
      * <code>JXErrorPane</code> for the view portion of the dialog.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the dialog shown will be modal. Otherwise, this thread will
      * block until the error dialog has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param owner Owner of this error dialog. Determines the Window in which the dialog
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -398,7 +431,7 @@ public class JXErrorPane extends JComponent {
                 dlg.setVisible(true);
             }
         };
-        
+
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
                 SwingUtilities.invokeAndWait(r);
@@ -411,17 +444,17 @@ public class JXErrorPane extends JComponent {
             r.run();
         }
     }
-    
+
     /**
      * <p>Constructs and returns an error dialog, using the given
      * <code>JXErrorPane</code> for the view portion of the dialog.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It does not block. The
      * caller is responsible for ensuring that the dialog is shown and manipulated
      * on the AWT event dispatch thread. A common way to do this is to use
-     * <code>SwingUtilities.invokeAndWait</code> or 
+     * <code>SwingUtilities.invokeAndWait</code> or
      * <code>SwingUtilities.invokeLater()</code>.</p>
-     * 
+     *
      * @param owner Owner of this error dialog. Determines the Window in which the dialog
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -443,33 +476,33 @@ public class JXErrorPane extends JComponent {
         window.setLocationRelativeTo(owner);
         return window;
     }
-    
+
     /**
-     * <p>Constructs and shows the error frame for the given exception.  The 
-     * exceptions message will be the errorMessage, and the stacktrace will form 
+     * <p>Constructs and shows the error frame for the given exception.  The
+     * exceptions message will be the errorMessage, and the stacktrace will form
      * the details for the error dialog.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param e Exception that contains information about the error cause and stack trace
      */
     public static void showFrame(Throwable e) {
         ErrorInfo ii = new ErrorInfo(null, null, null, null, e, null, null);
         showFrame(null, ii);
     }
-    
+
     /**
      * <p>Constructs and shows the error frame, using the given
      * <code>ErrorInfo</code> to initialize the view.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the frame
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -480,16 +513,16 @@ public class JXErrorPane extends JComponent {
         pane.setErrorInfo(info);
         showFrame(owner, pane);
     }
-    
+
     /**
      * <p>Constructs and shows the error frame, using the given
      * <code>JXErrorPane</code> for the view portion of the frame.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the dialog
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -504,7 +537,7 @@ public class JXErrorPane extends JComponent {
                 window.setVisible(true);
             }
         };
-        
+
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
                 SwingUtilities.invokeAndWait(r);
@@ -517,17 +550,17 @@ public class JXErrorPane extends JComponent {
             r.run();
         }
     }
-    
+
     /**
      * <p>Constructs and returns an error frame, using the given
      * <code>JXErrorPane</code> for the view portion of the frame.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It does not block. The
      * caller is responsible for ensuring that the frame is shown and manipulated
      * on the AWT event dispatch thread. A common way to do this is to use
-     * <code>SwingUtilities.invokeAndWait</code> or 
+     * <code>SwingUtilities.invokeAndWait</code> or
      * <code>SwingUtilities.invokeLater()</code>.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the frame
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -549,33 +582,33 @@ public class JXErrorPane extends JComponent {
 //        window.setLocationRelativeTo(owner);
         return window;
     }
-    
+
     /**
-     * <p>Constructs and shows the error frame for the given exception.  The 
-     * exceptions message will be the errorMessage, and the stacktrace will form 
+     * <p>Constructs and shows the error frame for the given exception.  The
+     * exceptions message will be the errorMessage, and the stacktrace will form
      * the details for the error dialog.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param e Exception that contains information about the error cause and stack trace
      */
     public static void showInternalFrame(Throwable e) {
         ErrorInfo ii = new ErrorInfo(null, null, null, null, e, null, null);
         showInternalFrame(null, ii);
     }
-    
+
     /**
      * <p>Constructs and shows the error frame, using the given
      * <code>ErrorInfo</code> to initialize the view.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the frame
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -586,16 +619,16 @@ public class JXErrorPane extends JComponent {
         pane.setErrorInfo(info);
         showInternalFrame(owner, pane);
     }
-    
+
     /**
      * <p>Constructs and shows the error frame, using the given
      * <code>JXErrorPane</code> for the view portion of the frame.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It will actually show the error
      * dialog on the AWT event dispatch thread. This method blocks. If called
      * on the EDT, the frame shown will be modal. Otherwise, this thread will
      * block until the error frame has been shown and hidden on the EDT.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the dialog
      *        is displayed; if the <code>owner</code> has
      *        no <code>Window</code>, a default <code>Frame</code> is used
@@ -607,10 +640,10 @@ public class JXErrorPane extends JComponent {
             @Override
             public void run() {
                 JInternalFrame window = createInternalFrame(owner, pane);
-                window.setVisible(true);                
+                window.setVisible(true);
             }
         };
-        
+
         if (!SwingUtilities.isEventDispatchThread()) {
             try {
                 SwingUtilities.invokeAndWait(r);
@@ -623,17 +656,17 @@ public class JXErrorPane extends JComponent {
             r.run();
         }
     }
-    
+
     /**
      * <p>Constructs and returns an error frame, using the given
      * <code>JXErrorPane</code> for the view portion of the frame.</p>
-     * 
+     *
      * <p>This method may be called from any thread. It does not block. The
      * caller is responsible for ensuring that the frame is shown and manipulated
      * on the AWT event dispatch thread. A common way to do this is to use
-     * <code>SwingUtilities.invokeAndWait</code> or 
+     * <code>SwingUtilities.invokeAndWait</code> or
      * <code>SwingUtilities.invokeLater()</code>.</p>
-     * 
+     *
      * @param owner Owner of this error frame. Determines the Window in which the frame
      *    is displayed; if the <code>owner</code> has
      *    no <code>Window</code>, a default <code>Frame</code> is used
@@ -656,5 +689,5 @@ public class JXErrorPane extends JComponent {
 //                window.setLocationRelativeTo(owner);
         return window;
     }
-    
+
 }
