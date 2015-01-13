@@ -26,7 +26,9 @@ import org.jdesktop.smack.util.StringUtils;
  *
  * @version $Revision$
  * @author michab
+ * @deprecated Use JXErrorPane instead.
  */
+@Deprecated
 public class ErrorDialog
 {
     // TODO(michab) Resource handling must be switched to
