@@ -4,26 +4,31 @@
  */
 package org.jdesktop.application;
 
-import java.awt.Image;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JRootPane;
-
 import static org.jdesktop.application.Application.KEY_APPLICATION_ICON;
 import static org.jdesktop.application.Application.KEY_APPLICATION_TITLE;
 
+import java.awt.Image;
+
+import javax.swing.JFrame;
+import javax.swing.JRootPane;
+
+/**
+ * A View implementation using a JFrame.
+ *
+ * @version $Rev$
+ * @author Michael Binz
+ */
 public class FrameView extends View {
     public static final String MAIN_FRAME_NAME = "mainFrame";
 
-    private static final Logger logger = Logger.getLogger(FrameView.class.getName());
-    private JFrame frame = null;
+    private JFrame _frame = null;
 
     public FrameView(Application application) {
         super(application);
     }
 
     /**
-     * Return the JFrame used to show this View
+     * Return the JFrame used to show this View.
      *
      * <p>
      * This method may be called at any time; the JFrame is created lazily
@@ -35,25 +40,25 @@ public class FrameView extends View {
      * }
      * </pre>
      *
-     * @return this application's  main frame
+     * @return this application's main frame.
      */
     public JFrame getFrame() {
-        if (frame == null) {
+        if (_frame == null) {
             ResourceMap resourceMap = getContext().getResourceMap();
             String title = resourceMap.getString(KEY_APPLICATION_TITLE);
 
-            frame = new JFrame(title);
-            frame.setName(MAIN_FRAME_NAME);
+            _frame = new JFrame(title);
+            _frame.setName(MAIN_FRAME_NAME);
             if (resourceMap.containsKey(KEY_APPLICATION_ICON)) {
                 Image icon = resourceMap.getImageIcon(KEY_APPLICATION_ICON).getImage();
-                frame.setIconImage(icon);
+                _frame.setIconImage(icon);
             }
         }
-        return frame;
+        return _frame;
     }
 
     /**
-     * Sets the JFrame use to show this View
+     * Sets the JFrame used to show this View.
      * <p>
      * This method should be called from the startup method by a
      * subclass that wants to construct and initialize the main frame
@@ -69,8 +74,6 @@ public class FrameView extends View {
      * <p>
      * This property is bound.
      *
-     *
-     *
      * @param frame the new value of the frame property
      * @see #getFrame
      */
@@ -78,11 +81,14 @@ public class FrameView extends View {
         if (frame == null) {
             throw new IllegalArgumentException("null JFrame");
         }
-        if (this.frame != null) {
+        if (_frame != null) {
             throw new IllegalStateException("frame already set");
         }
-        this.frame = frame;
-        firePropertyChange("frame", null, this.frame);
+        _frame = frame;
+
+        _frame.setName( MAIN_FRAME_NAME );
+
+        firePropertyChange("frame", null, _frame);
     }
 
     @Override
