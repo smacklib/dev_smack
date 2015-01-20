@@ -25,7 +25,9 @@ import javax.swing.UIManager;
 /**
  * A set of utility classes.  Basically I hate that, but some things <i>are</i>
  * just functions.
+ * @deprecated Do not use.
  */
+@Deprecated
 public final class Utilities
 {
     private final static Logger _log =
@@ -84,7 +86,8 @@ public final class Utilities
    *
    * @deprecated  This is not cool, the description above wrong.  Do not use.
    */
-  public static int showOptionDialog(
+  @Deprecated
+public static int showOptionDialog(
     java.awt.Component parentComponent,
     Object message,
     String title,

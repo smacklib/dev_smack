@@ -32,11 +32,11 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.Task;
-import org.jdesktop.smack.ErrorDialog;
 import org.jdesktop.smack.MackAppViewer;
 import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.smack.util.Transformer;
+import org.jdesktop.swingx.JXErrorPane;
 
 
 
@@ -287,7 +287,7 @@ public class AppOpen<FT, MC extends Component>
             }
             catch ( Exception e )
             {
-                ErrorDialog.show( e );
+                JXErrorPane.showDialog( e );
                 throw e;
             }
         }
@@ -352,6 +352,7 @@ public class AppOpen<FT, MC extends Component>
     /*
      * Inherit javadoc.
      */
+    @Override
     public void drop( DropTargetDropEvent dtde )
     {
         // Used on dnd protocol completion in 'finally' below.
