@@ -1,12 +1,23 @@
 /* $Id$
  *
- * Mack.
+ * Copyright © 2010-15 Michael G. Binz
  *
- * Released under Gnu Public License
- * Copyright © 2010 Michael G. Binz
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.jdesktop.smack;
+package org.jdesktop.swingx;
 
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -24,6 +35,7 @@ import javax.swing.JToolBar;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.smack.MackAction;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 
 /**
@@ -34,7 +46,7 @@ import org.jdesktop.swingx.action.ActionContainerFactory;
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
-public class MackToolbar extends JToolBar
+public class JXToolbar extends JToolBar
 {
     private final JCheckBoxMenuItem _showLabels =
         new JCheckBoxMenuItem();
@@ -62,7 +74,7 @@ public class MackToolbar extends JToolBar
     /**
      * The default constructor.
      */
-    public MackToolbar( ActionContainerFactory acf )
+    public JXToolbar( ActionContainerFactory acf )
     {
         _acf = acf;
         init();
@@ -75,7 +87,7 @@ public class MackToolbar extends JToolBar
      *
      * @param componentName The toolbar's component name.
      */
-    public MackToolbar( String name )
+    public JXToolbar( String name )
     {
         super( name );
         init();
@@ -89,7 +101,7 @@ public class MackToolbar extends JToolBar
      * @param acf
      * @param name
      */
-    public MackToolbar( ActionContainerFactory acf, String name )
+    public JXToolbar( ActionContainerFactory acf, String name )
     {
         super( name );
         _acf = acf;

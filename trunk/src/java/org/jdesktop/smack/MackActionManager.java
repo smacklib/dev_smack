@@ -1,9 +1,7 @@
 /* $Id$
  *
- * Michael's Application Construction Kit (MACK)
- *
  * Released under Gnu Public License
- * Copyright (c) 2003-2012 Michael G. Binz
+ * Copyright © 2003-2015 Michael G. Binz
  */
 package org.jdesktop.smack;
 
@@ -21,16 +19,15 @@ import javax.swing.JPopupMenu;
 import org.jdesktop.application.Application;
 import org.jdesktop.smack.util.MultiMap;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.swingx.JXToolbar;
 import org.jdesktop.swingx.action.AbstractActionExt;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 
 
 /**
- * <p>
  * Manages an application's set of actions. The current main responsibility is
  * to keep references to all existing application actions and to compute a popup
  * menu and a menu bar.
- * </p>
  *
  * @version $Rev$
  * @author Michael Binz
@@ -174,11 +171,11 @@ public final class MackActionManager
      *
      * @return A reference to the tool bar holding the configured actions.
      */
-    public MackToolbar getToolbar()
+    public JXToolbar getToolbar()
     {
         List<Action> actions = getActionBar(_toolbarMap);
 
-        MackToolbar result = new MackToolbar(_acf);
+        JXToolbar result = new JXToolbar(_acf);
 
         for (Action c : actions)
         {
