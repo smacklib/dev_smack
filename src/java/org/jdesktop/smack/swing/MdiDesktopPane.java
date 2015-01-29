@@ -1,8 +1,5 @@
 /* $Id$
  *
- * Common.
- *
- * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
 package org.jdesktop.smack.swing;
@@ -60,11 +57,6 @@ public class MdiDesktopPane extends JDesktopPane
      *
      */
     private static final int TILE_VERTICALLY = 1;
-
-    /**
-     * The last rectangle returned by initWindowPosition().
-     */
-    private final Rectangle _windowPosition = new Rectangle();
 
     /**
      * Maps menu items to their associated child windows.
@@ -140,13 +132,11 @@ public class MdiDesktopPane extends JDesktopPane
     @Action
     public void actTileHorizontally( ActionEvent ae )
     {
-        // TODO(micbinz) document...
         tile( TILE_VERTICALLY );
     }
     @Action
     public void actTileVertically( ActionEvent ae )
     {
-        // TODO(micbinz) document...
         tile( TILE_HORIZONTALLY );
     }
     @Action
@@ -159,7 +149,7 @@ public class MdiDesktopPane extends JDesktopPane
      * Tile the contained internal frames horizontally or vertically as defined
      * by the passed constant.
      */
-    public void tile( int how )
+    private void tile( int how )
     {
         Dimension availableDesktop = arrangeIcons();
 
@@ -238,12 +228,11 @@ public class MdiDesktopPane extends JDesktopPane
     /**
      * Implements cascading the child windows.
      */
-    public void cascade()
+    private void cascade()
     {
-        Dimension availableDesktop = arrangeIcons();
+        Rectangle windowPosition = new Rectangle();
 
-        // Init our window position.
-        _windowPosition.setLocation( 0, 0 );
+        Dimension availableDesktop = arrangeIcons();
 
         JInternalFrame[] childs = getOpenFrames();
 
@@ -266,26 +255,26 @@ public class MdiDesktopPane extends JDesktopPane
         {
             // Check if we can create a window given that width at the current
             // position...
-            if ( (_windowPosition.x + childWidth) > availableDesktop.width )
+            if ( (windowPosition.x + childWidth) > availableDesktop.width )
                 // ...and reset the current position to the upper left corner if
                 // not.
-                _windowPosition.setLocation( 0, 0 );
+                windowPosition.setLocation( 0, 0 );
 
             // Seems fine so far. Set the height of the new window to the
             // maximum possible for the current y position.
-            _windowPosition.setSize( childWidth, childHeight );
+            windowPosition.setSize( childWidth, childHeight );
 
             // Set our result on the frame.
-            childs[i].setBounds( _windowPosition );
+            childs[i].setBounds( windowPosition );
             childs[i].toFront();
 
             // Translate the current position for the next call.
-            _windowPosition.translate( cascadeOffset, cascadeOffset );
+            windowPosition.translate( cascadeOffset, cascadeOffset );
         }
     }
 
     /**
-     * Implements vertical tiling.
+     * Implements horizontal tiling.
      */
     private void tileHorizontally( JInternalFrame[] childs, int numOfRows,
             int childsPerRow, int remaining, Dimension availableDesktop )
@@ -312,7 +301,7 @@ public class MdiDesktopPane extends JDesktopPane
     }
 
     /**
-     * Implements horizontal tiling.
+     * Implements vertical tiling.
      */
     private void tileVertically( JInternalFrame[] childs, int numOfRows,
             int childsPerRow, int remaining, Dimension availableDesktop )
@@ -326,7 +315,7 @@ public class MdiDesktopPane extends JDesktopPane
         {
             // ...calculate the number of childs in this row...
             int childsInThisRow = childsPerRow + (i < remaining ? 1 : 0);
-            // ...and each child's height...
+            // ...and each child's width...
             int childWidth = availableDesktop.width / childsInThisRow;
             // ...and for each child in this row...
             for ( int j = 0; j < childsInThisRow; j++ )
@@ -441,7 +430,7 @@ public class MdiDesktopPane extends JDesktopPane
      * Sets the focus to a specific child window. If the child is iconified it
      * gets deiconified.
      */
-    public void activate( JInternalFrame child )
+    private void activate( JInternalFrame child )
     {
         try
         {
@@ -545,8 +534,6 @@ public class MdiDesktopPane extends JDesktopPane
         @Override
         public void internalFrameClosing( InternalFrameEvent e )
         {
-            // TODO add a system for the InternalFrame to take part in the
-            // decision whether it can be closed or not.
             LOG.fine( "InternalFrameListener: Closing" );
             JInternalFrame internalFrame = (JInternalFrame)e.getSource();
 
@@ -617,6 +604,22 @@ public class MdiDesktopPane extends JDesktopPane
      */
     public JInternalFrame registerChild( JInternalFrame child )
     {
+        return registerChild( child, false );
+    }
+
+
+    /**
+     * Registers a new ChildWindow.  On registration child windows are set
+     * to an invisible state.  To display the child window call setVisible( true )
+     * on the returned instance.  This call triggers registration -- nothing
+     * more has to be done.
+     *
+     * @param child The new child window to register.
+     * @param followResize If true then the child window size is adjusted if
+     * the desktop resizes.
+     */
+    public JInternalFrame registerChild( JInternalFrame child, boolean followResize )
+    {
         // Set the child to invisible state.
         child.setVisible( false );
         // Add our internal management listener.
@@ -624,6 +627,9 @@ public class MdiDesktopPane extends JDesktopPane
         child.addPropertyChangeListener( internalFramePropertyChangeListener );
 
         child.setInheritsPopupMenu( true );
+
+        if ( followResize )
+            new ResizeGoo( this, child );
 
         return child;
     }
