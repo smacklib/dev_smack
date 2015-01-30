@@ -1,3 +1,10 @@
+/* $Id$
+ *
+ * Common.
+ *
+ * Released under Gnu Public License
+ * Copyright © 2012 Michael G. Binz
+ */
 package org.jdesktop.smack.util;
 
 import java.io.IOException;
@@ -7,16 +14,16 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 /**
-* A simple pipe.  Write to the write end, read from the read end.
-*
-*/
+ * A simple pipe.  Write to the write end, read from the read end.
+ *
+ */
 public final class Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;
- 
+
     private final PipedOutputStream _writeEnd;
     private final PipedInputStream _readEnd;
- 
+
     /**
      * Create an instance.
      *
@@ -36,7 +43,7 @@ public final class Pipe
             throw new InternalError( e.toString() );
         }
     }
- 
+
     /**
      * Create an instance with a 10k buffer size.
      */
@@ -44,7 +51,7 @@ public final class Pipe
     {
         this( BUFFER_SIZE );
     }
- 
+
     /**
      * Get the Pipe's write end.
      *
@@ -54,7 +61,7 @@ public final class Pipe
     {
         return _writeEnd;
     }
- 
+
     /**
      * Get the pipes read end.
      *
@@ -65,4 +72,3 @@ public final class Pipe
         return _readEnd;
     }
 }
- 
