@@ -32,7 +32,7 @@ import org.jdesktop.smack.util.StringUtils;
  * Do not use explicit calls to {@link #pack()}.
  * </p>
  *
- * @version $Revision: 4250 $
+ * @version $Revision$
  * @author Michael Binz
  * @author Tihomir Daskalov
  */

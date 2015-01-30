@@ -26,7 +26,7 @@ import org.jdesktop.application.SingleFrameApplication;
 /**
  * Tools.
  *
- * @version $Revision: 13640 $
+ * @version $Revision$
  */
 public class GTools
 {

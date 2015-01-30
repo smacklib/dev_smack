@@ -15,7 +15,7 @@ import javax.swing.UIManager;
  * UI component that displays an information string.
  *
  * @author Tihomir Daskalov
- * @version $Revision: 14118 $
+ * @version $Revision$
  */
 class InfoComponent extends JPanel
 {
