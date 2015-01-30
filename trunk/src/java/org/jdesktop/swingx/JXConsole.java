@@ -1,9 +1,9 @@
-/* $Id: JConsole.java 48 2014-11-23 10:28:59Z michab66 $
+/* $Id$
  *
  * Common.
  *
  * Released under Gnu Public License
- * Copyright © 2011 Michael G. Binz
+ * Copyright © 2003-15 Michael G. Binz
  */
 package org.jdesktop.swingx;
 
@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
@@ -38,16 +39,16 @@ import javax.swing.text.Document;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.swingx.JXFontChooser;
-
+import org.jdesktop.application.Resource;
+import org.jdesktop.smack.util.OutputStreamForwarder;
 
 /**
  * A console ui component. Connects stream oriented in- and output to a text component.
  *
- * @version $Rev: 48 $
+ * @version $Rev$
  */
 @SuppressWarnings("serial")
-public class JXConsole extends JPanel implements KeyListener {
+public final class JXConsole extends JPanel implements KeyListener {
 
     private final Logger LOG = Logger.getLogger( getClass().getName() );
 
@@ -101,7 +102,7 @@ public class JXConsole extends JPanel implements KeyListener {
     /**
      * The document position where the editable content starts.
      */
-    private int                  _cmdStart            = 0;
+    private int _cmdStart = 0;
 
     private static final int  maximumHistoryLength = 100;
 
@@ -121,7 +122,7 @@ public class JXConsole extends JPanel implements KeyListener {
     private int _histLine = 0;
 
     /**
-     *
+     * The context popup.
      */
     private final JPopupMenu _menu = new JPopupMenu();
 
@@ -130,6 +131,9 @@ public class JXConsole extends JPanel implements KeyListener {
      */
     private final JTextArea _text;
 
+    /**
+     * The window toolbar.
+     */
     private final JToolBar _toolbar = new JToolBar();
 
     /**
@@ -138,6 +142,8 @@ public class JXConsole extends JPanel implements KeyListener {
     public JXConsole() {
 
         super( new BorderLayout() );
+
+        Application.getResourceManager().injectResources( this );
 
         _text = new JTextArea() {
 
@@ -160,6 +166,8 @@ public class JXConsole extends JPanel implements KeyListener {
         };
 
         _text.setLineWrap( true );
+        _text.setBackground( _toolbar.getBackground() );
+        _text.setEditable( false );
 
         setFont(new Font("Monospaced", Font.PLAIN, 12));
 
@@ -179,6 +187,8 @@ public class JXConsole extends JPanel implements KeyListener {
         _menu.add(new JMenuItem( getNamedAction( "actClear" ) ) );
 
         _text.setComponentPopupMenu( _menu );
+
+        _toolbar.setFloatable( false );
 
         add( scrollPane, BorderLayout.CENTER );
 
@@ -202,6 +212,16 @@ public class JXConsole extends JPanel implements KeyListener {
         {
             _toolbar.add(  a );
         }
+    }
+
+    /**
+     * Access the console's toolbar.
+     *
+     * @return The console's toolbar.
+     */
+    public JToolBar getToolbar()
+    {
+        return _toolbar;
     }
 
     /**
@@ -233,6 +253,17 @@ public class JXConsole extends JPanel implements KeyListener {
 
         if (e.getKeyChar() == '\b') {
             e.setKeyCode(e.getKeyChar());
+        }
+
+        // TODO(micbinz) This is a quick hack. Because of the special
+        // key handling it's not so easy to add a normal action for
+        // handling control keys. Research.  The whole key handling
+        // needs a rework.
+        if ( e.isControlDown() && e.getKeyCode() == 'A' )
+        {
+            _text.selectAll();
+            e.consume();
+            return;
         }
 
         switch (e.getKeyCode()) {
@@ -436,7 +467,7 @@ public class JXConsole extends JPanel implements KeyListener {
      */
     private String getEditAreaContents() {
         try {
-            return this._text.getText(this._cmdStart, this._text.getDocument().getLength() - this._cmdStart);
+            return _text.getText(this._cmdStart, _text.getDocument().getLength() - _cmdStart);
         }
         catch (BadLocationException e) {
             throw new RuntimeException(e);
@@ -507,9 +538,9 @@ public class JXConsole extends JPanel implements KeyListener {
         catch (IOException e) {
             // Signal to the user that we cannot accept further input.
             _text.setBackground( Color.LIGHT_GRAY );
-            _text.setEnabled( false );
+            _text.setEditable( false );
             _outPipe = null;
-            LOG.warning( "Console pipe broken..." );
+            LOG.log( Level.WARNING, "Console pipe broken...", e );
         }
     }
 
@@ -520,10 +551,21 @@ public class JXConsole extends JPanel implements KeyListener {
      *            The output stream receiving lines entered by the user.
      */
     public void setInputReceiver(OutputStream os) {
-        _outPipe = os;
+        _outPipe = os == null ?
+            null :
+            new OutputStreamForwarder( os, 10 );
+
         // Set back to default background color.
-        _text.setBackground( new JTextArea().getBackground() );
-        _text.setEnabled( true );
+        if ( _outPipe != null )
+        {
+            _text.setBackground( new JTextArea().getBackground() );
+            _text.setEditable( true );
+        }
+        else
+        {
+            _text.setBackground( _toolbar.getBackground() );
+            _text.setEditable( false );
+        }
     }
 
     /**
@@ -544,12 +586,12 @@ public class JXConsole extends JPanel implements KeyListener {
         if ( ! SwingUtilities.isEventDispatchThread() )
             throw new InternalError( "Not on EDT." );
 
-        int cp = _text.getSelectionStart() - _text.getSelectionEnd();
+        int caretPosition = _text.getSelectionStart() - _text.getSelectionEnd();
 
-        if ( cp != 0 )
-            cp = -1;
+        if ( caretPosition != 0 )
+            caretPosition = -1;
         else
-            cp = _text.getCaretPosition();
+            caretPosition = _text.getCaretPosition();
 
         // Atomically read and reset the data to display.
         synchronized ( string )
@@ -560,10 +602,10 @@ public class JXConsole extends JPanel implements KeyListener {
 
         resetEditArea();
 
-        if ( cp < 0 )
+        if ( caretPosition < 0 )
             ;
         else if ( isLocked() )
-            _text.setCaretPosition( cp );
+            _text.setCaretPosition( caretPosition );
         else
             _text.setCaretPosition( _cmdStart );
     }
@@ -606,14 +648,15 @@ public class JXConsole extends JPanel implements KeyListener {
     /**
      * Set the font on this component.
      *
-     * @param font The font to set.
+     * @param font
+     *            The font to set.
      */
     @Override
     public void setFont(Font font) {
         super.setFont(font);
 
-        if (this._text != null) {
-            this._text.setFont(font);
+        if (_text != null) {
+            _text.setFont(font);
         }
     }
 
@@ -630,7 +673,7 @@ public class JXConsole extends JPanel implements KeyListener {
             result = super.getFont();
         }
         else {
-            result = this._text.getFont();
+            result = _text.getFont();
         }
 
         return result;
@@ -640,7 +683,7 @@ public class JXConsole extends JPanel implements KeyListener {
     @Action
     public void actCopy( ActionEvent ae )
     {
-        this._text.copy();
+        _text.copy();
     }
 
     @Action
@@ -659,6 +702,9 @@ public class JXConsole extends JPanel implements KeyListener {
         }
     }
 
+    @Resource
+    private String FILE_EXISTS_MESSAGE;
+
     @Action
     public void actSave( ActionEvent ae ) {
         if (JXConsole.saveChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
@@ -670,9 +716,9 @@ public class JXConsole extends JPanel implements KeyListener {
                 // Parent.
                 this,
                 // Message.
-                "File exists.  Should it be replaced?",
+                String.format( FILE_EXISTS_MESSAGE, f.getName() ),
                 // Title.
-                "",
+                Application.getInstance().getContext().getResourceMap().getString( Application.KEY_APPLICATION_TITLE ),
                 // Options
                 JOptionPane.YES_NO_OPTION,
                 //
@@ -683,7 +729,7 @@ public class JXConsole extends JPanel implements KeyListener {
             }
         }
 
-        writeFile(f, this._text.getText());
+        writeFile(f, _text.getText());
     }
 
     @Action
@@ -819,8 +865,9 @@ public class JXConsole extends JPanel implements KeyListener {
     private boolean _isLocked = false;
 
     /**
+     * Get the scroll lock status.
      *
-     * @return
+     * @return {code true} if scroll lock is active.
      */
     public boolean isLocked()
     {
@@ -828,8 +875,9 @@ public class JXConsole extends JPanel implements KeyListener {
     }
 
     /**
+     * Sets the scroll lock status.
      *
-     * @param what
+     * @param what The scroll lock status. {@code true} is scroll lock active.
      */
     public void setLocked( boolean what )
     {
