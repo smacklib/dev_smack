@@ -9,7 +9,7 @@ import javax.swing.JButton;
  *
  * @author micbinz
  * @author daskalot
- * @version $Revision: 4231 $
+ * @version $Revision$
  */
 class HBox extends Box
 {
