@@ -18,7 +18,7 @@ import java.util.concurrent.BlockingQueue;
  * forwards the data to the passed target stream.
  *
  * @version $Rev$
- * @author micbinz
+ * @author Michael Binz
  */
 final public class OutputStreamForwarder
     extends OutputStream
