@@ -16,6 +16,7 @@ import java.io.PipedOutputStream;
 /**
  * A simple pipe.  Write to the write end, read from the read end.
  *
+ * @author Michael Binz
  */
 public final class Pipe
 {
