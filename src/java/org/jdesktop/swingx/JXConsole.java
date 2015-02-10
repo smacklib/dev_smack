@@ -137,11 +137,30 @@ public final class JXConsole extends JPanel implements KeyListener {
     private final JToolBar _toolbar = new JToolBar();
 
     /**
+     * True if a console should display an entered CR, false
+     * otherwise.  Default is false.
+     */
+    private final boolean _showCr;
+
+    /**
      * Creates a console.
      */
     public JXConsole() {
+        this( false );
+    }
+
+    /**
+     * Creates a console. Allows to select whether carriage
+     * returns are displayed in the console window as they are entered.
+     *
+     * @param showCr If true then entered carriage returns are shown in the
+     * console window. Otherwise carriage returns are not displayed.
+     */
+    public JXConsole( boolean showCr ) {
 
         super( new BorderLayout() );
+
+        _showCr = showCr;
 
         Application.getResourceManager().injectResources( this );
 
@@ -457,6 +476,17 @@ public final class JXConsole extends JPanel implements KeyListener {
         this._histLine = 0;
 
         postLine(confirmedLine + "\n");
+
+        if ( _showCr )
+            try
+            {
+                getOut().write( '\n' );
+            }
+            catch ( IOException e )
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 
     /**
