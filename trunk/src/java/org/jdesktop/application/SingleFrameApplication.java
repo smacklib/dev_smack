@@ -5,16 +5,32 @@
  */
 package org.jdesktop.application;
 
-import org.jdesktop.application.utils.SwingHelper;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.Window;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JWindow;
+import javax.swing.RootPaneContainer;
+
+import org.jdesktop.application.utils.SwingHelper;
 
 /**
  * An application base class for simple GUIs with one primary JFrame.
@@ -464,7 +480,7 @@ public abstract class SingleFrameApplication extends Application
     @Override
     protected void end() {
         JFrame mainFrame = getMainFrame();
-        if (mainFrame != null || mainFrame.isDisplayable()) {
+        if (mainFrame != null) {
             mainFrame.setVisible(false);
             mainFrame.dispose();
         }
