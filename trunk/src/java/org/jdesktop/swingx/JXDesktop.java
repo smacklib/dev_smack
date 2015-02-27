@@ -1,4 +1,4 @@
-/* $Id: MdiDesktopPane.java 48 2014-11-23 10:28:59Z michab66 $
+/* $Id$
  *
  * Copyright � 2011 Michael G. Binz
  */
@@ -38,7 +38,7 @@ import org.jdesktop.application.Application;
  * be as similar as possible to what is usually implemented in Windows for MDI
  * support.
  *
- * @version $Rev: 13640 $
+ * @version $Rev$
  * @author micbinz
  */
 @SuppressWarnings("serial")
