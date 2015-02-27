@@ -11,12 +11,13 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
+
 import javax.swing.JFrame;
 
-import org.jdesktop.application.utils.SwingHelper;
+import org.jdesktop.application.util.SwingHelper;
 
-import static org.jdesktop.application.utils.SwingHelper.computeVirtualGraphicsBounds;
-import static org.jdesktop.application.utils.SwingHelper.isResizable;
+import static org.jdesktop.application.util.SwingHelper.computeVirtualGraphicsBounds;
+import static org.jdesktop.application.util.SwingHelper.isResizable;
 
 /**
  * A {@code sessionState} property for Window.

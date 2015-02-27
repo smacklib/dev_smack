@@ -28,9 +28,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.jdesktop.application.utils.AppHelper;
-import org.jdesktop.application.utils.OSXAdapter;
-import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.application.util.AppHelper;
+import org.jdesktop.application.util.OSXAdapter;
+import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.beans.AbstractBeanEdt;
 
 /**

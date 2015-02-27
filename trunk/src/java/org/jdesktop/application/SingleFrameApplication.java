@@ -30,7 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JWindow;
 import javax.swing.RootPaneContainer;
 
-import org.jdesktop.application.utils.SwingHelper;
+import org.jdesktop.application.util.SwingHelper;
 
 /**
  * An application base class for simple GUIs with one primary JFrame.

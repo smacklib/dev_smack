@@ -6,11 +6,12 @@ package org.jdesktop.application;
 
 import static org.jdesktop.application.Application.KEY_APPLICATION_VENDOR_ID;
 
-import org.jdesktop.application.utils.AppHelper;
-import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.application.util.AppHelper;
+import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.beans.AbstractBeanEdt;
 
 import javax.jnlp.*;
+
 import java.awt.*;
 import java.beans.*;
 import java.io.*;

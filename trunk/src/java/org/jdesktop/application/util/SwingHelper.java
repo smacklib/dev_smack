@@ -3,7 +3,7 @@
  * Use is subject to license terms.
  */
 
-package org.jdesktop.application.utils;
+package org.jdesktop.application.util;
 
 import java.awt.Component;
 import java.awt.Dialog;
