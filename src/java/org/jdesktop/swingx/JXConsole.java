@@ -39,6 +39,7 @@ import javax.swing.text.Document;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
+import org.jdesktop.smack.FontResizer;
 import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.smack.util.OutputStreamForwarder;
 
@@ -183,6 +184,8 @@ public final class JXConsole extends JPanel implements KeyListener {
                 super.paste();
             }
         };
+
+        new FontResizer( _text );
 
         _text.setLineWrap( true );
         _text.setBackground( _toolbar.getBackground() );
