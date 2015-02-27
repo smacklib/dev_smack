@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,6 +39,7 @@ import javax.swing.text.Document;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Resource;
+import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.smack.util.OutputStreamForwarder;
 
 /**
@@ -504,53 +504,76 @@ public final class JXConsole extends JPanel implements KeyListener {
         }
     }
 
-    public void historyUpAction(ActionEvent ae) {
-        System.err.println("historyPrefixUp");
-    }
-
     /**
-     *
+     * Processes a cursor up key.
      */
-    private void historyUp() {
-        if (this._history.size() == 0) {
-            return;
-        }
-        if (this._histLine == 0) {
-            this._startedLine = getEditAreaContents();
-        }
-        if (this._histLine < this._history.size()) {
-            this._histLine++;
-            showHistoryLine();
-        }
-    }
+    private void historyUp()
+    {
+        // TODO Implementation is a mess. Cleanup.
 
-    /**
-     *
-     */
-    private void historyDown() {
-        if (this._histLine == 0) {
+        if (_history.size() == 0) {
             return;
         }
 
-        this._histLine--;
-        showHistoryLine();
+        if (_histLine == 0) {
+            _startedLine = getEditAreaContents();
+        }
+
+        int historyLine = _histLine;
+
+        while (historyLine < _history.size()) {
+            historyLine++;
+            if ( _history.get( _history.size() - historyLine ).startsWith( _startedLine ) )
+            {
+                _histLine = historyLine;
+                showHistoryLine();
+                break;
+            }
+        }
+    }
+
+    /**
+     * Processes a cursor down key.
+     */
+    private void historyDown()
+    {
+        // TODO Implementation is a mess. Cleanup.
+
+        if (_histLine == 0)
+            return;
+
+        int historyLine = _histLine;
+
+        while ( historyLine > 0 ) {
+            historyLine--;
+            if ( historyLine == 0 ||
+                 _history.get( _history.size() - historyLine ).startsWith( _startedLine ) )
+            {
+                _histLine = historyLine;
+                showHistoryLine();
+                break;
+            }
+        }
     }
 
     /**
      *
      */
-    private void showHistoryLine() {
+    private void showHistoryLine()
+    {
+        // TODO Implementation is a mess. Cleanup.
+
         String showline;
-        if (this._histLine == 0) {
-            showline = this._startedLine;
+        if (_histLine == 0) {
+            showline = _startedLine;
         }
         else {
-            showline = this._history.elementAt(this._history.size() - this._histLine);
+            showline = _history.elementAt(_history.size() - _histLine);
         }
 
         replaceEditArea(showline);
         forceCaretIntoEditArea();
-        this._text.setCaretPosition(this._text.getDocument().getLength());
+        _text.setCaretPosition(_text.getDocument().getLength());
     }
 
     /**
@@ -821,19 +844,7 @@ public final class JXConsole extends JPanel implements KeyListener {
                 null, e.getLocalizedMessage(), "Writing failed.", JOptionPane.ERROR_MESSAGE, null);
         }
         finally {
-            forceClose(fw);
-        }
-    }
-
-    /**
-     * @param c
-     */
-    private static void forceClose(Closeable c) {
-        try {
-            c.close();
-        }
-        catch (IOException e) {
-            ;
+            FileUtils.forceClose(fw);
         }
     }
 
