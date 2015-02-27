@@ -44,7 +44,7 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.ResourceConverter.ResourceConverterException;
-import org.jdesktop.application.utils.PlatformType;
+import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.smack.util.ResourceUtils;
 import org.jdesktop.smack.util.StringUtils;

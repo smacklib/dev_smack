@@ -1,4 +1,4 @@
-package org.jdesktop.application.utils;
+package org.jdesktop.application.util;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;

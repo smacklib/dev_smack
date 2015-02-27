@@ -5,7 +5,7 @@
  */
 package org.jdesktop.application;
 
-import static org.jdesktop.application.utils.SwingHelper.findRootPaneContainer;
+import static org.jdesktop.application.util.SwingHelper.findRootPaneContainer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
