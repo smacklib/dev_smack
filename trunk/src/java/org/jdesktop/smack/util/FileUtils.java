@@ -7,9 +7,9 @@
  */
 package org.jdesktop.smack.util;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +39,7 @@ public class FileUtils
     /**
      * The logger for this class.
      */
-    private static final Logger _log = Logger.getLogger(
+    private static final Logger LOG = Logger.getLogger(
         FileUtils.class.getName() );
 
 
@@ -80,32 +80,44 @@ public class FileUtils
 
 
     /**
-     * Silently closes the passed {@link Closeable}.  In case the close
+     * Silently closes the passed closeable.  In case the close
      * operation fails the exception is written into the log.
+     * If the passed objrct does not offer a close operation
+     * an {@link IllegalArgumentException} is thrown.
      *
-     * @param f The {@link Closeable} to close.  If {@code null} is passed
+     * @param f The object to close.  If {@code null} is passed
      *          this operation does nothing.
-     * @return Always a typed {@code null}.  This can be used to reset the
-     * reference to the passed {@link Closeable}.
      */
-    public static <T extends Closeable> T forceClose( T f )
+    public static void forceClose( Object closeable )
     {
-        if ( f != null )
-        {
-            try
-            {
-                f.close();
-            }
-            catch ( IOException e )
-            {
-                _log.log( Level.INFO, "forceClose", e );
-            }
+        if ( closeable == null )
+            return;
+
+        try {
+            Method closeOperation = closeable.getClass().getMethod( "close" );
+
+            if ( ! closeOperation.isAccessible() )
+                closeOperation.setAccessible( true );
+
+            closeOperation.invoke(closeable);
         }
+        catch (NoSuchMethodException e) {
 
-        return null;
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        catch (Exception e) {
+
+            if ( ! LOG.isLoggable(Level.FINE) )
+                return;
+
+            Throwable t = e;
+
+            if (t instanceof InvocationTargetException)
+                t = t.getCause();
+
+            LOG.log(Level.FINE, t.getMessage(), t);
+        }
     }
-
-
 
     /**
      * Filters a list of files.
