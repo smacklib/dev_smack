@@ -2,7 +2,7 @@
  *
  * Copyright © 2011 Michael G. Binz
  */
-package org.jdesktop.smack.swing;
+package org.jdesktop.swingx;
 
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;

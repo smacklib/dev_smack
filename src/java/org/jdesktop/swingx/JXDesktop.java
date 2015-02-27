@@ -1,8 +1,8 @@
-/* $Id$
+/* $Id: MdiDesktopPane.java 48 2014-11-23 10:28:59Z michab66 $
  *
- * Copyright © 2011 Michael G. Binz
+ * Copyright � 2011 Michael G. Binz
  */
-package org.jdesktop.smack.swing;
+package org.jdesktop.swingx;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -38,13 +38,13 @@ import org.jdesktop.application.Application;
  * be as similar as possible to what is usually implemented in Windows for MDI
  * support.
  *
- * @version $Rev$
+ * @version $Rev: 13640 $
  * @author micbinz
  */
 @SuppressWarnings("serial")
-public class MdiDesktopPane extends JDesktopPane
+public class JXDesktop extends JDesktopPane
 {
-    private static Logger LOG = Logger.getLogger( MdiDesktopPane.class.getName() );
+    private static Logger LOG = Logger.getLogger( JXDesktop.class.getName() );
 
     // TODO sorting window array
     // TODO calculating cascade offset
@@ -85,7 +85,7 @@ public class MdiDesktopPane extends JDesktopPane
     /**
      * Create an instance.
      */
-    public MdiDesktopPane()
+    public JXDesktop()
     {
         JMenuItem tile = new JMenuItem( getNamedAction( "actCascade" ) );
         _windowMenu.add( tile );
@@ -388,7 +388,7 @@ public class MdiDesktopPane extends JDesktopPane
         @Override
         public void actionPerformed( ActionEvent dummy )
         {
-            WindowsDialog.showFor( MdiDesktopPane.this );
+            WindowsDialog.showFor( JXDesktop.this );
         }
     };
 

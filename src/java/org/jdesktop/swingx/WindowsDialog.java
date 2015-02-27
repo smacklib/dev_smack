@@ -1,11 +1,11 @@
-/* $Id$
+/* $Id: WindowsDialog.java 48 2014-11-23 10:28:59Z michab66 $
  *
  * Application framework
  *
  * Unpublished work.
  * Copyright (c) 1999 Michael G. Binz
  */
-package org.jdesktop.smack.swing;
+package org.jdesktop.swingx;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JList;
@@ -20,7 +20,7 @@ import javax.swing.JScrollPane;
  * @see de.michab.swingx.MdiFrame
  */
 class WindowsDialog {
-    public static void showFor(MdiDesktopPane desktop) {
+    public static void showFor(JXDesktop desktop) {
         JInternalFrame[] frames = desktop.getAllFrames();
 
         String[] titles = new String[frames.length];
