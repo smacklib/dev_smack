@@ -9,8 +9,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,7 +30,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
+import org.jdesktop.beans.PropertyLink;
 
 /**
  * A special desktop pane, providing the ability to tile the existing child
@@ -80,26 +80,55 @@ public class JXDesktop extends JDesktopPane
      */
     private final JPopupMenu _windowMenu = new JPopupMenu( "Window" );
 
+    public final javax.swing.Action ACTION_CASCADE =
+            GTools.getAction( this, "actCascade" );
+    public final javax.swing.Action ACTION_TILE_VERTICALLY =
+            GTools.getAction( this, "actTileVertically" );
+    public final javax.swing.Action ACTION_TILE_HORIZONTALLY =
+            GTools.getAction( this, "actTileHorizontally" );
 
+    private final ContainerListener _containerListener = new ContainerListener()
+    {
+        @Override
+        public void componentRemoved( ContainerEvent e )
+        {
+            setActionsEnabled( e.getContainer().getComponentCount() );
+        }
+
+        @Override
+        public void componentAdded( ContainerEvent e )
+        {
+            setActionsEnabled( e.getContainer().getComponentCount() );
+        }
+
+        private void setActionsEnabled( int componentCount )
+        {
+            boolean enabled = componentCount > 0;
+            ACTION_CASCADE.setEnabled( enabled );
+            ACTION_TILE_HORIZONTALLY.setEnabled( enabled );
+            ACTION_TILE_VERTICALLY.setEnabled( enabled );
+        }
+    };
 
     /**
      * Create an instance.
      */
     public JXDesktop()
     {
-        JMenuItem tile = new JMenuItem( getNamedAction( "actCascade" ) );
-        _windowMenu.add( tile );
+        ACTION_CASCADE.setEnabled( false );
+        ACTION_TILE_HORIZONTALLY.setEnabled( false );
+        ACTION_TILE_VERTICALLY.setEnabled( false );
 
-        tile = new JMenuItem( getNamedAction( "actTileVertically" ) );
-        _windowMenu.add( tile );
-
-        tile = new JMenuItem( getNamedAction( "actTileHorizontally" ) );
-        _windowMenu.add( tile );
+        _windowMenu.add( new JMenuItem( ACTION_CASCADE ) );
+        _windowMenu.add( new JMenuItem( ACTION_TILE_VERTICALLY ) );
+        _windowMenu.add( new JMenuItem( ACTION_TILE_HORIZONTALLY ) );
 
         // The static entries in the windows menu are delimited by a separator.
         // Everything below that separator will be managed automatically.
         _windowMenu.addSeparator();
         setComponentPopupMenu( _windowMenu );
+
+        addContainerListener( _containerListener );
     }
 
     /**
@@ -111,6 +140,9 @@ public class JXDesktop extends JDesktopPane
         super.add( child );
 
         JMenuItem mi = new JRadioButtonMenuItem( child.getTitle() );
+
+        new PropertyLink( child, JInternalFrame.TITLE_PROPERTY, mi, "text" );
+
         mi.addActionListener( childsMenuItemListener );
         child.putClientProperty( CP_MENUITEM, mi );
         _mi2frameMap.put( mi, child );
@@ -184,13 +216,11 @@ public class JXDesktop extends JDesktopPane
     {
         Point currentPosition = null;
 
-        JInternalFrame[] childs = getAllFrames();
-
-        for ( int i = 0; i < childs.length; i++ )
+        for ( JInternalFrame c : getAllFrames() )
         {
-            if ( childs[i].isIcon() )
+            if ( c.isIcon() )
             {
-                JComponent icon = childs[i].getDesktopIcon();
+                JComponent icon = c.getDesktopIcon();
 
                 // Init the current placement position.
                 if ( currentPosition == null )
@@ -234,9 +264,9 @@ public class JXDesktop extends JDesktopPane
 
         Dimension availableDesktop = arrangeIcons();
 
-        JInternalFrame[] childs = getOpenFrames();
+        JInternalFrame[] children = getOpenFrames();
 
-        int cascadeOffset = calculateCascadeOffset( childs );
+        int cascadeOffset = calculateCascadeOffset( children );
 
         // Childs will be created at 4/5 of our width.
         int childWidth = (4 * availableDesktop.width) / 5;
@@ -251,7 +281,7 @@ public class JXDesktop extends JDesktopPane
         int childHeight = availableDesktop.height
                 - (childsPerRun * cascadeOffset);
 
-        for ( int i = 0; i < childs.length; i++ )
+        for ( JInternalFrame c : children )
         {
             // Check if we can create a window given that width at the current
             // position...
@@ -265,8 +295,8 @@ public class JXDesktop extends JDesktopPane
             windowPosition.setSize( childWidth, childHeight );
 
             // Set our result on the frame.
-            childs[i].setBounds( windowPosition );
-            childs[i].toFront();
+            c.setBounds( windowPosition );
+            c.toFront();
 
             // Translate the current position for the next call.
             windowPosition.translate( cascadeOffset, cascadeOffset );
@@ -557,42 +587,10 @@ public class JXDesktop extends JDesktopPane
         @Override
         public void internalFrameOpened( InternalFrameEvent e )
         {
-            LOG.fine( "InternalFrameListener: Opened" );
+            LOG.warning( "InternalFrameListener: Opened" );
             add( (JInternalFrame)e.getSource() );
         }
     };
-
-
-
-    /**
-     * Responsible for listening to property changes of contained child windows.
-     * Currently only keeps the frames menu item text in sync with its title.
-     */
-    private final PropertyChangeListener internalFramePropertyChangeListener =
-      new PropertyChangeListener()
-    {
-      @Override
-    public void propertyChange(PropertyChangeEvent evt)
-      {
-        if ( evt.getPropertyName() == JInternalFrame.TITLE_PROPERTY )
-        {
-          JInternalFrame changedFrame = (JInternalFrame)evt.getSource();
-          JMenuItem menuItemToChange = (JMenuItem)
-              changedFrame.getClientProperty( CP_MENUITEM );
-
-          if ( null == menuItemToChange )
-          {
-            System.err.println( "internalFramePropertyChangeListener: no menuItem found." );
-            return;
-          }
-          if ( ! menuItemToChange.getText().equals( changedFrame.getTitle() ) )
-          {
-            menuItemToChange.setText( changedFrame.getTitle() );
-          }
-        }
-      }
-    };
-
 
     /**
      * Registers a new ChildWindow.  On registration child windows are set
@@ -624,7 +622,6 @@ public class JXDesktop extends JDesktopPane
         child.setVisible( false );
         // Add our internal management listener.
         child.addInternalFrameListener( childListener );
-        child.addPropertyChangeListener( internalFramePropertyChangeListener );
 
         child.setInheritsPopupMenu( true );
 
@@ -632,20 +629,6 @@ public class JXDesktop extends JDesktopPane
             new ResizeGoo( this, child );
 
         return child;
-    }
-
-    /**
-     * Get the action corresponding to the passed name. The action is entered in the component's
-     * action map.
-     */
-    private javax.swing.Action getNamedAction( String actionName )
-    {
-        javax.swing.Action result = Application.getInstance().getContext().getActionMap(this).get( actionName );
-
-        if ( result != null && getActionMap().get( actionName ) == null )
-            getActionMap().put( actionName, result );
-
-        return result;
     }
 
     /**
