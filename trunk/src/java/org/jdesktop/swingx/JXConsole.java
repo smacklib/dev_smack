@@ -47,6 +47,7 @@ import org.jdesktop.smack.util.OutputStreamForwarder;
  * A console ui component. Connects stream oriented in- and output to a text component.
  *
  * @version $Rev$
+ * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public final class JXConsole extends JPanel implements KeyListener {

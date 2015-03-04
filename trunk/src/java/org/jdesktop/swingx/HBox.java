@@ -7,7 +7,7 @@ import javax.swing.JButton;
 /**
  * UI component that layouts horizontally the components added to it.
  *
- * @author micbinz
+ * @author Michael Binz
  * @author daskalot
  * @version $Revision$
  */

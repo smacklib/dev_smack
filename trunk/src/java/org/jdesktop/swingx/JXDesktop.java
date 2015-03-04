@@ -39,7 +39,7 @@ import org.jdesktop.beans.PropertyLink;
  * support.
  *
  * @version $Rev$
- * @author micbinz
+ * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public class JXDesktop extends JDesktopPane
