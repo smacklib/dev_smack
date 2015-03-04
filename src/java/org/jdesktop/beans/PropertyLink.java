@@ -35,24 +35,17 @@ public class PropertyLink
      * Creates a property update link between the source and target.
      * The property is expected to exist on both objects.
      *
-     * @param propName
-     * @param source
-     * @param target
+     * @param source The source object. Changes on this are propagated to the
+     * target object.
+     * @param propName The name of source and target property.
+     * @param target The target object.
      */
     public PropertyLink(
             Object source,
             String propName,
             Object target )
     {
-        _propertySrcName = propName;
-
-        PropertyAdapter pa =
-            new PropertyAdapter( source );
-
-        pa.addPropertyChangeListener( _listener );
-
-        _targetProperty =
-            new PropertyProxy<Object>( propName, target );
+        this( source, propName, target, propName );
     }
 
 
@@ -60,9 +53,11 @@ public class PropertyLink
     /**
      * Creates a property update link between the source and target.
      *
-     * @param propName
-     * @param source
-     * @param target
+     * @param source The source object. Changes on this are propagated to the
+     * target object.
+     * @param propSrcName The name of the source property.
+     * @param target The target object.
+     * @param propTgtName The name of the target property.
      */
     public PropertyLink(
             Object source,
