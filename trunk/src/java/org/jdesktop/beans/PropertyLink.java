@@ -48,8 +48,6 @@ public class PropertyLink
         this( source, propName, target, propName );
     }
 
-
-
     /**
      * Creates a property update link between the source and target.
      *
