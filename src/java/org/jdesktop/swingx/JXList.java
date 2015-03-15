@@ -733,7 +733,6 @@ public class JXList extends JList {
     /**
      * Sets the filter to the sorter, if available and of type SortController.
      * Does nothing otherwise.
-     * <p>
      *
      * @param filter the filter used to determine what entries should be
      *        included
@@ -749,24 +748,19 @@ public class JXList extends JList {
 
     /**
      * Returns the filter of the sorter, if available and of type SortController.
-     * Returns null otherwise.<p>
-     *
-     * PENDING JW: generics? had to remove return type from getSortController to
-     * make this compilable, so probably wrong.
+     * Returns null otherwise.
      *
      * @return the filter used in the sorter.
      */
-    @SuppressWarnings("unchecked")
     public RowFilter<?, ?> getRowFilter() {
         return hasSortController() ? getSortController().getRowFilter() : null;
     }
 
     /**
      * Resets sorting of all columns.
-     * Delegates to the SortController if available, or does nothing if not.<p>
+     * Delegates to the SortController if available, or does nothing if not.
      *
      * PENDING JW: method name - consistent in SortController and here.
-     *
      */
     public void resetSortOrder() {
         if (hasSortController())
@@ -774,7 +768,6 @@ public class JXList extends JList {
     }
 
     /**
-     *
      * Toggles the sort order of the list.
      * Delegates to the SortController if available, or does nothing if not.<p>
      *

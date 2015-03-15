@@ -109,6 +109,9 @@ public class JXHeader extends JXPanel {
     private Font descriptionFont;
     private Color titleForeground;
     private Color descriptionForeground;
+
+    // TODO(michab) This is not working reliably.  E.g. setting
+    // default to left here has no impact.  Research...
     private IconPosition iconPosition = IconPosition.RIGHT;
 
     /** Creates a new instance of JXHeader */
@@ -354,6 +357,7 @@ public class JXHeader extends JXPanel {
     @Override
     public Dimension getPreferredSize() {
         Dimension s = super.getPreferredSize();
+        // TODO(michab) clarify below.
         // TODO: hack for JXLabel issue ... see JXHeaderVisualCheck.interactiveCustomProperties();
         s.width += 5;
         return s;
