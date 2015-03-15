@@ -16,7 +16,9 @@ import javax.swing.UIManager;
  *
  * @author Tihomir Daskalov
  * @version $Revision$
+ * @deprecated Use JXHeader instead.
  */
+@Deprecated
 class InfoComponent extends JPanel
 {
     // TODO (daskalot) The org.jdesktop.swingx.JXHeader does the same, but is
