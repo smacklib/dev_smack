@@ -196,6 +196,8 @@ public class JXList extends JList {
         LookAndFeelAddons.contribute(new XListAddon());
     }
 
+    public static final String EXECUTE_BUTTON_ACTIONCOMMAND = "executeButtonAction";
+
     /**
      * The pipeline holding the highlighters.
      */

@@ -1,11 +1,11 @@
-/* $Id$
+/* $Id: MackSplit.java 48 2014-11-23 10:28:59Z michab66 $
  *
  * Common.
  *
  * Released under Gnu Public License
  * Copyright © 2013 Michael G. Binz
  */
-package org.jdesktop.smack;
+package org.jdesktop.swingx;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -20,11 +20,11 @@ import org.jdesktop.smack.util.MathExt;
  * in the constructor. This simplifies handling of the location a lot
  * compared to the original {@link JSplitPane}.
  *
- * @version $Rev$
+ * @version $Rev: 48 $
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
-public class MackSplit
+public class JXSplitPane
     extends JSplitPane
 {
     private double _proportionalLeftTopx;
@@ -32,7 +32,7 @@ public class MackSplit
     /**
      * Create an instance with a proportion of 0.5.
      */
-    public MackSplit()
+    public JXSplitPane()
     {
         this( .5 );
     }
@@ -42,7 +42,7 @@ public class MackSplit
      * @param proportion The proportion of the left pane in range
      * [0.0..1.0].
      */
-    public MackSplit( double proportion )
+    public JXSplitPane( double proportion )
     {
         if ( proportion < 0 || proportion > 1 )
             throw new IllegalArgumentException();

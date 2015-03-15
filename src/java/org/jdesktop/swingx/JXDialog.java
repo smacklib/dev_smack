@@ -46,6 +46,8 @@ import org.jdesktop.swingx.plaf.UIManagerExt;
  * First cut for enhanced Dialog. The idea is to have a pluggable content
  * from which the dialog auto-configures all its "dialogueness".
  *
+ * Prefer {@link JXDialogExt}.
+ *
  * <ul>
  * <li> accepts a content and configures itself from content's properties -
  *  replaces the execute action from the appropriate action in content's action map (if any)
@@ -64,9 +66,7 @@ import org.jdesktop.swingx.plaf.UIManagerExt;
  *
  * @author Jeanette Winzenburg
  * @author Karl Schaefer
- * @deprecated Use {@link JXDialogExt}.
  */
-@Deprecated
 @JavaBean
 public class JXDialog extends JDialog {
 
