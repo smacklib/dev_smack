@@ -10,6 +10,7 @@ import java.util.Random;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.jdesktop.application.Application;
@@ -30,6 +32,26 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class GTools
 {
+    /**
+     * Icon for information messages. This is the default icon.
+     */
+    public static final Icon ICON_INFO = UIManager.getIcon( "OptionPane.informationIcon" );
+
+    /**
+     * Icon for warning messages.
+     */
+    public static final Icon ICON_WARN = UIManager.getIcon("OptionPane.warningIcon");
+
+    /**
+     * Icon for error messages.
+     */
+    public static final Icon ICON_ERROR = UIManager.getIcon("OptionPane.errorIcon");
+
+    /**
+     * Icon for information messages. This is the default icon.
+     */
+    public static final Icon ICON_QUESTION = UIManager.getIcon( "OptionPane.questionIcon" );
+
     /**
      * @param c
      *            the component to add the double click action

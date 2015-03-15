@@ -48,11 +48,11 @@ public class JXDialogExt extends JDialog
     /**
      * The info component is lazy constructed and added to the view.
      */
-    private final InfoComponent _info =
-        new InfoComponent(
-            1, // line count
-            null // Initial message
-            );
+    private final JXHeader _info =
+        new JXHeader(
+            StringUtils.EMPTY_STRING,
+            StringUtils.EMPTY_STRING,
+            GTools.ICON_INFO );
 
     /**
      * Panel containing the user component and the button box.
@@ -179,7 +179,9 @@ public class JXDialogExt extends JDialog
         setName( "dialog" );
         setLayout(new BorderLayout());
         _info.setVisible(false);
+
         add(_info, BorderLayout.PAGE_START);
+
         _mainPanel.setBorder(GTools.GAP_BORDER);
         _mainPanel.add(_btnBox, BorderLayout.PAGE_END);
         add(_mainPanel, BorderLayout.CENTER);
@@ -238,14 +240,15 @@ public class JXDialogExt extends JDialog
     public void setMessage(String pMessage)
     {
         if ( ! StringUtils.hasContent(pMessage)) {
-            _info.setMessage( StringUtils.EMPTY_STRING );
+            _info.setDescription( StringUtils.EMPTY_STRING );
             _info.setVisible( false );
             return;
         }
 
-        if (pMessage.split("\n").length > 1)
-            _info.setLineCount(3);
-        _info.setMessage( pMessage );
+//        if (pMessage.split("\n").length > 1)
+//            _info.setLineCount(3);
+
+        _info.setDescription( pMessage );
         _info.setVisible( true );
     }
 
