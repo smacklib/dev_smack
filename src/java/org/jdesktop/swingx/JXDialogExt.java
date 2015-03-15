@@ -1,3 +1,9 @@
+/* $Id$
+ *
+ * GNU LGPL
+ *
+ * Copyright � 2011 Michael G. Binz
+ */
 package org.jdesktop.swingx;
 
 import java.awt.BorderLayout;
@@ -26,7 +32,7 @@ import org.jdesktop.smack.util.StringUtils;
  * A message can be optionally placed in the top area of the dialog.
  * <p>
  * A note on setting the size of the dialog: Either use
- * {@link JXDialogExt#setSize(GDialogSize)} or set the preferred size on the
+ * {@link JXDialogExt#setSize(Size)} or set the preferred size on the
  * user component that is installed with {@link #setUserComponent(Component)}.
  * The preferred size has to be set before the component is installed.
  * Do not use explicit calls to {@link #pack()}.
@@ -36,10 +42,9 @@ import org.jdesktop.smack.util.StringUtils;
  * @author Michael Binz
  * @author Tihomir Daskalov
  */
+@SuppressWarnings("serial")
 public class JXDialogExt extends JDialog
 {
-    private static final long serialVersionUID = -5042307782178304049L;
-
     /**
      * The info component is lazy constructed and added to the view.
      */
@@ -64,39 +69,36 @@ public class JXDialogExt extends JDialog
      * The action fired when the user click on the Close button, ESC key or the
      * window system close button.
      */
-    private final Action _closeAction =
+    private final Action ACT_CLOSE =
         GTools.getAction(
-                JXDialogExt.class,
                 this,
                 "closeAction" );
 
     /**
      * The action fired when the user clicks the Cancel button.
      */
-    private final Action _cancelAction =
+    private final Action ACT_CANCEL =
         GTools.getAction(
-                JXDialogExt.class,
                 this,
                 "cancelAction" );
 
     /**
      * The action fired when the user clicks the OK button or the Enter key.
      */
-    private final Action _okAction =
+    private final Action ACT_OK =
         GTools.getAction(
-                JXDialogExt.class,
                 this,
                 "okAction" );
 
     /**
      * The combination of buttons to show.
      */
-    private final GDialogButtons _dialogButtons;
+    private final Buttons _dialogButtons;
 
     /**
      * The dialog's size specified by the user.
      */
-    private GDialogSize _size;
+    private Size _size;
 
     /**
      * The component receiving the focus on each opening of the dialog.
@@ -121,7 +123,7 @@ public class JXDialogExt extends JDialog
     /**
      * The possible combinations of buttons displayed in the dialog.
      */
-    public enum GDialogButtons
+    public enum Buttons
     {
         /**
          * The dialog will have OK and Cancel buttons.
@@ -136,29 +138,19 @@ public class JXDialogExt extends JDialog
     /**
      * Predefined dialog sizes.
      */
-    public enum GDialogSize
+    public enum Size
     {
         SMALL(600, 400),
         MEDIUM(800, 600),
         BIG(1024, 800);
 
-        private final int _width;
-        private final int _height;
+        final int _width;
+        final int _height;
 
-        private GDialogSize(int pWidth, int pHeight)
+        private Size(int pWidth, int pHeight)
         {
             _width = pWidth;
             _height = pHeight;
-        }
-
-        public int width()
-        {
-            return _width;
-        }
-
-        public int height()
-        {
-            return _height;
         }
     }
 
@@ -175,7 +167,7 @@ public class JXDialogExt extends JDialog
      */
     public JXDialogExt(
             Component pParent,
-            GDialogButtons pDialogButtons)
+            Buttons pDialogButtons)
     {
         super(
             windowForComponent(pParent),
@@ -187,9 +179,9 @@ public class JXDialogExt extends JDialog
         setName( "dialog" );
         setLayout(new BorderLayout());
         _info.setVisible(false);
-        add(_info, BorderLayout.NORTH);
+        add(_info, BorderLayout.PAGE_START);
         _mainPanel.setBorder(GTools.GAP_BORDER);
-        _mainPanel.add(_btnBox, BorderLayout.SOUTH);
+        _mainPanel.add(_btnBox, BorderLayout.PAGE_END);
         add(_mainPanel, BorderLayout.CENTER);
 
         _dialogButtons = pDialogButtons;
@@ -197,12 +189,11 @@ public class JXDialogExt extends JDialog
 
         // We take over the closing of the dialog.
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        GTools.registerEsc(this, _closeAction);
-        GTools.registerWindowClosing(this, _closeAction);
+        GTools.registerEsc(this, ACT_CLOSE);
+        GTools.registerWindowClosing(this, ACT_CLOSE);
 
         GTools.injectComponents( this );
     }
-
 
     /**
      * Get the parent window of the passed component.  Note that
@@ -293,14 +284,14 @@ public class JXDialogExt extends JDialog
         _btnBox.addGlue();
 
         // Add the system actions to the right.
-        if (_dialogButtons == GDialogButtons.OK_CANCEL) {
-            JButton okBtn = _btnBox.addButton(_okAction);
+        if (_dialogButtons == Buttons.OK_CANCEL) {
+            JButton okBtn = _btnBox.addButton(ACT_OK);
             _btnBox.addGap();
-            _btnBox.addButton(_cancelAction);
+            _btnBox.addButton(ACT_CANCEL);
             getRootPane().setDefaultButton(okBtn);
-            GTools.registerEnter(this, _okAction);
-        } else if (_dialogButtons == GDialogButtons.CLOSE) {
-            _btnBox.addButton(_closeAction);
+            GTools.registerEnter(this, ACT_OK);
+        } else if (_dialogButtons == Buttons.CLOSE) {
+            _btnBox.addButton(ACT_CLOSE);
         }
     }
 
@@ -324,7 +315,7 @@ public class JXDialogExt extends JDialog
      *
      * @param pSize
      */
-    public void setSize(GDialogSize pSize)
+    public void setSize(Size pSize)
     {
         _size = pSize;
         resize();
@@ -366,7 +357,7 @@ public class JXDialogExt extends JDialog
 
         // Apply the user size if specified.
         if (_size != null)
-            setSize(_size.width(), _size.height());
+            setSize(_size._width, _size._height);
     }
 
     /**
@@ -404,8 +395,7 @@ public class JXDialogExt extends JDialog
      * The default implementation returns <code>true</code> leading to hiding
      * the dialog.
      *
-     * Can be overwritten to customize the behaviour and to veto the
-     * cancelation.
+     * Can be overridden to customize the behavior and to veto the cancel.
      *
      * @return whether the operation is confirmed. If true then the dialog will
      *         be hidden otherwise will be left open.
@@ -467,12 +457,12 @@ public class JXDialogExt extends JDialog
      */
     public void submitOnDoubleClickOn(Component pComponent)
     {
-        GTools.registerDoubleClick(pComponent, _okAction);
+        GTools.registerDoubleClick(pComponent, ACT_OK);
     }
 
     /**
      * Whether the dialog was submitted after the last time it was displayed.
-     * This method makes only sense only when the dialog is not visible.
+     * This method makes only sense when the dialog is not visible.
      *
      * @return <code>true</code> if the dialog was submitted. <code>false</code>
      *         if the dialog was canceled.
@@ -535,35 +525,5 @@ public class JXDialogExt extends JDialog
             _focusComponent.requestFocusInWindow();
 
         super.setVisible(pVisible);
-    }
-
-    /**
-     * Returns the action bound to the OK button.
-     *
-     * @return
-     */
-    public Action getOkAction()
-    {
-        return _okAction;
-    }
-
-    /**
-     * Returns the action bound to the Cancel button.
-     *
-     * @return
-     */
-    public Action getCancelAction()
-    {
-        return _cancelAction;
-    }
-
-    /**
-     * Returns the action bound to the Close button.
-     *
-     * @return
-     */
-    public Action getCloseAction()
-    {
-        return _closeAction;
     }
 }

@@ -74,7 +74,7 @@ public class GTools
     }
 
     /**
-     * Registeres the given action to be fired when the ESC key is pressed in
+     * Registers the given action to be fired when the ESC key is pressed in
      * the given dialog.
      *
      * @param pDialog
@@ -202,28 +202,30 @@ public class GTools
         return getText( pClass, pKey, new Object[0] );
     }
 
-
     /**
-     * Looks up the action for the given pBaseName in the action map associated
+     * Looks up the action for the given name in the action map associated
      * with the passed object.
+     *
+     * @param pObj The object that carries the action.
+     * @param pName The name of the action.
      */
-    public static Action getAction(Object pObj, String pBaseName) {
-        return getAction( pObj.getClass(), pObj, pBaseName );
+    public static Action getAction(Object pObj, String pName) {
+        return getAction( pObj.getClass(), pObj, pName );
     }
 
     /**
-     * Looks up the action for the given pBaseName in the action map associated
+     * Looks up the action for the given name in the action map associated
      * with the passed object.
      */
-    public static Action getAction(
+    private static Action getAction(
             Class<?> pClass,
             Object pObject,
-            String pBaseName)
+            String pName)
     {
         Action a = Application.getInstance().getContext().
-                    getActionMap(pClass, pObject).get(pBaseName);
+                    getActionMap(pClass, pObject).get(pName);
         if (a.getValue( Action.ACTION_COMMAND_KEY ) == null)
-            a.putValue( Action.ACTION_COMMAND_KEY, pBaseName );
+            a.putValue( Action.ACTION_COMMAND_KEY, pName );
         return a;
     }
 
