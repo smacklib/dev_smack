@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright ï¿½ 2011 Michael G. Binz
+ * Copyright © 2011 Michael G. Binz
  */
 package org.jdesktop.swingx;
 
@@ -9,12 +9,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -87,28 +87,27 @@ public class JXDesktop extends JDesktopPane
     public final javax.swing.Action ACTION_TILE_HORIZONTALLY =
             GTools.getAction( this, "actTileHorizontally" );
 
-    private final ContainerListener _containerListener = new ContainerListener()
+//    private final ContainerListener _containerListener = new ContainerListener()
+//    {
+//        @Override
+//        public void componentRemoved( ContainerEvent e )
+//        {
+//            setActionsEnabled( e.getContainer().getComponentCount() );
+//        }
+//
+//        @Override
+//        public void componentAdded( ContainerEvent e )
+//        {
+//            setActionsEnabled( e.getContainer().getComponentCount() );
+//        }
+//    };
+//
+    private void enableActions( boolean enabled )
     {
-        @Override
-        public void componentRemoved( ContainerEvent e )
-        {
-            setActionsEnabled( e.getContainer().getComponentCount() );
-        }
-
-        @Override
-        public void componentAdded( ContainerEvent e )
-        {
-            setActionsEnabled( e.getContainer().getComponentCount() );
-        }
-
-        private void setActionsEnabled( int componentCount )
-        {
-            boolean enabled = componentCount > 0;
-            ACTION_CASCADE.setEnabled( enabled );
-            ACTION_TILE_HORIZONTALLY.setEnabled( enabled );
-            ACTION_TILE_VERTICALLY.setEnabled( enabled );
-        }
-    };
+        ACTION_CASCADE.setEnabled( enabled );
+        ACTION_TILE_HORIZONTALLY.setEnabled( enabled );
+        ACTION_TILE_VERTICALLY.setEnabled( enabled );
+    }
 
     /**
      * Create an instance.
@@ -127,8 +126,8 @@ public class JXDesktop extends JDesktopPane
         // Everything below that separator will be managed automatically.
         _windowMenu.addSeparator();
         setComponentPopupMenu( _windowMenu );
-
-        addContainerListener( _containerListener );
+//
+//        addContainerListener( _containerListener );
     }
 
     /**
@@ -466,6 +465,8 @@ public class JXDesktop extends JDesktopPane
         {
             if ( child.isIcon() )
                 child.setIcon( false );
+            else if ( ! child.isVisible() )
+                child.setVisible( true );
 
             child.setSelected( true );
         }
@@ -541,21 +542,26 @@ public class JXDesktop extends JDesktopPane
 
 
     /**
-     *
+     * Processes the context menu.
      */
     private final InternalFrameAdapter childListener = new InternalFrameAdapter()
     {
+        private final Set<JInternalFrame> openFrames = new HashSet<JInternalFrame>();
+
         @Override
         public void internalFrameActivated( InternalFrameEvent e )
         {
             LOG.fine( "InternalFrameListener: Activated" );
-            // Set our attribute...
-            JInternalFrame activeChild = (JInternalFrame)e.getSource();
-            // ...and activate the window's menu item.
+            JInternalFrame activeChild = e.getInternalFrame();
+            openFrames.add( activeChild );
+
+            // Activate the window's menu item.
             JRadioButtonMenuItem mi = (JRadioButtonMenuItem)
                 activeChild.getClientProperty( CP_MENUITEM );
             if ( mi != null )
                 _group.setSelected( mi.getModel(), true );
+
+            enableActions( openFrames.size() > 0 );
         }
 
         /**
@@ -565,20 +571,25 @@ public class JXDesktop extends JDesktopPane
         public void internalFrameClosing( InternalFrameEvent e )
         {
             LOG.fine( "InternalFrameListener: Closing" );
-            JInternalFrame internalFrame = (JInternalFrame)e.getSource();
+            JInternalFrame internalFrame = e.getInternalFrame();
+            openFrames.remove( internalFrame );
 
             int closeOperation =
                     internalFrame.getDefaultCloseOperation();
 
+            // Note that there's already a listener that peforms and handles
+            // the default close operation, i.e. performs the hide on
+            // HIDE_ON_CLOSE.
             if ( closeOperation == WindowConstants.DO_NOTHING_ON_CLOSE )
                 ;
             else if ( closeOperation == WindowConstants.HIDE_ON_CLOSE )
-                internalFrame.setVisible( false );
+                ;
             else if ( closeOperation == WindowConstants.DISPOSE_ON_CLOSE )
             {
-                internalFrame.dispose();
                 remove( internalFrame );
             }
+
+            enableActions( openFrames.size() > 0 );
         }
 
         /**
@@ -588,7 +599,12 @@ public class JXDesktop extends JDesktopPane
         public void internalFrameOpened( InternalFrameEvent e )
         {
             LOG.warning( "InternalFrameListener: Opened" );
-            add( (JInternalFrame)e.getSource() );
+            JInternalFrame internalFrame = e.getInternalFrame();
+            openFrames.add( internalFrame );
+
+            add( internalFrame );
+
+            enableActions( openFrames.size() > 0 );
         }
     };
 
