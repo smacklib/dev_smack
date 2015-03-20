@@ -69,7 +69,7 @@ public class JXDialogExt extends JDialog
      * The action fired when the user click on the Close button, ESC key or the
      * window system close button.
      */
-    private final Action ACT_CLOSE =
+    public final Action ACT_CLOSE =
         GTools.getAction(
                 this,
                 "closeAction" );
@@ -77,7 +77,7 @@ public class JXDialogExt extends JDialog
     /**
      * The action fired when the user clicks the Cancel button.
      */
-    private final Action ACT_CANCEL =
+    public final Action ACT_CANCEL =
         GTools.getAction(
                 this,
                 "cancelAction" );
@@ -85,7 +85,7 @@ public class JXDialogExt extends JDialog
     /**
      * The action fired when the user clicks the OK button or the Enter key.
      */
-    private final Action ACT_OK =
+    public final Action ACT_OK =
         GTools.getAction(
                 this,
                 "okAction" );
