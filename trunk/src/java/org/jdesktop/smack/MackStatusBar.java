@@ -73,7 +73,29 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
      *            the {@code TaskMonitor} whose {@code PropertyChangeEvents}
      *            {@code this StatusBar} will track.
      */
+    @Deprecated
     public MackStatusBar( Application app, TaskMonitor taskMonitor )
+    {
+        this( taskMonitor );
+    }
+
+    /**
+     * Create an instance.
+     */
+    public MackStatusBar()
+    {
+        this( null );
+    }
+
+    /**
+     * Constructs a panel that displays messages/progress/state properties of
+     * the {@code taskMonitor's} foreground task.
+     *
+     * @param taskMonitor
+     *            the {@code TaskMonitor} whose {@code PropertyChangeEvents}
+     *            {@code this StatusBar} will track.
+     */
+    public MackStatusBar( TaskMonitor taskMonitor )
     {
         super( new GridBagLayout() );
         setBorder( new EmptyBorder( 2, 0, 6, 0 ) ); // top, left, bottom, right
@@ -108,7 +130,8 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
         c.insets = new Insets( 6, 3, 0, 6 ); // top, left, bottom, right;
         add( statusAnimationLabel, c );
 
-        taskMonitor.addPropertyChangeListener( this );
+        if ( taskMonitor != null )
+            taskMonitor.addPropertyChangeListener( this );
     }
 
 
@@ -125,8 +148,6 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
 
         messageLabel.setText( message );
     }
-
-
 
     /**
      * Display the passed message for a certain duration.  After the duration
@@ -174,6 +195,7 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
 
     private class ClearOldMessage implements ActionListener
     {
+        @Override
         public void actionPerformed( ActionEvent e )
         {
             messageLabel.setText( StringUtils.EMPTY_STRING );
@@ -182,6 +204,7 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
 
     private class UpdateBusyIcon implements ActionListener
     {
+        @Override
         public void actionPerformed( ActionEvent e )
         {
             busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
@@ -209,12 +232,11 @@ public class MackStatusBar extends JPanel implements PropertyChangeListener
         statusAnimationLabel.setIcon( idleIcon );
     }
 
-
-
     /**
      * The TaskMonitor (constructor arg) tracks a "foreground" task; this method
      * is called each time a foreground task property changes.
      */
+    @Override
     public void propertyChange( PropertyChangeEvent e )
     {
         String propertyName = e.getPropertyName();
