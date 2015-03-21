@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright © 2011 Michael G. Binz
+ * Copyright Â© 2011 Michael G. Binz
  */
 package org.jdesktop.swingx;
 
