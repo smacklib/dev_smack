@@ -156,7 +156,7 @@ public abstract class MackApplication<MC extends Component>
     protected JComponent createStatusBar()
     {
         _statusBar =
-            new MackStatusBar( this, getContext().getTaskMonitor() );
+            new MackStatusBar( getContext().getTaskMonitor() );
         _statusBar.setName( "mainStatusBar" );
 
         return _statusBar;
