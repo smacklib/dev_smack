@@ -5,12 +5,6 @@
  */
 package org.jdesktop.application;
 
-import org.jdesktop.application.session.PropertySupport;
-import org.jdesktop.application.session.SplitPaneProperty;
-import org.jdesktop.application.session.TabbedPaneProperty;
-import org.jdesktop.application.session.TableProperty;
-import org.jdesktop.application.session.WindowProperty;
-
 import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Container;
@@ -22,7 +16,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.swing.*;
+
+import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+
+import org.jdesktop.application.session.PropertySupport;
+import org.jdesktop.application.session.SplitPaneProperty;
+import org.jdesktop.application.session.TabbedPaneProperty;
+import org.jdesktop.application.session.TableProperty;
+import org.jdesktop.application.session.WindowProperty;
 
 /**
  * Support for storing GUI state that persists between Application sessions.
@@ -90,11 +94,12 @@ import javax.swing.*;
  * @see ApplicationContext#getSessionStorage
  * @see LocalStorage
  */
-public class SessionStorage {
+public final class SessionStorage {
 
-    private static Logger logger = Logger.getLogger(SessionStorage.class.getName());
+    private static final Logger LOG = Logger.getLogger(SessionStorage.class.getName());
     private final Map<Class, PropertySupport> propertyMap;
-    private final ApplicationContext context;
+
+    private final Application _application;
 
     /**
      * Constructs a SessionStorage object.  The following {@link
@@ -136,16 +141,18 @@ public class SessionStorage {
      * </pre>
      *
      *
-     * @param context
+     * @param a
      * @see ApplicationContext#getSessionStorage
      * @see #getProperty(Class)
      * @see #getProperty(Component)
      */
-    protected SessionStorage(ApplicationContext context) {
-        if (context == null) {
+    public SessionStorage(Application a) {
+        if (a == null) {
             throw new IllegalArgumentException("null context");
         }
-        this.context = context;
+
+        _application = a;
+//        this.context = context;
         propertyMap = new HashMap<Class, PropertySupport>();
         propertyMap.put(Window.class, new WindowProperty());
         propertyMap.put(JTabbedPane.class, new TabbedPaneProperty());
@@ -158,9 +165,9 @@ public class SessionStorage {
 	 * {@code SessionStorage} object.
 	 * @return the application context for this session storage object
 	 */
-    protected final ApplicationContext getContext() {
-        return context;
-    }
+//    protected final ApplicationContext getContext() {
+//        return context;
+//    }
 
     private void checkSaveRestoreArgs(Component root, String fileName) {
         if (root == null) {
@@ -223,7 +230,7 @@ public class SessionStorage {
                 } else {
                     // Implies that the component tree is changing
                     // while we're computing the path. Punt.
-                    logger.warning("Couldn't compute pathname for " + c);
+                    LOG.warning("Couldn't compute pathname for " + c);
                     return null;
                 }
             }
@@ -318,7 +325,7 @@ public class SessionStorage {
         checkSaveRestoreArgs(root, fileName);
         Map<String, Object> stateMap = new HashMap<String, Object>();
         saveTree(Collections.singletonList(root), stateMap);
-        LocalStorage lst = getContext().getLocalStorage();
+        LocalStorage lst = _application.getApplicationService( LocalStorage.class );
         lst.save(stateMap, fileName);
     }
 
@@ -342,7 +349,7 @@ public class SessionStorage {
                         if (state != null) {
                             p.setSessionState(root, state);
                         } else {
-                            logger.warning("No saved state for " + root);
+                            LOG.warning("No saved state for " + root);
                         }
                     }
                 }
@@ -378,7 +385,7 @@ public class SessionStorage {
      */
     public void restore(Component root, String fileName) throws IOException {
         checkSaveRestoreArgs(root, fileName);
-        LocalStorage lst = getContext().getLocalStorage();
+        LocalStorage lst = _application.getApplicationService(LocalStorage.class );
         Map<String, Object> stateMap = (Map<String, Object>) (lst.load(fileName));
         if (stateMap != null) {
             restoreTree(Collections.singletonList(root), stateMap);

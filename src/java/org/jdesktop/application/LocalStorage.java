@@ -4,22 +4,39 @@
 */
 package org.jdesktop.application;
 
-import static org.jdesktop.application.Application.KEY_APPLICATION_VENDOR_ID;
-
-import org.jdesktop.application.util.AppHelper;
-import org.jdesktop.application.util.PlatformType;
-import org.jdesktop.beans.AbstractBeanEdt;
-
-import javax.jnlp.*;
-
-import java.awt.*;
-import java.beans.*;
-import java.io.*;
+import java.awt.Rectangle;
+import java.beans.DefaultPersistenceDelegate;
+import java.beans.Encoder;
+import java.beans.ExceptionListener;
+import java.beans.Expression;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.jnlp.BasicService;
+import javax.jnlp.FileContents;
+import javax.jnlp.PersistenceService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
+
+import org.jdesktop.application.util.AppHelper;
+import org.jdesktop.application.util.PlatformType;
+import org.jdesktop.beans.AbstractBeanEdt;
+import org.jdesktop.smack.util.StringUtils;
 
 /**
  * Access to per application, per user, local file storage.
@@ -31,23 +48,32 @@ import java.util.logging.Logger;
 public class LocalStorage extends AbstractBeanEdt {
 
     private static Logger logger = Logger.getLogger(LocalStorage.class.getName());
-    private final ApplicationContext context;
+//    private final ApplicationContext context;
     private long storageLimit = -1L;
     private LocalIO localIO = null;
     private final File unspecifiedFile = new File("unspecified");
     private File directory = unspecifiedFile;
 
-    protected LocalStorage(ApplicationContext context) {
-        if (context == null) {
-            throw new IllegalArgumentException("null context");
-        }
-        this.context = context;
+    LocalStorage( Application a ) {
+        this( a.getVendorId(), a.getId() );
     }
 
-    // FIXME - documentation
-    protected final ApplicationContext getContext() {
-        return context;
+    LocalStorage( String vendorId, String applicationId ) {
+        if ( StringUtils.isEmpty( vendorId ) )
+            throw new IllegalArgumentException("Empty vendorId");
+        if ( StringUtils.isEmpty( applicationId ) )
+            throw new IllegalArgumentException("Empty applicationId");
+
+        _vendorId =
+                vendorId.trim();
+        _applicationId =
+                applicationId.trim();
     }
+
+//    // FIXME - documentation
+//    private final ApplicationContext getContext() {
+//        return context;
+//    }
 
     private void checkFileName(String fileName) {
         if (fileName == null) {
@@ -240,26 +266,29 @@ public class LocalStorage extends AbstractBeanEdt {
         firePropertyChange("storageLimit", oldValue, this.storageLimit);
     }
 
-    private String getId(String key, String def) {
-        ResourceMap appResourceMap = getContext().getResourceMap();
-        String id = appResourceMap.getString(key);
-        if (id == null) {
-            logger.log(Level.WARNING, "unspecified resource " + key + " using " + def);
-            id = def;
-        } else if (id.trim().length() == 0) {
-            logger.log(Level.WARNING, "empty resource " + key + " using " + def);
-            id = def;
-        }
-        return id;
-    }
+//    private String getId(String key, String def) {
+//        ResourceMap appResourceMap = getContext().getResourceMap();
+//        String id = appResourceMap.getString(key);
+//        if (id == null) {
+//            logger.log(Level.WARNING, "unspecified resource " + key + " using " + def);
+//            id = def;
+//        } else if (id.trim().length() == 0) {
+//            logger.log(Level.WARNING, "empty resource " + key + " using " + def);
+//            id = def;
+//        }
+//        return id;
+//    }
 
-    private String getApplicationId() {
-        return getId("Application.id", getContext().getApplicationClass().getSimpleName());
-    }
+    private final String _vendorId;
+    private final String _applicationId;
 
-    private String getVendorId() {
-        return getId(KEY_APPLICATION_VENDOR_ID, "UnknownApplicationVendor");
-    }
+//    private String getApplicationId() {
+//        return getId("Application.id", getContext().getApplicationClass().getSimpleName());
+//    }
+//
+//    private String getVendorId() {
+//        return getId(KEY_APPLICATION_VENDOR_ID, "UnknownApplicationVendor");
+//    }
 
     /**
      * Returns the directory where the local storage is located
@@ -274,7 +303,6 @@ public class LocalStorage extends AbstractBeanEdt {
             } catch (SecurityException ignore) {
             }
             if (userHome != null) {
-                final String applicationId = getApplicationId();
                 final PlatformType osId = AppHelper.getPlatform();
                 if (osId == PlatformType.WINDOWS) {
                     File appDataDir = null;
@@ -285,23 +313,22 @@ public class LocalStorage extends AbstractBeanEdt {
                         }
                     } catch (SecurityException ignore) {
                     }
-                    String vendorId = getVendorId();
                     if ((appDataDir != null) && appDataDir.isDirectory()) {
                         // ${APPDATA}\{vendorId}\${applicationId}
-                        String path = vendorId + "\\" + applicationId + "\\";
+                        String path = _vendorId + "\\" + _applicationId + "\\";
                         directory = new File(appDataDir, path);
                     } else {
                         // ${userHome}\Application Data\${vendorId}\${applicationId}
-                        String path = "Application Data\\" + vendorId + "\\" + applicationId + "\\";
+                        String path = "Application Data\\" + _vendorId + "\\" + _applicationId + "\\";
                         directory = new File(userHome, path);
                     }
                 } else if (osId == PlatformType.OS_X) {
                     // ${userHome}/Library/Application Support/${applicationId}
-                    String path = "Library/Application Support/" + applicationId + "/";
+                    String path = "Library/Application Support/" + _applicationId + "/";
                     directory = new File(userHome, path);
                 } else {
                     // ${userHome}/.${applicationId}/
-                    String path = "." + applicationId + "/";
+                    String path = "." + _applicationId + "/";
                     directory = new File(userHome, path);
                 }
             }
@@ -368,22 +395,22 @@ public class LocalStorage extends AbstractBeanEdt {
         public abstract InputStream openInputFile(String fileName) throws IOException;
 
 
-        /**
-         * Opens an output stream to write to the entry
-         * specified by the {@code name} parameter.
-         * If the named entry cannot be opened for writing
-         * then a {@code IOException} is thrown.
-         * If the named entry does not exist it can be created.
-         * The entry will be recreated if already exists.
-         *
-         * @param fileName  the storage-dependent name
-         * @return an {@code OutputStream} object
-         * @throws IOException if the specified name is invalid,
-         *                     or an output stream cannot be opened
-         */
-        public OutputStream openOutputFile(final String fileName) throws IOException {
-            return openOutputFile(fileName, false);
-        }
+//        /**
+//         * Opens an output stream to write to the entry
+//         * specified by the {@code name} parameter.
+//         * If the named entry cannot be opened for writing
+//         * then a {@code IOException} is thrown.
+//         * If the named entry does not exist it can be created.
+//         * The entry will be recreated if already exists.
+//         *
+//         * @param fileName  the storage-dependent name
+//         * @return an {@code OutputStream} object
+//         * @throws IOException if the specified name is invalid,
+//         *                     or an output stream cannot be opened
+//         */
+//        public OutputStream openOutputFile(final String fileName) throws IOException {
+//            return openOutputFile(fileName, false);
+//        }
 
 
         /**
@@ -455,14 +482,15 @@ public class LocalStorage extends AbstractBeanEdt {
 
     }
 
-    /* Determine if we're a web started application and the
+    /**
+     *  Determine if we're a web started application and the
      * JNLP PersistenceService is available without forcing
      * the JNLP API to be class-loaded.  We don't want to
      * require apps that aren't web started to bundle javaws.jar
      */
     private LocalIO getPersistenceServiceIO() {
         try {
-            Class smClass = Class.forName("javax.jnlp.ServiceManager");
+            Class<?> smClass = Class.forName("javax.jnlp.ServiceManager");
             Method getServiceNamesMethod = smClass.getMethod("getServiceNames");
             String[] serviceNames = (String[]) getServiceNamesMethod.invoke(null);
             boolean psFound = false;

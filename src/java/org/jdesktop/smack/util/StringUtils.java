@@ -66,6 +66,41 @@ public class StringUtils
 
 
     /**
+     * Checks whether a string has content.
+     *
+     * @param string The string to test.
+     * @return {@code true} if the string is either {@code null} or has
+     * a trimmed length of zero.  Otherwise {@code false}.
+     * @see #isEmpty(String, boolean)
+     */
+    public static boolean isEmpty( String string )
+    {
+        return isEmpty( string, true );
+    }
+
+
+
+    /**
+     * Checks whether a string has content.
+     *
+     * @param string The string to test.
+     * @param trim If {@code true}, then the string is trimmed before the test.
+     * @return {@code true} if the string is either {@code null} or has
+     * a length of zero.  Otherwise {@code false}.
+     * @see #isEmpty(String)
+     * @see String#trim()
+     */
+    public static boolean isEmpty( String string, boolean trim )
+    {
+        if ( string != null && trim )
+            string = string.trim();
+
+        return string == null || string.isEmpty();
+    }
+
+
+
+    /**
      * Trims the characters passed in {@code charactersToTrim} from
      * the beginning and the end of {@code stringToTrim}.
      *
