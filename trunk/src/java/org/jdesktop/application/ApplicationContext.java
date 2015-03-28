@@ -27,25 +27,26 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see Application
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class ApplicationContext extends AbstractBeanEdt {
+public final class ApplicationContext extends AbstractBeanEdt {
 
     private final List<TaskService> taskServices;
     private final List<TaskService> taskServicesReadOnly;
-    private ResourceManager resourceManager;
-    private ActionManager actionManager;
-    private LocalStorage localStorage;
-    private SessionStorage sessionStorage;
-    private Application application = null;
-    private Class applicationClass = null;
+//    private ResourceManager resourceManager;
+//    private ActionManager actionManager;
+//    private LocalStorage localStorage;
+//    private SessionStorage sessionStorage;
+    private final Application application;
+//    private Class<?> applicationClass = null;
     private JComponent focusOwner = null;
     private Clipboard clipboard = null;
     private TaskMonitor taskMonitor = null;
 
     protected ApplicationContext( Application a ) {
-        resourceManager = new ResourceManager(a.getClass());
-        actionManager = new ActionManager(this);
-        localStorage = new LocalStorage(this);
-        sessionStorage = new SessionStorage(this);
+        application = a;
+//        resourceManager = new ResourceManager(a.getClass());
+//        actionManager = new ActionManager(this);
+//        localStorage = new LocalStorage( a.getVendorId(), a.getId() );
+//        sessionStorage = new SessionStorage(this);
         taskServices = new CopyOnWriteArrayList<TaskService>();
         taskServices.add(new TaskService(TaskService.DEFAULT_NAME));
         taskServicesReadOnly = Collections.unmodifiableList(taskServices);
@@ -61,28 +62,28 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @see #setApplicationClass
      * @see #getApplication
      */
-    public final synchronized Class getApplicationClass() {
-        return applicationClass;
-    }
+//    public final synchronized Class getApplicationClass() {
+//        return applicationClass;
+//    }
 
-    /**
-     * Called by
-     * {@link Application#launch Application.launch()} to
-     * record the application's class.
-     * <p>
-     * This method is only intended for testing, or design time
-     * configuration.  Normal applications shouldn't need to
-     * call it directly.
-     *
-     * @param applicationClass
-     * @see #getApplicationClass
-     */
-    public final synchronized void setApplicationClass(Class applicationClass) {
-        if (this.application != null) {
-            throw new IllegalStateException("application has been launched");
-        }
-        this.applicationClass = applicationClass;
-    }
+//    /**
+//     * Called by
+//     * {@link Application#launch Application.launch()} to
+//     * record the application's class.
+//     * <p>
+//     * This method is only intended for testing, or design time
+//     * configuration.  Normal applications shouldn't need to
+//     * call it directly.
+//     *
+//     * @param applicationClass
+//     * @see #getApplicationClass
+//     */
+//    public final synchronized void setApplicationClass(Class applicationClass) {
+//        if (this.application != null) {
+//            throw new IllegalStateException("application has been launched");
+//        }
+//        this.applicationClass = applicationClass;
+//    }
 
     /**
      * The {@code Application} singleton, or null if {@code launch} hasn't
@@ -92,17 +93,20 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @see Application#launch
      */
     public final synchronized Application getApplication() {
-        return application;
+
+        if ( application.isLaunched() )
+            return application;
+        return null;
     }
 
-    /* Called by Application.launch().
-     */
-    synchronized void setApplication(Application application) {
-        if (this.application != null) {
-            throw new IllegalStateException("application has already been launched");
-        }
-        this.application = application;
-    }
+//    /* Called by Application.launch().
+//     */
+//    synchronized void setApplication(Application application) {
+//        if (this.application != null) {
+//            throw new IllegalStateException("application has already been launched");
+//        }
+//        this.application = application;
+//    }
 
     /**
      * The application's {@code ResourceManager} provides
@@ -111,31 +115,34 @@ public class ApplicationContext extends AbstractBeanEdt {
      *
      * @return this application's ResourceManager.
      * @see #getResourceMap(Class, Class)
+     * @deprecated Use Application.getResourceManager
      */
+    @Deprecated
     public final ResourceManager getResourceManager() {
-        return resourceManager;
+        return application.getResourceManagerForFriends();
+//        return resourceManager;
     }
 
-    /**
-     * Change this application's {@code ResourceManager}.  An
-     * {@code ApplicationContext} subclass that
-     * wanted to fundamentally change the way {@code ResourceMaps} were
-     * created and cached could replace this property in its constructor.
-     * <p>
-     * Throws an IllegalArgumentException if resourceManager is null.
-     *
-     * @param resourceManager the new value of the resourceManager property.
-     * @see #getResourceMap(Class, Class)
-     * @see #getResourceManager
-     */
-    protected void setResourceManager(ResourceManager resourceManager) {
-        if (resourceManager == null) {
-            throw new IllegalArgumentException("null resourceManager");
-        }
-        Object oldValue = this.resourceManager;
-        this.resourceManager = resourceManager;
-        firePropertyChange("resourceManager", oldValue, this.resourceManager);
-    }
+//    /**
+//     * Change this application's {@code ResourceManager}.  An
+//     * {@code ApplicationContext} subclass that
+//     * wanted to fundamentally change the way {@code ResourceMaps} were
+//     * created and cached could replace this property in its constructor.
+//     * <p>
+//     * Throws an IllegalArgumentException if resourceManager is null.
+//     *
+//     * @param resourceManager the new value of the resourceManager property.
+//     * @see #getResourceMap(Class, Class)
+//     * @see #getResourceManager
+//     */
+//    protected void setResourceManager(ResourceManager resourceManager) {
+//        if (resourceManager == null) {
+//            throw new IllegalArgumentException("null resourceManager");
+//        }
+//        Object oldValue = this.resourceManager;
+//        this.resourceManager = resourceManager;
+//        firePropertyChange("resourceManager", oldValue, this.resourceManager);
+//    }
 
 //    /**
 //     * Returns a {@link ResourceMap#getParent chain} of two or
@@ -218,29 +225,29 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @see #getActionMap(Object)
      */
     public final ActionManager getActionManager() {
-        return actionManager;
+        return application.getApplicationService( ActionManager.class );
     }
 
-    /**
-     * Change this application's {@code ActionManager}.  An
-     * {@code ApplicationContext} subclass that
-     * wanted to fundamentally change the way {@code ActionManagers} were
-     * created and cached could replace this property in its constructor.
-     * <p>
-     * Throws an IllegalArgumentException if actionManager is null.
-     *
-     * @param actionManager the new value of the actionManager property.
-     * @see #getActionManager
-     * @see #getActionMap(Object)
-     */
-    protected void setActionManager(ActionManager actionManager) {
-        if (actionManager == null) {
-            throw new IllegalArgumentException("null actionManager");
-        }
-        Object oldValue = this.actionManager;
-        this.actionManager = actionManager;
-        firePropertyChange("actionManager", oldValue, this.actionManager);
-    }
+//    /**
+//     * Change this application's {@code ActionManager}.  An
+//     * {@code ApplicationContext} subclass that
+//     * wanted to fundamentally change the way {@code ActionManagers} were
+//     * created and cached could replace this property in its constructor.
+//     * <p>
+//     * Throws an IllegalArgumentException if actionManager is null.
+//     *
+//     * @param actionManager the new value of the actionManager property.
+//     * @see #getActionManager
+//     * @see #getActionMap(Object)
+//     */
+//    protected void setActionManager(ActionManager actionManager) {
+//        if (actionManager == null) {
+//            throw new IllegalArgumentException("null actionManager");
+//        }
+//        Object oldValue = this.actionManager;
+//        this.actionManager = actionManager;
+//        firePropertyChange("actionManager", oldValue, this.actionManager);
+//    }
 
     /**
      * Returns the shared {@code ActionMap} chain for the entire {@code Application}.
@@ -275,7 +282,7 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @return the {@code ActionMap} chain for the entire {@code Application}.
      * @see ActionManager#getActionMap(Class, Object)
      */
-    public final ApplicationActionMap getActionMap(Class actionsClass, Object actionsObject) {
+    public final ApplicationActionMap getActionMap(Class<?> actionsClass, Object actionsObject) {
         return getActionManager().getActionMap(actionsClass, actionsObject);
     }
 
@@ -299,22 +306,22 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @return the shared {@link LocalStorage LocalStorage} object.
      */
     public final LocalStorage getLocalStorage() {
-        return localStorage;
+        return application.getApplicationService( LocalStorage.class );
     }
 
-    /**
-     * The shared {@link LocalStorage LocalStorage} object.
-     *
-     * @param localStorage the shared {@link LocalStorage LocalStorage} object.
-     */
-    protected void setLocalStorage(LocalStorage localStorage) {
-        if (localStorage == null) {
-            throw new IllegalArgumentException("null localStorage");
-        }
-        Object oldValue = this.localStorage;
-        this.localStorage = localStorage;
-        firePropertyChange("localStorage", oldValue, this.localStorage);
-    }
+//    /**
+//     * The shared {@link LocalStorage LocalStorage} object.
+//     *
+//     * @param localStorage the shared {@link LocalStorage LocalStorage} object.
+//     */
+//    protected void setLocalStorage(LocalStorage localStorage) {
+//        if (localStorage == null) {
+//            throw new IllegalArgumentException("null localStorage");
+//        }
+//        Object oldValue = this.localStorage;
+//        this.localStorage = localStorage;
+//        firePropertyChange("localStorage", oldValue, this.localStorage);
+//    }
 
     /**
      * The shared {@link SessionStorage SessionStorage} object.
@@ -322,22 +329,22 @@ public class ApplicationContext extends AbstractBeanEdt {
      * @return the shared {@link SessionStorage SessionStorage} object.
      */
     public final SessionStorage getSessionStorage() {
-        return sessionStorage;
+        return application.getApplicationService( SessionStorage.class );
     }
 
-    /**
-     * The shared {@link SessionStorage SessionStorage} object.
-     *
-     * @param sessionStorage the shared {@link SessionStorage SessionStorage} object.
-     */
-    protected void setSessionStorage(SessionStorage sessionStorage) {
-        if (sessionStorage == null) {
-            throw new IllegalArgumentException("null sessionStorage");
-        }
-        Object oldValue = this.sessionStorage;
-        this.sessionStorage = sessionStorage;
-        firePropertyChange("sessionStorage", oldValue, this.sessionStorage);
-    }
+//    /**
+//     * The shared {@link SessionStorage SessionStorage} object.
+//     *
+//     * @param sessionStorage the shared {@link SessionStorage SessionStorage} object.
+//     */
+//    protected void setSessionStorage(SessionStorage sessionStorage) {
+//        if (sessionStorage == null) {
+//            throw new IllegalArgumentException("null sessionStorage");
+//        }
+//        Object oldValue = this.sessionStorage;
+//        this.sessionStorage = sessionStorage;
+//        firePropertyChange("sessionStorage", oldValue, this.sessionStorage);
+//    }
 
     /**
      * Return a shared {@code Clipboard}.

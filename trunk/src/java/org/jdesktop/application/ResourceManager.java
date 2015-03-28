@@ -96,6 +96,9 @@ public final class ResourceManager
             throw new IllegalArgumentException( "null applicationClass" );
         _applicationClass = applicationClass;
     }
+    ResourceManager( Application application ) {
+        this( application.getClass() );
+    }
 
     /**
      * Returns a read-only list of the ResourceBundle names for all of

@@ -30,13 +30,17 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see ApplicationAction
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class ActionManager extends AbstractBeanEdt {
+public final class ActionManager extends AbstractBeanEdt {
 
 //    private static final Logger logger = Logger.getLogger(ActionManager.class.getName());
     private final ApplicationContext context;
     private final WeakHashMap<Object, WeakReference<ApplicationActionMap>> actionMaps;
     private ApplicationActionMap globalActionMap = null;
 
+    ActionManager( Application a )
+    {
+        this( a.getContext() );
+    }
     protected ActionManager(ApplicationContext context) {
         if (context == null) {
             throw new IllegalArgumentException("null context");
@@ -98,7 +102,7 @@ public class ActionManager extends AbstractBeanEdt {
         if (globalActionMap == null) {
             ApplicationContext ctx = getContext();
             Object appObject = ctx.getApplication();
-            Class<?> appClass = ctx.getApplicationClass();
+            Class<?> appClass = appObject.getClass();
             ResourceMap resourceMap = ctx.getResourceMap();
             globalActionMap = createActionMapChain(appClass, Application.class, appObject, resourceMap);
             initProxyActionSupport();  // lazy initialization

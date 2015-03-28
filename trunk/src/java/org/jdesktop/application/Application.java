@@ -31,7 +31,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.OSXAdapter;
 import org.jdesktop.application.util.PlatformType;
-import org.jdesktop.beans.AbstractBeanEdt;
 
 /**
  * The base class for Swing applications.
@@ -130,8 +129,9 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 @ProxyActions({"cut", "copy", "paste", "delete"})
-public abstract class Application extends AbstractBeanEdt
+public abstract class Application extends BaseApplication
 {
+    public static final String KEY_APPLICATION_ID = "Application.id";
     public static final String KEY_APPLICATION_TITLE = "Application.title";
     public static final String KEY_APPLICATION_ICON = "Application.icon";
     public static final String KEY_APPLICATION_VENDOR_ID = "Application.vendorId";
@@ -151,6 +151,9 @@ public abstract class Application extends AbstractBeanEdt
      * method.
      */
     protected Application() {
+
+        getResourceManagerForFriends().injectResources( this );
+
         context = new ApplicationContext(this);
     }
 
@@ -242,8 +245,8 @@ public abstract class Application extends AbstractBeanEdt
 
         // Initialize the ApplicationContext application properties.
         ApplicationContext ctx = application.getContext();
-        ctx.setApplicationClass(applicationClass);
-        ctx.setApplication(application);
+//        ctx.setApplicationClass(applicationClass);
+//        ctx.setApplication(application);
 
         // Load the application resource map, notably the
         // Application.* properties.s
@@ -688,6 +691,10 @@ public abstract class Application extends AbstractBeanEdt
         }
     }
 
+    boolean isLaunched()
+    {
+        return application != null;
+    }
     /**
      * Shows the application {@code View}
      * @param view - View to show
@@ -732,6 +739,7 @@ public abstract class Application extends AbstractBeanEdt
      */
     public static ResourceManager getResourceManager()
     {
+
         try
         {
             return getInstance().getContext().getResourceManager();
@@ -740,6 +748,11 @@ public abstract class Application extends AbstractBeanEdt
         {
             return new ResourceManager( Application.class );
         }
+    }
+
+    ResourceManager getResourceManagerForFriends()
+    {
+        return getApplicationService( ResourceManager.class );
     }
 
     /**
@@ -754,8 +767,8 @@ public abstract class Application extends AbstractBeanEdt
 
         protected DesignTimeApplication() {
             ApplicationContext ctx = getContext();
-            ctx.setApplicationClass(getClass());
-            ctx.setApplication(this);
+//            ctx.setApplicationClass(getClass());
+//            ctx.setApplication(this);
             ResourceMap appResourceMap = ctx.getResourceMap();
             appResourceMap.setPlatform(PlatformType.DEFAULT);
         }
@@ -763,6 +776,17 @@ public abstract class Application extends AbstractBeanEdt
         @Override
         protected void startup() {
         }
+    }
+
+    @Resource
+    private String id = getClass().getSimpleName();
+    /**
+     * Return the application's id as defined in the resources.
+     * @return The application's id.
+     */
+    public String getId()
+    {
+        return id;
     }
 
     @Resource
@@ -807,5 +831,16 @@ public abstract class Application extends AbstractBeanEdt
     public String getVendor()
     {
         return vendor;
+    }
+
+    @Resource
+    private String vendorId;
+    /**
+     * Return the application's vendor as defined in the resources.
+     * @return The vendor name.
+     */
+    public String getVendorId()
+    {
+        return vendorId;
     }
 }
