@@ -150,9 +150,9 @@ public abstract class Application extends BaseApplication
      * public API, should be done in the {@link #startup startup}
      * method.
      */
-    protected Application() {
-
-        getResourceManagerForFriends().injectResources( this );
+    protected Application()
+    {
+        getApplicationService( ResourceManager.class ).injectResources( this );
 
         context = new ApplicationContext(this);
     }

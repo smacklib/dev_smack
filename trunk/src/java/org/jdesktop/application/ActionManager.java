@@ -30,7 +30,7 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see ApplicationAction
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public final class ActionManager extends AbstractBeanEdt 
+public final class ActionManager extends AbstractBeanEdt
 {
     private final ApplicationContext context;
     private final WeakHashMap<Object, WeakReference<ApplicationActionMap>> actionMaps;
@@ -48,7 +48,7 @@ public final class ActionManager extends AbstractBeanEdt
         actionMaps = new WeakHashMap<Object, WeakReference<ApplicationActionMap>>();
     }
 
-    protected final ApplicationContext getContext() {
+    private final ApplicationContext getContext() {
         return context;
     }
 

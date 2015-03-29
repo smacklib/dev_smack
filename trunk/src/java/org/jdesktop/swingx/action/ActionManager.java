@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -87,40 +87,15 @@ import javax.swing.ActionMap;
  * @author Mark Davidson
  * @author Neil Weber
  */
-public class ActionManager extends ActionMap {
-
+@SuppressWarnings("serial")
+public class ActionManager extends ActionMap
+{
     /**
-     * Shared instance of the singleton ActionManager.
-     */
-    private static ActionManager INSTANCE;
-
-    /**
-     * Creates the action manager. Use this constuctor if the application should
+     * Creates the action manager. Use this constructor if the application should
      * support many ActionManagers. Otherwise, using the getInstance method will
      * return a singleton.
      */
     public ActionManager() {
-    }
-
-    /**
-     * Return the instance of the ActionManger. If this has not been explicity
-     * set then it will be created.
-     *
-     * @return the ActionManager instance.
-     * @see #setInstance
-     */
-    public static ActionManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ActionManager();
-        }
-        return INSTANCE;
-    }
-
-    /**
-     * Sets the ActionManager instance.
-     */
-    public static void setInstance(ActionManager manager) {
-        INSTANCE = manager;
     }
 
     /**
