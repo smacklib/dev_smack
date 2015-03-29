@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -126,6 +126,7 @@ import org.jdesktop.application.util.PlatformType;
  * @see ApplicationContext
  * @see UIManager#setLookAndFeel
  * @version $Rev$
+ * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
 @ProxyActions({"cut", "copy", "paste", "delete"})
@@ -136,12 +137,12 @@ public abstract class Application extends BaseApplication
     public static final String KEY_APPLICATION_ICON = "Application.icon";
     public static final String KEY_APPLICATION_VENDOR_ID = "Application.vendorId";
 
-    private static final Logger logger = Logger.getLogger(Application.class.getName());
+    private static final Logger LOG = Logger.getLogger(Application.class.getName());
     private static Application application = null;
     private final List<ExitListener> _exitListeners =
             new CopyOnWriteArrayList<ExitListener>();
     private final ApplicationContext context;
-    protected boolean ready;
+    private boolean ready;
 
     /**
      * Subclasses can provide a no-args constructor
@@ -152,6 +153,9 @@ public abstract class Application extends BaseApplication
      */
     protected Application()
     {
+        // Inject resource-defined fields on the application instance.
+        // This ensures that these are set before the object is
+        // accessible to the user.
         getApplicationService( ResourceManager.class ).injectResources( this );
 
         context = new ApplicationContext(this);
@@ -192,7 +196,7 @@ public abstract class Application extends BaseApplication
                     application.waitForReady();
                 } catch (Exception e) {
                     String msg = String.format("Application %s failed to launch", applicationClass);
-                    logger.log(Level.SEVERE, msg, e);
+                    LOG.log(Level.SEVERE, msg, e);
                     // Prevent a hanging vm if launching failed.
                     System.exit(1);
                 }
@@ -245,8 +249,6 @@ public abstract class Application extends BaseApplication
 
         // Initialize the ApplicationContext application properties.
         ApplicationContext ctx = application.getContext();
-//        ctx.setApplicationClass(applicationClass);
-//        ctx.setApplication(application);
 
         // Load the application resource map, notably the
         // Application.* properties.s
@@ -259,14 +261,9 @@ public abstract class Application extends BaseApplication
             try {
                 OSXAdapter.setQuitHandler(application, Application.class.getDeclaredMethod("handleQuit", (Class[])null));
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Cannot set Mac Os X specific handler for Quit event", e);
+                LOG.log(Level.SEVERE, "Cannot set Mac Os X specific handler for Quit event", e);
             }
         }
-
-        // Inject resource-defined fields on the application instance.
-        // This ensures that these are set before the object is
-        // accessible to the user.
-        ctx.getResourceManager().injectResources( application );
 
         if (!Beans.isDesignTime()) {
             // Initialize the UIManager lookAndFeel property with the
@@ -291,7 +288,7 @@ public abstract class Application extends BaseApplication
                 }
             } catch (Exception e) {
                 String s = "Couldn't set LookandFeel " + key + " = \"" + lnfResource + "\"";
-                logger.log(Level.WARNING, s, e);
+                LOG.log(Level.WARNING, s, e);
             }
         }
 
@@ -514,12 +511,12 @@ public abstract class Application extends BaseApplication
                         try {
                             listener.willExit(event);
                         } catch (Exception e) {
-                            logger.log(Level.WARNING, "ExitListener.willExit() failed", e);
+                            LOG.log(Level.WARNING, "ExitListener.willExit() failed", e);
                         }
                     }
                     shutdown();
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "unexpected error in Application.shutdown()", e);
+                    LOG.log(Level.WARNING, "unexpected error in Application.shutdown()", e);
                 } finally {
                     end();
                 }
@@ -739,10 +736,9 @@ public abstract class Application extends BaseApplication
      */
     public static ResourceManager getResourceManager()
     {
-
         try
         {
-            return getInstance().getContext().getResourceManager();
+            return getInstance().getApplicationService( ResourceManager.class );
         }
         catch ( Exception e )
         {
@@ -812,12 +808,12 @@ public abstract class Application extends BaseApplication
     }
 
     @Resource
-    private Icon icon;
+    private ImageIcon icon;
     /**
      * Return the application's icon as defined in the resources.
      * @return The application icon.
      */
-    public Icon getIcon()
+    public ImageIcon getIcon()
     {
         return icon;
     }

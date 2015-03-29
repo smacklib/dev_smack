@@ -4,11 +4,6 @@
  */
 package org.jdesktop.application;
 
-import static org.jdesktop.application.Application.KEY_APPLICATION_ICON;
-import static org.jdesktop.application.Application.KEY_APPLICATION_TITLE;
-
-import java.awt.Image;
-
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
@@ -42,18 +37,20 @@ public class FrameView extends View {
      *
      * @return this application's main frame.
      */
-    public JFrame getFrame() {
-        if (_frame == null) {
-            ResourceMap resourceMap = getContext().getResourceMap();
-            String title = resourceMap.getString(KEY_APPLICATION_TITLE);
+    public JFrame getFrame()
+    {
+        if (_frame == null)
+        {
+            Application a = getApplication();
 
-            _frame = new JFrame(title);
+            _frame = new JFrame( a.getTitle() );
+
             _frame.setName(MAIN_FRAME_NAME);
-            if (resourceMap.containsKey(KEY_APPLICATION_ICON)) {
-                Image icon = resourceMap.getImageIcon(KEY_APPLICATION_ICON).getImage();
-                _frame.setIconImage(icon);
-            }
+
+            if ( a.getIcon() != null )
+                _frame.setIconImage(a.getIcon().getImage());
         }
+
         return _frame;
     }
 
