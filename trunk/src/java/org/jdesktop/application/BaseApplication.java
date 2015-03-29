@@ -1,3 +1,10 @@
+/* $Id: ConstrainedProperty.java 600 2012-09-03 18:58:30Z Michael $
+ *
+ * Smack Application.
+ *
+ * Released under Gnu Public License
+ * Copyright © 2015 Michael G. Binz
+ */
 package org.jdesktop.application;
 
 import java.lang.reflect.Constructor;
@@ -15,6 +22,14 @@ class BaseApplication extends AbstractBeanEdt
 {
     private Map<Class<?>, Object> _singletons =
             new HashMap<Class<?>, Object>();
+
+    /**
+     *
+     */
+    public BaseApplication()
+    {
+        // Catch ctor.
+    }
 
     /**
      *

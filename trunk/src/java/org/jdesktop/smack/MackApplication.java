@@ -21,6 +21,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.TaskMonitor;
 import org.jdesktop.smack.actions.AppExit;
 import org.jdesktop.smack.util.StringUtils;
 
@@ -156,7 +157,7 @@ public abstract class MackApplication<MC extends Component>
     protected JComponent createStatusBar()
     {
         _statusBar =
-            new MackStatusBar( getContext().getTaskMonitor() );
+            new MackStatusBar( getApplicationService( TaskMonitor.class ) );
         _statusBar.setName( "mainStatusBar" );
 
         return _statusBar;

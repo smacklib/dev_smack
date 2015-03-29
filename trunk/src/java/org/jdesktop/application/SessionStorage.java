@@ -93,11 +93,17 @@ import org.jdesktop.application.session.WindowProperty;
  *
  * @see ApplicationContext#getSessionStorage
  * @see LocalStorage
+ *
+ * @version $Rev$
+ * @author Michael Binz
+ * @author Hans Muller
  */
-public final class SessionStorage {
-
+public final class SessionStorage
+{
     private static final Logger LOG = Logger.getLogger(SessionStorage.class.getName());
-    private final Map<Class, PropertySupport> propertyMap;
+
+    private final Map<Class<?>, PropertySupport> _propertyMap =
+            new HashMap<Class<?>, PropertySupport>();
 
     private final Application _application;
 
@@ -152,22 +158,12 @@ public final class SessionStorage {
         }
 
         _application = a;
-//        this.context = context;
-        propertyMap = new HashMap<Class, PropertySupport>();
-        propertyMap.put(Window.class, new WindowProperty());
-        propertyMap.put(JTabbedPane.class, new TabbedPaneProperty());
-        propertyMap.put(JSplitPane.class, new SplitPaneProperty());
-        propertyMap.put(JTable.class, new TableProperty());
-    }
 
-    /**
-	 * Returns {@link ApplicationContext} which was used during creation of this
-	 * {@code SessionStorage} object.
-	 * @return the application context for this session storage object
-	 */
-//    protected final ApplicationContext getContext() {
-//        return context;
-//    }
+        _propertyMap.put(Window.class, new WindowProperty());
+        _propertyMap.put(JTabbedPane.class, new TabbedPaneProperty());
+        _propertyMap.put(JSplitPane.class, new SplitPaneProperty());
+        _propertyMap.put(JTable.class, new TableProperty());
+    }
 
     private void checkSaveRestoreArgs(Component root, String fileName) {
         if (root == null) {
@@ -221,7 +217,7 @@ public final class SessionStorage {
             if (name == null) {
                 int n = c.getParent().getComponentZOrder(c);
                 if (n >= 0) {
-                    Class cls = c.getClass();
+                    Class<?> cls = c.getClass();
                     name = cls.getSimpleName();
                     if (name.length() == 0) {
                         name = "Anonymous" + cls.getSuperclass().getSimpleName();
@@ -383,6 +379,7 @@ public final class SessionStorage {
      * @see LocalStorage#save
      * @see #getProperty(Component)
      */
+    @SuppressWarnings("unchecked")
     public void restore(Component root, String fileName) throws IOException {
         checkSaveRestoreArgs(root, fileName);
         LocalStorage lst = _application.getApplicationService(LocalStorage.class );
@@ -392,7 +389,7 @@ public final class SessionStorage {
         }
     }
 
-    private void checkClassArg(Class cls) {
+    private void checkClassArg(Class<?> cls) {
         if (cls == null) {
             throw new IllegalArgumentException("null class");
         }
@@ -416,10 +413,10 @@ public final class SessionStorage {
      * @see #save
      * @see #restore
      */
-    public PropertySupport getProperty(Class cls) {
+    public PropertySupport getProperty(Class<?> cls) {
         checkClassArg(cls);
         while (cls != null) {
-            PropertySupport p = propertyMap.get(cls);
+            PropertySupport p = _propertyMap.get(cls);
             if (p != null) {
                 return p;
             }
@@ -451,16 +448,16 @@ public final class SessionStorage {
      * @see #save
      * @see #restore
      */
-    public void putProperty(Class cls, PropertySupport propertySupport) {
+    public void putProperty(Class<?> cls, PropertySupport propertySupport) {
         checkClassArg(cls);
 
         // Remove property support for the clazz in case property argument is null
         if (propertySupport == null) {
-            propertyMap.remove(cls);
+            _propertyMap.remove(cls);
             return;
         }
 
-        propertyMap.put(cls, propertySupport);
+        _propertyMap.put(cls, propertySupport);
     }
 
     /**

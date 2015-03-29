@@ -31,59 +31,16 @@ public final class ApplicationContext extends AbstractBeanEdt {
 
     private final List<TaskService> taskServices;
     private final List<TaskService> taskServicesReadOnly;
-//    private ResourceManager resourceManager;
-//    private ActionManager actionManager;
-//    private LocalStorage localStorage;
-//    private SessionStorage sessionStorage;
     private final Application application;
-//    private Class<?> applicationClass = null;
     private JComponent focusOwner = null;
     private Clipboard clipboard = null;
-    private TaskMonitor taskMonitor = null;
 
     protected ApplicationContext( Application a ) {
         application = a;
-//        resourceManager = new ResourceManager(a.getClass());
-//        actionManager = new ActionManager(this);
-//        localStorage = new LocalStorage( a.getVendorId(), a.getId() );
-//        sessionStorage = new SessionStorage(this);
         taskServices = new CopyOnWriteArrayList<TaskService>();
         taskServices.add(new TaskService(TaskService.DEFAULT_NAME));
         taskServicesReadOnly = Collections.unmodifiableList(taskServices);
     }
-
-    /**
-     * Returns the application's class or null if the application
-     * hasn't been launched and this property hasn't been set.  Once
-     * the application has been launched, the value returned by this
-     * method is the same as {@code getApplication().getClass()}.
-     *
-     * @return the application's class or null
-     * @see #setApplicationClass
-     * @see #getApplication
-     */
-//    public final synchronized Class getApplicationClass() {
-//        return applicationClass;
-//    }
-
-//    /**
-//     * Called by
-//     * {@link Application#launch Application.launch()} to
-//     * record the application's class.
-//     * <p>
-//     * This method is only intended for testing, or design time
-//     * configuration.  Normal applications shouldn't need to
-//     * call it directly.
-//     *
-//     * @param applicationClass
-//     * @see #getApplicationClass
-//     */
-//    public final synchronized void setApplicationClass(Class applicationClass) {
-//        if (this.application != null) {
-//            throw new IllegalStateException("application has been launched");
-//        }
-//        this.applicationClass = applicationClass;
-//    }
 
     /**
      * The {@code Application} singleton, or null if {@code launch} hasn't
@@ -99,15 +56,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
         return null;
     }
 
-//    /* Called by Application.launch().
-//     */
-//    synchronized void setApplication(Application application) {
-//        if (this.application != null) {
-//            throw new IllegalStateException("application has already been launched");
-//        }
-//        this.application = application;
-//    }
-
     /**
      * The application's {@code ResourceManager} provides
      * read-only cached access to resources in ResourceBundles via the
@@ -120,83 +68,7 @@ public final class ApplicationContext extends AbstractBeanEdt {
     @Deprecated
     public final ResourceManager getResourceManager() {
         return application.getResourceManagerForFriends();
-//        return resourceManager;
     }
-
-//    /**
-//     * Change this application's {@code ResourceManager}.  An
-//     * {@code ApplicationContext} subclass that
-//     * wanted to fundamentally change the way {@code ResourceMaps} were
-//     * created and cached could replace this property in its constructor.
-//     * <p>
-//     * Throws an IllegalArgumentException if resourceManager is null.
-//     *
-//     * @param resourceManager the new value of the resourceManager property.
-//     * @see #getResourceMap(Class, Class)
-//     * @see #getResourceManager
-//     */
-//    protected void setResourceManager(ResourceManager resourceManager) {
-//        if (resourceManager == null) {
-//            throw new IllegalArgumentException("null resourceManager");
-//        }
-//        Object oldValue = this.resourceManager;
-//        this.resourceManager = resourceManager;
-//        firePropertyChange("resourceManager", oldValue, this.resourceManager);
-//    }
-
-//    /**
-//     * Returns a {@link ResourceMap#getParent chain} of two or
-//     * more ResourceMaps.  The first encapsulates the ResourceBundles
-//     * defined for the specified class, and its parent
-//     * encapsulates the ResourceBundles defined for the entire application.
-//     * <p>
-//     *  This is just a convenience method that calls
-//     * {@link ResourceManager#getResourceMap(Class, Class)
-//     * ResourceManager.getResourceMap()}.  It's defined as:
-//     * <pre>
-//     * return getResourceManager().getResourceMap(cls, cls);
-//     * </pre>
-//     *
-//     * @param cls the class that defines the location of ResourceBundles
-//     * @return a {@code ResourceMap} that contains resources loaded from
-//     *   {@code ResourceBundles}  found in the resources subpackage of the
-//     *   specified class's package.
-//     * @see ResourceManager#getResourceMap(Class)
-//     * @deprecated Use the ResourceManager equivalent, and in this case
-//     * prefer to use {@link ResourceManager#injectResources(Object)}.
-//     */
-//    @Deprecated
-//    public final ResourceMap getResourceMap(Class cls) {
-//        return getResourceManager().getResourceMap(cls, cls);
-//    }
-
-//    /**
-//     * Returns a {@link ResourceMap#getParent chain} of two or more
-//     * ResourceMaps.  The first encapsulates the ResourceBundles
-//     * defined for the all of the classes between {@code startClass}
-//     * and {@code stopClass} inclusive.  It's parent encapsulates the
-//     * ResourceBundles defined for the entire application.
-//     * <p>
-//     *  This is just a convenience method that calls
-//     * {@link ResourceManager#getResourceMap(Class, Class)
-//     * ResourceManager.getResourceMap()}.  It's defined as:
-//     * <pre>
-//     * return getResourceManager().getResourceMap(startClass, stopClass);
-//     * </pre>
-//     *
-//     * @param startClass the first class whose ResourceBundles will be included
-//     * @param stopClass the last class whose ResourceBundles will be included
-//     * @return a {@code ResourceMap} that contains resources loaded from
-//     *   {@code ResourceBundles}  found in the resources subpackage of the
-//     *   specified class's package.
-//     * @see ResourceManager#getResourceMap(Class, Class)
-//     * @deprecated Use the ResourceManager equivalent, and in this case
-//     * prefer to use {@link ResourceManager#injectResources(Object)}.
-//     */
-//    @Deprecated
-//    public final ResourceMap getResourceMap(Class startClass, Class stopClass) {
-//        return getResourceManager().getResourceMap(startClass, stopClass);
-//    }
 
     /**
      * Returns the {@link ResourceMap#getParent chain} of ResourceMaps
@@ -227,27 +99,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
     public final ActionManager getActionManager() {
         return application.getApplicationService( ActionManager.class );
     }
-
-//    /**
-//     * Change this application's {@code ActionManager}.  An
-//     * {@code ApplicationContext} subclass that
-//     * wanted to fundamentally change the way {@code ActionManagers} were
-//     * created and cached could replace this property in its constructor.
-//     * <p>
-//     * Throws an IllegalArgumentException if actionManager is null.
-//     *
-//     * @param actionManager the new value of the actionManager property.
-//     * @see #getActionManager
-//     * @see #getActionMap(Object)
-//     */
-//    protected void setActionManager(ActionManager actionManager) {
-//        if (actionManager == null) {
-//            throw new IllegalArgumentException("null actionManager");
-//        }
-//        Object oldValue = this.actionManager;
-//        this.actionManager = actionManager;
-//        firePropertyChange("actionManager", oldValue, this.actionManager);
-//    }
 
     /**
      * Returns the shared {@code ActionMap} chain for the entire {@code Application}.
@@ -309,20 +160,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
         return application.getApplicationService( LocalStorage.class );
     }
 
-//    /**
-//     * The shared {@link LocalStorage LocalStorage} object.
-//     *
-//     * @param localStorage the shared {@link LocalStorage LocalStorage} object.
-//     */
-//    protected void setLocalStorage(LocalStorage localStorage) {
-//        if (localStorage == null) {
-//            throw new IllegalArgumentException("null localStorage");
-//        }
-//        Object oldValue = this.localStorage;
-//        this.localStorage = localStorage;
-//        firePropertyChange("localStorage", oldValue, this.localStorage);
-//    }
-
     /**
      * The shared {@link SessionStorage SessionStorage} object.
      *
@@ -331,20 +168,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
     public final SessionStorage getSessionStorage() {
         return application.getApplicationService( SessionStorage.class );
     }
-
-//    /**
-//     * The shared {@link SessionStorage SessionStorage} object.
-//     *
-//     * @param sessionStorage the shared {@link SessionStorage SessionStorage} object.
-//     */
-//    protected void setSessionStorage(SessionStorage sessionStorage) {
-//        if (sessionStorage == null) {
-//            throw new IllegalArgumentException("null sessionStorage");
-//        }
-//        Object oldValue = this.sessionStorage;
-//        this.sessionStorage = sessionStorage;
-//        firePropertyChange("sessionStorage", oldValue, this.sessionStorage);
-//    }
 
     /**
      * Return a shared {@code Clipboard}.
@@ -478,19 +301,5 @@ public final class ApplicationContext extends AbstractBeanEdt {
      */
     public List<TaskService> getTaskServices() {
         return taskServicesReadOnly;
-    }
-
-    /**
-     * Returns a shared TaskMonitor object.  Most applications only
-     * need one TaskMonitor for the sake of status bars and other status
-     * indicators.
-     *
-     * @return the shared TaskMonitor object.
-     */
-    public final TaskMonitor getTaskMonitor() {
-        if (taskMonitor == null) {
-            taskMonitor = new TaskMonitor(this);
-        }
-        return taskMonitor;
     }
 }
