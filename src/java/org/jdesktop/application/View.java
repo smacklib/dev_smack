@@ -94,20 +94,20 @@ public class View extends AbstractBeanEdt
         return application;
     }
 
-    /**
-     * Gets the {@code ApplicationContext} for the {@code
-     * Application} that's responsible for showing/hiding this View.
-     * This method is just shorthand for {@code getApplication().getContext()}.
-     *
-     * @return the Application that owns this View
-     * @see #getApplication
-     * @see Application#show(View)
-     * @see Application#hide(View)
-     */
-    public final ApplicationContext getContext() {
-        return getApplication().getContext();
-    }
-
+//    /**
+//     * Gets the {@code ApplicationContext} for the {@code
+//     * Application} that's responsible for showing/hiding this View.
+//     * This method is just shorthand for {@code getApplication().getContext()}.
+//     *
+//     * @return the Application that owns this View
+//     * @see #getApplication
+//     * @see Application#show(View)
+//     * @see Application#hide(View)
+//     */
+//    public final ApplicationContext getContext() {
+//        return getApplication().getContext();
+//    }
+//
     /**
      * Gets the {@code JRootPane} for this View.  All of the components for this
      * View must be added to its rootPane.  Most applications will do so
