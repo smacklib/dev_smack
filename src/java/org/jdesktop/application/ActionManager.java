@@ -30,18 +30,17 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see ApplicationAction
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public final class ActionManager extends AbstractBeanEdt {
-
-//    private static final Logger logger = Logger.getLogger(ActionManager.class.getName());
+public final class ActionManager extends AbstractBeanEdt 
+{
     private final ApplicationContext context;
     private final WeakHashMap<Object, WeakReference<ApplicationActionMap>> actionMaps;
     private ApplicationActionMap globalActionMap = null;
 
-    ActionManager( Application a )
+    public ActionManager( Application a )
     {
         this( a.getContext() );
     }
-    protected ActionManager(ApplicationContext context) {
+    private ActionManager(ApplicationContext context) {
         if (context == null) {
             throw new IllegalArgumentException("null context");
         }

@@ -1,7 +1,7 @@
 /*
-* Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
-* subject to license terms.
-*/
+ * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
+ * subject to license terms.
+ */
 package org.jdesktop.application;
 
 import java.awt.Rectangle;
@@ -31,7 +31,6 @@ import javax.jnlp.BasicService;
 import javax.jnlp.FileContents;
 import javax.jnlp.PersistenceService;
 import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
 
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.PlatformType;
@@ -39,26 +38,35 @@ import org.jdesktop.beans.AbstractBeanEdt;
 import org.jdesktop.smack.util.StringUtils;
 
 /**
- * Access to per application, per user, local file storage.
+ * Access to per application, per user, local file storage. The
+ * shared instance can be received by calling
+ * {@link Application#getApplicationService(Class)}.
  *
- * @see ApplicationContext#getLocalStorage
  * @see SessionStorage
+ * @version $Rev$
+ * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public class LocalStorage extends AbstractBeanEdt {
+public final class LocalStorage extends AbstractBeanEdt {
 
-    private static Logger logger = Logger.getLogger(LocalStorage.class.getName());
-//    private final ApplicationContext context;
-    private long storageLimit = -1L;
+    private static final Logger lOG =
+            Logger.getLogger(LocalStorage.class.getName());
+
     private LocalIO localIO = null;
+
     private final File unspecifiedFile = new File("unspecified");
+
     private File directory = unspecifiedFile;
 
-    LocalStorage( Application a ) {
-        this( a.getVendorId(), a.getId() );
-    }
+    /**
+     * Create an instance.
+     * @param a
+     */
+    LocalStorage( Application a )
+    {
+        String vendorId = a.getVendorId();
+        String applicationId = a.getId();
 
-    LocalStorage( String vendorId, String applicationId ) {
         if ( StringUtils.isEmpty( vendorId ) )
             throw new IllegalArgumentException("Empty vendorId");
         if ( StringUtils.isEmpty( applicationId ) )
@@ -69,11 +77,6 @@ public class LocalStorage extends AbstractBeanEdt {
         _applicationId =
                 applicationId.trim();
     }
-
-//    // FIXME - documentation
-//    private final ApplicationContext getContext() {
-//        return context;
-//    }
 
     private void checkFileName(String fileName) {
         if (fileName == null) {
@@ -146,7 +149,8 @@ public class LocalStorage extends AbstractBeanEdt {
         return getLocalIO().deleteFile(fileName);
     }
 
-    /* If an exception occurs in the XMLEncoder/Decoder, we want
+    /**
+     * If an exception occurs in the XMLEncoder/Decoder, we want
      * to throw an IOException.  The exceptionThrow listener method
      * doesn't throw a checked exception so we just set a flag
      * here and check it when the encode/decode operation finishes
@@ -235,66 +239,15 @@ public class LocalStorage extends AbstractBeanEdt {
         }
     }
 
-//    private void closeStream(Closeable st, String fileName) throws IOException {
-//        if (st != null) {
-//            try {
-//                st.close();
-//            } catch (java.io.IOException e) {
-//                throw new LSException("close failed \"" + fileName + "\"", e);
-//            }
-//        }
-//    }
-
-    /**
-     * Gets the limit of the local storage
-     * @return the limit of the local storage
-     */
-    public long getStorageLimit() {
-        return storageLimit;
-    }
-
-    /**
-     * Sets the limit of the lical storage
-     * @param storageLimit the limit of the lical storage
-     */
-    public void setStorageLimit(long storageLimit) {
-        if (storageLimit < -1L) {
-            throw new IllegalArgumentException("invalid storageLimit");
-        }
-        long oldValue = this.storageLimit;
-        this.storageLimit = storageLimit;
-        firePropertyChange("storageLimit", oldValue, this.storageLimit);
-    }
-
-//    private String getId(String key, String def) {
-//        ResourceMap appResourceMap = getContext().getResourceMap();
-//        String id = appResourceMap.getString(key);
-//        if (id == null) {
-//            logger.log(Level.WARNING, "unspecified resource " + key + " using " + def);
-//            id = def;
-//        } else if (id.trim().length() == 0) {
-//            logger.log(Level.WARNING, "empty resource " + key + " using " + def);
-//            id = def;
-//        }
-//        return id;
-//    }
 
     private final String _vendorId;
     private final String _applicationId;
-
-//    private String getApplicationId() {
-//        return getId("Application.id", getContext().getApplicationClass().getSimpleName());
-//    }
-//
-//    private String getVendorId() {
-//        return getId(KEY_APPLICATION_VENDOR_ID, "UnknownApplicationVendor");
-//    }
 
     /**
      * Returns the directory where the local storage is located
      * @return the directory where the local storage is located
      */
-    public File getDirectory() {
+    private File getDirectory() {
         if (directory == unspecifiedFile) {
             directory = null;
             String userHome = null;
@@ -336,15 +289,15 @@ public class LocalStorage extends AbstractBeanEdt {
         return directory;
     }
 
-    /**
-     * Sets the location of the local storage
-     * @param directory the location of the local storage
-     */
-    public void setDirectory(File directory) {
-        File oldValue = this.directory;
-        this.directory = directory;
-        firePropertyChange("directory", oldValue, this.directory);
-    }
+//    /**
+//     * Sets the location of the local storage
+//     * @param directory the location of the local storage
+//     */
+//    public void setDirectory(File directory) {
+//        File oldValue = this.directory;
+//        this.directory = directory;
+//        firePropertyChange("directory", oldValue, this.directory);
+//    }
 
     /* There are some (old) Java classes that aren't proper beans.  Rectangle
      * is one of these.  When running within the secure sandbox, writing a
@@ -393,25 +346,6 @@ public class LocalStorage extends AbstractBeanEdt {
          *                     or an input stream cannot be opened
          */
         public abstract InputStream openInputFile(String fileName) throws IOException;
-
-
-//        /**
-//         * Opens an output stream to write to the entry
-//         * specified by the {@code name} parameter.
-//         * If the named entry cannot be opened for writing
-//         * then a {@code IOException} is thrown.
-//         * If the named entry does not exist it can be created.
-//         * The entry will be recreated if already exists.
-//         *
-//         * @param fileName  the storage-dependent name
-//         * @return an {@code OutputStream} object
-//         * @throws IOException if the specified name is invalid,
-//         *                     or an output stream cannot be opened
-//         */
-//        public OutputStream openOutputFile(final String fileName) throws IOException {
-//            return openOutputFile(fileName, false);
-//        }
-
 
         /**
          * Opens an output stream to write to the entry
@@ -479,11 +413,10 @@ public class LocalStorage extends AbstractBeanEdt {
             }
             return new File(getDirectory(), name);
         }
-
     }
 
     /**
-     *  Determine if we're a web started application and the
+     * Determine if we're a web started application and the
      * JNLP PersistenceService is available without forcing
      * the JNLP API to be class-loaded.  We don't want to
      * require apps that aren't web started to bundle javaws.jar
@@ -507,34 +440,23 @@ public class LocalStorage extends AbstractBeanEdt {
             }
         } catch (Exception ignore) {
             // either the classes or the services can't be found
+            lOG.log(Level.FINE, ("ServiceManager.lookup failed"), ignore);
         }
         return null;
     }
 
     private final class PersistenceServiceIO extends LocalIO {
 
-        private BasicService bs;
-        private PersistenceService ps;
+        private final BasicService bs;
+        private final PersistenceService ps;
 
-        private String initFailedMessage(String s) {
-            return getClass().getName() + " initialization failed: " + s;
-        }
-
-        PersistenceServiceIO() {
-            try {
-                bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-                ps = (PersistenceService) ServiceManager.lookup("javax.jnlp.PersistenceService");
-            } catch (UnavailableServiceException e) {
-                logger.log(Level.SEVERE, initFailedMessage("ServiceManager.lookup"), e);
-                bs = null;
-                ps = null;
-            }
-        }
-
-        private void checkBasics(String s) throws IOException {
-            if ((bs == null) || (ps == null)) {
-                throw new IOException(initFailedMessage(s));
-            }
+        PersistenceServiceIO()
+            throws Exception
+        {
+            bs = (BasicService)
+                    ServiceManager.lookup("javax.jnlp.BasicService");
+            ps = (PersistenceService)
+                    ServiceManager.lookup("javax.jnlp.PersistenceService");
         }
 
         private URL fileNameToURL(String name) throws IOException {
@@ -549,8 +471,8 @@ public class LocalStorage extends AbstractBeanEdt {
         }
 
         @Override
-        public InputStream openInputFile(String fileName) throws IOException {
-            checkBasics("openInputFile");
+        public InputStream openInputFile(String fileName) throws IOException
+        {
             URL fileURL = fileNameToURL(fileName);
             try {
                 return new BufferedInputStream(ps.get(fileURL).getInputStream());
@@ -561,7 +483,7 @@ public class LocalStorage extends AbstractBeanEdt {
 
         @Override
         public OutputStream openOutputFile(String fileName, boolean append) throws IOException {
-            checkBasics("openOutputFile");
+
             URL fileURL = fileNameToURL(fileName);
             try {
                 FileContents fc = null;
@@ -588,8 +510,8 @@ public class LocalStorage extends AbstractBeanEdt {
         }
 
         @Override
-        public boolean deleteFile(String fileName) throws IOException {
-            checkBasics("deleteFile");
+        public boolean deleteFile(String fileName) throws IOException
+        {
             URL fileURL = fileNameToURL(fileName);
             try {
                 ps.delete(fileURL);
