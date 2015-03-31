@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.SwingWorker.StateValue;
 
 import org.jdesktop.beans.AbstractBeanEdt;
@@ -57,7 +58,8 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * on the event dispatching thread (EDT) and all of its listeners will
  * run on the EDT.
  *
- *
+ * @version $Rev$
+ * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see ApplicationContext#getTaskServices
  * @see TaskService#getTasks
@@ -74,10 +76,20 @@ public class TaskMonitor extends AbstractBeanEdt {
     private Task foregroundTask = null;
 
     /**
+     * Create an instance.
+     *
+     * @param a The hosting application.
+     */
+    public TaskMonitor( Application a )
+    {
+        this( a.getContext() );
+    }
+
+    /**
      * Construct a TaskMonitor.
      * @param context
      */
-    public TaskMonitor(ApplicationContext context) {
+    private TaskMonitor(ApplicationContext context) {
         applicationPCL = new ApplicationPCL();
         taskServicePCL = new TaskServicePCL();
         taskPCL = new TaskPCL();
