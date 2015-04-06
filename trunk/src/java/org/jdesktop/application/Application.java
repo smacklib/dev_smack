@@ -132,12 +132,13 @@ import org.jdesktop.application.util.PlatformType;
 @ProxyActions({"cut", "copy", "paste", "delete"})
 public abstract class Application extends BaseApplication
 {
+    private static final Logger LOG = Logger.getLogger(Application.class.getName());
+
     public static final String KEY_APPLICATION_ID = "Application.id";
     public static final String KEY_APPLICATION_TITLE = "Application.title";
     public static final String KEY_APPLICATION_ICON = "Application.icon";
     public static final String KEY_APPLICATION_VENDOR_ID = "Application.vendorId";
 
-    private static final Logger LOG = Logger.getLogger(Application.class.getName());
     private static Application application = null;
     private final List<ExitListener> _exitListeners =
             new CopyOnWriteArrayList<ExitListener>();
@@ -742,6 +743,7 @@ public abstract class Application extends BaseApplication
         }
         catch ( Exception e )
         {
+            LOG.warning( "Creating standalone ResourceManager." );
             return new ResourceManager( Application.class );
         }
     }
