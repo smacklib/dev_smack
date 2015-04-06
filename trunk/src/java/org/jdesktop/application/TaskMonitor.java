@@ -71,9 +71,9 @@ public class TaskMonitor extends AbstractBeanEdt {
     private final PropertyChangeListener applicationPCL;
     private final PropertyChangeListener taskServicePCL;
     private final PropertyChangeListener taskPCL;
-    private final LinkedList<Task> taskQueue;
+    private final LinkedList<Task<?,?>> taskQueue;
     private boolean autoUpdateForegroundTask = true;
-    private Task foregroundTask = null;
+    private Task<?,?> foregroundTask = null;
 
     /**
      * Create an instance.
@@ -93,7 +93,7 @@ public class TaskMonitor extends AbstractBeanEdt {
         applicationPCL = new ApplicationPCL();
         taskServicePCL = new TaskServicePCL();
         taskPCL = new TaskPCL();
-        taskQueue = new LinkedList<Task>();
+        taskQueue = new LinkedList<Task<?,?>>();
         context.addPropertyChangeListener(applicationPCL);
         for (TaskService taskService : context.getTaskServices()) {
             taskService.addPropertyChangeListener(taskServicePCL);
@@ -113,13 +113,13 @@ public class TaskMonitor extends AbstractBeanEdt {
      * @see #setAutoUpdateForegroundTask
      * @see #getForegroundTask
      */
-    public void setForegroundTask(Task foregroundTask) {
-        final Task oldTask = this.foregroundTask;
+    public void setForegroundTask(Task<?,?> foregroundTask) {
+        final Task<?,?> oldTask = this.foregroundTask;
         if (oldTask != null) {
             oldTask.removePropertyChangeListener(taskPCL);
         }
         this.foregroundTask = foregroundTask;
-        Task newTask = this.foregroundTask;
+        Task<?,?> newTask = this.foregroundTask;
         if (newTask != null) {
             newTask.addPropertyChangeListener(taskPCL);
         }
@@ -134,7 +134,7 @@ public class TaskMonitor extends AbstractBeanEdt {
      * @return the value of the foregroundTask property.
      * @see #setForegroundTask
      */
-    public Task getForegroundTask() {
+    public Task<?,?> getForegroundTask() {
         return foregroundTask;
     }
 
@@ -169,12 +169,12 @@ public class TaskMonitor extends AbstractBeanEdt {
         firePropertyChange("autoUpdateForegroundTask", oldValue, this.autoUpdateForegroundTask);
     }
 
-    private List<Task> copyTaskQueue() {
+    private List<Task<?,?>> copyTaskQueue() {
         synchronized (taskQueue) {
             if (taskQueue.isEmpty()) {
                 return Collections.emptyList();
             } else {
-                return new ArrayList<Task>(taskQueue);
+                return new ArrayList<Task<?,?>>(taskQueue);
             }
         }
     }
@@ -188,7 +188,7 @@ public class TaskMonitor extends AbstractBeanEdt {
      *
      * @return a list of all Tasks that aren't {@code DONE}
      */
-    public List<Task> getTasks() {
+    public List<Task<?,?>> getTasks() {
         return copyTaskQueue();
     }
 
@@ -196,11 +196,11 @@ public class TaskMonitor extends AbstractBeanEdt {
      * i.e. each time a new Task is executed and each time a Task's
      * state changes to DONE.
      */
-    private void updateTasks(List<Task> oldTasks, List<Task> newTasks) {
+    private void updateTasks(List<Task<?,?>> oldTasks, List<Task<?,?>> newTasks) {
         boolean tasksChanged = false;  // has the "tasks" property changed?
-        List<Task> oldTaskQueue = copyTaskQueue();
+        List<Task<?,?>> oldTaskQueue = copyTaskQueue();
         // Remove each oldTask that's not in the newTasks list from taskQueue
-        for (Task oldTask : oldTasks) {
+        for (Task<?,?> oldTask : oldTasks) {
             if (!(newTasks.contains(oldTask))) {
                 if (taskQueue.remove(oldTask)) {
                     tasksChanged = true;
@@ -208,16 +208,16 @@ public class TaskMonitor extends AbstractBeanEdt {
             }
         }
         // Add each newTask that's not in the oldTasks list to the taskQueue
-        for (Task newTask : newTasks) {
+        for (Task<?,?> newTask : newTasks) {
             if (!(taskQueue.contains(newTask))) {
                 taskQueue.addLast(newTask);
                 tasksChanged = true;
             }
         }
         // Remove any tasks that are DONE for the sake of tasksChanged
-        Iterator<Task> tasks = taskQueue.iterator();
+        Iterator<Task<?,?>> tasks = taskQueue.iterator();
         while (tasks.hasNext()) {
-            Task task = tasks.next();
+            Task<?,?> task = tasks.next();
             if (task.isDone()) {
                 tasks.remove();
                 tasksChanged = true;
@@ -225,7 +225,7 @@ public class TaskMonitor extends AbstractBeanEdt {
         }
         // Maybe fire the "tasks" PCLs
         if (tasksChanged) {
-            List<Task> newTaskQueue = copyTaskQueue();
+            List<Task<?,?>> newTaskQueue = copyTaskQueue();
             firePropertyChange("tasks", oldTaskQueue, newTaskQueue);
         }
 
@@ -243,6 +243,7 @@ public class TaskMonitor extends AbstractBeanEdt {
      */
     private class ApplicationPCL implements PropertyChangeListener {
 
+        @SuppressWarnings("unchecked")
         @Override
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
@@ -266,12 +267,13 @@ public class TaskMonitor extends AbstractBeanEdt {
      */
     private class TaskServicePCL implements PropertyChangeListener {
 
+        @SuppressWarnings("unchecked")
         @Override
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
             if ("tasks".equals(propertyName)) {
-                List<Task> oldList = (List<Task>) e.getOldValue();
-                List<Task> newList = (List<Task>) e.getNewValue();
+                List<Task<?,?>> oldList = (List<Task<?,?>>) e.getOldValue();
+                List<Task<?,?>> newList = (List<Task<?,?>>) e.getNewValue();
                 updateTasks(oldList, newList);
             }
         }
@@ -284,14 +286,14 @@ public class TaskMonitor extends AbstractBeanEdt {
      */
     private class TaskPCL implements PropertyChangeListener {
 
-        private void fireStateChange(Task task, String propertyName) {
+        private void fireStateChange(Task<?,?> task, String propertyName) {
             firePropertyChange(new PropertyChangeEvent(task, propertyName, false, true));
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
-            Task task = (Task) (e.getSource());
+            Task<?,?> task = (Task<?,?>) (e.getSource());
             if ((task != null) && (task == getForegroundTask())) {
                 firePropertyChange(e);
                 if ("state".equals(propertyName)) {

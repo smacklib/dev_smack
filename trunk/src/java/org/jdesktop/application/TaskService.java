@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.beans.AbstractBeanEdt;
@@ -29,7 +30,7 @@ public class TaskService extends AbstractBeanEdt {
 
     private final String name;
     private final ExecutorService executorService;
-    private final List<Task> tasks;
+    private final List<Task<?,?>> tasks;
     private final PropertyChangeListener taskPCL;
 
     /**
@@ -46,7 +47,7 @@ public class TaskService extends AbstractBeanEdt {
         }
         this.name = name;
         this.executorService = executorService;
-        this.tasks = new ArrayList<Task>();
+        this.tasks = new ArrayList<Task<?,?>>();
         this.taskPCL = new TaskPCL();
     }
 
@@ -72,12 +73,12 @@ public class TaskService extends AbstractBeanEdt {
         return name;
     }
 
-    private List<Task> copyTasksList() {
+    private List<Task<?,?>> copyTasksList() {
         synchronized (tasks) {
             if (tasks.isEmpty()) {
                 return Collections.emptyList();
             } else {
-                return new ArrayList<Task>(tasks);
+                return new ArrayList<Task<?,?>>(tasks);
             }
         }
     }
@@ -88,9 +89,9 @@ public class TaskService extends AbstractBeanEdt {
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
             if ("done".equals(propertyName)) {
-                Task task = (Task) (e.getSource());
+                Task<?,?> task = (Task<?,?>) (e.getSource());
                 if (task.isDone()) {
-                    List<Task> oldTaskList, newTaskList;
+                    List<Task<?,?>> oldTaskList, newTaskList;
                     synchronized (tasks) {
                         oldTaskList = copyTasksList();
                         tasks.remove(task);
@@ -107,7 +108,7 @@ public class TaskService extends AbstractBeanEdt {
         }
     }
 
-    private void maybeBlockTask(Task task) {
+    private void maybeBlockTask(Task<?,?> task) {
         final Task.InputBlocker inputBlocker = task.getInputBlocker();
         if (inputBlocker == null) {
             return;
@@ -133,7 +134,7 @@ public class TaskService extends AbstractBeanEdt {
      *
      * @param task the task to be executed
      */
-    public void execute(Task task) {
+    public void execute(Task<?,?> task) {
         if (task == null) {
             throw new IllegalArgumentException("null task");
         }
@@ -142,7 +143,7 @@ public class TaskService extends AbstractBeanEdt {
         }
         task.setTaskService(this);
         // TBD: what if task has already been submitted?
-        List<Task> oldTaskList, newTaskList;
+        List<Task<?,?>> oldTaskList, newTaskList;
         synchronized (tasks) {
             oldTaskList = copyTasksList();
             tasks.add(task);
@@ -158,7 +159,7 @@ public class TaskService extends AbstractBeanEdt {
      * Returns the list of tasks which are executing by this service
      * @return the list of tasks which are executing by this service
      */
-    public List<Task> getTasks() {
+    public List<Task<?,?>> getTasks() {
         return copyTasksList();
     }
 
