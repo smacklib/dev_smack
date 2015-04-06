@@ -104,8 +104,11 @@
     <!-- Create the jdoc directory -->
     <mkdir dir="${out.web}/javadoc"/>
     <javadoc sourcepath="${in.src}"
-             destdir="${out.web}/javadoc"
-             use="true"/>
+        classpathref="pt.common.libraries.id"
+        destdir="${out.web}/javadoc"
+        use="true"
+        verbose="true"
+    />
   </target>
 
 
