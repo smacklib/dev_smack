@@ -11,6 +11,7 @@ import java.util.EventObject;
  * @see TaskListener
  * @see Task
  */
+@SuppressWarnings("serial")
 public class TaskEvent<T> extends EventObject {
 
     private final T value;
@@ -30,7 +31,7 @@ public class TaskEvent<T> extends EventObject {
      * @param source the {@code Task} that produced the value.
      * @param value the value, null if type {@code T} is {@code Void}.
      */
-    public TaskEvent(Task source, T value) {
+    public TaskEvent(Task<?,?> source, T value) {
         super(source);
         this.value = value;
     }

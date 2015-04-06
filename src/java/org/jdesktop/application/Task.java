@@ -127,9 +127,9 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see TaskListener
  * @see TaskEvent
  */
-public abstract class Task<T, V> extends SwingWorker<T, V> {
-
-    private static final Logger logger = Logger.getLogger(Task.class.getName());
+public abstract class Task<T, V> extends SwingWorker<T, V>
+{
+    private static final Logger LOG = Logger.getLogger(Task.class.getName());
 
     public static final String PROP_DESCRIPTION = "description";
     public static final String PROP_INPUTBLOCKER = "inputBlocker";
@@ -213,8 +213,17 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
         taskListeners = new CopyOnWriteArrayList<TaskListener<T, V>>();
     }
 
-    private ResourceMap defaultResourceMap(Application application) {
-        return application.getContext().getResourceManager().getResourceMap(getClass(), Task.class);
+    /**
+     *
+     * @param application
+     * @return
+     */
+    private ResourceMap defaultResourceMap(Application application)
+    {
+        ResourceManager rm =
+                application.getApplicationService( ResourceManager.class );
+
+        return rm.getResourceMap( getClass(), Task.class );
     }
 
     /**
@@ -812,7 +821,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
      */
     protected void failed(Throwable cause) {
         String msg = String.format("%s failed: %s", this, cause);
-        logger.log(Level.SEVERE, msg, cause);
+        LOG.log(Level.SEVERE, msg, cause);
     }
 
     /**
@@ -967,6 +976,8 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
                     case DONE:
                         taskDone();
                         break;
+                    default:
+                        LOG.severe( "Unexpected state: " + state );
                 }
             } else if ("progress".equals(propertyName)) {
                 synchronized (Task.this) {
@@ -1138,6 +1149,8 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
                         throw new IllegalArgumentException("target not a Component");
                     }
                     break;
+                default:
+                    LOG.severe( "Unexpected scope: " + scope );
             }
             this.task = task;
             this.scope = scope;

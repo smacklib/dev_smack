@@ -43,7 +43,7 @@ import javax.swing.event.MouseInputListener;
 
 final class DefaultInputBlocker extends Task.InputBlocker {
 
-    private static final Logger logger = Logger.getLogger(DefaultInputBlocker.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultInputBlocker.class.getName());
     private static final String PB_STRING_FORMAT_KEY = "progressBarStringFormat";
     public static final String ON_ESCAPE_ACTION_KEY = "onEscape";
     private JDialog modalDialog = null;
@@ -357,7 +357,7 @@ final class DefaultInputBlocker extends Task.InputBlocker {
         if (f) {
             if (modalDialog != null) {
                 String msg = String.format("unexpected InputBlocker state [%s] %s", f, this);
-                logger.warning(msg);
+                LOG.warning(msg);
                 modalDialog.dispose();
             }
             modalDialog = createBlockingDialog();
@@ -379,7 +379,7 @@ final class DefaultInputBlocker extends Task.InputBlocker {
                 modalDialog = null;
             } else {
                 String msg = String.format("unexpected InputBlocker state [%s] %s", f, this);
-                logger.warning(msg);
+                LOG.warning(msg);
             }
         }
     }
@@ -398,6 +398,8 @@ final class DefaultInputBlocker extends Task.InputBlocker {
                 showBusyGlassPane(true);
                 showBlockingDialog(true);
                 break;
+            default:
+                LOG.severe( "Unexpected scope: " + getScope() );
         }
     }
 
@@ -415,6 +417,8 @@ final class DefaultInputBlocker extends Task.InputBlocker {
                 showBusyGlassPane(false);
                 showBlockingDialog(false);
                 break;
+            default:
+                LOG.severe( "Unexpected scope: " + getScope() );
         }
     }
 }
