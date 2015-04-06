@@ -49,6 +49,7 @@
     name="out.web"
     value="${build.dir}/web"/>
 
+  <property file="build.properties"></property>
 
   <fileset dir="${in.lib}" id="fs.common.libraries.id">
     <include name="metainf-services-1.5.jar"/>
@@ -81,7 +82,7 @@
            destdir="${out.bin}"
            deprecation="true"
            classpathref="pt.common.libraries.id"
-    	   debug="true"
+           debug="true"
     />
   </target>
 
@@ -107,7 +108,6 @@
         classpathref="pt.common.libraries.id"
         destdir="${out.web}/javadoc"
         use="true"
-        verbose="true"
     />
   </target>
 
@@ -153,9 +153,25 @@
     </jar>
   </target>
 
+  <target name="jar-javadoc" depends="resource, jdoc">
+  	<zip destfile="${out.dist}/${ant.project.name}-javadoc-${build.number}.zip"
+  	       basedir="${out.web}/javadoc"
+  	  />
+  </target>
+    
   <target description="Copies the project libs to the dist position."
           name="dist"
-          depends="jar-bin, jar-src">
-  	<echo>${java.version}</echo>
+          depends="jar-bin, jar-src, jar-javadoc">
+      <echo>${java.version}</echo>
+  </target>
+
+  <target name="release_sf">
+  	<copydir src="${out.dist}" dest="${build.dir}/${build.number}"></copydir>
+<!--    <svnant></svnant> -->
+  	<scp 
+        todir="${sf.user}:${sf.password}@${sf.frs.url}"
+        trust="yes" >
+  	    <fileset dir="${build.dir}/${build.number}" />
+    </scp>
   </target>
 </project>
