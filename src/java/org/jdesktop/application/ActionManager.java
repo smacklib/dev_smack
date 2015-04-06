@@ -170,10 +170,10 @@ public final class ActionManager extends AbstractBeanEdt
             WeakReference<ApplicationActionMap> ref = actionMaps.get(actionsObject);
             ApplicationActionMap classActionMap = (ref != null) ? ref.get() : null;
             if ((classActionMap == null) || (classActionMap.getActionsClass() != actionsClass)) {
-                ApplicationContext ctx = getContext();
+                //ApplicationContext ctx = getContext();
                 Class<?> actionsObjectClass = actionsObject.getClass();
                 ResourceMap resourceMap =
-                    ctx.getResourceManager().getResourceMap(actionsObjectClass, actionsClass);
+                    Application.getResourceManager().getResourceMap(actionsObjectClass, actionsClass);
                 classActionMap = createActionMapChain(actionsObjectClass, actionsClass, actionsObject, resourceMap);
                 ActionMap lastActionMap = classActionMap;
                 while (lastActionMap.getParent() != null) {
