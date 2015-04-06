@@ -54,8 +54,6 @@ public class ResourceUtils
      * fails, for example because string conversion fails.  This is
      * not a missing resource exception.  If a resource isn't defined
      * for a particular key, getObject does not throw an exception.
-     *
-     * @see #getObject
      */
     @SuppressWarnings("serial")
     private static class LookupException extends RuntimeException {
