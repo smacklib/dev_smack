@@ -1,4 +1,4 @@
-/* $Id: WindowsDialog.java 48 2014-11-23 10:28:59Z michab66 $
+/* $Id$
  *
  * Application framework
  *

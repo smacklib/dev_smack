@@ -1,4 +1,4 @@
-/* $Id: PropertyLink.java 462 2011-01-29 17:22:22Z Michael $
+/* $Id$
  *
  * Laboratory.
  *
@@ -20,7 +20,7 @@ import org.jdesktop.smack.util.JavaUtils;
  * Links a bound property on a source object to a bound property on
  * a target object.
  *
- * @version $Rev: 462 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class PropertyLink

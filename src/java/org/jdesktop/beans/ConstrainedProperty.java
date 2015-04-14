@@ -1,4 +1,4 @@
-/* $Id: ConstrainedProperty.java 600 2012-09-03 18:58:30Z Michael $
+/* $Id$
  *
  * Laboratory.
  *
@@ -16,7 +16,7 @@ import java.beans.VetoableChangeSupport;
  * of each target component.  It acts as a wrapper for the target
  * adding a constrained enabled Java Bean property.
  *
- * @version $Rev: 600 $
+ * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")

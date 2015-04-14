@@ -1,4 +1,4 @@
-/* $Id: JPopupList.java 56 2014-12-07 11:55:44Z michab66@gmail.com $
+/* $Id$
  *
  * Common util.
  *

@@ -1,4 +1,4 @@
-/* $Id: MackSplit.java 48 2014-11-23 10:28:59Z michab66 $
+/* $Id$
  *
  * Common.
  *
@@ -20,7 +20,7 @@ import org.jdesktop.smack.util.MathExt;
  * in the constructor. This simplifies handling of the location a lot
  * compared to the original {@link JSplitPane}.
  *
- * @version $Rev: 48 $
+ * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")

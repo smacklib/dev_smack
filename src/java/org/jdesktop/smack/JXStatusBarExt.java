@@ -1,4 +1,4 @@
-/* $Id: MackStatusBar.java 123 2015-03-21 07:49:54Z michab66@gmail.com $
+/* $Id$
  *
  * Mack.
  *
@@ -40,7 +40,7 @@ import org.jdesktop.smack.util.StringUtils;
  *  area is by default from right to left. It is possible to add WEST or EAST
  *  explicitly.
 
- * @version $Rev: 123 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class JXStatusBarExt extends JPanel
