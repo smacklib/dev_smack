@@ -1,4 +1,4 @@
-/* $Id: MdiDesktopPane.java 48 2014-11-23 10:28:59Z michab66 $
+/* $Id$
  *
  * Copyright © 2011 Michael G. Binz
  */

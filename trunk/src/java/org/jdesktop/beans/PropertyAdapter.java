@@ -1,4 +1,4 @@
-/* $Id: PropertyAdapter.java 774 2014-06-29 18:13:36Z Michael $
+/* $Id$
  *
  * Laboratory.
  *
@@ -22,7 +22,7 @@ import org.jdesktop.smack.util.ReflectionUtils;
  * {@code addPropertyChangeListener( PropertyChangeListener p )} and
  * {@code removePropertyChangeListener( PropertyChangeListener p )}.
  *
- * @version $Rev: 774 $
+ * @version $Rev$
  * @author Michael Binz
  */
 public class PropertyAdapter

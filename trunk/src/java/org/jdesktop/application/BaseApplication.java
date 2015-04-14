@@ -1,4 +1,4 @@
-/* $Id: ConstrainedProperty.java 600 2012-09-03 18:58:30Z Michael $
+/* $Id$
  *
  * Smack Application.
  *
