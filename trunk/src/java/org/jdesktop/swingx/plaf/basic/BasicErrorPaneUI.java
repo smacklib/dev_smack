@@ -165,9 +165,6 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
 
     //---------------------------------------------------------- constructor
 
-    /**
-     * {@inheritDoc}
-     */
     public static ComponentUI createUI(JComponent c) {
         return new BasicErrorPaneUI();
     }
@@ -175,6 +172,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("serial")
     @Override
     public void installUI(JComponent c) {
         super.installUI(c);
@@ -682,6 +680,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
      *  Default action for closing the JXErrorPane's enclosing window
      *  (JDialog, JFrame, or JInternalFrame)
      */
+    @SuppressWarnings("serial")
     private static final class CloseAction extends AbstractAction {
         private Window w;
 
@@ -756,6 +755,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
      * This is better than using setPreferredSize since this will work regardless
      * of changes to the text of the button and its language.
      */
+    @SuppressWarnings("serial")
     private static final class EqualSizeJButton extends JButton {
 
         public EqualSizeJButton(String text) {
@@ -812,6 +812,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
      * Returns the text as non-HTML in a COPY operation, and disabled CUT/PASTE
      * operations for the Details pane.
      */
+    @SuppressWarnings("serial")
     private static final class DetailsTransferHandler extends TransferHandler {
         private JTextComponent details;
         private DetailsTransferHandler(JTextComponent detailComponent) {
@@ -839,6 +840,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
 
     }
 
+    @SuppressWarnings("serial")
     private final class JXErrorDialog extends JDialog {
         public JXErrorDialog(Frame parent, JXErrorPane p) {
             super(parent, true);
@@ -857,6 +859,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
         }
     }
 
+    @SuppressWarnings("serial")
     private final class JXErrorFrame extends JFrame {
         public JXErrorFrame(JXErrorPane p) {
             setTitle(p.getErrorInfo().getTitle());
@@ -864,6 +867,7 @@ public class BasicErrorPaneUI extends ErrorPaneUI {
         }
     }
 
+    @SuppressWarnings("serial")
     private final class JXInternalErrorFrame extends JInternalFrame {
         public JXInternalErrorFrame(JXErrorPane p) {
             setTitle(p.getErrorInfo().getTitle());

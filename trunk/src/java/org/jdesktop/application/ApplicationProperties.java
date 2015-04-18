@@ -62,7 +62,7 @@ public class ApplicationProperties
         try
         {
             is = new ObjectInputStream(
-                    _localStorage.openInputFile( _fileName.getPath() ) );
+                    _localStorage.openInputFile( _fileName ) );
 
             localMap = (Map<String, String>)is.readObject();
         }
@@ -257,7 +257,7 @@ public class ApplicationProperties
 
         try
         {
-            oos = new ObjectOutputStream( _localStorage.openOutputFile( _fileName.getPath() ) );
+            oos = new ObjectOutputStream( _localStorage.openOutputFile( _fileName ) );
             oos.writeObject( _storage );
             oos.flush();
         }
