@@ -14,17 +14,21 @@ import java.util.Map;
 import org.jdesktop.beans.AbstractBeanEdt;
 
 /**
+ * A raw base application.  Offers management of ApplicationServices.
  *
  * @version $Rev$
  * @author Michael Binz
  */
 class BaseApplication extends AbstractBeanEdt
 {
-    private Map<Class<?>, Object> _singletons =
+    /**
+     * The map of singular application services.
+     */
+    private final Map<Class<?>, Object> _singletons =
             new HashMap<Class<?>, Object>();
 
     /**
-     *
+     * Create an instance.
      */
     public BaseApplication()
     {
@@ -32,11 +36,12 @@ class BaseApplication extends AbstractBeanEdt
     }
 
     /**
+     * Get an application service of the specified type.
      *
-     * @param type
-     * @return
+     * @param type The type of the application service.
+     * @return An instance of the requested service.
      */
-    public synchronized <T> T getApplicationService(Class<T> singletonType)
+    public synchronized <T> T getApplicationService( Class<T> singletonType )
     {
         if ( !  _singletons.containsKey( singletonType ) )
             try
