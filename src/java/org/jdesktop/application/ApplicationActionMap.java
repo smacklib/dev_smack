@@ -88,7 +88,9 @@ public class ApplicationActionMap extends ActionMap {
     /**
      * Returns the {@code ApplicationContext}
      * @return the {@code ApplicationContext}
+     * @deprecated
      */
+    @Deprecated
     public final ApplicationContext getContext() {
         return context;
     }
