@@ -38,7 +38,7 @@ class BaseApplication extends AbstractBeanEdt
     /**
      * Get an application service of the specified type.
      *
-     * @param type The type of the application service.
+     * @param singletonType The type of the application service.
      * @return An instance of the requested service.
      */
     public synchronized <T> T getApplicationService( Class<T> singletonType )

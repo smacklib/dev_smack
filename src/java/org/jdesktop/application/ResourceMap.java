@@ -22,6 +22,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1377,20 +1378,25 @@ public class ResourceMap {
             super(Color.class);
         }
 
-//        private void error(String msg, String s, Exception e) throws ResourceConverterException {
-//            throw new ResourceConverterException(msg, s, e);
-//        }
-
-        /* An improved version of Color.decode() that supports colors
-         * with an alpha channel and comma separated RGB[A] values.
-         * Legal format for color resources are:
+        /**
+         * Parses colors with an alpha channel and comma separated RGB[A] values.
+         * Legal formats for color resources are:
          * "#RRGGBB",  "#AARRGGBB", "R, G, B", "R, G, B, A"
-         * Thanks to Romain Guy for the code.
+         * or the color plain names defined on {@link Color}.
+         * @author Romain Guy
          */
-
         @Override
         public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
+
+            // Implanted michab.
+            {
+                Color result = checkPlainColorName( s );
+                if ( result != null )
+                    return result;
+            }
+            // TODO michab -- check code below for simplification.
             final Color color;
+
             if (s.startsWith("#")) {
                 switch (s.length()) {
                     // RGB/hex color
@@ -1430,6 +1436,23 @@ public class ResourceMap {
                 }
             }
             return color;
+        }
+
+        private Color checkPlainColorName( String name )
+        {
+            try
+            {
+                Field f = Color.class.getField( name );
+                if ( ! Color.class.equals( f.getType() ) )
+                    return null;
+                if ( ! Modifier.isStatic( f.getModifiers() ) )
+                    return null;
+                return (Color) f.get( null );
+            }
+            catch ( Exception e )
+            {
+                return null;
+            }
         }
     }
 
