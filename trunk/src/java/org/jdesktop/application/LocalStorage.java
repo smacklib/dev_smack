@@ -94,10 +94,46 @@ public final class LocalStorage extends AbstractBeanEdt {
      * @return an {@code InputStream} object
      * @throws IOException if the specified name is invalid,
      *                     or an input stream cannot be opened
+     * @deprecated Use {@link #openInputFile(File)}
      */
+    @Deprecated
     public InputStream openInputFile(String fileName) throws IOException {
         checkFileName(fileName);
         return getLocalIO().openInputFile(fileName);
+    }
+
+    /**
+     * Opens an input stream to read from the entry
+     * specified by the {@code name} parameter.
+     * If the named entry cannot be opened for reading
+     * then a {@code IOException} is thrown.
+     *
+     * @param file  the storage-dependent name
+     * @return an {@code InputStream} object
+     * @throws IOException if the specified name is invalid,
+     *                     or an input stream cannot be opened
+     */
+    public InputStream openInputFile( File file ) throws IOException {
+        return openInputFile( file.getPath() );
+    }
+
+    /**
+     * Opens an output stream to write to the entry
+     * specified by the {@code name} parameter.
+     * If the named entry cannot be opened for writing
+     * then a {@code IOException} is thrown.
+     * If the named entry does not exist it can be created.
+     * The entry will be recreated if already exists.
+     *
+     * @param fileName  the storage-dependent name
+     * @return an {@code OutputStream} object
+     * @throws IOException if the specified name is invalid,
+     *                     or an output stream cannot be opened
+     * @deprecated Use {@link #openInputFile(File)}
+     */
+    @Deprecated
+    public OutputStream openOutputFile(final String fileName) throws IOException {
+        return openOutputFile(fileName, false);
     }
 
     /**
@@ -113,8 +149,8 @@ public final class LocalStorage extends AbstractBeanEdt {
      * @throws IOException if the specified name is invalid,
      *                     or an output stream cannot be opened
      */
-    public OutputStream openOutputFile(final String fileName) throws IOException {
-        return openOutputFile(fileName, false);
+    public OutputStream openOutputFile( File file ) throws IOException {
+        return openOutputFile(file.getPath(), false);
     }
 
     /**
@@ -132,9 +168,44 @@ public final class LocalStorage extends AbstractBeanEdt {
      * @throws IOException if the specified name is invalid,
      *                     or an output stream cannot be opened
      */
+    public OutputStream openOutputFile(File file, boolean append) throws IOException {
+        return openOutputFile( file.getPath(), append );
+    }
+
+    /**
+     * Opens an output stream to write to the entry
+     * specified by the {@code name} parameter.
+     * If the named entry cannot be opened for writing
+     * then a {@code IOException} is thrown.
+     * If the named entry does not exist it can be created.
+     * You can decide whether data will be appended via append parameter.
+     *
+     * @param fileName  the storage-dependent name
+     * @param append if <code>true</code>, then bytes will be written
+     *                   to the end of the output entry rather than the beginning
+     * @return an {@code OutputStream} object
+     * @deprecated Use {@link #openOutputFile(File, boolean)}
+     * @throws IOException if the specified name is invalid,
+     *                     or an output stream cannot be opened
+     */
+    @Deprecated
     public OutputStream openOutputFile(String fileName, boolean append) throws IOException {
         checkFileName(fileName);
         return getLocalIO().openOutputFile(fileName, append);
+    }
+
+    /**
+     * Deletes the entry specified by the {@code name} parameter.
+     *
+     * @deprecated Use {@link #deleteFile(File)}
+     * @param fileName  the storage-dependent name
+     * @throws IOException if the specified name is invalid,
+     *                     or an internal entry cannot be deleted
+     */
+    @Deprecated
+    public boolean deleteFile(String fileName) throws IOException {
+        checkFileName(fileName);
+        return getLocalIO().deleteFile(fileName);
     }
 
     /**
@@ -144,9 +215,8 @@ public final class LocalStorage extends AbstractBeanEdt {
      * @throws IOException if the specified name is invalid,
      *                     or an internal entry cannot be deleted
      */
-    public boolean deleteFile(String fileName) throws IOException {
-        checkFileName(fileName);
-        return getLocalIO().deleteFile(fileName);
+    public boolean deleteFile( File file ) throws IOException {
+        return deleteFile( file.getPath() );
     }
 
     /**
