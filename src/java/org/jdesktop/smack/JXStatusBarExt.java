@@ -9,23 +9,17 @@ package org.jdesktop.smack;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 import javax.swing.Timer;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.smack.util.StringUtils;
-
-
-
+import org.jdesktop.swingx.JXToolbar;
 
 /**
  * Strategy:  Three areas:
@@ -43,28 +37,14 @@ import org.jdesktop.smack.util.StringUtils;
  * @version $Rev$
  * @author Michael Binz
  */
+@SuppressWarnings("serial")
 public class JXStatusBarExt extends JPanel
 {
-    private final JToolBar _right = new JToolBar();
+    private final JXToolbar _right = new JXToolbar();
 
-    private final Insets zeroInsets =
-        new Insets( 0, 0, 0, 0 );
-
-    private final JLabel messageLabel = new JLabel();
-//    private final JProgressBar progressBar;
-//    private final JLabel statusAnimationLabel;
+    private final JLabel _messageLabel = new JLabel();
 
     private Timer messageTimer;
-//    private final Timer busyIconTimer;
-    @Resource
-    private Icon idleIcon;
-    @Resource
-    private final Icon[] busyIcons = new Icon[15];
-    @Resource
-    private int busyAnimationRate;
-    private int busyIconIndex = 0;
-
-
 
     /**
      * Create an instance.
@@ -74,61 +54,11 @@ public class JXStatusBarExt extends JPanel
         super( new BorderLayout() );
 
         // Display the Application version on startup.
-        messageLabel.setText( Application.getInstance().getVersion() );
-        add( messageLabel, BorderLayout.LINE_START );
+        _messageLabel.setText( Application.getInstance().getVersion() );
+        add( _messageLabel, BorderLayout.LINE_START );
 
-        _right.setFloatable( false );
         add( _right, BorderLayout.LINE_END );
     }
-
-//    /**
-//     * Constructs a panel that displays messages/progress/state properties of
-//     * the {@code taskMonitor's} foreground task.
-//     *
-//     * @param taskMonitor
-//     *            the {@code TaskMonitor} whose {@code PropertyChangeEvents}
-//     *            {@code this StatusBar} will track.
-//     */
-//    public JXStatusBarExt( TaskMonitor taskMonitor )
-//    {
-//        super( new GridBagLayout() );
-//        setBorder( new EmptyBorder( 2, 0, 6, 0 ) ); // top, left, bottom, right
-//        messageLabel = new JLabel();
-//        progressBar = new JProgressBar( 0, 100 );
-//        statusAnimationLabel = new JLabel();
-//
-//        Application.getResourceManager().injectResources( this );
-//
-//        busyIconTimer = new Timer( busyAnimationRate, new UpdateBusyIcon() );
-//        progressBar.setEnabled( false );
-//        statusAnimationLabel.setIcon( idleIcon );
-//
-//        GridBagConstraints c = new GridBagConstraints();
-//        initGridBagConstraints( c );
-//        c.gridwidth = GridBagConstraints.REMAINDER;
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        c.weightx = 1.0;
-//        add( new JSeparator(), c );
-//
-//        initGridBagConstraints( c );
-//        c.insets = new Insets( 6, 6, 0, 3 ); // top, left, bottom, right;
-//        c.weightx = 1.0;
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        add( messageLabel, c );
-//
-//        initGridBagConstraints( c );
-//        c.insets = new Insets( 6, 3, 0, 3 ); // top, left, bottom, right;
-//        add( progressBar, c );
-//
-//        initGridBagConstraints( c );
-//        c.insets = new Insets( 6, 3, 0, 6 ); // top, left, bottom, right;
-//        add( statusAnimationLabel, c );
-//
-//        if ( taskMonitor != null )
-//            taskMonitor.addPropertyChangeListener( this );
-//    }
-
-
 
     /**
      * Display the passed message.
@@ -141,7 +71,7 @@ public class JXStatusBarExt extends JPanel
             // Set a space to ensure we keep our height.
             message = " ";
 
-        messageLabel.setText( message );
+        _messageLabel.setText( message );
     }
 
     /**
@@ -159,7 +89,7 @@ public class JXStatusBarExt extends JPanel
         if ( displayDuration <= 0 )
             throw new IllegalArgumentException( "displayDuration <= 0" );
 
-        messageLabel.setText( message );
+        _messageLabel.setText( message );
 
         if ( messageTimer == null )
         {
@@ -178,7 +108,7 @@ public class JXStatusBarExt extends JPanel
     private Component _centerComponent = null;
 
     /**
-     * Add the a component in the center of the status bar.
+     * Add a component in the center of the status bar.
      *
      * @param component The component to add. null removes the center component.
      */
@@ -192,89 +122,73 @@ public class JXStatusBarExt extends JPanel
         _centerComponent = component;
     }
 
+    /**
+     * Add a component to the right-side status bar area.
+     *
+     * @param component The component to add.
+     */
     public void addRight( Component component )
     {
-        _right.add( component );
-
+        addRight( component, BorderLayout.LINE_END );
     }
 
+    /**
+     * Add a component to the right-side status bar area.
+     *
+     * @param component The component to add.
+     * @param linePosition One of {@link BorderLayout#LINE_START} or
+     * {@link BorderLayout#LINE_END}.
+     * @throws IllegalArgumentException if the linePostion is unknown or null.
+     */
     public void addRight( Component component, String linePosition )
     {
         if ( BorderLayout.LINE_END.equals( linePosition ) )
-        {
-            addRight( component );
-            return;
-        }
+            _right.add( component );
+        else if ( BorderLayout.LINE_START.equals( linePosition ) )
+            _right.add( component, 0 );
+        else
+            throw new IllegalArgumentException(
+                    "Unknown position hint: " + linePosition );
     }
 
-    public void addRight( Action component )
+    /**
+     * Add an {@link Action} to the right side status bar area.
+     *
+     * @param action The Action to add.
+     */
+    public void addRight( Action action )
     {
-
+        addRight( action, BorderLayout.LINE_END );
     }
 
-    public void addRight( Action component, int linePosition )
+    /**
+     * Add an {@link Action} to the right-side status bar area.
+     *
+     * @param action The component to add.
+     * @param linePosition One of {@link BorderLayout#LINE_START} or
+     * {@link BorderLayout#LINE_END}.
+     * @throws IllegalArgumentException if the linePostion is unknown or null.
+     */
+    public void addRight( Action action, String linePosition )
     {
-
+        if ( BorderLayout.LINE_END.equals( linePosition ) )
+            _right.add( action );
+        else if ( BorderLayout.LINE_START.equals( linePosition ) )
+            _right.add( action, 0 );
+        else
+            throw new IllegalArgumentException(
+                    "Unknown position hint: " + linePosition );
     }
 
+    /**
+     * Called for timed messages, clears the message area.
+     */
     private class ClearOldMessage implements ActionListener
     {
         @Override
         public void actionPerformed( ActionEvent e )
         {
-            messageLabel.setText( " " );
+            _messageLabel.setText( " " );
         }
     }
-
-    public void showBusyAnimation()
-    {
-//        if ( !busyIconTimer.isRunning() )
-//        {
-//            statusAnimationLabel.setIcon( busyIcons[0] );
-//            busyIconIndex = 0;
-//            busyIconTimer.start();
-//        }
-    }
-
-
-    public void stopBusyAnimation()
-    {
-//        busyIconTimer.stop();
-//        statusAnimationLabel.setIcon( idleIcon );
-    }
-
-//    /**
-//     * The TaskMonitor (constructor arg) tracks a "foreground" task; this method
-//     * is called each time a foreground task property changes.
-//     */
-//    @Override
-//    public void propertyChange( PropertyChangeEvent e )
-//    {
-//        String propertyName = e.getPropertyName();
-//        if ( "started".equals( propertyName ) )
-//        {
-//            showBusyAnimation();
-//            progressBar.setEnabled( true );
-//            progressBar.setIndeterminate( true );
-//        }
-//        else if ( "done".equals( propertyName ) )
-//        {
-//            stopBusyAnimation();
-//            progressBar.setIndeterminate( false );
-//            progressBar.setEnabled( false );
-//            progressBar.setValue( 0 );
-//        }
-//        else if ( "message".equals( propertyName ) )
-//        {
-//            String text = (String) (e.getNewValue());
-//            setMessage( text );
-//        }
-//        else if ( "progress".equals( propertyName ) )
-//        {
-//            int value = (Integer) (e.getNewValue());
-//            progressBar.setEnabled( true );
-//            progressBar.setIndeterminate( false );
-//            progressBar.setValue( value );
-//        }
-//    }
 }

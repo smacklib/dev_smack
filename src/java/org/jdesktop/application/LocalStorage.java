@@ -144,7 +144,7 @@ public final class LocalStorage extends AbstractBeanEdt {
      * If the named entry does not exist it can be created.
      * The entry will be recreated if already exists.
      *
-     * @param fileName  the storage-dependent name
+     * @param file The storage-dependent name
      * @return an {@code OutputStream} object
      * @throws IOException if the specified name is invalid,
      *                     or an output stream cannot be opened
@@ -161,12 +161,12 @@ public final class LocalStorage extends AbstractBeanEdt {
      * If the named entry does not exist it can be created.
      * You can decide whether data will be appended via append parameter.
      *
-     * @param fileName  the storage-dependent name
-     * @param append if <code>true</code>, then bytes will be written
-     *                   to the end of the output entry rather than the beginning
+     * @param file The storage-dependent name
+     * @param append If <code>true</code>, then bytes will be written
+     * to the end of the output entry rather than the beginning
      * @return an {@code OutputStream} object
      * @throws IOException if the specified name is invalid,
-     *                     or an output stream cannot be opened
+     * or an output stream cannot be opened
      */
     public OutputStream openOutputFile(File file, boolean append) throws IOException {
         return openOutputFile( file.getPath(), append );
@@ -211,11 +211,12 @@ public final class LocalStorage extends AbstractBeanEdt {
     /**
      * Deletes the entry specified by the {@code name} parameter.
      *
-     * @param fileName  the storage-dependent name
+     * @param file The storage-dependent name.
      * @throws IOException if the specified name is invalid,
-     *                     or an internal entry cannot be deleted
+     * or an internal entry cannot be deleted
      */
     public boolean deleteFile( File file ) throws IOException {
+        // TODO(michab) Fix return code AND exception.
         return deleteFile( file.getPath() );
     }
 

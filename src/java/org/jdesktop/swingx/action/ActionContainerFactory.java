@@ -43,6 +43,8 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
+import org.jdesktop.smack.util.StringUtils;
+
 /**
  * Creates user interface elements based on action ids and lists of action ids.
  * All action ids must represent actions managed by the ActionManager.
@@ -483,8 +485,7 @@ public final class ActionContainerFactory {
     }
 
     /**
-     * This method will be called after buttons created from an action. Override
-     * for custom configuration.
+     * This method will be called after buttons created from an action.
      *
      * @param button the button to be configured
      * @param action the action used to construct the menu item.
@@ -494,15 +495,15 @@ public final class ActionContainerFactory {
             button.setToolTipText((String)action.getValue(Action.NAME));
         }
         // Use the large icon for toolbar buttons.
-        if (action.getValue(AbstractActionExt.LARGE_ICON) != null) {
-            button.setIcon((Icon)action.getValue(AbstractActionExt.LARGE_ICON));
+        if (action.getValue(Action.LARGE_ICON_KEY) != null) {
+            button.setIcon((Icon)action.getValue(Action.LARGE_ICON_KEY));
         }
         // Don't show the text under the toolbar buttons if they have an icon
+        // TODO michab not sure if this is cool ...
         if (button.getIcon() != null) {
-            button.setText("");
+            button.setText( StringUtils.EMPTY_STRING );
         }
     }
-
 
     /**
      * This method will be called after menu items are created.

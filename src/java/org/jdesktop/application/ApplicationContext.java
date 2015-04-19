@@ -62,7 +62,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
      * {@link ResourceMap ResourceMap} class.
      *
      * @return this application's ResourceManager.
-     * @see #getResourceMap(Class, Class)
      * @deprecated Use Application.getResourceManager
      */
     @Deprecated
@@ -85,7 +84,6 @@ public final class ApplicationContext extends AbstractBeanEdt {
      *
      * @return the Application's ResourceMap
      * @see ResourceManager#getApplicationResourceMap()
-     * @see #getApplicationClass
      */
     public final ResourceMap getResourceMap() {
         return getResourceManager().getApplicationResourceMap();

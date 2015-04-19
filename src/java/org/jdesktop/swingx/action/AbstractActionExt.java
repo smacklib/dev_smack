@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -37,8 +37,9 @@ import javax.swing.KeyStroke;
  * added in {@code Java 1.6}. The selection is now managed with {@link Action#SELECTED_KEY}, which
  * allows the action to correctly configured Swing buttons. The {@link #LARGE_ICON} has also been
  * changed to correspond to {@link Action#LARGE_ICON_KEY}.
- * 
+ *
  */
+@SuppressWarnings("serial")
 public abstract class AbstractActionExt extends AbstractAction
     implements ItemListener {
 
@@ -46,7 +47,9 @@ public abstract class AbstractActionExt extends AbstractAction
      * The key for the large icon
      * <p>
      * As of SwingX 1.6.3 is now has the same value as {@link Action#LARGE_ICON_KEY}, which is new to 1.6.
+     * @deprecated Use Action.LARGE_ICON_KEY.
      */
+    @Deprecated
     public static final String LARGE_ICON = Action.LARGE_ICON_KEY;
 
     /**
@@ -65,7 +68,7 @@ public abstract class AbstractActionExt extends AbstractAction
     public AbstractActionExt() {
         this((String) null);
     }
-    
+
     /**
      * Copy constructor copies the state.
      */
@@ -271,7 +274,7 @@ public abstract class AbstractActionExt extends AbstractAction
         }
         return '\0';
     }
-    
+
     /**
      * Sets the action command key. The action command key
      * is used to identify the action.
@@ -289,7 +292,7 @@ public abstract class AbstractActionExt extends AbstractAction
 
     /**
      * Returns the action command.
-     * 
+     *
      * @return the action command or null
      */
     public String getActionCommand() {
@@ -384,18 +387,18 @@ public abstract class AbstractActionExt extends AbstractAction
      */
     public boolean isSelected() {
         Boolean selected = (Boolean) getValue(SELECTED_KEY);
-        
+
         if (selected == null) {
             return false;
         }
-        
+
         return selected.booleanValue();
     }
 
     /**
      * Changes the state of the action. This is a convenience method for updating the Action via the
      * value map.
-     * 
+     *
      * @param newValue
      *            true to set the action as selected of the action.
      * @see Action#SELECTED_KEY
@@ -428,14 +431,14 @@ public abstract class AbstractActionExt extends AbstractAction
         }
         return buffer.toString();
     }
-    
+
     /**
      * Callback method as <code>ItemListener</code>. Updates internal state based
      * on the given ItemEvent. <p>
-     * 
+     *
      * Here: synchs selected property if isStateAction(), does nothing otherwise.
-     * 
-     * @param e the ItemEvent fired by a ItemSelectable on changing the selected 
+     *
+     * @param e the ItemEvent fired by a ItemSelectable on changing the selected
      *    state.
      */
     @Override

@@ -299,16 +299,12 @@ public final class ResourceManager
 
     /**
      * Returns the chain of ResourceMaps that's shared by the entire application,
-     * beginning with the resources defined for the application's class, i.e.
-     * the value of the ApplicationContext
-     * {@link ApplicationContext#getApplicationClass applicationClass} property.
+     * beginning with the resources defined for the application's class.
      * If the {@code applicationClass} property has not been set, e.g. because
      * the application has not been {@link Application#launch launched} yet,
      * then a ResourceMap for just {@code Application.class} is returned.
      *
      * @return the Application's ResourceMap
-     * @see ApplicationContext#getResourceMap()
-     * @see ApplicationContext#getApplicationClass
      */
     public ResourceMap getApplicationResourceMap( Locale locale ) {
         if (_appResourceMap == null) {
@@ -333,7 +329,6 @@ public final class ResourceManager
      * allowed, array instances are not allowed, primitive classes are not
      * allowed.
      * @throws IllegalArgumentException In case a bad object was passed.
-     * @author Michael Binz
      */
     public void injectResources( Object o )
     {
