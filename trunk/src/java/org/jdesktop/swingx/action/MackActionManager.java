@@ -3,7 +3,7 @@
  * Released under Gnu Public License
  * Copyright © 2003-2015 Michael G. Binz
  */
-package org.jdesktop.smack;
+package org.jdesktop.swingx.action;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -20,8 +20,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.smack.util.MultiMap;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.JXToolbar;
-import org.jdesktop.swingx.action.AbstractActionExt;
-import org.jdesktop.swingx.action.ActionContainerFactory;
 
 
 /**

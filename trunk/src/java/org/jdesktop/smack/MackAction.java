@@ -77,7 +77,9 @@ import org.jdesktop.swingx.action.AbstractActionExt;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Moved to swingx.action
  */
+@Deprecated
 public abstract class MackAction extends AbstractActionExt
 {
     private static final long serialVersionUID = -2511845641813776124L;

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2009-2012 Michael G. Binz
  */
-package org.jdesktop.smack;
+package org.jdesktop.swingx.action;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -23,8 +23,8 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
+import org.jdesktop.smack.MackApplication;
 import org.jdesktop.smack.util.StringUtils;
-import org.jdesktop.swingx.action.AbstractActionExt;
 
 
 

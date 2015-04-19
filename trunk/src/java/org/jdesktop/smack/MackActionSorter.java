@@ -22,7 +22,9 @@ import org.jdesktop.smack.util.StringUtils;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Moved to swingx.action
  */
+@Deprecated
 class MackActionSorter
 implements Comparator<MackAction>
 {

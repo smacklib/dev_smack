@@ -6,7 +6,7 @@
  * Copyright © 2012 Michael G. Binz
  */
 
-package org.jdesktop.smack;
+package org.jdesktop.swingx.action;
 
 import java.util.ArrayList;
 import java.util.Collection;
