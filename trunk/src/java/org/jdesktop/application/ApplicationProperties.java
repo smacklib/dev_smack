@@ -82,8 +82,8 @@ public class ApplicationProperties
      * Check if a key is defined.
      *
      * @param client The client class.
-     * @param key
-     * @return
+     * @param key The key to check for.
+     * @return True if the key is defined, false otherwise.
      */
     public boolean containsKey( Class<?> client, String key )
     {

@@ -95,6 +95,11 @@ public class JXToolbar extends JToolBar
      */
     private void init()
     {
+        // Be non-floatable. Floatable toolbars require some special
+        // handling and planning so we prefer the client to set the
+        // floatable property explicitly.
+        setFloatable( false );
+
         // Resolve the resource annotations.
         _showLabels.setName( "showLabelsCheckbox" );
         ResourceMap rm =
@@ -178,14 +183,11 @@ public class JXToolbar extends JToolBar
         return result;
     }
 
-
-
     /**
      *  Note that this returns null if a component different from a
      *  jbutton was added.
      */
-    @Override
-    public JButton add( Action a )
+    public JButton add( Action a, int idx )
     {
         JComponent toAdd = null;
 
@@ -197,24 +199,15 @@ public class JXToolbar extends JToolBar
         {
             toAdd = ma.getToolbarComponent();
         }
-        // Check if we've a component factory.
-        else if ( _acf != null )
-        {
-            toAdd = _acf.createButton( a );
-        }
-        // Create the component using the toolbar.
         else
         {
-            JButton button = createActionComponent( a );
-            // This is required for vanilla non-mack actions.
-            button.setAction( a );
-            toAdd = button;
+            toAdd = _acf.createButton( a );
         }
 
         assert toAdd != null;
 
         // Add the component.
-        add( toAdd );
+        add( toAdd, idx );
 
         // If we created a JButton, return it...
         if ( toAdd instanceof JButton )
@@ -223,7 +216,11 @@ public class JXToolbar extends JToolBar
         return null;
     }
 
-
+    @Override
+    public JButton add( Action a )
+    {
+        return add( a, -1 );
+    }
 
     /**
      * Make all added JButtons to follow the _showText property.  This covers
