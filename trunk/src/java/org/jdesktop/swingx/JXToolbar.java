@@ -35,8 +35,8 @@ import javax.swing.JToolBar;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.smack.MackAction;
 import org.jdesktop.swingx.action.ActionContainerFactory;
+import org.jdesktop.swingx.action.MackAction;
 
 /**
  * An extended toolbar that offers a popup menu allowing to select whether

@@ -7,7 +7,8 @@
  */
 package org.jdesktop.smack.actions;
 
-import org.jdesktop.smack.MackAction;
+import org.jdesktop.swingx.action.MackAction;
+
 
 
 

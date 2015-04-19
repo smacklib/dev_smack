@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
 
 import javax.swing.ActionMap;
 
-import org.jdesktop.smack.MackAction;
 import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.swingx.action.MackAction;
 
 
 /**

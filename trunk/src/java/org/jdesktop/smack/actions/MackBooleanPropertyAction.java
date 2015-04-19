@@ -17,8 +17,8 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.MackAction;
 import org.jdesktop.smack.util.ReflectionUtils;
+import org.jdesktop.swingx.action.MackAction;
 
 
 

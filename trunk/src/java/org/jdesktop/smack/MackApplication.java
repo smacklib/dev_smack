@@ -24,6 +24,7 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.TaskMonitor;
 import org.jdesktop.smack.actions.AppExit;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.swingx.action.MackActionManager;
 
 
 
