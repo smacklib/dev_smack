@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -72,13 +71,13 @@ import org.jdesktop.application.Application;
  *
  * @see ActionManager
  */
-public class ActionContainerFactory {
+public final class ActionContainerFactory {
     /**
      * Standard margin for toolbar buttons to improve their look
      */
     private static Insets TOOLBAR_BUTTON_MARGIN = new Insets(1, 1, 1, 1);
 
-    private ActionMap manager;
+    private ActionManager manager;
 
     // Map between group id + component and the ButtonGroup
     private Map<Integer, ButtonGroup> groupMap;
@@ -96,7 +95,7 @@ public class ActionContainerFactory {
      * @param manager use the actions managed with this manager for
      *                constructing ui componenents.
      */
-    public ActionContainerFactory(ActionMap manager) {
+    public ActionContainerFactory(ActionManager manager) {
         setActionManager(manager);
     }
 
@@ -107,7 +106,7 @@ public class ActionContainerFactory {
      * @return the ActionManager used by the ActionContainerFactory.
      * @see #setActionManager
      */
-    public ActionMap getActionManager() {
+    public ActionManager getActionManager() {
         if (manager == null) {
             manager = Application.getInstance().getApplicationService( ActionManager.class );
         }
@@ -118,7 +117,7 @@ public class ActionContainerFactory {
      * Sets the ActionManager instance that will be used by this
      * ActionContainerFactory
      */
-    public void setActionManager(ActionMap manager) {
+    public void setActionManager(ActionManager manager) {
         this.manager = manager;
     }
 
@@ -309,7 +308,7 @@ public class ActionContainerFactory {
      * Convenience method to get the action from an ActionManager.
      */
     private Action getAction(Object id) {
-        return getActionManager().get(id);
+        return getActionManager().getAction(id);
     }
 
     /**
@@ -465,7 +464,7 @@ public class ActionContainerFactory {
      * Adds and configures a toggle button.
      * @param a an abstraction of a toggle action.
      */
-    private JToggleButton createToggleButton(AbstractActionExt a)  {
+    private static JToggleButton createToggleButton(AbstractActionExt a)  {
         return createToggleButton(a, null);
     }
 
@@ -474,7 +473,7 @@ public class ActionContainerFactory {
      * @param a an abstraction of a toggle action.
      * @param group the group to add the toggle button or null
      */
-    private JToggleButton createToggleButton(AbstractActionExt a, ButtonGroup group)  {
+    private static JToggleButton createToggleButton(AbstractActionExt a, ButtonGroup group)  {
         JToggleButton button = new JToggleButton();
         configureButton(button, a, group);
         return button;
@@ -486,7 +485,7 @@ public class ActionContainerFactory {
      * @param a
      * @param group
      */
-    public void configureButton(JToggleButton button, AbstractActionExt a, ButtonGroup group) {
+    public static void configureButton(JToggleButton button, AbstractActionExt a, ButtonGroup group) {
        configureSelectableButton(button, a, group);
        configureButtonFromExtActionProperties(button, a);
     }
@@ -509,7 +508,7 @@ public class ActionContainerFactory {
      * @throws IllegalArgumentException if the given action doesn't have the state flag set.
      *
      */
-    public void configureSelectableButton(AbstractButton button, AbstractActionExt a, ButtonGroup group){
+    public static void configureSelectableButton(AbstractButton button, AbstractActionExt a, ButtonGroup group){
         if ((a != null) && !a.isStateAction()) throw
             new IllegalArgumentException("the Action must be a stateAction");
         // we assume that all button configuration is done exclusively through this method!!
@@ -556,7 +555,7 @@ public class ActionContainerFactory {
      * @param button the button to be configured
      * @param action the action used to construct the menu item.
      */
-    protected void configureButtonFromExtActionProperties(AbstractButton button, Action action)  {
+    private static void configureButtonFromExtActionProperties(AbstractButton button, Action action)  {
         if (action.getValue(Action.SHORT_DESCRIPTION) == null) {
             button.setToolTipText((String)action.getValue(Action.NAME));
         }
@@ -578,7 +577,7 @@ public class ActionContainerFactory {
      * @param menuItem the menu item to be configured
      * @param action the action used to construct the menu item.
      */
-    protected void configureMenuItemFromExtActionProperties(JMenuItem menuItem, Action action) {
+    private void configureMenuItemFromExtActionProperties(JMenuItem menuItem, Action action) {
     }
 
     /**

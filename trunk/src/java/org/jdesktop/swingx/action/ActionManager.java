@@ -87,9 +87,10 @@ import javax.swing.ActionMap;
  * @author Mark Davidson
  * @author Neil Weber
  */
-@SuppressWarnings("serial")
-public class ActionManager extends ActionMap
+public class ActionManager // extends ActionMap
 {
+    private final ActionMap _actionMap = new ActionMap();
+
     /**
      * Creates the action manager. Use this constructor if the application should
      * support many ActionManagers. Otherwise, using the getInstance method will
@@ -110,7 +111,7 @@ public class ActionManager extends ActionMap
      * @return a set which represents all the action ids
      */
     public Set<Object> getActionIDs() {
-        Object[] keys = keys();
+        Object[] keys = _actionMap.keys();
         if (keys == null) {
             return null;
         }
@@ -129,7 +130,7 @@ public class ActionManager extends ActionMap
      * @return the action that was added
      */
     public Action addAction(Object id, Action action)  {
-        put(id, action);
+        _actionMap.put(id, action);
         return action;
     }
 
@@ -140,7 +141,7 @@ public class ActionManager extends ActionMap
      * @return an Action or null if id
      */
     public Action getAction(Object id)  {
-        return get(id);
+        return _actionMap.get(id);
     }
 
     /**

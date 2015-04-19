@@ -65,22 +65,19 @@ public class JXToolbar extends JToolBar
 
 
     /**
-     * Used to create the buttons.  May be null.
+     * Used to create the buttons.
      */
-    private ActionContainerFactory _acf = null;
+    private final ActionContainerFactory _acf = new ActionContainerFactory();
 
 
 
     /**
      * The default constructor.
      */
-    public JXToolbar( ActionContainerFactory acf )
+    public JXToolbar()
     {
-        _acf = acf;
         init();
     }
-
-
 
     /**
      * Create a named toolbar.
@@ -92,23 +89,6 @@ public class JXToolbar extends JToolBar
         super( name );
         init();
     }
-
-
-
-    /**
-     * Should be used in the future.
-     *
-     * @param acf
-     * @param name
-     */
-    public JXToolbar( ActionContainerFactory acf, String name )
-    {
-        super( name );
-        _acf = acf;
-        init();
-    }
-
-
 
     /**
      * Internal initialization after ctor call.
