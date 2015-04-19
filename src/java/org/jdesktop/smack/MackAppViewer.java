@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import org.jdesktop.application.Action;
 import org.jdesktop.smack.actions.AppOpen;
 import org.jdesktop.smack.util.Transformer;
+import org.jdesktop.swingx.action.MackActionManager;
 
 
 
@@ -77,6 +78,7 @@ public abstract class MackAppViewer<FT, MC extends Component>
      *
      * @param files The files that have been selected for loading.
      */
+    @Override
     public abstract void load( FT[] files );
 
     @Override
