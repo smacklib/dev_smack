@@ -42,7 +42,7 @@ public final class MackActionManager
         new org.jdesktop.swingx.action.ActionManager();
 
     private final ActionContainerFactory _acf =
-        new ActionContainerFactory( _swingxActionManager );
+        new ActionContainerFactory();
 
     private final MultiMap<Object, String, MackAction> _toolbarMap =
         new MultiMap<Object, String, MackAction>();
@@ -104,7 +104,7 @@ public final class MackActionManager
         assert mackAction != null;
         Object key = mackAction.getValue(Action.ACTION_COMMAND_KEY);
         assert key != null;
-        assert null == _swingxActionManager.get(key);
+        assert null == _swingxActionManager.getAction(key);
 
         // First add the action to our embedded action manager.
         _swingxActionManager.addAction(mackAction);
@@ -173,7 +173,7 @@ public final class MackActionManager
     {
         List<Action> actions = getActionBar(_toolbarMap);
 
-        JXToolbar result = new JXToolbar(_acf);
+        JXToolbar result = new JXToolbar();
 
         for (Action c : actions)
         {
