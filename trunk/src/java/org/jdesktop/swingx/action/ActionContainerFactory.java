@@ -128,17 +128,6 @@ public final class ActionContainerFactory {
      * @param list a list of action ids used to construct the toolbar.
      * @return the toolbar or null
      */
-    public JToolBar createToolBar(Object[] list) {
-        return createToolBar(Arrays.asList(list));
-    }
-
-    /**
-     * Constructs a toolbar from an action-list id. By convention,
-     * the identifier of the main toolbar should be "main-toolbar"
-     *
-     * @param list a list of action ids used to construct the toolbar.
-     * @return the toolbar or null
-     */
     public JToolBar createToolBar(List<?> list) {
         JToolBar toolbar = new JToolBar();
         Iterator<?> iter = list.iterator();
@@ -166,17 +155,6 @@ public final class ActionContainerFactory {
         return toolbar;
     }
 
-
-    /**
-     * Constructs a popup menu from an array of action ids.
-     *
-     * @param list an array of action ids used to construct the popup.
-     * @return the popup or null
-     */
-    public JPopupMenu createPopup(Object[] list) {
-        return createPopup(Arrays.asList(list));
-    }
-
     /**
      * Constructs a popup menu from a list of action ids.
      *
@@ -201,16 +179,6 @@ public final class ActionContainerFactory {
             }
         }
         return popup;
-    }
-
-    /**
-     * Constructs a menu tree from a list of actions or lists of lists or actions.
-     *
-     * @param actionIds an array which represents the root item.
-     * @return a menu bar which represents the menu bar tree
-     */
-    public JMenuBar createMenuBar(Object[] actionIds) {
-        return createMenuBar(Arrays.asList(actionIds));
     }
 
     /**
@@ -256,7 +224,7 @@ public final class ActionContainerFactory {
      *             the first element represents the action used for the menu,
      * @return the constructed JMenu or null
      */
-     public JMenu createMenu(Object[] actionIds) {
+     private JMenu createMenu(Object[] actionIds) {
         return createMenu(Arrays.asList(actionIds));
     }
 
