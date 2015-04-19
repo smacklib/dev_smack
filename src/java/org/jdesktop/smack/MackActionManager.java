@@ -31,7 +31,9 @@ import org.jdesktop.swingx.action.ActionContainerFactory;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Moved to swingx.action
  */
+@Deprecated
 public final class MackActionManager
 {
     private final static MackActionSorter _sorter =
