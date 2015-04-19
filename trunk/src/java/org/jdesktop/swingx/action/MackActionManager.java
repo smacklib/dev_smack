@@ -161,7 +161,7 @@ public final class MackActionManager
             menu.add(current);
         }
 
-        return _acf.createMenuBar(menu);
+        return _acf.createMenuBar(menu,_swingxActionManager);
     }
 
     /**

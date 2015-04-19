@@ -43,8 +43,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import org.jdesktop.application.Application;
-
 /**
  * Creates user interface elements based on action ids and lists of action ids.
  * All action ids must represent actions managed by the ActionManager.
@@ -77,8 +75,6 @@ public final class ActionContainerFactory {
      */
     private static Insets TOOLBAR_BUTTON_MARGIN = new Insets(1, 1, 1, 1);
 
-    private ActionManager manager;
-
     // Map between group id + component and the ButtonGroup
     private Map<Integer, ButtonGroup> groupMap;
 
@@ -89,37 +85,6 @@ public final class ActionContainerFactory {
      */
     public ActionContainerFactory() {
     }
-    /**
-     * Constructs an container factory which uses managed actions.
-     *
-     * @param manager use the actions managed with this manager for
-     *                constructing ui componenents.
-     */
-    public ActionContainerFactory(ActionManager manager) {
-        setActionManager(manager);
-    }
-
-    /**
-     * Gets the ActionManager instance. If the ActionManager has not been explicitly
-     * set then the default ActionManager instance will be used.
-     *
-     * @return the ActionManager used by the ActionContainerFactory.
-     * @see #setActionManager
-     */
-    public ActionManager getActionManager() {
-        if (manager == null) {
-            manager = Application.getInstance().getApplicationService( ActionManager.class );
-        }
-        return manager;
-    }
-
-    /**
-     * Sets the ActionManager instance that will be used by this
-     * ActionContainerFactory
-     */
-    public void setActionManager(ActionManager manager) {
-        this.manager = manager;
-    }
 
     /**
      * Constructs a toolbar from an action-list id. By convention,
@@ -128,7 +93,8 @@ public final class ActionContainerFactory {
      * @param list a list of action ids used to construct the toolbar.
      * @return the toolbar or null
      */
-    public JToolBar createToolBar(List<?> list) {
+    public JToolBar createToolBar( List<?> list, ActionManager m )
+    {
         JToolBar toolbar = new JToolBar();
         Iterator<?> iter = list.iterator();
         while(iter.hasNext()) {
@@ -137,7 +103,7 @@ public final class ActionContainerFactory {
             if (element == null) {
                 toolbar.addSeparator();
             } else {
-                AbstractButton button = createButton(element, toolbar);
+                AbstractButton button = createButton(element, toolbar, m);
                 // toolbar buttons shouldn't steal focus
                 button.setFocusable(false);
                 /*
@@ -161,7 +127,7 @@ public final class ActionContainerFactory {
      * @param list a list of action ids used to construct the popup.
      * @return the popup or null
      */
-    public JPopupMenu createPopup(List<?> list) {
+    public JPopupMenu createPopup( List<?> list, ActionManager m ) {
         JPopupMenu popup = new JPopupMenu();
         Iterator<?> iter = list.iterator();
         while(iter.hasNext()) {
@@ -170,12 +136,12 @@ public final class ActionContainerFactory {
             if (element == null) {
                 popup.addSeparator();
             } else if (element instanceof List<?>) {
-                JMenu newMenu= createMenu((List<?>)element);
+                JMenu newMenu= createMenu((List<?>)element,m);
                 if (newMenu!= null) {
                     popup.add(newMenu);
                 }
             } else {
-                popup.add(createMenuItem(element, popup));
+                popup.add(createMenuItem( element, popup, m ));
             }
         }
         return popup;
@@ -187,7 +153,7 @@ public final class ActionContainerFactory {
      * @param list a list which represents the root item.
      * @return a menu bar which represents the menu bar tree
      */
-    public JMenuBar createMenuBar(List<?> list) {
+    public JMenuBar createMenuBar(List<?> list, ActionManager m ) {
         final JMenuBar menubar = new JMenuBar();
 
         for (Object element : list) {
@@ -198,11 +164,11 @@ public final class ActionContainerFactory {
             JMenuItem menu;
 
             if (element instanceof Object[]) {
-                menu = createMenu((Object[]) element);
+                menu = createMenu((Object[]) element, m);
             } else if (element instanceof List<?>) {
-                menu = createMenu((List<?>) element);
+                menu = createMenu((List<?>) element,m);
             } else {
-                menu = createMenuItem(element, menubar);
+                menu = createMenuItem(element, menubar,m);
             }
 
             if (menu != null) {
@@ -224,8 +190,8 @@ public final class ActionContainerFactory {
      *             the first element represents the action used for the menu,
      * @return the constructed JMenu or null
      */
-     private JMenu createMenu(Object[] actionIds) {
-        return createMenu(Arrays.asList(actionIds));
+     private JMenu createMenu( Object[] actionIds, ActionManager m ) {
+        return createMenu(Arrays.asList(actionIds),m);
     }
 
     /**
@@ -238,9 +204,9 @@ public final class ActionContainerFactory {
      *             the first element represents the action used for the menu,
      * @return the constructed JMenu or null
      */
-    public JMenu createMenu(List<?> list) {
+    public JMenu createMenu(List<?> list,ActionManager m) {
         // The first item will be the action for the JMenu
-        Action action = getAction(list.get(0));
+        Action action = getAction(m,list.get(0));
 
         if (action == null) {
             return null;
@@ -256,11 +222,11 @@ public final class ActionContainerFactory {
                 JMenuItem newMenu;
 
                 if (element instanceof Object[]) {
-                    newMenu = createMenu((Object[]) element);
+                    newMenu = createMenu((Object[]) element,m);
                 } else if (element instanceof List<?>) {
-                    newMenu = createMenu((List<?>) element);
+                    newMenu = createMenu((List<?>) element,m);
                 } else {
-                    newMenu = createMenuItem(element, menu);
+                    newMenu = createMenuItem(element, menu,m);
                 }
 
                 if (newMenu != null) {
@@ -275,8 +241,8 @@ public final class ActionContainerFactory {
     /**
      * Convenience method to get the action from an ActionManager.
      */
-    private Action getAction(Object id) {
-        return getActionManager().getAction(id);
+    private Action getAction( ActionManager m, Object id) {
+        return m.getAction(id);
     }
 
     /**
@@ -310,8 +276,8 @@ public final class ActionContainerFactory {
      *
      * @return a JMenuItem or subclass depending on type.
      */
-    private JMenuItem createMenuItem(Object id, JComponent container) {
-        return createMenuItem(getAction(id), container);
+    private JMenuItem createMenuItem(Object id, JComponent container, ActionManager m) {
+        return createMenuItem(m.getAction(id), container);
     }
 
 
@@ -373,8 +339,8 @@ public final class ActionContainerFactory {
      * @param container the JComponent which parents the group, if any.
      * @return an AbstractButton based on the
      */
-    public AbstractButton createButton(Object id, JComponent container) {
-        return createButton(getAction(id), container);
+    public AbstractButton createButton(Object id, JComponent container, ActionManager m ) {
+        return createButton(m.getAction(id), container);
     }
 
     /**
