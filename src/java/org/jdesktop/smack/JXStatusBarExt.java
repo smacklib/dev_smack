@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import org.jdesktop.application.Application;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.JXToolbar;
 
@@ -54,7 +53,6 @@ public class JXStatusBarExt extends JPanel
         super( new BorderLayout() );
 
         // Display the Application version on startup.
-        _messageLabel.setText( Application.getInstance().getVersion() );
         add( _messageLabel, BorderLayout.LINE_START );
 
         add( _right, BorderLayout.LINE_END );
