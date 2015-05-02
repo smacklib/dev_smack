@@ -185,16 +185,12 @@ public class GTools
     }
 
     /**
-     * Returns the main GCC frame.
+     * Returns the application's main frame.
      *
-     * @return
+     * @return The application's main frame.
      */
     public static JFrame getFrame() {
-
-        SingleFrameApplication self =
-                (SingleFrameApplication)SingleFrameApplication.getInstance();
-
-        return self.getMainView().getFrame();
+        return Application.getInstance( SingleFrameApplication.class ).getMainFrame();
     }
 
     /**
