@@ -162,14 +162,28 @@ public abstract class MackAction extends AbstractActionExt
 
     /**
      * Get the Action's user displayable text.
-     *
      * <p>Note that this is in raw Swing called the Action's
      * name, which is pretty confusing.</p>
+     *
      * @return The Action's user display text.
+     * @see #setText(String)
      */
     public String getText()
     {
         return getName();
+    }
+
+    /**
+     * Set the action's user displayable text.
+     * <p>Note that this is in raw Swing called the Action's
+     * name, which is pretty confusing.</p>
+     *
+     * @param text The new visible action text.
+     * @see MackAction#getText()
+     */
+    public void setText( String text )
+    {
+        setName( text );
     }
 
     private final static String CATEGORY =
@@ -225,8 +239,6 @@ public abstract class MackAction extends AbstractActionExt
 
         return this;
     }
-
-
 
     /**
      *
