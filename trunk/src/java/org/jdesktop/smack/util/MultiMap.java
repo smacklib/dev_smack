@@ -1,14 +1,13 @@
 /* $Id$
  *
- * Michael's Utilities
- *
  * Released under Gnu Public License
- * Copyright © 2008-2010 Michael G. Binz
+ * Copyright © 2008-2015 Michael G. Binz
  */
 package org.jdesktop.smack.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,5 +112,20 @@ public class MultiMap<KT1, KT2, VT>
     public Set<KT1> getPrimaryKeys()
     {
         return Collections.unmodifiableSet( _primaryMap.keySet() );
+    }
+
+    /**
+     * Get all values from this map.
+     *
+     * @return All contained values in a newly allocated map.
+     */
+    public Set<VT> getValues()
+    {
+        Set<VT> result = new HashSet<VT>();
+
+        for ( KT1 c : getPrimaryKeys() )
+            result.addAll( getAll( c ).values() );
+
+        return result;
     }
 }
