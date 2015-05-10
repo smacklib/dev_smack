@@ -28,41 +28,60 @@ public class MultiMap<KT1, KT2, VT>
     private final Map<KT1, Map<KT2, VT>> _primaryMap =
         new HashMap< KT1, Map<KT2, VT>>();
 
-
-
     /**
      * Put a value into the map.  No argument must be null.
      *
-     * @param pK1 The first key.
-     * @param pK2 The second key.
+     * @param k1 The first key.
+     * @param k2 The second key.
      * @param pValue The value.
      * @throws NullPointerException If one of the arguments was null.
      */
-    public VT put( KT1 pK1, KT2 pK2, VT pValue )
+    public VT put( KT1 k1, KT2 k2, VT pValue )
     {
         if ( pValue == null )
             throw new NullPointerException( "null value." );
 
         Map<KT2, VT> secondaryMap;
 
-        if ( _primaryMap.containsKey( pK1 ) )
+        if ( _primaryMap.containsKey( k1 ) )
         {
             // If the key was contained, we get a reference on the
             // existing map.
-            secondaryMap = _primaryMap.get( pK1 );
+            secondaryMap = _primaryMap.get( k1 );
         }
         else
         {
             // If the key was not contained, we create the sub map
             // and add it to our main map.
             secondaryMap = new HashMap<KT2, VT>();
-            _primaryMap.put( pK1, secondaryMap );
+            _primaryMap.put( k1, secondaryMap );
         }
 
-        return secondaryMap.put( pK2, pValue );
+        return secondaryMap.put( k2, pValue );
     }
 
+    /**
+     * Remove a key pair from the map.
+     *
+     * @param k1 The primary key.
+     * @param k2 The secondary key.
+     * @return The removed value. If there was no value in the
+     * map for the passed keys then {@code null} is returned.
+     */
+    public VT remove( KT1 k1, KT2 k2 )
+    {
+        if ( ! _primaryMap.containsKey( k1 ) )
+            return null;
 
+        Map<KT2,VT> secondaryMap = _primaryMap.get( k1 );
+
+        VT result = secondaryMap.remove( k2 );
+
+        if ( secondaryMap.isEmpty() )
+            _primaryMap.remove( secondaryMap );
+
+        return result;
+    }
 
     /**
      * Get a value from the map.
