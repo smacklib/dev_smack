@@ -164,9 +164,6 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  * <h2>Customizing the Look and Feel</h2>
  * <p>TODO</p>
  *
- *
- * @status REVIEWED
- *
  * @author Richard Bair
  * @author Alexander Zuev
  * @author Shai Almog
