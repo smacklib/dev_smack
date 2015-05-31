@@ -35,12 +35,6 @@ public final class MackActionManager
     private final static MackActionSorter _sorter =
         new MackActionSorter();
 
-    /**
-     *
-     */
-    private final org.jdesktop.swingx.action.ActionManager _swingxActionManager =
-        new org.jdesktop.swingx.action.ActionManager();
-
     private final ActionContainerFactory _acf =
         new ActionContainerFactory();
 
@@ -102,12 +96,15 @@ public final class MackActionManager
     public void addAction(MackAction mackAction)
     {
         assert mackAction != null;
-        Object key = mackAction.getValue(Action.ACTION_COMMAND_KEY);
+        Object key = mackAction.getKey();
         assert key != null;
-        assert null == _swingxActionManager.getAction(key);
+
+        ActionManager am = ActionManager.getInstance();
+
+        assert null == am.getAction(key);
 
         // First add the action to our embedded action manager.
-        _swingxActionManager.addAction(mackAction);
+        am.addAction(mackAction);
 
         // One key, many values.
         if (mackAction.isToolbar()) {
@@ -139,6 +136,8 @@ public final class MackActionManager
      */
     public JMenuBar getMenuBar()
     {
+        ActionManager am = ActionManager.getInstance();
+
         List<Object> menu = new ArrayList<Object>();
 
         for (String c : getOrderedMenuIds()) {
@@ -151,7 +150,7 @@ public final class MackActionManager
             // Create the list for the current menu actions.
             List<Object> current = new ArrayList<Object>();
             // Add the menu head action.
-            current.add(new DummyAction(c, _swingxActionManager)
+            current.add(new DummyAction(c, am)
                     .getActionCommand());
 
             for (MackAction cAction : _sorter
@@ -161,7 +160,7 @@ public final class MackActionManager
             menu.add(current);
         }
 
-        return _acf.createMenuBar(menu,_swingxActionManager);
+        return _acf.createMenuBar(menu,am);
     }
 
     /**

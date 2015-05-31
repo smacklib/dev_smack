@@ -287,7 +287,7 @@ public abstract class AbstractActionExt extends AbstractAction
      * @see Action#putValue
      */
     public void setActionCommand(String key) {
-        putValue(Action.ACTION_COMMAND_KEY, key);
+        setActionCommand( this, key );
     }
 
     /**
@@ -296,7 +296,33 @@ public abstract class AbstractActionExt extends AbstractAction
      * @return the action command or null
      */
     public String getActionCommand() {
-        return (String) getValue(Action.ACTION_COMMAND_KEY);
+        return getActionCommand( this );
+    }
+
+    /**
+     * Sets the action command key of the passed action. The action command key
+     * is used to identify the action.
+     * <p>
+     * This is a convenience method for <code>putValue</code> with the
+     * <code>Action.ACTION_COMMAND_KEY</code> key.
+     *
+     * @param action the target action.
+     * @param key the action command
+     * @see Action#ACTION_COMMAND_KEY
+     * @see Action#putValue
+     */
+    public static void setActionCommand( Action action,  String key ) {
+        action.putValue(Action.ACTION_COMMAND_KEY, key);
+    }
+
+    /**
+     * Returns the action command of the passed action.
+     *
+     * @param action the target action.
+     * @return the action command or null
+     */
+    public static String getActionCommand( Action action ) {
+        return (String) action.getValue(Action.ACTION_COMMAND_KEY);
     }
 
     /**

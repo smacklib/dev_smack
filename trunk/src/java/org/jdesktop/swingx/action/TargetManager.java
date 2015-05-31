@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,6 +33,8 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
+
+import org.jdesktop.application.Application;
 
 
 
@@ -84,7 +86,6 @@ import javax.swing.JComponent;
  */
 public class TargetManager {
 
-    private static TargetManager INSTANCE;
     private List<Targetable> targetList;
     private Targetable target;
     private PropertyChangeSupport propertySupport;
@@ -102,10 +103,7 @@ public class TargetManager {
      * Return the singleton instance.
      */
     public static TargetManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TargetManager();
-        }
-        return INSTANCE;
+        return Application.getInstance().getApplicationService( TargetManager.class );
     }
 
     /**
@@ -161,7 +159,7 @@ public class TargetManager {
             targets = new Targetable[0];
         } else {
             targets = new Targetable[targetList.size()];
-            targets = (Targetable[])targetList.toArray(new Targetable[targetList.size()]);
+            targets = targetList.toArray(new Targetable[targetList.size()]);
         }
         return targets;
     }
@@ -278,7 +276,6 @@ public class TargetManager {
         for (int i = 0; i < listeners.length; i++) {
             propertySupport.removePropertyChangeListener(listeners[i]);
         }
-        INSTANCE = null;
     }
 
 }
