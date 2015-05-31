@@ -23,7 +23,7 @@ package org.jdesktop.swingx.action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.Action;
@@ -33,7 +33,7 @@ import org.jdesktop.application.Application;
 
 /**
  * A class that represents an action which will fire a sequence of actions.
- * The action ids are added to the internal list. When this action is invoked,
+ * The actions are added to the internal list. When this action is invoked,
  * the event will be dispatched to the actions in the internal list.
  * <p>
  * The action ids are represented by the value of the <code>Action.ACTION_COMMAND_KEY</code>
@@ -44,22 +44,33 @@ import org.jdesktop.application.Application;
  * @see ActionManager
  * @author Mark Davidson
  */
+@SuppressWarnings("serial")
 public class CompositeAction extends AbstractActionExt {
 
-     /**
-     * Keys for storing extended action attributes. May make public.
+    /**
+     * Keys for storing extended action attributes.
      */
-    private static final String LIST_IDS = "action-list-ids";
+    private static final String LIST_IDSx = "action-list-ids";
 
+    /**
+     * Create an instance with a default name.
+     */
     public CompositeAction() {
         this("CompositeAction");
     }
 
+    /**
+     * Create an instance.
+     *
+     * @param name display name of the action
+     */
     public CompositeAction(String name) {
         super(name);
     }
 
     /**
+     * Create an instance.
+     *
      * @param name display name of the action
      * @param command the value of the action command key
      */
@@ -67,11 +78,19 @@ public class CompositeAction extends AbstractActionExt {
         super(name, command);
     }
 
+    /**
+     * Create an instance.
+     *
+     * @param name display name of the action
+     * @param icon icon to display
+     */
     public CompositeAction(String name, Icon icon) {
         super(name, icon);
     }
 
     /**
+     * Create an instance.
+     *
      * @param name display name of the action
      * @param command the value of the action command key
      * @param icon icon to display
@@ -83,15 +102,37 @@ public class CompositeAction extends AbstractActionExt {
     /**
      * Add an action id to the action list. This action will be invoked
      * when this composite action is invoked.
+     * The id must refer to an action in the application's
+     * {@link ActionManager}.
+     *
+     * @throws IllegalArgumentException If the id is not found in the
+     * ActionManager.
      */
-    @SuppressWarnings("unchecked")
     public void addAction(String id) {
-        List<String> list = (List<String>) getValue(LIST_IDS);
-        if (list == null) {
-            list = new ArrayList<String>();
-            putValue(LIST_IDS, list);
-        }
-        list.add(id);
+        ActionManager manager =
+                Application.getInstance().getApplicationService( ActionManager.class );
+
+        Action action = manager.getAction(id);
+
+        if ( action == null )
+            throw new IllegalArgumentException( id );
+
+        addAction( action );
+    }
+
+    /**
+     * Add an action id to the action list. This action will be invoked
+     * when this composite action is invoked.
+     */
+    public void addAction( Action action ) {
+        List<Action> actions = getActionsHot();
+
+        if ( actions.contains( action ) )
+            throw new IllegalArgumentException(
+                    "Duplicate action: " +
+                    AbstractActionExt.getActionCommand( action ) );
+
+        actions.add( action );
     }
 
     /**
@@ -99,9 +140,41 @@ public class CompositeAction extends AbstractActionExt {
      * action.
      * @return a valid list of action ids or null
      */
-    @SuppressWarnings("unchecked")
     public List<String> getActionIDs() {
-        return (List<String>) getValue(LIST_IDS);
+        List<String> result = new ArrayList<String>();
+
+        for ( Action c : getActionsHot() )
+            result.add( AbstractActionExt.getActionCommand( c ) );
+
+        return result;
+    }
+
+    /**
+     * Get the list of the target actions. This is the real container, i.e.
+     * actions added or removed are added or removed to this composite
+     * action.
+     *
+     * @return The list of target actions.
+     */
+    private List<Action> getActionsHot()
+    {
+        @SuppressWarnings("unchecked")
+        List<Action> result = (List<Action>) getValue(LIST_IDSx);
+        if (result == null) {
+            result = new ArrayList<Action>();
+            putValue(LIST_IDSx, result);
+        }
+        return result;
+    }
+
+    /**
+     * Get the list of the target actions.
+     *
+     * @return The list of target actions.
+     */
+    public List<Action> getActions()
+    {
+        return Collections.unmodifiableList( getActionsHot() );
     }
 
     /**
@@ -110,17 +183,9 @@ public class CompositeAction extends AbstractActionExt {
      */
     @Override
     public void actionPerformed(ActionEvent evt) {
-        ActionManager manager =
-                Application.getInstance().getApplicationService( ActionManager.class );
 
-        Iterator<String> iter = getActionIDs().iterator();
-        while (iter.hasNext()) {
-            String id = iter.next();
-            Action action = manager.getAction(id);
-            if (action != null) {
-            action.actionPerformed(evt);
-            }
-        }
+        for ( Action c : getActionsHot() )
+            c.actionPerformed( evt );
     }
 
     /**
@@ -128,15 +193,10 @@ public class CompositeAction extends AbstractActionExt {
      */
     @Override
     public void itemStateChanged(ItemEvent evt) {
-        ActionManager manager =
-                Application.getInstance().getApplicationService( ActionManager.class );
 
-        Iterator<String> iter = getActionIDs().iterator();
-        while (iter.hasNext()) {
-            String id = iter.next();
-            Action action = manager.getAction(id);
-            if (action != null && action instanceof AbstractActionExt) {
-            ((AbstractActionExt)action).itemStateChanged(evt);
+        for ( Action c : getActionsHot() ) {
+            if (c != null && c instanceof AbstractActionExt) {
+                ((AbstractActionExt)c).itemStateChanged(evt);
             }
         }
     }

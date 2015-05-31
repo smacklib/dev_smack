@@ -29,6 +29,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 
+import org.jdesktop.application.Application;
+
 /**
  * The ActionManager manages sets of <code>javax.swing.Action</code>s for an
  * application. There are convenience methods for getting and setting the state
@@ -87,7 +89,7 @@ import javax.swing.ActionMap;
  * @author Mark Davidson
  * @author Neil Weber
  */
-public class ActionManager // extends ActionMap
+public class ActionManager
 {
     private final ActionMap _actionMap = new ActionMap();
 
@@ -97,6 +99,13 @@ public class ActionManager // extends ActionMap
      * return a singleton.
      */
     public ActionManager() {
+    }
+
+    /**
+     * Return the singleton instance.
+     */
+    public static ActionManager getInstance() {
+        return Application.getInstance().getApplicationService( ActionManager.class );
     }
 
     /**
