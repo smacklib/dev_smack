@@ -7,13 +7,9 @@
  */
 package org.jdesktop.smack;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyDescriptor;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
-import java.beans.VetoableChangeSupport;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -23,6 +19,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import org.jdesktop.beans.ConstrainedProperty;
+import org.jdesktop.beans.PropertyProxy;
 import org.jdesktop.smack.util.StringUtils;
 
 
@@ -56,8 +54,12 @@ public class TextContentNotifier
 
     /**
      * The handler for property changes.
+     *
+     * One instance of this type is placed in the client properties
+     * of each target component.  It acts as a wrapper for the target
+     * adding a constrained enabled Java Bean property.
      */
-    private ConstrainedBooleanEnabled<Boolean> _targetHandler;
+    private ConstrainedProperty<Boolean> _targetHandler;
 
 
 
@@ -76,14 +78,14 @@ public class TextContentNotifier
         _source = source;
 
         // Check if we are already cooperating with the target.
-        _targetHandler = (ConstrainedBooleanEnabled<Boolean>)
+        _targetHandler = (ConstrainedProperty<Boolean>)
             target.getClientProperty( TextContentNotifier.class );
 
         if ( _targetHandler == null )
         {
             // No, so start cooperation.
             _targetHandler =
-                new ConstrainedBooleanEnabled<Boolean>( _targetProperty );
+                new ConstrainedProperty<Boolean>( _targetProperty );
 
             target.putClientProperty(
                     TextContentNotifier.class,
@@ -110,14 +112,14 @@ public class TextContentNotifier
         _source = source;
 
         // Check if we are already cooperating with the target.
-        _targetHandler = (ConstrainedBooleanEnabled<Boolean>)
+        _targetHandler = (ConstrainedProperty<Boolean>)
             target.getValue( TextContentNotifier.class.getName() );
 
         if ( _targetHandler == null )
         {
             // No, so start cooperation.
             _targetHandler =
-                new ConstrainedBooleanEnabled<Boolean>( _targetProperty );
+                new ConstrainedProperty<Boolean>( _targetProperty );
 
             target.putValue(
                 TextContentNotifier.class.getName(),
@@ -270,130 +272,6 @@ public class TextContentNotifier
                 throw new PropertyVetoException( null, evt );
         }
     };
-
-
-
-    /**
-     * One instance of this type is placed in the client properties
-     * of each target component.  It acts as a wrapper for the target
-     * adding a constrained enabled Java Bean property.
-     */
-    @SuppressWarnings("serial")
-    private static class ConstrainedBooleanEnabled<T>
-        extends VetoableChangeSupport
-    {
-        private final PropertyProxy<T> _target;
-
-        /**
-         * Create an instance for the given target.
-         */
-        public ConstrainedBooleanEnabled( PropertyProxy<T> target )
-        {
-            super( target );
-            _target = target;
-        }
-
-        public void set( T what )
-            throws PropertyVetoException
-        {
-            T old = _target.get();
-            fireVetoableChange( _target.getName(), old, what );
-            _target.set( what );
-        }
-    }
-
-
-
-    /**
-     * Allows to set a JavaBean property in a relatively simple way.  An
-     * instance if this class represents the property on the target object
-     * in a (runtime) type-safe way.
-     */
-    private static class PropertyProxy<T>
-    {
-        private final PropertyDescriptor _targetProperty;
-        private final Object _targetObject;
-
-        /**
-         * Create an instance of the proxy and ensures that the property is
-         * actually available on the target.  'Available' means that the
-         * class of the target object follows the Java Beans conventions.
-         *
-         * @param propName The name of the property.
-         * @param target The target object. Null not allowed.
-         */
-        public PropertyProxy( String propName, Object target )
-        {
-            try
-            {
-                _targetProperty = new PropertyDescriptor( propName, target.getClass() );
-
-                if ( _targetProperty.getReadMethod() == null )
-                    throw new IllegalArgumentException( "target has no read method" );
-                if ( _targetProperty.getWriteMethod() == null )
-                    throw new IllegalArgumentException( "target has no write method" );
-
-                _targetObject = target;
-            }
-            catch ( IntrospectionException e )
-            {
-                throw new IllegalArgumentException();
-            }
-        }
-
-
-
-        /**
-         * Get the property's value.
-         *
-         * @return The property's value.
-         */
-        @SuppressWarnings("unchecked")
-        T get()
-        {
-            try
-            {
-                return (T)_targetProperty.getReadMethod().invoke( _targetObject );
-            }
-            catch ( InvocationTargetException e )
-            {
-                throw new RuntimeException( "Getter failed", e.getCause() );
-            }
-            catch ( Exception e )
-            {
-                throw new RuntimeException( "Getter not callable", e);
-            }
-        }
-        /**
-         * Set the property's value.
-         *
-         * @param value The value to set.
-         */
-        void set( T value )
-        {
-            try
-            {
-                _targetProperty.getWriteMethod().invoke( _targetObject, value );
-            }
-            catch ( InvocationTargetException e )
-            {
-                throw new RuntimeException( "Setter failed", e.getCause() );
-            }
-            catch ( Exception e )
-            {
-                throw new RuntimeException( "Setter not callable", e);
-            }
-        }
-        /**
-         * Get the property's name.
-         *
-         * @return The property's name.
-         */
-        String getName()
-        {
-            return _targetProperty.getName();
-        }
-    }
 
 
 

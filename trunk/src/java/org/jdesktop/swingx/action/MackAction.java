@@ -83,11 +83,6 @@ public abstract class MackAction extends AbstractActionExt
     private static final long serialVersionUID = -2511845641813776124L;
 
 
-//    private static Logger log =
-//        Logger.getLogger( MackAction.class.getName() );
-
-
-
     private final ResourceMap _resourceMap;
 
     /**
@@ -242,7 +237,7 @@ public abstract class MackAction extends AbstractActionExt
 
     /**
      *
-     * @return
+     * @return True if the action is placed into the application toolbar.
      */
     public boolean isToolbar()
     {
@@ -255,9 +250,9 @@ public abstract class MackAction extends AbstractActionExt
 
 
     /**
-     * Action should show up in the toolbar.
+     * Action should show up in the application popup.
      *
-     * @param visible True if it is to show up in the toolbar.
+     * @param visible True if it is to show up in the application popup.
      */
     public MackAction setPopup( boolean visible )
     {
@@ -272,7 +267,7 @@ public abstract class MackAction extends AbstractActionExt
 
     /**
      *
-     * @return
+     * @return True if this action is part of the application popup.
      */
     public boolean isPopup()
     {
@@ -285,9 +280,10 @@ public abstract class MackAction extends AbstractActionExt
 
 
     /**
+     * Check if the passed action is part of the application toolbar.
      *
-     * @param action
-     * @return
+     * @param action The action to check.
+     * @return True if the action is in the application toolbar.
      */
     public static boolean inToolbar( Action action )
     {
@@ -303,8 +299,8 @@ public abstract class MackAction extends AbstractActionExt
     /**
      * The action should show up in the menu.
      *
-     * @param visible
-     * @return
+     * @param visible True if part of menu.
+     * @return The reference to the action (this).
      */
     public MackAction setMenubar( boolean visible )
     {
@@ -317,7 +313,7 @@ public abstract class MackAction extends AbstractActionExt
 
     /**
      *
-     * @return
+     * @return True if the action is part of the application menubar.
      */
     public boolean isMenubar()
     {
@@ -328,9 +324,10 @@ public abstract class MackAction extends AbstractActionExt
     }
 
     /**
+     * Check if the passed action is in the application menubar.
      *
-     * @param action
-     * @return
+     * @param action The action to check.
+     * @return True if part of the application menubar.
      */
     public static boolean inMenubar( Action action )
     {
@@ -395,9 +392,10 @@ public abstract class MackAction extends AbstractActionExt
 
 
     /**
+     * Get an optional component tied to the action.
      *
-     * @param a
-     * @return
+     * @param a The action to check.
+     * @return An attached component or null.
      */
     public static Component getActionComponent( Action a )
     {
@@ -431,8 +429,8 @@ public abstract class MackAction extends AbstractActionExt
      * for this action.  Typically if a name of 'msg' is passed the name
      * is extended to 'ActionName.Action.msg'.
      *
-     * @param simpleName
-     * @return
+     * @param simpleName The base name.
+     * @return The resource key name.
      */
     protected final String makeResourceKeyName( String simpleName )
     {
@@ -584,7 +582,7 @@ public abstract class MackAction extends AbstractActionExt
 
     /**
      *
-     * @param task
+     * @param task The task to execute.
      */
     protected final void execute( Task<?,?> task )
     {
@@ -595,9 +593,10 @@ public abstract class MackAction extends AbstractActionExt
 
 
     /**
+     * Get the resource map for the passed class.
      *
-     * @param application
-     * @return
+     * @param classs The key class.
+     * @return The resource map.
      */
     private static ResourceMap resourceMap( Class<?> classs )
     {

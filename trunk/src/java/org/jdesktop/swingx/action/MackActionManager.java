@@ -60,9 +60,9 @@ public final class MackActionManager
     }
 
     /**
+     * Get the ordered menu ids.
      *
-     * @param z
-     * @return
+     * @return The ordered menu ids.
      */
     private static List<String> getOrderedMenuIds()
     {
@@ -91,7 +91,7 @@ public final class MackActionManager
      * Add an action to the <code>ActionManager</code>'s set of managed
      * actions.
      *
-     * @param ca The action to add.
+     * @param mackAction The action to add.
      */
     public void addAction(MackAction mackAction)
     {
