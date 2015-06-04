@@ -66,7 +66,16 @@ public class PropertyProxy<T>
         }
     }
 
-
+    /**
+     * Get the property's type.
+     *
+     * @return The property's type.
+     */
+    @SuppressWarnings("unchecked")
+    public Class<T> getType()
+    {
+        return (Class<T>)_targetProperty.getPropertyType();
+    }
 
     /**
      * Get the property's value.
@@ -80,8 +89,6 @@ public class PropertyProxy<T>
                 _targetProperty.getReadMethod(),
                 _targetObject );
     }
-
-
 
     /**
      * Set the property's value.
