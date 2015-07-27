@@ -93,6 +93,10 @@ public abstract class ResourceConverter {
         this.type = type;
     }
 
+    protected Class<?> getType() {
+        return type;
+    }
+
     /**
      * Checks whether {@code testType} can be converted with this converter.
      * @param testType
@@ -161,9 +165,16 @@ public abstract class ResourceConverter {
             }
         }
 
+        // We did not find a resource converter so far, so we perform
+        // a fallback strategy:  If the sought type is not an array...
         if ( ! type.isArray() )
-            return null;
+            // ... we try to interpret the string from the resources
+            // as a class name.
+            return new ClassResourceConverter( type );
 
+        // If the sought type is an array, we try to resolve this via
+        // its component type using the normal resource converter lookup
+        // strategy.
         ResourceConverter rc = forType( type.getComponentType() );
         if ( rc == null )
             return null;
@@ -190,6 +201,39 @@ public abstract class ResourceConverter {
      */
     private static List<ResourceConverter> resourceConverters =
             new ArrayList<ResourceConverter>(Arrays.asList(resourceConvertersArray));
+
+    /**
+     * A ResourceConverter that takes the passed string as a classname.
+     * Checks whether the class can be loaded and is assignable to
+     * the target type.  If this is the case creates and returns an instance
+     * of the configured class using the default constructor.
+     */
+    private static class ClassResourceConverter extends ResourceConverter
+    {
+        protected ClassResourceConverter( Class<?> type )
+        {
+            super( type );
+        }
+
+        @Override
+        public Object parseString( String s, ResourceMap r )
+                throws ResourceConverterException
+        {
+            try
+            {
+                Class<?> resultClass = Class.forName( s );
+
+                if ( ! getType().isAssignableFrom( resultClass ) )
+                    throw new ClassCastException( getType().getName() + " is not assignable from " + resultClass.getName() );
+
+                return resultClass.newInstance();
+            }
+            catch ( Exception e )
+            {
+                throw new ResourceConverterException( getType().getName(), s, e );
+            }
+        }
+    }
 
     private static class StringResourceConverter extends ResourceConverter {
 
