@@ -1,8 +1,8 @@
 /* $Id$
  *
- * smack
+ * http://sourceforge.net/projects/smackfw/
  *
- * Copyright © 2005-2012 Michael G. Binz
+ * Copyright Â© 2005-2012 Michael G. Binz
  */
 package org.jdesktop.application.util;
 
