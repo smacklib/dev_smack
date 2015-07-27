@@ -31,6 +31,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.OSXAdapter;
 import org.jdesktop.application.util.PlatformType;
+import org.jdesktop.smack.util.StringUtils;
 
 /**
  * The base class for Swing applications.
@@ -138,6 +139,8 @@ public abstract class Application extends BaseApplication
     public static final String KEY_APPLICATION_TITLE = "Application.title";
     public static final String KEY_APPLICATION_ICON = "Application.icon";
     public static final String KEY_APPLICATION_VENDOR_ID = "Application.vendorId";
+    private static final String KEY_APPLICATION_LOOKANDFEEL =
+            "Application.lookAndFeel";
 
     private static Application application = null;
     private final List<ExitListener> _exitListeners =
@@ -218,7 +221,7 @@ public abstract class Application extends BaseApplication
      * @param applicationClass the {@code Application} class to create
      * @return created application instance
      */
-    static <T extends Application> T create(Class<T> applicationClass) throws Exception {
+    private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
 
         if (!Beans.isDesignTime()) {
             /* A common mistake for privileged applications that make
@@ -252,7 +255,7 @@ public abstract class Application extends BaseApplication
         ApplicationContext ctx = application.getContext();
 
         // Load the application resource map, notably the
-        // Application.* properties.s
+        // Application.* properties.
         ResourceMap appResourceMap = ctx.getResourceMap();
         final PlatformType platform = AppHelper.getPlatform();
         appResourceMap.putResource(ResourceMap.KEY_PLATFORM, platform);
@@ -266,39 +269,92 @@ public abstract class Application extends BaseApplication
             }
         }
 
-        if (!Beans.isDesignTime()) {
-            // Initialize the UIManager lookAndFeel property with the
-            // Application.lookAndFeel resource.  If the resource
-            // isn't defined we default to "system".
-            String key = "Application.lookAndFeel";
-            String lnfResource = appResourceMap.getString(key);
-            String lnf = (lnfResource == null) ? "system" : lnfResource;
-            try {
-                if (lnf.equalsIgnoreCase("system")) {
-                    String name = UIManager.getSystemLookAndFeelClassName();
-                    UIManager.setLookAndFeel(name);
-                } else if (lnf.equalsIgnoreCase("nimbus")) {
-                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                        if ("Nimbus".equals(info.getName())) {
-                            UIManager.setLookAndFeel(info.getClassName());
-                            break;
-                	    }
-                    }
-                } else if (!lnf.equalsIgnoreCase("default")) {
-                    UIManager.setLookAndFeel(lnf);
-                }
-            } catch (Exception e) {
-                String s = "Couldn't set LookandFeel " + key + " = \"" + lnfResource + "\"";
-                LOG.log(Level.WARNING, s, e);
-            }
-        }
+        if (!Beans.isDesignTime())
+            setLookAndFeel( appResourceMap );
 
         return application;
     }
 
-    /* Calls the ready method when the eventQ is quiet.
+    /**
+     * Sets the look and feel.
+     *
+     * Uses the value of {@link #KEY_APPLICATION_LOOKANDFEEL} from the
+     * application resources.
+     * If this key is not set, then the system L&F is used.
+     * If set to 'default', then no L&F is set.
+     * Otherwise the value is used to look up a L&F from
+     * the installed L&Fs by name case insensitive.
+     * If not found, then 'system' is used.
      */
-    void waitForReady() {
+    private static void setLookAndFeel( ResourceMap appResourceMap )
+    {
+        // Initialize the UIManager lookAndFeel property with the
+        // Application.lookAndFeel resource.  If the resource
+        // isn't defined we default to "system".
+        String lnf =
+                appResourceMap.getString(KEY_APPLICATION_LOOKANDFEEL);
+        if ( StringUtils.isEmpty( lnf ) )
+            lnf = "system";
+
+        // For default nothing to do.
+        if ( "default".equalsIgnoreCase( lnf ) )
+            return;
+
+        if ( "system".equalsIgnoreCase( lnf ) )
+        {
+            setSystemLnf();
+            return;
+        }
+
+        String classname = null;
+        for ( LookAndFeelInfo c : UIManager.getInstalledLookAndFeels() )
+            if ( lnf.equalsIgnoreCase( c.getName() ) )
+            {
+                classname = c.getClassName();
+                break;
+            }
+
+        if ( StringUtils.isEmpty( classname ) )
+        {
+            LOG.warning(
+                    "LookAndFeel not found: " +
+                    lnf +
+                    ". Using system lnf." );
+            setSystemLnf();
+            return;
+        }
+
+        try {
+                UIManager.setLookAndFeel(classname);
+        } catch (Exception e) {
+            LOG.warning(
+                    "LookAndFeel failed to load: " +
+                    lnf +
+                    ". Using system lnf." );
+            setSystemLnf();
+        }
+    }
+
+    /**
+     * Sets the system look and feel.
+     */
+    private static void setSystemLnf()
+    {
+        try
+        {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName() );
+        }
+        catch ( Exception e )
+        {
+            LOG.log( Level.WARNING, "Could not set system look and feel.", e );
+        }
+    }
+
+    /**
+     *  Calls the ready method when the eventQ is quiet.
+     */
+    private void waitForReady() {
         new DoWaitForEmptyEventQ().execute();
     }
 
@@ -739,18 +795,13 @@ public abstract class Application extends BaseApplication
     {
         try
         {
-            return getInstance().getApplicationService( ResourceManager.class );
+            return AppHelper.getResourceManager( getInstance() );
         }
         catch ( Exception e )
         {
             LOG.warning( "Creating standalone ResourceManager." );
             return new ResourceManager( Application.class );
         }
-    }
-
-    ResourceManager getResourceManagerForFriends()
-    {
-        return getApplicationService( ResourceManager.class );
     }
 
     /**
