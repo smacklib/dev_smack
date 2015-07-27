@@ -42,7 +42,7 @@
   <property
     description="The name of the target directory for the distributables."
     name="out.dist"
-    value="${build.dir}/dist"/>
+    value="${build.dir}/dist/${ant.project.name}-${build.number}"/>
 
   <property
     description="The name of a directory for the project web site."
@@ -154,15 +154,19 @@
   </target>
 
   <target name="jar-javadoc" depends="resource, jdoc">
-  	<zip destfile="${out.dist}/${ant.project.name}-javadoc-${build.number}.zip"
+    <zip destfile="${out.dist}/${ant.project.name}-javadoc-${build.number}.zip"
   	       basedir="${out.web}/javadoc"
   	  />
   </target>
-    
+
   <target description="Copies the project libs to the dist position."
           name="dist"
           depends="jar-bin, jar-src, jar-javadoc">
-      <echo>${java.version}</echo>
+    <echo>${java.version}</echo>
+    <zip destfile="${out.dist}/../${ant.project.name}-${build.number}.zip"
+           basedir="${out.dist}"
+      />
+  	
   </target>
 
   <target name="release_sf">
