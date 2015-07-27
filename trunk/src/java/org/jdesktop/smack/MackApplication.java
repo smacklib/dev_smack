@@ -140,7 +140,7 @@ public abstract class MackApplication<MC extends Component>
     /**
      * Ensures that the component name is set to 'mainComponent'.
      *
-     * @return
+     * @return The main component with a valid component name.
      */
     private Component createMainInternal()
     {
@@ -166,7 +166,8 @@ public abstract class MackApplication<MC extends Component>
 
     /**
      * Allows an application to access the status bar.
-     * @return
+     *
+     * @return The application status bar.
      */
     protected final MackStatusBar getStatusBar()
     {
@@ -175,7 +176,8 @@ public abstract class MackApplication<MC extends Component>
 
     /**
      * Get the application's toolbar.
-     * @return
+     *
+     * @return The application toolbar.
      */
     protected final JToolBar getToolbar()
     {
@@ -206,7 +208,7 @@ public abstract class MackApplication<MC extends Component>
     /**
      * Add the Mack-internal actions. If overriding call super.
      *
-     * @param actionManager
+     * @param actionManager The action manager to add actions.
      */
     void addActionsInternal( MackActionManager actionManager )
     {

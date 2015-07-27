@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JComponent;
 
+import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.beans.AbstractBeanEdt;
 
 /**
@@ -65,8 +66,8 @@ public final class ApplicationContext extends AbstractBeanEdt {
      * @deprecated Use Application.getResourceManager
      */
     @Deprecated
-    public final ResourceManager getResourceManager() {
-        return application.getResourceManagerForFriends();
+    private final ResourceManager getResourceManager() {
+        return AppHelper.getResourceManager( application );
     }
 
     /**
