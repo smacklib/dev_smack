@@ -1,3 +1,9 @@
+/* $Id$
+ *
+ * http://sourceforge.net/projects/smackfw/
+ *
+ * Copyright © 2005-2012 Michael G. Binz
+ */
 package org.jdesktop.swingx;
 
 import java.awt.Component;
@@ -24,6 +30,7 @@ import javax.swing.border.Border;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.util.AppHelper;
 
 /**
  * Tools.
@@ -294,34 +301,25 @@ public class GTools
     /**
      * The standard gap between the components.
      */
-    public static final int GAP = 10;
+    static final int GAP = 10;
 
     /**
      * Empty border with GAP space on all sides.
      */
-    public static final Border GAP_BORDER = BorderFactory.createEmptyBorder(
+    static final Border GAP_BORDER = BorderFactory.createEmptyBorder(
             GAP, GAP, GAP, GAP);
 
     /**
      * Returns the resource map for the given class.
      *
-     * @param pClass
-     * @return
+     * @param pClass The target class.
+     * @return The associated ResourceMap
+     * @deprecated Use {@link AppHelper#getResourceMap(Application, Class)}
      */
-    public static ResourceMap getResourceMap(Class<?> pClass)
+    @Deprecated
+    private static ResourceMap getResourceMap(Class<?> pClass)
     {
         return Application.getResourceManager().getResourceMap(pClass);
-    }
-
-    /**
-     * Simplified resource string resolution.
-     *
-     * @param key The key to resolve.
-     * @return The resource value for the passed key.
-     */
-    public static String getResource( String key )
-    {
-        return Application.getInstance().getContext().getResourceMap().getString( key );
     }
 
     /**

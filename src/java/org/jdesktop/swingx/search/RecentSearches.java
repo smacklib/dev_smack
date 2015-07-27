@@ -22,10 +22,10 @@ import org.jdesktop.swingx.plaf.UIManagerExt;
 /**
  * Maintains a list of recent searches and persists this list automatically
  * using {@link Preferences}. A recent searches popup menu can be installed on
- * a {@link JXSearchField} using {@link #install(JXSearchField)}.
- * 
+ * a {@link JXSearchField} using {@link #install(JTextField)}.
+ *
  * @author Peter Weishapl <petw@gmx.net>
- * 
+ *
  */
 public class RecentSearches implements ActionListener {
 	private Preferences prefsNode;
@@ -40,7 +40,7 @@ public class RecentSearches implements ActionListener {
 	 * Creates a list of recent searches and uses <code>saveName</code> to
 	 * persist this list under the {@link Preferences} user root node. Existing
 	 * entries will be loaded automatically.
-	 * 
+	 *
 	 * @param saveName
 	 *            a unique name for saving this list of recent searches
 	 */
@@ -52,8 +52,8 @@ public class RecentSearches implements ActionListener {
 	 * Creates a list of recent searches and uses <code>saveName</code> to
 	 * persist this list under the <code>prefs</code> node. Existing entries
 	 * will be loaded automatically.
-	 * 
-	 * @param prefsNode
+	 *
+	 * @param prefs
 	 *            the preferences node under which this list will be persisted.
 	 *            If prefsNode is <code>null</code> the preferences node will
 	 *            be set to the user root node
@@ -114,10 +114,10 @@ public class RecentSearches implements ActionListener {
 	 * <code>null</code> or empty nothing will be added. If the search string
 	 * already exists, the old element will be removed. The modified list will
 	 * automatically be persisted.
-	 * 
+	 *
 	 * If the number of elements exceeds the maximum number of entries, the last
 	 * entry will be removed.
-	 * 
+	 *
 	 * @see #getMaxRecents()
 	 * @param searchString
 	 *            the search string to add
@@ -141,7 +141,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Returns all recent searches in this list.
-	 * 
+	 *
 	 * @return the recent searches
 	 */
 	public String[] getRecentSearches() {
@@ -150,7 +150,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * The number of recent searches.
-	 * 
+	 *
 	 * @return number of recent searches
 	 */
 	public int getLength() {
@@ -168,7 +168,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Returns the maximum number of recent searches.
-	 * 
+	 *
 	 * @see #put(String)
 	 * @return the maximum number of recent searches
 	 */
@@ -178,7 +178,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Set the maximum number of recent searches.
-	 * 
+	 *
 	 * @see #put(String)
 	 * @param maxRecents
 	 *            maximum number of recent searches
@@ -190,7 +190,7 @@ public class RecentSearches implements ActionListener {
 	/**
 	 * Add a change listener. A {@link ChangeEvent} will be fired whenever a
 	 * search is added or removed.
-	 * 
+	 *
 	 * @param l
 	 *            the {@link ChangeListener}
 	 */
@@ -200,7 +200,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Remove a change listener.
-	 * 
+	 *
 	 * @param l
 	 *            a registered {@link ChangeListener}
 	 */
@@ -210,7 +210,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Returns all registered {@link ChangeListener}s.
-	 * 
+	 *
 	 * @return all registered {@link ChangeListener}s
 	 */
 	public ChangeListener[] getChangeListeners() {
@@ -227,11 +227,11 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Creates the recent searches popup menu which will be used by
-	 * {@link #install(JXSearchField)} to set a search popup menu on
+	 * {@link #install(JTextField)} to set a search popup menu on
 	 * <code>searchField</code>.
-	 * 
+	 *
 	 * Override to return a custom popup menu.
-	 * 
+	 *
 	 * @param searchField
 	 *            the search field the returned popup menu will be installed on
 	 * @return the recent searches popup menu
@@ -242,14 +242,14 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * Install a recent the searches popup menu returned by
-	 * {@link #createPopupMenu(JXSearchField)} on <code>searchField</code>.
+	 * {@link #createPopupMenu(JTextField)} on <code>searchField</code>.
 	 * Also registers an {@link ActionListener} on <code>searchField</code>
 	 * and adds the search string to the list of recent searches whenever a
 	 * {@link ActionEvent} is received.
-	 * 
+	 *
 	 * Uses {@link NativeSearchFieldSupport} to achieve compatibility with the native
 	 * search field support provided by the Mac Look And Feel since Mac OS 10.5.
-	 * 
+	 *
 	 * @param searchField
 	 *            the search field to install a recent searches popup menu on
 	 */
@@ -262,7 +262,7 @@ public class RecentSearches implements ActionListener {
 	 * Remove the recent searches popup from <code>searchField</code> when
 	 * installed and stop listening for {@link ActionEvent}s fired by the
 	 * search field.
-	 * 
+	 *
 	 * @param searchField
 	 *            uninstall recent searches popup menu
 	 */
@@ -285,7 +285,7 @@ public class RecentSearches implements ActionListener {
 
 	/**
 	 * The popup menu returned by
-	 * {@link RecentSearches#createPopupMenu(JXSearchField)}.
+	 * {@link RecentSearches#createPopupMenu(JTextField)}.
 	 */
 	public static class RecentSearchesPopup extends JPopupMenu implements ActionListener, ChangeListener {
 		private RecentSearches recentSearches;
@@ -297,7 +297,7 @@ public class RecentSearches implements ActionListener {
 		/**
 		 * Creates a new popup menu based on the given {@link RecentSearches}
 		 * and {@link JXSearchField}.
-		 * 
+		 *
 		 * @param recentSearches
 		 * @param searchField
 		 */

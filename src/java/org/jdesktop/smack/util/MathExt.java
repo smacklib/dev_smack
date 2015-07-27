@@ -15,6 +15,7 @@ import java.awt.Point;
  *
  * @version $Revision$
  * @author Michael Binz
+ * @author Dave Hale, Landmark Graphics, 01/24/96
  */
 public class MathExt
 {
@@ -195,7 +196,6 @@ public class MathExt
      * @param real The real part of the data.
      * @param imag The imaginary part of the data.
      * @throws IllegalArgumentException If n is not a power of two.
-     * @author Dave Hale, Landmark Graphics, 01/24/96
      */
     public static void complexToComplex(
         int sign,
@@ -229,7 +229,6 @@ public class MathExt
      * @param real The real part of the data.
      * @param imag The imaginary part of the data.
      * @throws IllegalArgumentException If n is not a power of two.
-     * @author Dave Hale, Landmark Graphics, 01/24/96
      */
     public static void complexToComplex(
       int sign,
@@ -261,7 +260,6 @@ public class MathExt
      *
      * @throws ArrayIndexOutOfBoundsException
      *             If parameter <code>n</code> is not a power of two.
-     * @author Dave Hale, Landmark Graphics, 01/24/96
      */
     private static void complexToComplexImpl(
             int sign,
@@ -329,7 +327,6 @@ public class MathExt
      *
      * @throws ArrayIndexOutOfBoundsException
      *             If parameter <code>n</code> is not a power of two.
-     * @author Dave Hale, Landmark Graphics, 01/24/96
      */
     private static void complexToComplexImpl( int sign, int n, double ar[],
             double ai[] )
