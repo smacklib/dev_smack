@@ -342,7 +342,6 @@ public final class ResourceManager
      * allowed, array instances are not allowed, primitive classes are not
      * allowed.
      * @throws IllegalArgumentException In case a bad object was passed.
-     * @author Michael Binz
      */
     private void injectResources( Object o, Locale locale )
     {
