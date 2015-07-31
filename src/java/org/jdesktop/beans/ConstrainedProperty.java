@@ -23,12 +23,12 @@ import java.beans.VetoableChangeSupport;
 public class ConstrainedProperty<T>
     extends VetoableChangeSupport
 {
-    private final PropertyProxy<T> _target;
+    private final PropertyProxy<T,?> _target;
 
     /**
      * Create an instance for the given target.
      */
-    public ConstrainedProperty( PropertyProxy<T> target )
+    public ConstrainedProperty( PropertyProxy<T,?> target )
     {
         super( target );
         _target = target;

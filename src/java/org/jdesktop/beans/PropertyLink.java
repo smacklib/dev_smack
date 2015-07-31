@@ -27,9 +27,7 @@ public class PropertyLink
 {
     private final String _propertySrcName;
 
-    private PropertyProxy<Object> _targetProperty;
-
-
+    private PropertyProxy<Object,Object> _targetProperty;
 
     /**
      * Creates a property update link between the source and target.
@@ -71,7 +69,7 @@ public class PropertyLink
         pa.addPropertyChangeListener( _listener );
 
         _targetProperty =
-            new PropertyProxy<Object>( propTgtName, target );
+            new PropertyProxy<Object,Object>( propTgtName, target );
     }
 
 
