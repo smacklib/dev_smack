@@ -5,10 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
-
 package org.jdesktop.smack.util;
-
-
 
 /**
  * General utilities.
@@ -23,8 +20,6 @@ public class JavaUtils
         throw new AssertionError();
     }
 
-
-
     /**
      * Compare two objects, handle {@code null}.
      *
@@ -38,5 +33,17 @@ public class JavaUtils
         if ( a == null )
             return b == null;
         return a.equals( b );
+    }
+
+    /**
+     * Test if an array is empty.
+     *
+     * @param array The array to test. {@code null} is allowed.
+     * @return {@code true} if the array is not null and has a length greater
+     * than zero.
+     */
+    public static <T> boolean isEmptyArray( T[] array )
+    {
+        return array == null || array.length == 0;
     }
 }
