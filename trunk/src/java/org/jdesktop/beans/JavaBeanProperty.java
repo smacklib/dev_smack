@@ -12,7 +12,6 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +35,7 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
     private B _host;
     private Class<T> _type;
 
-    private final List<PropertyChangeListener> _pcls;
+//    private final List<PropertyChangeListener> _pcls;
 
     public JavaBeanProperty( B host, T initialValue, String propertyName )
     {
@@ -48,7 +47,7 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
         _value = initialValue;
         _name = propertyName;
 
-        _pcls = Collections.unmodifiableList( getPcls( host, propertyName ) );
+//        _pcls = Collections.unmodifiableList( getPcls( host, propertyName ) );
     }
 
     @Override
@@ -57,18 +56,18 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
         if ( JavaUtils.equals( _value, newValue ) )
             return;
 
-        if ( _pcls.size() > 0 )
+        T oldValue = _value;
+        _value = newValue;
+
+        List<PropertyChangeListener> pcls = getPcls( _host, _name );
+        if ( pcls.size() > 0 )
         {
-            T oldValue = _value;
-
             PropertyChangeEvent evt =
-                    new PropertyChangeEvent( _host, _name, oldValue, _value );
+                    new PropertyChangeEvent( _host, _name, oldValue, newValue );
 
-            for ( PropertyChangeListener c : _pcls )
+            for ( PropertyChangeListener c : pcls )
                 c.propertyChange( evt );
         }
-
-        _value = newValue;
     }
 
     private List<PropertyChangeListener> getPcls( Object bean, String propertyName )
