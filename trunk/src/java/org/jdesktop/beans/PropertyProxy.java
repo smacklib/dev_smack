@@ -13,13 +13,13 @@ import java.beans.PropertyDescriptor;
 import org.jdesktop.smack.util.ReflectionUtils;
 
 /**
- * An instance if this class represents a property on the target object
+ * An instance of this class represents a property on the target object
  * in a (runtime) type-safe way.
  *
  * @version $Rev$
  * @author Michael Binz
  */
-public class PropertyProxy<T> implements PropertyType<T>
+public class PropertyProxy<T,B> implements PropertyType<T,B>
 {
     /**
      * The property descriptor of the proxied property.
@@ -31,7 +31,7 @@ public class PropertyProxy<T> implements PropertyType<T>
     /**
      * The target object.
      */
-    private final Object _targetObject;
+    private final B _targetObject;
 
 
 
@@ -41,22 +41,22 @@ public class PropertyProxy<T> implements PropertyType<T>
      * class of the target object follows the Java Beans conventions.
      *
      * @param propName The name of the property.
-     * @param target The target object. Null not allowed.
+     * @param beanInstance The target object. Null not allowed.
      * @throws IllegalArgumentException of the property is not supported
      * by the target object.
      */
-    public PropertyProxy( String propName, Object target )
+    public PropertyProxy( String propName, B beanInstance )
     {
         try
         {
-            _targetProperty = new PropertyDescriptor( propName, target.getClass() );
+            _targetProperty = new PropertyDescriptor( propName, beanInstance.getClass() );
 
             if ( _targetProperty.getReadMethod() == null )
                 throw new IllegalArgumentException( "target has no read method" );
             if ( _targetProperty.getWriteMethod() == null )
                 throw new IllegalArgumentException( "target has no write method" );
 
-            _targetObject = target;
+            _targetObject = beanInstance;
         }
         catch ( IntrospectionException e )
         {
@@ -104,8 +104,6 @@ public class PropertyProxy<T> implements PropertyType<T>
                 value );
     }
 
-
-
     /**
      * Get the property name.
      *
@@ -116,8 +114,6 @@ public class PropertyProxy<T> implements PropertyType<T>
     {
         return _targetProperty.getName();
     }
-
-
 
     /**
      * Returns a string representation of an instance for debug purposes.
@@ -133,5 +129,11 @@ public class PropertyProxy<T> implements PropertyType<T>
             .append( '@' )
             .append( _targetProperty.getName() )
             .toString();
+    }
+
+    @Override
+    public B getBean()
+    {
+        return _targetObject;
     }
 }

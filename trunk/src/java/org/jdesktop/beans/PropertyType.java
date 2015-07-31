@@ -13,7 +13,7 @@ package org.jdesktop.beans;
  * @version $Rev$
  * @author Michael Binz
  */
-public interface PropertyType<T>
+public interface PropertyType<T,B>
 {
     /**
      * Get the property's type.
@@ -42,4 +42,11 @@ public interface PropertyType<T>
      * @return The property name.
      */
     String getName();
+
+    /**
+     * Get the property's home Bean instance.
+     *
+     * @return The property's home Bean instance.
+     */
+    B getBean();
 }

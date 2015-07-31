@@ -72,8 +72,8 @@ public class TextContentNotifier
     @SuppressWarnings("unchecked")
     public TextContentNotifier( JTextComponent source, JComponent target )
     {
-        PropertyProxy<Boolean> _targetProperty =
-            new PropertyProxy<Boolean>( ENABLED_PROP_NAME, target );
+        PropertyProxy<Boolean,JComponent> _targetProperty =
+            new PropertyProxy<Boolean,JComponent>( ENABLED_PROP_NAME, target );
 
         _source = source;
 
@@ -106,8 +106,8 @@ public class TextContentNotifier
     @SuppressWarnings("unchecked")
     public TextContentNotifier( JTextComponent source, Action target )
     {
-        PropertyProxy<Boolean> _targetProperty =
-            new PropertyProxy<Boolean>( ENABLED_PROP_NAME, target );
+        PropertyProxy<Boolean,Action> _targetProperty =
+            new PropertyProxy<Boolean,Action>( ENABLED_PROP_NAME, target );
 
         _source = source;
 

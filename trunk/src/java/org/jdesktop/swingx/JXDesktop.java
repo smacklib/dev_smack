@@ -670,8 +670,8 @@ public class JXDesktop extends JDesktopPane
         }
     }
 
-    public final JavaBeanProperty<Image>  P_BACKGROUND_IMAGE =
-            new JavaBeanProperty<Image>( this, null, "backgroundImage" );
+    public final JavaBeanProperty<Image,JXDesktop>  P_BACKGROUND_IMAGE =
+            new JavaBeanProperty<Image,JXDesktop>( this, null, "backgroundImage" );
 
     /**
      * Set a new background image.  This property is bound.

@@ -26,7 +26,7 @@ public class TextSelectResponder implements FocusListener
     /**
      * The single instance.
      */
-    public final TextSelectResponder INSTANCE = new TextSelectResponder();
+    public static final TextSelectResponder INSTANCE = new TextSelectResponder();
 
 
 

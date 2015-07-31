@@ -7,11 +7,18 @@
  */
 package org.jdesktop.beans;
 
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdesktop.smack.util.JavaUtils;
+import org.jdesktop.smack.util.ReflectionUtils;
 
 /**
  * Support class for implementing java bean properties on components.
@@ -19,22 +26,29 @@ import org.jdesktop.smack.util.JavaUtils;
  * @version $Rev$
  * @author Michael Binz
  */
-public class JavaBeanProperty<T> implements PropertyType<T>
+public class JavaBeanProperty<T,B> implements PropertyType<T,B>
 {
+    private static final Logger LOG =
+            Logger.getLogger( JavaBeanProperty.class.getName() );
+
     private String _name;
     private T _value;
-    private Component _host;
+    private B _host;
     private Class<T> _type;
 
-    public JavaBeanProperty( Component host, T initialValue, String propertyName )
+    private final List<PropertyChangeListener> _pcls;
+
+    public JavaBeanProperty( B host, T initialValue, String propertyName )
     {
         // This internally validates if the host offers the required
         // set and get operations.
-        _type = new PropertyProxy<T>( propertyName, host ).getType();
+        _type = new PropertyProxy<T,B>( propertyName, host ).getType();
 
         _host = host;
         _value = initialValue;
         _name = propertyName;
+
+        _pcls = Collections.unmodifiableList( getPcls( host, propertyName ) );
     }
 
     @Override
@@ -43,21 +57,77 @@ public class JavaBeanProperty<T> implements PropertyType<T>
         if ( JavaUtils.equals( _value, newValue ) )
             return;
 
-        PropertyChangeListener[] pcls =
-                _host.getPropertyChangeListeners( _name );
-
-        if ( ! JavaUtils.isEmptyArray( pcls ) )
+        if ( _pcls.size() > 0 )
         {
             T oldValue = _value;
 
             PropertyChangeEvent evt =
                     new PropertyChangeEvent( _host, _name, oldValue, _value );
 
-            for ( PropertyChangeListener c : pcls )
+            for ( PropertyChangeListener c : _pcls )
                 c.propertyChange( evt );
         }
 
         _value = newValue;
+    }
+
+    private List<PropertyChangeListener> getPcls( Object bean, String propertyName )
+    {
+        String gpcls = "getPropertyChangeListeners";
+
+        Method getPclsNamed =
+                ReflectionUtils.getMethod( bean.getClass(), gpcls, String.class );
+        Method getPcls =
+                ReflectionUtils.getMethod( bean.getClass(), gpcls );
+
+        if ( null == getPcls && null == getPclsNamed )
+            throw new IllegalArgumentException( "Not found: " + bean.getClass().getName() + "#" + gpcls );
+
+        List<PropertyChangeListener> result = new ArrayList<PropertyChangeListener>();
+
+        boolean oneCallSucceeded = false;
+
+        Exception toThrow = null;
+
+        if ( getPclsNamed != null )
+        {
+            try
+            {
+                result.addAll(
+                        Arrays.asList(
+                                (PropertyChangeListener[])getPclsNamed.invoke(
+                                        bean,
+                                        propertyName ) ) );
+                oneCallSucceeded = true;
+            }
+            catch ( Exception e )
+            {
+                toThrow = e;
+                LOG.log( Level.WARNING, "Exception in #getPropertyChangeListeners() on " + bean.getClass().getName(), e );
+            }
+        }
+
+        if ( getPcls != null )
+        {
+            try
+            {
+                result.addAll(
+                        Arrays.asList(
+                                (PropertyChangeListener[])getPcls.invoke(
+                                        bean ) ) );
+                oneCallSucceeded = true;
+            }
+            catch ( Exception e )
+            {
+                toThrow = e;
+                LOG.log( Level.WARNING, "Exception in #getPropertyChangeListeners() on " + bean.getClass().getName(), e );
+            }
+        }
+
+        if ( ! oneCallSucceeded )
+            throw new RuntimeException( toThrow );
+
+        return result;
     }
 
     @Override
@@ -76,5 +146,11 @@ public class JavaBeanProperty<T> implements PropertyType<T>
     public String getName()
     {
         return _name;
+    }
+
+    @Override
+    public B getBean()
+    {
+        return _host;
     }
 }
