@@ -5,6 +5,8 @@
 package org.jdesktop.swingx;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -30,6 +32,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.beans.JavaBeanProperty;
 import org.jdesktop.beans.PropertyLink;
 
 /**
@@ -665,5 +668,48 @@ public class JXDesktop extends JDesktopPane
                 return;
             }
         }
+    }
+
+    public final JavaBeanProperty<Image>  P_BACKGROUND_IMAGE =
+            new JavaBeanProperty<Image>( this, null, "backgroundImage" );
+
+    /**
+     * Set a new background image.  This property is bound.
+     *
+     * @param newValue The new background image.
+     */
+    public void setBackgroundImage( Image newValue )
+    {
+        P_BACKGROUND_IMAGE.set( newValue );
+    }
+
+    /**
+     * Get the currently set background image.
+     *
+     * @return The currently set background image or {@code null} if none is
+     * set.
+     */
+    public Image getBackgroundImage()
+    {
+        return P_BACKGROUND_IMAGE.get();
+    }
+
+    @Override
+    protected void paintComponent( Graphics g )
+    {
+        super.paintComponent( g );
+
+        Image image = P_BACKGROUND_IMAGE.get();
+
+        // If there's a background image ...
+        if ( image == null )
+            return;
+
+        // ... paint it centered.
+        g.drawImage(
+                image,
+                (getWidth() - image.getWidth( null ) ) / 2,
+                (getHeight() - image.getHeight( null ) ) / 2,
+                null );
     }
 }

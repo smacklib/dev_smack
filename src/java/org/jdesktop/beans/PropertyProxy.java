@@ -12,16 +12,14 @@ import java.beans.PropertyDescriptor;
 
 import org.jdesktop.smack.util.ReflectionUtils;
 
-
 /**
- * Allows to set a JavaBean property in a relatively simple way.  An
- * instance if this class represents the property on the target object
+ * An instance if this class represents a property on the target object
  * in a (runtime) type-safe way.
  *
  * @version $Rev$
  * @author Michael Binz
  */
-public class PropertyProxy<T>
+public class PropertyProxy<T> implements PropertyType<T>
 {
     /**
      * The property descriptor of the proxied property.
@@ -71,6 +69,7 @@ public class PropertyProxy<T>
      *
      * @return The property's type.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Class<T> getType()
     {
@@ -82,6 +81,7 @@ public class PropertyProxy<T>
      *
      * @return The property's value.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T get()
     {
@@ -95,6 +95,7 @@ public class PropertyProxy<T>
      *
      * @param value The value to set.
      */
+    @Override
     public void set( T value )
     {
         ReflectionUtils.invokeQuiet(
@@ -110,6 +111,7 @@ public class PropertyProxy<T>
      *
      * @return The property name.
      */
+    @Override
     public String getName()
     {
         return _targetProperty.getName();
