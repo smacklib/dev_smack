@@ -66,13 +66,11 @@ public class PropertyLink
         PropertyAdapter pa =
             new PropertyAdapter( source );
 
-        pa.addPropertyChangeListener( _listener );
+        pa.addPropertyChangeListener( propSrcName, _listener );
 
         _targetProperty =
             new PropertyProxy<Object,Object>( propTgtName, target );
     }
-
-
 
     /**
      * A listener for source changes.

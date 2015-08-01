@@ -35,14 +35,22 @@ public class PropertyAdapter
     /**
      * The add operation.
      */
-    private final Method _addPropertyChangeListener;
+    private final Method _addPcl;
 
     /**
      * The remove operation.
      */
-    private final Method _removePropertyChangeListener;
+    private final Method _removePcl;
 
+    /**
+     * The add operation.
+     */
+    private final Method _addPclNamed;
 
+    /**
+     * The remove operation.
+     */
+    private final Method _removePclNamed;
 
     /**
      * Creates an instance.  The constructor validates the contract
@@ -59,14 +67,22 @@ public class PropertyAdapter
 
         try
         {
-            _addPropertyChangeListener =
+            _addPcl =
                 beanClass.getMethod(
                         "addPropertyChangeListener",
                         PropertyChangeListener.class );
-            _removePropertyChangeListener =
+            _addPclNamed =
+                beanClass.getMethod(
+                        "addPropertyChangeListener",
+                        String.class, PropertyChangeListener.class );
+            _removePcl =
                 beanClass.getMethod(
                         "removePropertyChangeListener",
                         PropertyChangeListener.class );
+            _removePclNamed =
+                beanClass.getMethod(
+                        "removePropertyChangeListener",
+                        String.class, PropertyChangeListener.class );
         }
         catch ( SecurityException e )
         {
@@ -91,7 +107,7 @@ public class PropertyAdapter
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
         ReflectionUtils.invokeQuiet(
-                _addPropertyChangeListener,
+                _addPcl,
                 _bean,
                 listener );
     }
@@ -107,8 +123,42 @@ public class PropertyAdapter
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
         ReflectionUtils.invokeQuiet(
-                _removePropertyChangeListener,
+                _removePcl,
                 _bean,
+                listener );
+    }
+
+    /**
+     * Adds a <code>PropertyChange</code> listener. Containers and attached
+     * components use these methods to register interest in this
+     * <code>Action</code> object. When its enabled state or other property
+     * changes, the registered listeners are informed of the change.
+     *
+     * @param propertyName The name of the property.
+     * @param listener  a <code>PropertyChangeListener</code> object
+     */
+    public void addPropertyChangeListener( String propertyName, PropertyChangeListener listener)
+    {
+        ReflectionUtils.invokeQuiet(
+                _addPclNamed,
+                _bean,
+                propertyName,
+                listener );
+    }
+
+    /**
+     * Removes a <code>PropertyChange</code> listener.
+     *
+     * @param propertyName The name of the property.
+     * @param listener  a <code>PropertyChangeListener</code> object
+     * @see #addPropertyChangeListener
+     */
+    public void removePropertyChangeListener( String propertyName, PropertyChangeListener listener)
+    {
+        ReflectionUtils.invokeQuiet(
+                _removePclNamed,
+                _bean,
+                propertyName,
                 listener );
     }
 }
