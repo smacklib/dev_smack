@@ -13,7 +13,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdesktop.smack.util.JavaUtils;
@@ -76,57 +75,26 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
 
         Method getPclsNamed =
                 ReflectionUtils.getMethod( bean.getClass(), gpcls, String.class );
-        Method getPcls =
-                ReflectionUtils.getMethod( bean.getClass(), gpcls );
 
-        if ( null == getPcls && null == getPclsNamed )
+        if ( null == getPclsNamed )
             throw new IllegalArgumentException( "Not found: " + bean.getClass().getName() + "#" + gpcls );
 
-        List<PropertyChangeListener> result = new ArrayList<PropertyChangeListener>();
-
-        boolean oneCallSucceeded = false;
-
-        Exception toThrow = null;
-
-        if ( getPclsNamed != null )
+        try
         {
-            try
-            {
-                result.addAll(
-                        Arrays.asList(
-                                (PropertyChangeListener[])getPclsNamed.invoke(
-                                        bean,
-                                        propertyName ) ) );
-                oneCallSucceeded = true;
-            }
-            catch ( Exception e )
-            {
-                toThrow = e;
-                LOG.log( Level.WARNING, "Exception in #getPropertyChangeListeners() on " + bean.getClass().getName(), e );
-            }
-        }
+            List<PropertyChangeListener> result = new ArrayList<PropertyChangeListener>();
 
-        if ( getPcls != null )
+            result.addAll(
+                    Arrays.asList(
+                            (PropertyChangeListener[])getPclsNamed.invoke(
+                                    bean,
+                                    propertyName ) ) );
+
+            return result;
+        }
+        catch ( Exception e )
         {
-            try
-            {
-                result.addAll(
-                        Arrays.asList(
-                                (PropertyChangeListener[])getPcls.invoke(
-                                        bean ) ) );
-                oneCallSucceeded = true;
-            }
-            catch ( Exception e )
-            {
-                toThrow = e;
-                LOG.log( Level.WARNING, "Exception in #getPropertyChangeListeners() on " + bean.getClass().getName(), e );
-            }
+            throw new RuntimeException( e );
         }
-
-        if ( ! oneCallSucceeded )
-            throw new RuntimeException( toThrow );
-
-        return result;
     }
 
     @Override
