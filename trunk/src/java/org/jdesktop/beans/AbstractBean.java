@@ -82,7 +82,7 @@ import java.beans.VetoableChangeSupport;
  * {@link PropertyChangeEvent} events. These events are similar to
  * <code>PropertyChange</code> events, except a special exception can be used
  * to veto changing the property. For example, perhaps the property is changing
- * from "fred" to "red", but a listener deems that "red" is unexceptable. In
+ * from "fred" to "red", but a listener deems that "red" is unacceptable. In
  * this case, the listener can fire a veto exception and the property must
  * remain "fred". For example:
  *

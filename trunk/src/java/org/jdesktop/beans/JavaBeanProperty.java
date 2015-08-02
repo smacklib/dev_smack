@@ -9,14 +9,12 @@ package org.jdesktop.beans;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Method;
+import java.beans.PropertyChangeListenerProxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.jdesktop.smack.util.JavaUtils;
-import org.jdesktop.smack.util.ReflectionUtils;
 
 /**
  * Support class for implementing java bean properties on components.
@@ -26,27 +24,32 @@ import org.jdesktop.smack.util.ReflectionUtils;
  */
 public class JavaBeanProperty<T,B> implements PropertyType<T,B>
 {
-    private static final Logger LOG =
-            Logger.getLogger( JavaBeanProperty.class.getName() );
-
     private String _name;
     private T _value;
-    private B _host;
-    private Class<T> _type;
+    private B _bean;
+    private Class<T> _beantype;
 
-//    private final List<PropertyChangeListener> _pcls;
+    private final PropertyAdapter _pa;
 
-    public JavaBeanProperty( B host, T initialValue, String propertyName )
+    /**
+     * Create an instance.
+     *
+     * @param bean The target bean instance.
+     * @param initialValue
+     * @param propertyName
+     */
+    public JavaBeanProperty( B bean, T initialValue, String propertyName )
     {
         // This internally validates if the host offers the required
         // set and get operations.
-        _type = new PropertyProxy<T,B>( propertyName, host ).getType();
+        _beantype = new PropertyProxy<T,B>( propertyName, bean ).getType();
 
-        _host = host;
+        // This internally validates if the bean has the pcl operations
+        _pa = new PropertyAdapter( bean );
+
+        _bean = bean;
         _value = initialValue;
         _name = propertyName;
-
-//        _pcls = Collections.unmodifiableList( getPcls( host, propertyName ) );
     }
 
     @Override
@@ -58,43 +61,38 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
         T oldValue = _value;
         _value = newValue;
 
-        List<PropertyChangeListener> pcls = getPcls( _host, _name );
-        if ( pcls.size() > 0 )
-        {
-            PropertyChangeEvent evt =
-                    new PropertyChangeEvent( _host, _name, oldValue, newValue );
+        PropertyChangeEvent evt =
+                new PropertyChangeEvent( _bean, _name, oldValue, newValue );
 
-            for ( PropertyChangeListener c : pcls )
-                c.propertyChange( evt );
-        }
+        for ( PropertyChangeListener c : getPcls() )
+            c.propertyChange( evt );
     }
 
-    private List<PropertyChangeListener> getPcls( Object bean, String propertyName )
+    /**
+     * Get the listeners to call.
+     *
+     * @return The listeners to call.
+     */
+    private List<PropertyChangeListener> getPcls()
     {
-        String gpcls = "getPropertyChangeListeners";
+        List<PropertyChangeListener> result = new ArrayList<PropertyChangeListener>();
 
-        Method getPclsNamed =
-                ReflectionUtils.getMethod( bean.getClass(), gpcls, String.class );
+        result.addAll(
+            Arrays.asList( _pa.getPropertyChangeListeners( _name ) ) );
 
-        if ( null == getPclsNamed )
-            throw new IllegalArgumentException( "Not found: " + bean.getClass().getName() + "#" + gpcls );
-
-        try
+        // Get the pcls that were added w/o a name. Since we seem to get all pcls,
+        // with and w/o a name, we filter in the loop below.
+        // See comment in AbstractBean#getPropertyChangeListeners.
+        for ( PropertyChangeListener c : _pa.getPropertyChangeListeners() )
         {
-            List<PropertyChangeListener> result = new ArrayList<PropertyChangeListener>();
+            if ( c instanceof PropertyChangeListenerProxy )
+                continue;
 
-            result.addAll(
-                    Arrays.asList(
-                            (PropertyChangeListener[])getPclsNamed.invoke(
-                                    bean,
-                                    propertyName ) ) );
+            if ( ! result.contains( c ) )
+                result.add( c );
+        }
 
-            return result;
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
+        return result;
     }
 
     @Override
@@ -106,7 +104,7 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
     @Override
     public Class<T> getType()
     {
-        return _type;
+        return _beantype;
     }
 
     @Override
@@ -118,6 +116,6 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
     @Override
     public B getBean()
     {
-        return _host;
+        return _bean;
     }
 }
