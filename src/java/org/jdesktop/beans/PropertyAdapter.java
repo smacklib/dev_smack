@@ -30,7 +30,7 @@ public class PropertyAdapter
     /**
      * The target object.
      */
-    private Object _bean;
+    private final Object _bean;
 
     /**
      * The add operation.
@@ -43,14 +43,17 @@ public class PropertyAdapter
     private final Method _removePcl;
 
     /**
-     * The add operation.
+     * The add with name operation.
      */
     private final Method _addPclNamed;
 
     /**
-     * The remove operation.
+     * The remove with name operation.
      */
     private final Method _removePclNamed;
+
+    private final Method _getPcls;
+    private final Method _getPclsNamed;
 
     /**
      * Creates an instance.  The constructor validates the contract
@@ -83,18 +86,19 @@ public class PropertyAdapter
                 beanClass.getMethod(
                         "removePropertyChangeListener",
                         String.class, PropertyChangeListener.class );
+            _getPcls =
+                beanClass.getMethod(
+                        "getPropertyChangeListeners" );
+            _getPclsNamed =
+                beanClass.getMethod(
+                        "getPropertyChangeListeners",
+                        String.class );
         }
-        catch ( SecurityException e )
-        {
-            throw new IllegalArgumentException( e );
-        }
-        catch ( NoSuchMethodException e )
+        catch ( Exception e )
         {
             throw new IllegalArgumentException( e );
         }
     }
-
-
 
     /**
      * Adds a <code>PropertyChange</code> listener. Containers and attached
@@ -160,5 +164,20 @@ public class PropertyAdapter
                 _bean,
                 propertyName,
                 listener );
+    }
+
+    public PropertyChangeListener[] getPropertyChangeListeners( String propertyName )
+    {
+        return (PropertyChangeListener[])ReflectionUtils.invokeQuiet(
+                _getPclsNamed,
+                _bean,
+                propertyName );
+    }
+
+    public PropertyChangeListener[] getPropertyChangeListeners()
+    {
+        return (PropertyChangeListener[])ReflectionUtils.invokeQuiet(
+                _getPcls,
+                _bean );
     }
 }
