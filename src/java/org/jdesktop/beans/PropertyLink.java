@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Laboratory.
+ * Property framework.
  *
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
@@ -28,6 +28,26 @@ public class PropertyLink
     private final String _propertySrcName;
 
     private PropertyProxy<Object,Object> _targetProperty;
+
+    private final PropertyAdapter _pa;
+
+    /**
+     * Creates a property update link between the source and target.
+     *
+     * @param source A source property. Changes on this are propagated to the
+     * target object.
+     * @param target The target property.
+     */
+    public PropertyLink(
+            PropertyType<?, ?> source,
+            PropertyType<?, ?> target )
+    {
+        this(
+                source.getBean(),
+                source.getName(),
+                target.getBean(),
+                target.getName() );
+    }
 
     /**
      * Creates a property update link between the source and target.
@@ -63,13 +83,22 @@ public class PropertyLink
     {
         _propertySrcName = propSrcName;
 
-        PropertyAdapter pa =
+        _pa =
             new PropertyAdapter( source );
 
-        pa.addPropertyChangeListener( propSrcName, _listener );
+        _pa.addPropertyChangeListener( _propertySrcName, _listener );
 
         _targetProperty =
             new PropertyProxy<Object,Object>( propTgtName, target );
+    }
+
+    /**
+     * Remove the internal listener registrations.  This is only needed if the
+     * linked beans have a different life cycle.
+     */
+    public void dispose()
+    {
+        _pa.removePropertyChangeListener( _propertySrcName, _listener );
     }
 
     /**
