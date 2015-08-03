@@ -13,8 +13,6 @@ import javax.swing.JComponent;
 
 import org.jdesktop.application.Application;
 
-
-
 /**
  * A component that offers typed model access.
  *
@@ -35,7 +33,7 @@ public abstract class MackComponent<MT>
 
 
     /**
-     *
+     * Create an instance.
      */
     public MackComponent()
     {
@@ -43,7 +41,9 @@ public abstract class MackComponent<MT>
 
 
     /**
+     * Create an instance using the passed model.
      *
+     * @param model The model to use.
      */
     public MackComponent( MT model )
     {
@@ -53,33 +53,30 @@ public abstract class MackComponent<MT>
 
 
     /**
+     * Get the component's model.
      *
-     * @param model
+     * @return The component's model.
      */
     public MT getModel()
     {
         return _model;
     }
 
-
-
     /**
+     * Set the component's model.
      *
-     * @param model
-     * @return
+     * @param model The new model.
      */
-    public MT setModel( MT model )
+    public void setModel( MT model )
     {
-        MT result = _model;
         _model = model;
-
-        return result;
     }
 
     /**
+     * Get a named action resolved from the components Application action map.
      *
-     * @param name
-     * @return
+     * @param name The named action.
+     * @return The named action or null.
      */
     final protected Action getComponentAction( String name )
     {
