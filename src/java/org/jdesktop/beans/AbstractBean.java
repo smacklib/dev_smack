@@ -137,25 +137,10 @@ import java.beans.VetoableChangeSupport;
  * @version $Rev$
  * @author rbair
  */
-@SuppressWarnings("nls")
 public abstract class AbstractBean {
-    /**
-     * Helper class that manages all the property change notification machinery.
-     * PropertyChangeSupport cannot be extended directly because it requires
-     * a bean in the constructor, and the "this" argument is not valid until
-     * after super construction. Hence, delegation instead of extension
-     */
-    private transient PropertyChangeSupport pcs;
-
-    /**
-     * Helper class that manages all the veto property change notification machinery.
-     */
-    private transient VetoableChangeSupport vcs;
 
     /** Creates a new instance of AbstractBean */
     protected AbstractBean() {
-        pcs = new PropertyChangeSupport(this);
-        vcs = new VetoableChangeSupport(this);
     }
 
     /**
@@ -170,8 +155,8 @@ public abstract class AbstractBean {
             throw new NullPointerException("VetoableChangeSupport must not be null");
         }
 
-        this.pcs = pcs;
-        this.vcs = vcs;
+        this._pcs = pcs;
+        this._vcs = vcs;
     }
 
     /**
@@ -185,7 +170,7 @@ public abstract class AbstractBean {
      * @param listener  The PropertyChangeListener to be added
      */
     public final void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
+        getPcs().addPropertyChangeListener(listener);
     }
 
     /**
@@ -200,7 +185,7 @@ public abstract class AbstractBean {
      * @param listener  The PropertyChangeListener to be removed
      */
     public final void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
+        getPcs().removePropertyChangeListener(listener);
     }
 
     /**
@@ -234,7 +219,7 @@ public abstract class AbstractBean {
      *         empty array if no listeners have been added
      */
     public final PropertyChangeListener[] getPropertyChangeListeners() {
-        return pcs.getPropertyChangeListeners();
+        return getPcs().getPropertyChangeListeners();
     }
 
     /**
@@ -251,7 +236,7 @@ public abstract class AbstractBean {
      * @param listener  The PropertyChangeListener to be added
      */
     public final void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(propertyName, listener);
+        getPcs().addPropertyChangeListener(propertyName, listener);
     }
 
     /**
@@ -268,7 +253,7 @@ public abstract class AbstractBean {
      * @param listener  The PropertyChangeListener to be removed
      */
     public final void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(propertyName, listener);
+        getPcs().removePropertyChangeListener(propertyName, listener);
     }
 
     /**
@@ -282,7 +267,7 @@ public abstract class AbstractBean {
      *         returned.
      */
     public final PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
-            return pcs.getPropertyChangeListeners(propertyName);
+            return getPcs().getPropertyChangeListeners(propertyName);
     }
 
     /**
@@ -300,7 +285,7 @@ public abstract class AbstractBean {
      * @param newValue  The new value of the property.
      */
     protected final void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        pcs.firePropertyChange(propertyName, oldValue, newValue);
+        getPcs().firePropertyChange(propertyName, oldValue, newValue);
     }
 
     /**
@@ -310,7 +295,7 @@ public abstract class AbstractBean {
      * @param evt  The PropertyChangeEvent object.
      */
     protected final void firePropertyChange(PropertyChangeEvent evt) {
-        pcs.firePropertyChange(evt);
+        getPcs().firePropertyChange(evt);
     }
 
 
@@ -333,7 +318,7 @@ public abstract class AbstractBean {
      */
     protected final void fireIndexedPropertyChange(String propertyName, int index,
                       Object oldValue, Object newValue) {
-    pcs.fireIndexedPropertyChange(propertyName, index, oldValue, newValue);
+    getPcs().fireIndexedPropertyChange(propertyName, index, oldValue, newValue);
     }
 
     /**
@@ -345,7 +330,7 @@ public abstract class AbstractBean {
      * @return true if there are one or more listeners for the given property
      */
     protected final boolean hasPropertyChangeListeners(String propertyName) {
-        return pcs.hasListeners(propertyName);
+        return getPcs().hasListeners(propertyName);
     }
 
     /**
@@ -357,7 +342,7 @@ public abstract class AbstractBean {
      * @return true if there are one or more listeners for the given property
      */
     protected final boolean hasVetoableChangeListeners(String propertyName) {
-        return vcs.hasListeners(propertyName);
+        return getVcs().hasListeners(propertyName);
     }
 
     /**
@@ -372,7 +357,7 @@ public abstract class AbstractBean {
      */
 
     public final void addVetoableChangeListener(VetoableChangeListener listener) {
-        vcs.addVetoableChangeListener(listener);
+        getVcs().addVetoableChangeListener(listener);
     }
 
     /**
@@ -387,7 +372,7 @@ public abstract class AbstractBean {
      * @param listener  The VetoableChangeListener to be removed
      */
     public final void removeVetoableChangeListener(VetoableChangeListener listener) {
-        vcs.removeVetoableChangeListener(listener);
+        getVcs().removeVetoableChangeListener(listener);
     }
 
     /**
@@ -398,7 +383,7 @@ public abstract class AbstractBean {
      *         if named property change listeners were added.
      */
     public final VetoableChangeListener[] getVetoableChangeListeners(){
-        return vcs.getVetoableChangeListeners();
+        return getVcs().getVetoableChangeListeners();
     }
 
     /**
@@ -417,7 +402,7 @@ public abstract class AbstractBean {
 
     public final void addVetoableChangeListener(String propertyName,
                 VetoableChangeListener listener) {
-        vcs.addVetoableChangeListener(propertyName, listener);
+        getVcs().addVetoableChangeListener(propertyName, listener);
     }
 
     /**
@@ -436,7 +421,7 @@ public abstract class AbstractBean {
 
     public final void removeVetoableChangeListener(String propertyName,
                 VetoableChangeListener listener) {
-        vcs.removeVetoableChangeListener(propertyName, listener);
+        getVcs().removeVetoableChangeListener(propertyName, listener);
     }
 
     /**
@@ -450,7 +435,7 @@ public abstract class AbstractBean {
      *         returned.
      */
     public final VetoableChangeListener[] getVetoableChangeListeners(String propertyName) {
-        return vcs.getVetoableChangeListeners(propertyName);
+        return getVcs().getVetoableChangeListeners(propertyName);
     }
 
     /**
@@ -470,7 +455,7 @@ public abstract class AbstractBean {
     protected final void fireVetoableChange(String propertyName,
                     Object oldValue, Object newValue)
                     throws PropertyVetoException {
-        vcs.fireVetoableChange(propertyName, oldValue, newValue);
+        getVcs().fireVetoableChange(propertyName, oldValue, newValue);
     }
 
     /**
@@ -486,17 +471,61 @@ public abstract class AbstractBean {
      */
     protected final void fireVetoableChange(PropertyChangeEvent evt)
                     throws PropertyVetoException {
-        vcs.fireVetoableChange(evt);
+        getVcs().fireVetoableChange(evt);
+    }
+
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public Object clone() throws CloneNotSupportedException {
+//        AbstractBean result = (AbstractBean) super.clone();
+//        result.pcs = new PropertyChangeSupport(result);
+//        result.vcs = new VetoableChangeSupport(result);
+//        return result;
+//    }
+//
+    /**
+     * Helper class that manages all the property change notification machinery.
+     * PropertyChangeSupport cannot be extended directly because it requires
+     * a bean in the constructor, and the "this" argument is not valid until
+     * after super construction. Hence, delegation instead of extension
+     */
+    private transient PropertyChangeSupport _pcs;
+
+    private PropertyChangeSupport getPcs()
+    {
+        if ( _pcs == null )
+            _pcs = createPcs();
+
+        return _pcs;
     }
 
     /**
-     * {@inheritDoc}
+     * Called one to create a pcs instance.
+     *
+     * @return a newly allocated pcs instance used by this bean.
      */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        AbstractBean result = (AbstractBean) super.clone();
-        result.pcs = new PropertyChangeSupport(result);
-        result.vcs = new VetoableChangeSupport(result);
-        return result;
+    protected PropertyChangeSupport createPcs()
+    {
+        return new PropertyChangeSupport( this );
+    }
+
+    /**
+     * Helper class that manages all the veto property change notification machinery.
+     */
+    private transient VetoableChangeSupport _vcs;
+
+    private VetoableChangeSupport getVcs()
+    {
+        if ( _vcs == null )
+            _vcs = createVcs();
+
+        return _vcs;
+    }
+
+    protected VetoableChangeSupport createVcs()
+    {
+        return new VetoableChangeSupport( this );
     }
 }
