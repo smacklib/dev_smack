@@ -50,8 +50,6 @@ public class TextContentNotifier
      */
     private final JTextComponent _source;
 
-
-
     /**
      * The handler for property changes.
      *
@@ -61,7 +59,10 @@ public class TextContentNotifier
      */
     private ConstrainedProperty<Boolean> _targetHandler;
 
-
+    /**
+     *
+     */
+    private final String _targetPropertyName;
 
     /**
      * Create an instance that is linked between source and target.
@@ -69,11 +70,26 @@ public class TextContentNotifier
      * @param source The source component.
      * @param target The target component.
      */
-    @SuppressWarnings("unchecked")
     public TextContentNotifier( JTextComponent source, JComponent target )
     {
-        PropertyProxy<Boolean,JComponent> _targetProperty =
-            new PropertyProxy<Boolean,JComponent>( ENABLED_PROP_NAME, target );
+        this( source, target, ENABLED_PROP_NAME );
+    }
+
+    /**
+     * Create an instance that is linked between source and target.
+     *
+     * @param source The source component.
+     * @param target The target component.
+     * @param targetPropertyName The name of the target property.
+     */
+    @SuppressWarnings("unchecked")
+    public TextContentNotifier( JTextComponent source, JComponent target, String targetPropertyName )
+    {
+        // Null check.
+        _targetPropertyName = targetPropertyName.toString();
+
+        PropertyProxy<Boolean,JComponent> targetProperty =
+            new PropertyProxy<Boolean,JComponent>( targetPropertyName, target );
 
         _source = source;
 
@@ -85,7 +101,7 @@ public class TextContentNotifier
         {
             // No, so start cooperation.
             _targetHandler =
-                new ConstrainedProperty<Boolean>( _targetProperty );
+                new ConstrainedProperty<Boolean>( targetProperty );
 
             target.putClientProperty(
                     TextContentNotifier.class,
@@ -95,19 +111,32 @@ public class TextContentNotifier
         linkSource( source );
     }
 
-
-
     /**
      * Create an instance that is linked between source and target.
      *
      * @param source The source component.
      * @param target The target component.
      */
-    @SuppressWarnings("unchecked")
     public TextContentNotifier( JTextComponent source, Action target )
     {
-        PropertyProxy<Boolean,Action> _targetProperty =
-            new PropertyProxy<Boolean,Action>( ENABLED_PROP_NAME, target );
+        this( source, target, ENABLED_PROP_NAME );
+    }
+
+    /**
+     * Create an instance that is linked between source and target.
+     *
+     * @param source The source component.
+     * @param target The target component.
+     * @param targetPropertyName The name of the target property.
+     */
+    @SuppressWarnings("unchecked")
+    public TextContentNotifier( JTextComponent source, Action target, String targetPropertyName )
+    {
+        // Null check.
+        _targetPropertyName = targetPropertyName.toString();
+
+        PropertyProxy<Boolean,Action> targetProperty =
+            new PropertyProxy<Boolean,Action>( _targetPropertyName, target );
 
         _source = source;
 
@@ -119,7 +148,7 @@ public class TextContentNotifier
         {
             // No, so start cooperation.
             _targetHandler =
-                new ConstrainedProperty<Boolean>( _targetProperty );
+                new ConstrainedProperty<Boolean>( targetProperty );
 
             target.putValue(
                 TextContentNotifier.class.getName(),
@@ -129,12 +158,10 @@ public class TextContentNotifier
         linkSource( source );
     }
 
-
-
     private void linkSource( JTextComponent source )
     {
         _targetHandler.addVetoableChangeListener(
-                ENABLED_PROP_NAME,
+                _targetPropertyName,
                 _changeListener );
 
         // Register with the component's document model.
@@ -143,8 +170,6 @@ public class TextContentNotifier
         // Initialize the target status.
         handleChange( source.getDocument() );
     }
-
-
 
     /**
      * Check if the passed content qualifies as valid.  This default
@@ -158,8 +183,6 @@ public class TextContentNotifier
         return StringUtils.hasContent( pContent, true );
     }
 
-
-
     /**
      * Access to the source component.  Can be used to modify the component
      * view in the {@link #isValidContent(String)} operation.
@@ -170,8 +193,6 @@ public class TextContentNotifier
     {
         return _source;
     }
-
-
 
     /**
      * Checks if the passed document should enable the target component.
@@ -197,8 +218,6 @@ public class TextContentNotifier
         return result;
     }
 
-
-
     /**
      * Synchronizes the enabled state of the target according to the content
      * of the passed document.
@@ -211,7 +230,7 @@ public class TextContentNotifier
         {
             _targetHandler.set( shouldEnable( d ) );
         }
-        catch ( PropertyVetoException e )
+        catch ( PropertyVetoException ignore )
         {
             // Change was not accepted by another component.
         }
@@ -260,8 +279,8 @@ public class TextContentNotifier
         public void vetoableChange( PropertyChangeEvent evt )
                 throws PropertyVetoException
         {
-            // We are only interested in enabled property changes.
-            if ( ! ENABLED_PROP_NAME.equals( evt.getPropertyName() ) )
+            // Check the property name.
+            if ( ! _targetPropertyName.equals( evt.getPropertyName() ) )
                 return;
 
             // We never veto a change to not enabled.
@@ -281,7 +300,7 @@ public class TextContentNotifier
     public void dispose()
     {
         _targetHandler.removeVetoableChangeListener(
-                ENABLED_PROP_NAME,
+                _targetPropertyName,
                 _changeListener );
 
         _source.getDocument().removeDocumentListener(
