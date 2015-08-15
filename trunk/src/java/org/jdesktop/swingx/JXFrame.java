@@ -642,7 +642,8 @@ public class JXFrame extends JFrame {
         return null;
     }
 
-    // Fullscreen stuff.
+    // Fullscreen stuff.  This begun with
+    // http://stackoverflow.com/questions/4462454/java-full-screen-program-swing-tab-alt-f4
 
     private final GraphicsDevice device  =
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -650,6 +651,9 @@ public class JXFrame extends JFrame {
 
     private int _fsExtendedState;
 
+    /**
+     * Switch to fullscreen mode.
+     */
     private void fullscreenOn()
     {
         boolean wasVisible = isVisible();
@@ -684,6 +688,9 @@ public class JXFrame extends JFrame {
             setVisible(true);
     }
 
+    /**
+     * Leave fullscreen mode.
+     */
     private void fullscreenOff()
     {
         boolean wasVisible = isVisible();
@@ -718,11 +725,21 @@ public class JXFrame extends JFrame {
 
     private boolean _fullscreen = false;
 
+    /**
+     * Detect if this frame is in fullscreen mode.
+     *
+     * @return {@code true} if the screen is in fullscreen mode.
+     */
     public boolean isFullscreen()
     {
         return _fullscreen;
     }
 
+    /**
+     * Set the fullscreen property.
+     *
+     * @param newValue {@code true} switches to fullscreen mode.
+     */
     public void setFullscreen( boolean newValue )
     {
         if ( newValue == _fullscreen )
