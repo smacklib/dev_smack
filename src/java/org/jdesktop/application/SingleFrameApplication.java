@@ -211,6 +211,18 @@ public abstract class SingleFrameApplication extends Application
             root.addComponentListener(new FrameBoundsListener());
         }
 
+        // Michab: Skip resize and positioning and session restore if certain
+        // properties are set on a frame.  This solves problems with full
+        // screen and maximized frames.
+        if ( root instanceof Frame )
+        {
+            Frame frame = (Frame)root;
+            if ( ! frame.isResizable() )
+                return;
+            if ( frame.getExtendedState() != 0 )
+                return;
+        }
+
         if (root instanceof Window) {
             Window window = (Window) root;
 
