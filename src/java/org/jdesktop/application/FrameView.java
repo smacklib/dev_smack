@@ -7,6 +7,8 @@ package org.jdesktop.application;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
+import org.jdesktop.smack.util.StringUtils;
+
 /**
  * A View implementation using a JFrame.
  *
@@ -39,17 +41,8 @@ public class FrameView extends View {
      */
     public JFrame getFrame()
     {
-        if (_frame == null)
-        {
-            Application a = getApplication();
-
-            _frame = new JFrame( a.getTitle() );
-
-            _frame.setName(MAIN_FRAME_NAME);
-
-            if ( a.getIcon() != null )
-                _frame.setIconImage(a.getIcon().getImage());
-        }
+        if ( _frame == null )
+            _frame = configureFrame( new JFrame(), getApplication() );
 
         return _frame;
     }
@@ -74,16 +67,15 @@ public class FrameView extends View {
      * @param frame the new value of the frame property
      * @see #getFrame
      */
-    public void setFrame(JFrame frame) {
+    public void setFrame( JFrame frame ) {
         if (frame == null) {
             throw new IllegalArgumentException("null JFrame");
         }
         if (_frame != null) {
             throw new IllegalStateException("frame already set");
         }
-        _frame = frame;
 
-        _frame.setName( MAIN_FRAME_NAME );
+        _frame = configureFrame( frame, getApplication() );
 
         firePropertyChange("frame", null, _frame);
     }
@@ -91,5 +83,25 @@ public class FrameView extends View {
     @Override
     public JRootPane getRootPane() {
         return getFrame().getRootPane();
+    }
+
+    /**
+     * Perform the necessary settings for the passed frame.
+     *
+     * @param f The frame to configure.
+     * @param a The application to use to access title and icon.
+     * @return The configured frame.
+     */
+    private static JFrame configureFrame( JFrame f, Application a )
+    {
+        f.setName( MAIN_FRAME_NAME );
+
+        if ( StringUtils.isEmpty( f.getTitle() ) )
+            f.setTitle( a.getTitle() );
+
+        if ( f.getIconImage() == null && a.getIcon() != null )
+            f.setIconImage(a.getIcon().getImage());
+
+        return f;
     }
 }
