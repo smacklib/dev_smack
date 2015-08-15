@@ -24,7 +24,6 @@ package org.jdesktop.swingx;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.DisplayMode;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -647,7 +646,7 @@ public class JXFrame extends JFrame {
 
     private final GraphicsDevice device  =
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    private final DisplayMode originalDisplayMode = device.getDisplayMode();
+//    private final DisplayMode originalDisplayMode = device.getDisplayMode();
 
     private int _fsExtendedState;
 
@@ -661,18 +660,22 @@ public class JXFrame extends JFrame {
         if ( wasVisible )
             setVisible( false );
 
+        // We want to get positioned by the system.
         setLocationByPlatform( true );
 
         //remove the frame from being displayable.
         dispose();
+
         //remove borders around the frame
         setUndecorated(true);
+
         //make the window fullscreen.
         device.setFullScreenWindow(this);
-//        setBounds( device.getDefaultConfiguration().getBounds() );
+
         setExtendedState( Frame.MAXIMIZED_BOTH );
         //attempt to change the screen resolution.
 //        device.setDisplayMode(originalDisplayMode);
+
         setResizable(false);
         setAlwaysOnTop(true);
 
@@ -688,7 +691,7 @@ public class JXFrame extends JFrame {
         // Change to windowed mode.
         // set the display mode back to what it was when
         // the program was launched.
-        device.setDisplayMode(originalDisplayMode);
+//        device.setDisplayMode(originalDisplayMode);
 
         //hide the frame so we can change it.
         if ( wasVisible )
