@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,7 +24,11 @@ package org.jdesktop.swingx;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.DisplayMode;
+import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
@@ -67,7 +71,7 @@ import org.jdesktop.swingx.util.WindowUtils;
  * This secondary glass pane can be quickly enabled or disabled by
  * {@linkplain #setWaitPaneVisible(boolean) setting the wait pane visible}.
  * </p>
- * 
+ *
  * @author unascribed from JDNC
  */
 @JavaBean
@@ -79,7 +83,7 @@ public class JXFrame extends JFrame {
      * @author unascribed from JDNC
      */
     public enum StartPosition {CenterInScreen, CenterInParent, Manual}
-    
+
     private Component waitPane = null;
     private Component glassPane = null;
     private boolean waitPaneVisible = false;
@@ -94,7 +98,7 @@ public class JXFrame extends JFrame {
     private Timer idleTimer;
     private long idleThreshold = 0;
     private boolean idle;
-    
+
     /**
      * Creates a {@code JXFrame} with no title and standard closing behavior.
      */
@@ -105,7 +109,7 @@ public class JXFrame extends JFrame {
     /**
      * Creates a {@code JXFrame} with the specified title and default closing
      * behavior.
-     * 
+     *
      * @param title
      *            the frame title
      */
@@ -131,7 +135,7 @@ public class JXFrame extends JFrame {
         this(null, gc, false);
     }
 
-    
+
     /**
      * Creates a <code>JXFrame</code> with the specified title, the
      * specified <code>GraphicsConfiguration</code> of a screen device and
@@ -155,7 +159,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Creates a {@code JXFrame} with the specified title and closing behavior.
-     * 
+     *
      * @param title
      *            the frame title
      * @param exitOnClose
@@ -170,7 +174,7 @@ public class JXFrame extends JFrame {
     /**
      * Creates a {@code JXFrame} with the specified title, GraphicsConfiguration
      * and closing behavior.
-     * 
+     *
      * @param title the frame title
      * @param gc the <code>GraphicsConfiguration</code> of the target screen
      *        device. If <code>gc</code> is <code>null</code>, the system
@@ -180,14 +184,14 @@ public class JXFrame extends JFrame {
      *        EXIT_ON_CLOSE} instead; {@code false} to use the default behavior
      * @exception IllegalArgumentException if <code>gc</code> is not from a
      *            screen device.
-     * 
+     *
      */
    public JXFrame(String title, GraphicsConfiguration gc, boolean exitOnClose) {
         super(title, gc);
         if (exitOnClose) {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }
-        
+
         //create the event handler for key preview functionality
         keyEventListener = new AWTEventListener() {
             @Override
@@ -207,20 +211,20 @@ public class JXFrame extends JFrame {
                                 kl.keyTyped(evt);
                                 break;
                             default:
-                                System.err.println("Unhandled Key ID: " + id);    
+                                System.err.println("Unhandled Key ID: " + id);
                         }
                     }
                 }
             }
         };
-        
+
         idleTimer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 setIdle(true);
             }
         });
-        
+
         //create the event handler for key preview functionality
         idleListener = new AWTEventListener() {
             @Override
@@ -239,7 +243,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Sets the cancel button property on the underlying {@code JXRootPane}.
-     * 
+     *
      * @param button
      *            the {@code JButton} which is to be the cancel button
      * @see #getCancelButton()
@@ -252,7 +256,7 @@ public class JXFrame extends JFrame {
     /**
      * Returns the value of the cancel button property from the underlying
      * {@code JXRootPane}.
-     * 
+     *
      * @return the {@code JButton} which is the cancel button
      * @see #setCancelButton(JButton)
      * @see JXRootPane#getCancelButton()
@@ -260,10 +264,10 @@ public class JXFrame extends JFrame {
     public JButton getCancelButton() {
         return getRootPaneExt().getCancelButton();
     }
-    
+
     /**
      * Sets the default button property on the underlying {@code JRootPane}.
-     * 
+     *
      * @param button
      *            the {@code JButton} which is to be the default button
      * @see #getDefaultButton()
@@ -274,11 +278,11 @@ public class JXFrame extends JFrame {
         getRootPane().setDefaultButton(button);
         firePropertyChange("defaultButton", old, getDefaultButton());
     }
-    
+
     /**
      * Returns the value of the default button property from the underlying
      * {@code JRootPane}.
-     * 
+     *
      * @return the {@code JButton} which is the default button
      * @see #setDefaultButton(JButton)
      * @see JXRootPane#getDefaultButton()
@@ -290,7 +294,7 @@ public class JXFrame extends JFrame {
     /**
      * If enabled the {@code KeyListener}s will receive a preview of the {@code
      * KeyEvent} prior to normal viewing.
-     * 
+     *
      * @param flag {@code true} to enable previewing; {@code false} otherwise
      * @see #getKeyPreview()
      * @see #addKeyListener(KeyListener)
@@ -307,7 +311,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Returns the value for the key preview.
-     * 
+     *
      * @return if {@code true} previewing is enabled; otherwise it is not
      * @see #setKeyPreview(boolean)
      */
@@ -318,7 +322,7 @@ public class JXFrame extends JFrame {
     /**
      * Sets the start position for this frame. Setting this value only has an
      * effect is the frame has never been displayed.
-     * 
+     *
      * @param position
      *            the position to display the frame at
      * @see #getStartPosition()
@@ -332,7 +336,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Returns the start position for this frame.
-     * 
+     *
      * @return the start position of the frame
      * @see #setStartPosition(StartPosition)
      */
@@ -342,7 +346,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Switches the display cursor to or from the wait cursor.
-     * 
+     *
      * @param flag
      *            {@code true} to enable the wait cursor; {@code false} to
      *            enable the previous cursor
@@ -365,14 +369,14 @@ public class JXFrame extends JFrame {
 
     /**
      * Returns the state of the wait cursor visibility.
-     * 
+     *
      * @return {@code true} if the current cursor is the wait cursor; {@code
      *         false} otherwise
      */
     public boolean isWaitCursorVisible() {
         return waitCursorVisible;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -388,7 +392,7 @@ public class JXFrame extends JFrame {
     /**
      * Sets the component to use as a wait glass pane. This component is not
      * part of the display hierarchy unless {@code isWaitPaneVisible() == true}.
-     * 
+     *
      * @param c
      *            the wait glass pane for this frame
      * @see #getWaitPane()
@@ -403,7 +407,7 @@ public class JXFrame extends JFrame {
     /**
      * Returns the current wait pane for this frame. This component may or may
      * not be part of the display hierarchy.
-     * 
+     *
      * @return the current wait pane
      * @see #setWaitPane(Component)
      */
@@ -415,7 +419,7 @@ public class JXFrame extends JFrame {
      * Enabled or disabled the display of the normal or wait glass pane. If
      * {@code true} the wait pane is be displayed. Altering this property alters
      * the display hierarchy.
-     * 
+     *
      * @param flag
      *            {@code true} to display the wait glass pane; {@code false} to
      *            display the normal glass pane
@@ -445,7 +449,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Returns the current visibility of the wait glass pane.
-     * 
+     *
      * @return {@code true} if the wait glass pane is visible; {@code false}
      *         otherwise
      */
@@ -455,7 +459,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Sets the frame into a wait state or restores the frame from a wait state.
-     * 
+     *
      * @param waiting
      *            {@code true} to place the frame in a wait state; {@code false}
      *            otherwise
@@ -473,7 +477,7 @@ public class JXFrame extends JFrame {
 
     /**
      * Determines if the frame is in a wait state or not.
-     * 
+     *
      * @return {@code true} if the frame is in the wait state; {@code false}
      *         otherwise
      * @see #setWaiting(boolean)
@@ -481,7 +485,7 @@ public class JXFrame extends JFrame {
     public boolean isWaiting() {
         return waiting;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -504,14 +508,14 @@ public class JXFrame extends JFrame {
         }
         super.setVisible(visible);
     }
-    
+
     public boolean isIdle() {
         return idle;
     }
-    
+
     /**
      * Sets the frame into an idle state or restores the frame from an idle state.
-     * 
+     *
      * @param idle
      *            {@code true} to place the frame in an idle state; {@code false}
      *            otherwise
@@ -527,7 +531,7 @@ public class JXFrame extends JFrame {
     /**
      * Sets a threshold for user interaction before automatically placing the
      * frame in an idle state.
-     * 
+     *
      * @param threshold
      *            the time (in milliseconds) to elapse before setting the frame
      *            idle
@@ -538,9 +542,9 @@ public class JXFrame extends JFrame {
         long old = getIdleThreshold();
         this.idleThreshold = threshold;
         firePropertyChange("idleThreshold", old, getIdleThreshold());
-        
+
         threshold = getIdleThreshold(); // in case the getIdleThreshold method has been overridden
-        
+
         Toolkit.getDefaultToolkit().removeAWTEventListener(idleListener);
         if (threshold > 0) {
             Toolkit.getDefaultToolkit().addAWTEventListener(idleListener, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.MOUSE_WHEEL_EVENT_MASK);
@@ -553,16 +557,16 @@ public class JXFrame extends JFrame {
     /**
      * Returns the amount of time that must elapse before the frame
      * automatically enters an idle state.
-     * 
+     *
      * @return the time in milliseconds
      */
     public long getIdleThreshold() {
         return idleThreshold;
     }
-    
+
     /**
      * Sets the status bar property on the underlying {@code JXRootPane}.
-     * 
+     *
      * @param statusBar
      *            the {@code JXStatusBar} which is to be the status bar
      * @see #getStatusBar()
@@ -571,11 +575,11 @@ public class JXFrame extends JFrame {
     public void setStatusBar(JXStatusBar statusBar) {
         getRootPaneExt().setStatusBar(statusBar);
     }
-    
+
     /**
      * Returns the value of the status bar property from the underlying
      * {@code JXRootPane}.
-     * 
+     *
      * @return the {@code JXStatusBar} which is the current status bar
      * @see #setStatusBar(JXStatusBar)
      * @see JXRootPane#getStatusBar()
@@ -583,10 +587,10 @@ public class JXFrame extends JFrame {
     public JXStatusBar getStatusBar() {
         return getRootPaneExt().getStatusBar();
     }
-    
+
     /**
      * Sets the tool bar property on the underlying {@code JXRootPane}.
-     * 
+     *
      * @param toolBar
      *            the {@code JToolBar} which is to be the tool bar
      * @see #getToolBar()
@@ -595,11 +599,11 @@ public class JXFrame extends JFrame {
     public void setToolBar(JToolBar toolBar) {
         getRootPaneExt().setToolBar(toolBar);
     }
-    
+
     /**
      * Returns the value of the tool bar property from the underlying
      * {@code JXRootPane}.
-     * 
+     *
      * @return the {@code JToolBar} which is the current tool bar
      * @see #setToolBar(JToolBar)
      * @see JXRootPane#getToolBar()
@@ -607,7 +611,7 @@ public class JXFrame extends JFrame {
     public JToolBar getToolBar() {
         return getRootPaneExt().getToolBar();
     }
-    
+
     //---------------------------------------------------- Root Pane Methods
     /**
      * Overridden to create a JXRootPane.
@@ -637,6 +641,99 @@ public class JXFrame extends JFrame {
             return (JXRootPane)rootPane;
         }
         return null;
+    }
+
+    // Fullscreen stuff.
+
+    private final GraphicsDevice device  =
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    private final DisplayMode originalDisplayMode = device.getDisplayMode();
+
+    private int _fsExtendedState;
+
+    private void fullscreenOn()
+    {
+        boolean wasVisible = isVisible();
+
+        _fsExtendedState = getExtendedState();
+
+        //hide everything
+        if ( wasVisible )
+            setVisible( false );
+
+        setLocationByPlatform( true );
+
+        //remove the frame from being displayable.
+        dispose();
+        //remove borders around the frame
+        setUndecorated(true);
+        //make the window fullscreen.
+        device.setFullScreenWindow(this);
+//        setBounds( device.getDefaultConfiguration().getBounds() );
+        setExtendedState( Frame.MAXIMIZED_BOTH );
+        //attempt to change the screen resolution.
+//        device.setDisplayMode(originalDisplayMode);
+        setResizable(false);
+        setAlwaysOnTop(true);
+
+        //show the frame
+        if ( wasVisible )
+            setVisible(true);
+    }
+
+    private void fullscreenOff()
+    {
+        boolean wasVisible = isVisible();
+
+        // Change to windowed mode.
+        // set the display mode back to what it was when
+        // the program was launched.
+        device.setDisplayMode(originalDisplayMode);
+
+        //hide the frame so we can change it.
+        if ( wasVisible )
+            setVisible( false );
+
+        //remove the frame from being displayable.
+        dispose();
+        //put the borders back on the frame.
+        setUndecorated(false);
+        //needed to unset this window as the fullscreen window.
+        device.setFullScreenWindow(null);
+        //recenter window
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setAlwaysOnTop( false );
+
+        setExtendedState( _fsExtendedState );
+
+        if ( wasVisible )
+            setVisible( true );
+    }
+
+    public static final String PN_FULLSCREEN = "fullscreen";
+
+    private boolean _fullscreen = false;
+
+    public boolean isFullscreen()
+    {
+        return _fullscreen;
+    }
+
+    public void setFullscreen( boolean newValue )
+    {
+        if ( newValue == _fullscreen )
+            return;
+
+        if ( newValue )
+            fullscreenOn();
+        else
+            fullscreenOff();
+
+        boolean old = _fullscreen;
+        _fullscreen = newValue;
+
+        firePropertyChange( PN_FULLSCREEN, old, _fullscreen );
     }
 }
 
