@@ -5,6 +5,9 @@
 
 package org.jdesktop.application.session;
 
+import static org.jdesktop.application.util.SwingHelper.computeVirtualGraphicsBounds;
+import static org.jdesktop.application.util.SwingHelper.isResizable;
+
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -15,9 +18,6 @@ import java.awt.Window;
 import javax.swing.JFrame;
 
 import org.jdesktop.application.util.SwingHelper;
-
-import static org.jdesktop.application.util.SwingHelper.computeVirtualGraphicsBounds;
-import static org.jdesktop.application.util.SwingHelper.isResizable;
 
 /**
  * A {@code sessionState} property for Window.
@@ -84,7 +84,11 @@ public class WindowProperty implements PropertySupport {
         if ((c instanceof JFrame) && (0 != (frameState & Frame.MAXIMIZED_BOTH))) {
             frameBounds = SwingHelper.getWindowNormalBounds((JFrame)c);
         }
-        if (frameBounds.isEmpty()) return null;
+
+        // Michab added null check.
+        if ( frameBounds == null || frameBounds.isEmpty() )
+            return null;
+
         return new WindowState(frameBounds, gcBounds, getScreenCount(), frameState);
     }
 
