@@ -9,9 +9,12 @@ package org.jdesktop.application.util;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import javax.swing.Action;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceManager;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.GTools;
 
 /**
  * Help methods on application level.
@@ -59,6 +62,19 @@ public final class AppHelper {
     public static ResourceMap getResourceMap( Application app, Class<?> pClass )
     {
         return getResourceManager( app ).getResourceMap(pClass);
+    }
+
+    /**
+     * Looks up the Action for the given name in the ActionMap associated
+     * with the passed object.
+     *
+     * @param pObj The object that carries the action.
+     * @param pName The name of the action.
+     * @throws IllegalArgumentException If the Action was not found.
+     */
+    public static Action getAction( Object pObj, String pName )
+    {
+        return GTools.getAction( pObj, pName );
     }
 
     /**
