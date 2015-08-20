@@ -241,6 +241,11 @@ public class GTools
     /**
      * Looks up the action for the given name in the action map associated
      * with the passed object.
+     *
+     * @param pClass The target class.
+     * @param pObject The target instance.
+     * @return The Action reference.
+     * @throws IllegalArgumentException If the Action was not found.
      */
     private static Action getAction(
             Class<?> pClass,
@@ -249,6 +254,15 @@ public class GTools
     {
         Action a = Application.getInstance().getContext().
                     getActionMap(pClass, pObject).get(pName);
+
+        if ( a == null )
+        {
+            throw new IllegalArgumentException( String.format(
+                "Action '%s' not found on class '%s'.",
+                    pName,
+                    pClass.getName() ) );
+        }
+
         if (a.getValue( Action.ACTION_COMMAND_KEY ) == null)
             a.putValue( Action.ACTION_COMMAND_KEY, pName );
         return a;
