@@ -121,6 +121,8 @@ public class View extends AbstractBeanEdt
         if (newChild != null) {
             contentPane.add(newChild, constraint);
         }
+
+        getRootPane().revalidate();
     }
 
     /**
