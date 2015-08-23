@@ -38,8 +38,7 @@ public class EnumEditor extends DefaultCellEditor
 
 
     /**
-     *
-     * @param enm
+     * Create an instance.
      */
     public EnumEditor()
     {
