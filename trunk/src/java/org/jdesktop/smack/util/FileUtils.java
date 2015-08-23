@@ -82,10 +82,10 @@ public class FileUtils
     /**
      * Silently closes the passed closeable.  In case the close
      * operation fails the exception is written into the log.
-     * If the passed objrct does not offer a close operation
+     * If the passed object does not offer a close operation
      * an {@link IllegalArgumentException} is thrown.
      *
-     * @param f The object to close.  If {@code null} is passed
+     * @param closeable The object to close.  If {@code null} is passed
      *          this operation does nothing.
      */
     public static void forceClose( Object closeable )
