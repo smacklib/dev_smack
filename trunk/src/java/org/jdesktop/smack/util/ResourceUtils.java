@@ -74,10 +74,11 @@ public class ResourceUtils
      * Populates the passed Map with the preprocessed values from the named
      * resource bundle.
      *
-     * @param bundleName
-     *            The resource bundle whose entries are processed.
-     * @param result
-     *            The map to populate.
+     * @param bundleName The resource bundle whose entries are processed.
+     * @param loc The locale to use.
+     * @param cl The classloader used to resolve the resource bundle.
+     * @return The requested resource bundle or {@code null} if the bundle
+     * did not exist.
      */
     public static Map<String, String> getPreprocessedResourceBundle(
             String bundleName, Locale loc, ClassLoader cl )
@@ -101,10 +102,9 @@ public class ResourceUtils
      * Populates the passed Map with the preprocessed values from the passed
      * resource bundle.
      *
-     * @param bundle
-     *            The resource bundle whose entries are processed.
-     * @param result
-     *            The map to populate.
+     * @param bundle The resource bundle whose entries are processed.
+     * @return The requested resource bundle or {@code null} if the bundle
+     * did not exist.
      */
     public static Map<String, String> preprocessResourceBundle(
             ResourceBundle bundle )
