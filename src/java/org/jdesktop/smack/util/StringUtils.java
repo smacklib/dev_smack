@@ -207,7 +207,7 @@ public class StringUtils
      * will result in "Donald+Daisy+Scrooge".
      *
      * @param delimiter The delimiter to use.  Must not be {@code null}.
-     * @param iterable The array used for building the delimited list.
+     * @param array The array used for building the delimited list.
      * {@code null} is allowed, resulting in an empty string.
      * @return The result string.
      */
@@ -266,7 +266,7 @@ public class StringUtils
     /**
      * Quotes a string.
      * TODO(micbinz) does not support quoting of quote characters.
-     * @param parts The string to quote.
+     * @param part The string to quote.
      * @return The resulting string.
      * @see #splitQuoted(String)
      */
@@ -294,21 +294,15 @@ public class StringUtils
         return result.toString();
     }
 
-    public static void testQuote ( String[ ] argv )
-    {
-//        System.err.println( quote( "Michael" ) );
-//        System.err.println( quote( "Michael Binz" ) );
-        System.err.println( quote( "Admiral \"von Schneider\"" ) );
-        System.err.println( quote( "" ) );
-    }
     /**
+     * Quotes the passed string.
      *
-     * @param part
-     * @return
+     * @param string The string to quote.
+     * @return The quoted string
      */
-    public static String quote( String part )
+    public static String quote( String string )
     {
-        return quote( QUOTE_CHAR, part );
+        return quote( QUOTE_CHAR, string );
     }
 
     /**
@@ -378,12 +372,12 @@ public class StringUtils
      * split into 'Admiral' and 'von Schneider'.
      *
      * TODO(micbinz) does not support quoting of quote characters.
-     * @param toParse The string to split
+     * @param toSplit The string to split
      * @return The split strings.
      */
-    public static String[] splitQuoted( String someString )
+    public static String[] splitQuoted( String toSplit )
     {
-        return splitQuoted( QUOTE_CHAR, someString );
+        return splitQuoted( QUOTE_CHAR, toSplit );
     }
 
 

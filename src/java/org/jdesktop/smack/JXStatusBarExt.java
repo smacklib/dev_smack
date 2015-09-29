@@ -13,10 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.jdesktop.beans.PropertyLink;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.JXToolbar;
 
@@ -56,6 +58,11 @@ public class JXStatusBarExt extends JPanel
         add( _messageLabel, BorderLayout.LINE_START );
 
         add( _right, BorderLayout.LINE_END );
+
+        new PropertyLink( this, "background", _right );
+        new PropertyLink( this, "foreground", _right );
+        new PropertyLink( this, "background", _messageLabel );
+        new PropertyLink( this, "foreground", _messageLabel );
     }
 
     /**
@@ -153,10 +160,11 @@ public class JXStatusBarExt extends JPanel
      * Add an {@link Action} to the right side status bar area.
      *
      * @param action The Action to add.
+     * @return The component that was added for the passed Action.
      */
-    public void addRight( Action action )
+    public JComponent addRight( Action action )
     {
-        addRight( action, BorderLayout.LINE_END );
+        return addRight( action, BorderLayout.LINE_END );
     }
 
     /**
@@ -165,17 +173,18 @@ public class JXStatusBarExt extends JPanel
      * @param action The component to add.
      * @param linePosition One of {@link BorderLayout#LINE_START} or
      * {@link BorderLayout#LINE_END}.
+     * @return The component that was added for the passed Action.
      * @throws IllegalArgumentException if the linePostion is unknown or null.
      */
-    public void addRight( Action action, String linePosition )
+    public JComponent addRight( Action action, String linePosition )
     {
         if ( BorderLayout.LINE_END.equals( linePosition ) )
-            _right.add( action );
+            return _right.add( action );
         else if ( BorderLayout.LINE_START.equals( linePosition ) )
-            _right.add( action, 0 );
-        else
-            throw new IllegalArgumentException(
-                    "Unknown position hint: " + linePosition );
+            return _right.add( action, 0 );
+
+        throw new IllegalArgumentException(
+                "Unknown position hint: " + linePosition );
     }
 
     /**

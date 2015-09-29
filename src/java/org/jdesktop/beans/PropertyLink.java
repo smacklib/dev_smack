@@ -93,6 +93,21 @@ public class PropertyLink
     }
 
     /**
+     * Allows to manually trigger a property update.
+     *
+     * @return The PropertyLink for chained calls.
+     */
+    public PropertyLink update()
+    {
+        PropertyProxy<Object, Object> sourceProperty =
+                new PropertyProxy<Object, Object>( _propertySrcName, _pa.getBean() );
+
+        _targetProperty.set( sourceProperty.get() );
+
+        return this;
+    }
+
+    /**
      * Remove the internal listener registrations.  This is only needed if the
      * linked beans have a different life cycle.
      */

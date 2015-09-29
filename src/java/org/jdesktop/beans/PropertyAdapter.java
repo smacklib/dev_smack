@@ -180,4 +180,14 @@ public class PropertyAdapter
                 _getPcls,
                 _bean );
     }
+
+    /**
+     * Get the adapted bean object.
+     *
+     * @return The adapted bean object.
+     */
+    public Object getBean()
+    {
+        return _bean;
+    }
 }
