@@ -269,19 +269,6 @@ public class GTools
     }
 
     /**
-     * Return the name of the action given the resource object and action base
-     * name.
-     */
-    public static String getActionName(Object pObj, String pBaseName) {
-        Action a =  Application.getInstance().getContext().
-            getActionMap(pObj).get(pBaseName);
-        if( a != null ) {
-            return (String) a.getValue(Action.NAME);
-        }
-        return null;
-    }
-
-    /**
      * Recursively localizes the given component and all its child components
      * using the resource map of the component's class.
      *
