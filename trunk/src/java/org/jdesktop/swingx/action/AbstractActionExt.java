@@ -30,6 +30,8 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
+import org.jdesktop.smack.util.StringUtils;
+
 /**
  * Extends the concept of the Action to include toggle or group states.
  * <p>
@@ -197,7 +199,7 @@ public abstract class AbstractActionExt extends AbstractAction
      * @return the large icon or null
      */
     public Icon getLargeIcon() {
-        return (Icon)getValue(LARGE_ICON);
+        return (Icon)getValue( LARGE_ICON_KEY );
     }
 
     /**
@@ -211,34 +213,73 @@ public abstract class AbstractActionExt extends AbstractAction
      * @see Action#putValue
      */
     public void setLargeIcon(Icon icon) {
-        putValue(LARGE_ICON, icon);
+        putValue( LARGE_ICON_KEY, icon );
     }
 
     /**
      * Sets the name of the action.
-     * <p>
-     * This is a convenience method for <code>putValue</code> with the
-     * <code>Action.NAME</code> key.
+     * This is a convenience method for {@code putValue(Action.NAME)}.
      *
-     * @param name the name of the action; can be <code>null</code>
-     * @see Action#NAME
-     * @see Action#putValue
+     * @param name The name of the Action; can be {@code null}.
      */
     public void setName(String name) {
-        putValue(Action.NAME, name);
+        putValue( NAME, name );
     }
 
     /**
      * Returns the name of the action.
      *
-     * @return the name of the action or null
+     * @return The name of the Action; can be {@code null}.
      */
     public String getName() {
-        return (String)getValue(Action.NAME);
+        return (String)getValue( NAME );
+    }
+
+    /**
+     * Sets the text of the action. Equivalent to {@link #setName(String)}.
+     * This is a convenience method for {@code putValue(Action.NAME)}.
+     *
+     * @param name The name of the Action; can be {@code null}.
+     */
+    public void setText(String name) {
+        setName( name );
+    }
+
+    /**
+     * Returns the name of the action.  Equivalent to {@link #getName()}.
+     *
+     * @return The name of the Action; can be {@code null}.
+     */
+    public String getText() {
+        return getText();
+    }
+
+    /**
+     * Sets the action name of the passed action. This is a convenience method
+     * for {@code putValue()} with the {@code Action.NAME} key.
+     *
+     * @param action the target action.
+     * @param key The name of the Action; can be {@code null}.
+     * @see #setText(String)
+     */
+    public static void setActionText( Action action,  String name ) {
+        action.putValue( NAME, name );
+    }
+
+    /**
+     * Returns the action name of the passed action. This is a convenience method
+     * for {@code getValue()} with the {@code Action.NAME} key.
+     *
+     * @param action the target action.
+     * @return The name of the Action; can be {@code null}.
+     * @see #getText()
+     */
+    public static String getActionText( Action action ) {
+        return (String) action.getValue( NAME );
     }
 
     public void setMnemonic(String mnemonic) {
-        if (mnemonic != null && mnemonic.length() > 0) {
+        if ( StringUtils.hasContent( mnemonic ) ) {
             putValue(Action.MNEMONIC_KEY, new Integer(mnemonic.charAt(0)));
         }
     }
