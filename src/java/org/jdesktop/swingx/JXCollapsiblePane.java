@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -46,7 +46,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.util.GraphicsUtilities;
 
 /**
@@ -54,10 +53,10 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * expand its content area with animation and fade in/fade out effects.
  * It also acts as a standard container for other Swing components.
  * <p>
- * The {@code JXCollapsiblePane} has a "content pane" that actually holds the 
- * displayed contents. This means that colors, fonts, and other display 
+ * The {@code JXCollapsiblePane} has a "content pane" that actually holds the
+ * displayed contents. This means that colors, fonts, and other display
  * configuration items must be set on the content pane.
- * 
+ *
  * <pre><code>
  * // to set the font
  * collapsiblePane.getContentPane().setFont(font);
@@ -65,11 +64,11 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * collapsiblePane.getContentPane().setBackground(Color.RED);
  * </code>
  * </pre>
- * 
+ *
  * For convenience, the {@code add} and {@code remove} methods forward to the
  * content pane.  The following code shows to ways to add a child to the
  * content pane.
- * 
+ *
  * <pre><code>
  * // to add a child
  * collapsiblePane.getContentPane().add(component);
@@ -77,9 +76,9 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * collapsiblePane.add(component);
  * </code>
  * </pre>
- * 
+ *
  * To set the content pane, do not use {@code add}, use {@link #setContentPane(Container)}.
- * 
+ *
  * <p>
  * In this example, the <code>JXCollapsiblePane</code> is used to build
  * a Search pane which can be shown and hidden on demand.
@@ -146,25 +145,10 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * calculating its layout (example {@link org.jdesktop.swingx.VerticalLayout},
  * {@link java.awt.BorderLayout}).
  *
- * @javabean.attribute
- *          name="isContainer"
- *          value="Boolean.TRUE"
- *          rtexpr="true"
- *
- * @javabean.attribute
- *          name="containerDelegate"
- *          value="getContentPane"
- *
- * @javabean.class
- *          name="JXCollapsiblePane"
- *          shortDescription="A pane which hides its content with an animation."
- *          stopClass="java.awt.Component"
- *
  * @author rbair (from the JDNC project)
  * @author <a href="mailto:fred@L2FProd.com">Frederic Lavigne</a>
  * @author Karl George Schaefer
  */
-@JavaBean
 public class JXCollapsiblePane extends JXPanel {
     /**
      * The direction defines how the collapsible pane will collapse. The
@@ -193,7 +177,7 @@ public class JXCollapsiblePane extends JXPanel {
          * Collapses down. Suitable for {@link BorderLayout#SOUTH}.
          */
         DOWN(true),
-        
+
         /**
          * Collapses toward the leading edge. Suitable for {@link BorderLayout#LINE_START}.
          */
@@ -203,7 +187,7 @@ public class JXCollapsiblePane extends JXPanel {
                 return co.isLeftToRight() ? LEFT : RIGHT;
             }
         },
-        
+
         /**
          * Collapses toward the trailing edge. Suitable for {@link BorderLayout#LINE_END}.
          */
@@ -213,7 +197,7 @@ public class JXCollapsiblePane extends JXPanel {
                 return co.isLeftToRight() ? RIGHT : LEFT;
             }
         },
-        
+
         /**
          * Collapses toward the starting edge. Suitable for {@link BorderLayout#PAGE_START}.
          */
@@ -223,7 +207,7 @@ public class JXCollapsiblePane extends JXPanel {
                 return UP;
             }
         },
-        
+
         /**
          * Collapses toward the ending edge. Suitable for {@link BorderLayout#PAGE_END}.
          */
@@ -243,7 +227,7 @@ public class JXCollapsiblePane extends JXPanel {
 
         /**
          * Gets the orientation for this direction.
-         * 
+         *
          * @return {@code true} if the direction is vertical, {@code false}
          *         otherwise
          */
@@ -253,7 +237,7 @@ public class JXCollapsiblePane extends JXPanel {
 
         /**
          * Gets the fixed direction equivalent to this direction for the specified orientation.
-         * 
+         *
          * @param co
          *            the component's orientation
          * @return the fixed direction corresponding to the component's orietnation
@@ -262,13 +246,18 @@ public class JXCollapsiblePane extends JXPanel {
             return this;
         }
     }
-    
+
     /**
      * Toggles the JXCollapsiblePane state and updates its icon based on the
      * JXCollapsiblePane "collapsed" status.
      */
     private class ToggleAction extends AbstractAction implements
                                                       PropertyChangeListener {
+        /**
+         * Generated for JXCollapsiblePane.ToggleAction.
+         */
+        private static final long serialVersionUID = -3917511031133382497L;
+
         public ToggleAction() {
             super(TOGGLE_ACTION);
             // the action must track the collapsed status of the pane to update its icon
@@ -350,11 +339,11 @@ public class JXCollapsiblePane extends JXPanel {
     public JXCollapsiblePane() {
         this(Direction.UP);
     }
-    
+
     /**
      * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and the specified
      * direction.
-     * 
+     *
      * @param direction
      *                the direction to collapse the container
      */
@@ -373,7 +362,7 @@ public class JXCollapsiblePane extends JXPanel {
 
     /**
      * Creates the content pane used by this collapsible pane.
-     * 
+     *
      * @return the content pane
      */
     protected Container createContentPane() {
@@ -387,7 +376,7 @@ public class JXCollapsiblePane extends JXPanel {
         if (wrapper == null) {
             return null;
         }
-        
+
         return (Container) wrapper.getView();
     }
 
@@ -400,7 +389,7 @@ public class JXCollapsiblePane extends JXPanel {
      * likely that the scroll pane will never correctly size. While it is not
      * strictly necessary to implement {@code Scrollable} in this way, the
      * default content pane does so.
-     * 
+     *
      * @param contentPanel
      *                the container delegate used to hold all of the contents
      *                for this collapsible pane
@@ -420,7 +409,7 @@ public class JXCollapsiblePane extends JXPanel {
             assert super.getComponent(0) == wrapper;
             super.remove(0);
         }
-        
+
         wrapper = new WrapperContainer(contentPanel);
         wrapper.collapsedState = isCollapsed();
         wrapper.getView().setVisible(!wrapper.collapsedState);
@@ -486,12 +475,11 @@ public class JXCollapsiblePane extends JXPanel {
      * (collapsing) or show (expanding) its content area.
      *
      * @param animated
-     * @javabean.property bound="true" preferred="true"
      */
     public void setAnimated(boolean animated) {
         if (animated != useAnimation) {
             useAnimation = animated;
-            
+
             if (!animated) {
             	if (animateTimer.isRunning()) {
             		//TODO should we listen for animation state change?
@@ -517,7 +505,7 @@ public class JXCollapsiblePane extends JXPanel {
     public boolean isAnimated() {
         return useAnimation;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -526,7 +514,7 @@ public class JXCollapsiblePane extends JXPanel {
         if (animateTimer.isRunning()) {
             throw new IllegalStateException("cannot be change component orientation while collapsing.");
         }
-        
+
         super.setComponentOrientation(o);
     }
 
@@ -540,27 +528,24 @@ public class JXCollapsiblePane extends JXPanel {
      * @param direction the new {@link Direction} for this collapsible pane
      * @throws IllegalStateException when this method is called while a
      *                               collapsing/restore operation is running
-     * @javabean.property
-     *    bound="true"
-     *    preferred="true"
      */
     public void setDirection(Direction direction) {
         if (animateTimer.isRunning()) {
             throw new IllegalStateException("cannot be change direction while collapsing.");
         }
-        
+
         Direction oldValue = getDirection();
         this.direction = direction;
-        
+
         if (direction.isVertical()) {
             getContentPane().setLayout(new VerticalLayout(2));
         } else {
             getContentPane().setLayout(new HorizontalLayout(2));
         }
-        
+
         firePropertyChange("direction", oldValue, getDirection());
     }
-    
+
     /**
      * @return the current {@link Direction}.
      * @see #setDirection(Direction)
@@ -568,7 +553,7 @@ public class JXCollapsiblePane extends JXPanel {
     public Direction getDirection() {
         return direction;
     }
-    
+
     /**
      * @return true if the pane is collapsed, false if expanded
      */
@@ -590,33 +575,30 @@ public class JXCollapsiblePane extends JXPanel {
      * this call collapses the JXCollapsiblePane, such that the entire
      * JXCollapsiblePane will be invisible. If {@link #isAnimated()} returns true,
      * the collapse will be accompanied by an animation.
-     * 
+     *
      * <p>
      * As of SwingX 1.6.3, JXCollapsiblePane only fires property change events when
-     * the component's state is accurate.  This means that animated collapsible 
+     * the component's state is accurate.  This means that animated collapsible
      * pane's only fire events once the animation is complete.
      *
      * @see #isAnimated()
      * @see #setAnimated(boolean)
-     * @javabean.property
-     *    bound="true"
-     *    preferred="true"
      */
     public void setCollapsed(boolean val) {
         boolean oldValue = isCollapsed();
         this.collapsed = val;
-        
+
         if (isAnimated() && isShowing()) {
             if (oldValue == isCollapsed()) {
                 return;
             }
-            
+
             // this ensures that if the user reverses the animation
             // before completion that no property change is fired
             if (!animateTimer.isRunning()) {
                 collapseFiringState = oldValue;
             }
-            
+
             if (oldValue) {
                 int dimension = direction.isVertical() ? wrapper.getHeight() : wrapper.getWidth();
                 int preferredDimension = direction.isVertical() ? getContentPane()
@@ -631,14 +613,14 @@ public class JXCollapsiblePane extends JXPanel {
                 setAnimationParams(new AnimationParams(30, Math.max(8, dimension / 10), 1.0f, 0.01f));
                 animator.reinit(dimension, 0);
             }
-            
+
             animateTimer.start();
         } else {
             wrapper.collapsedState = isCollapsed();
             wrapper.getView().setVisible(!isCollapsed());
             revalidate();
             repaint();
-            
+
             firePropertyChange("collapsed", oldValue, isCollapsed());
         }
     }
@@ -651,10 +633,10 @@ public class JXCollapsiblePane extends JXPanel {
         if (getContentPane() instanceof JComponent) {
             return ((JComponent) getContentPane()).getBorder();
         }
-        
+
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -677,7 +659,7 @@ public class JXCollapsiblePane extends JXPanel {
     @Override
     public void setOpaque(boolean opaque) {
         super.setOpaque(opaque);
-        
+
         if (wrapper != null) {
             wrapper.setOpaque(opaque);
         }
@@ -689,7 +671,7 @@ public class JXCollapsiblePane extends JXPanel {
      * <p>
      * To query the minimum size of the contents user {@code
      * getContentPane().getMinimumSize()}.
-     * 
+     *
      * @return the preferred size of the component
      */
     @Override
@@ -699,7 +681,7 @@ public class JXCollapsiblePane extends JXPanel {
 
     /**
      * Forwards to the content pane.
-     * 
+     *
      * @param minimumSize
      *            the size to set on the content pane
      */
@@ -838,7 +820,6 @@ public class JXCollapsiblePane extends JXPanel {
         /**
          * The current alpha setting used during "animation" (fade-in/fade-out)
          */
-        @SuppressWarnings({"FieldCanBeLocal"})
         private float animateAlpha = 1.0f;
 
         @Override
@@ -901,13 +882,13 @@ public class JXCollapsiblePane extends JXPanel {
                     int oldHeight = bounds.height;
                     bounds.height = newDimension;
                     wrapper.setBounds(bounds);
-                    
+
                     if (direction.getFixedDirection(getComponentOrientation()) == Direction.DOWN) {
                         wrapper.setViewPosition(new Point(0, wrapper.getView().getPreferredSize().height - newDimension));
                     } else {
                         wrapper.setViewPosition(new Point(0, newDimension));
                     }
-                    
+
                     bounds = getBounds();
                     bounds.height = (bounds.height - oldHeight) + newDimension;
                     currentDimension = bounds.height;
@@ -915,13 +896,13 @@ public class JXCollapsiblePane extends JXPanel {
                     int oldWidth = bounds.width;
                     bounds.width = newDimension;
                     wrapper.setBounds(bounds);
-                    
+
                     if (direction.getFixedDirection(getComponentOrientation()) == Direction.RIGHT) {
                         wrapper.setViewPosition(new Point(wrapper.getView().getPreferredSize().width - newDimension, 0));
                     } else {
                         wrapper.setViewPosition(new Point(newDimension, 0));
                     }
-                    
+
                     bounds = getBounds();
                     bounds.width = (bounds.width - oldWidth) + newDimension;
                     currentDimension = bounds.width;
@@ -950,9 +931,9 @@ public class JXCollapsiblePane extends JXPanel {
                         animateAlpha = animationParams.alphaStart;
                     }
                 }
-                
+
                 wrapper.setAlpha(animateAlpha);
-                
+
                 validate();
             }
         }
@@ -996,6 +977,11 @@ public class JXCollapsiblePane extends JXPanel {
     }
 
     private final class WrapperContainer extends JViewport implements AlphaPaintable {
+        /**
+         * Generated for JXCollapsiblePane.WrapperContainer.
+         */
+        private static final long serialVersionUID = -2720023553828851075L;
+
         boolean collapsedState;
         private volatile float alpha;
         private boolean oldOpaque;
@@ -1015,7 +1001,7 @@ public class JXCollapsiblePane extends JXPanel {
 
         /**
          * {@inheritDoc} <p>
-         * 
+         *
          * Overridden to not have JViewPort behaviour (that is scroll the view)
          * but delegate to parent scrollRectToVisible just a JComponent does.<p>
          */
@@ -1037,10 +1023,10 @@ public class JXCollapsiblePane extends JXPanel {
             if (alpha < 0f || alpha > 1f) {
                 throw new IllegalArgumentException("invalid alpha value " + alpha);
             }
-            
+
             float oldValue = getAlpha();
             this.alpha = alpha;
-            
+
             if (getAlpha() < 1f) {
                 if (oldValue == 1) {
                     //it used to be 1, but now is not. Save the oldOpaque
@@ -1053,7 +1039,7 @@ public class JXCollapsiblePane extends JXPanel {
                     setOpaque(true);
                 }
             }
-            
+
             firePropertyChange("alpha", oldValue, getAlpha());
             repaint();
         }
@@ -1072,7 +1058,7 @@ public class JXCollapsiblePane extends JXPanel {
         public float getEffectiveAlpha() {
             return getAlpha();
         }
-        
+
         //support for Java 7 painting improvements
         protected boolean isPaintingOrigin() {
             return getAlpha() < 1f;
@@ -1080,7 +1066,7 @@ public class JXCollapsiblePane extends JXPanel {
 
         /**
          * Overridden paint method to take into account the alpha setting.
-         * 
+         *
          * @param g
          *            the <code>Graphics</code> context in which to paint
          */
@@ -1095,16 +1081,16 @@ public class JXCollapsiblePane extends JXPanel {
                 // TODO should we cache this image? repaint to same image unless size changes?
                 BufferedImage img = GraphicsUtilities.createCompatibleTranslucentImage(getWidth(), getHeight());
                 Graphics2D gfx = img.createGraphics();
-                
+
                 try {
                     super.paint(gfx);
                 } finally {
                     gfx.dispose();
                 }
-                
+
                 Graphics2D g2d = (Graphics2D) g;
                 Composite oldComp = g2d.getComposite();
-                
+
                 try {
                     Composite alphaComp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getEffectiveAlpha());
                     g2d.setComposite(alphaComp);
@@ -1140,7 +1126,7 @@ public class JXCollapsiblePane extends JXPanel {
 //                pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 //                        KeyStroke.getKeyStroke("ctrl F"),
 //                        JXCollapsiblePane.TOGGLE_ACTION);
-//                    
+//
 //                pane = new JXCollapsiblePane(Orientation.HORIZONTAL);
 //                JTree tree3 = new JTree();
 //                pane.add(tree3);
@@ -1157,4 +1143,9 @@ public class JXCollapsiblePane extends JXPanel {
 //        }
 //        });
 //    }
+
+    /**
+     * Generated for JXCollapsiblePane.java.
+     */
+    private static final long serialVersionUID = 7233346468871100903L;
 }

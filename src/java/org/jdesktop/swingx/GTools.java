@@ -169,7 +169,7 @@ public class GTools
      *            e.g. KeyStroke.getKeyStroke( KeyEvent.VK_ENTER,
      *            InputEvent.ALT_DOWN_MASK )
      * @param pCondition
-     *            e.g. {@link JComponent.WHEN_FOCUSED}
+     *            e.g. {@link JComponent#WHEN_FOCUSED}
      * @param pAction
      *            the action to execute when the key stroke is entered.
      */
