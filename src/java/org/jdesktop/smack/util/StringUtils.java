@@ -265,7 +265,7 @@ public class StringUtils
 
     /**
      * Quotes a string.
-     * TODO(micbinz) does not support quoting of quote characters.
+     *
      * @param part The string to quote.
      * @return The resulting string.
      * @see #splitQuoted(String)
@@ -298,7 +298,7 @@ public class StringUtils
      * Quotes the passed string.
      *
      * @param string The string to quote.
-     * @return The quoted string
+     * @return The quoted string.
      */
     public static String quote( String string )
     {
@@ -312,7 +312,7 @@ public class StringUtils
      *
      * TODO(micbinz) does not support quoting of quote characters.
      * @param quoteChar The character used for quotes.
-     * @param someString The string to split
+     * @param someString The string to split.
      * @return The split strings.
      */
     public static String[] splitQuoted( char quoteChar, String someString )
