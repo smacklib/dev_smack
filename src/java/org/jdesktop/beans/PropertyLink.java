@@ -1,7 +1,5 @@
 /* $Id$
  *
- * Property framework.
- *
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
@@ -27,7 +25,7 @@ public class PropertyLink
 {
     private final String _propertySrcName;
 
-    private PropertyProxy<Object,Object> _targetProperty;
+    private final PropertyProxy<Object,Object> _targetProperty;
 
     private final PropertyAdapter _pa;
 
@@ -86,7 +84,7 @@ public class PropertyLink
         _pa =
             new PropertyAdapter( source );
 
-        _pa.addPropertyChangeListener( _propertySrcName, _listener );
+        _pa.addPropertyChangeListener( _listener );
 
         _targetProperty =
             new PropertyProxy<Object,Object>( propTgtName, target );
@@ -113,13 +111,13 @@ public class PropertyLink
      */
     public void dispose()
     {
-        _pa.removePropertyChangeListener( _propertySrcName, _listener );
+        _pa.removePropertyChangeListener( _listener );
     }
 
     /**
      * A listener for source changes.
      */
-    private PropertyChangeListener _listener = new PropertyChangeListener()
+    private final PropertyChangeListener _listener = new PropertyChangeListener()
     {
         @Override
         public void propertyChange( PropertyChangeEvent evt )

@@ -1,9 +1,7 @@
 /* $Id$
  *
- * Laboratory.
- *
  * Released under Gnu Public License
- * Copyright © 2011 Michael G. Binz
+ * Copyright © 2011-15 Michael G. Binz
  */
 
 package org.jdesktop.beans;
@@ -12,9 +10,6 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 
 import org.jdesktop.smack.util.ReflectionUtils;
-
-
-
 
 /**
  * Wraps an object that offers a property change listener interface.
@@ -52,13 +47,20 @@ public class PropertyAdapter
      */
     private final Method _removePclNamed;
 
+    /**
+     * Get all property change listeners.
+     */
     private final Method _getPcls;
+
+    /**
+     * Get property change listeners for a certain name.
+     */
     private final Method _getPclsNamed;
 
     /**
-     * Creates an instance.  The constructor validates the contract
-     * for adaptable classes and fails with an exception if the passed
-     * object does not follow.
+     * Creates an instance.  The constructor fails with an exception
+     * if the passed object does not implement a partial property change
+     * listener interface.
      *
      * @param bean The object to adapt.
      */
@@ -68,36 +70,51 @@ public class PropertyAdapter
 
         Class<?> beanClass = bean.getClass();
 
-        try
-        {
-            _addPcl =
-                beanClass.getMethod(
-                        "addPropertyChangeListener",
-                        PropertyChangeListener.class );
-            _addPclNamed =
-                beanClass.getMethod(
-                        "addPropertyChangeListener",
-                        String.class, PropertyChangeListener.class );
-            _removePcl =
-                beanClass.getMethod(
-                        "removePropertyChangeListener",
-                        PropertyChangeListener.class );
-            _removePclNamed =
-                beanClass.getMethod(
-                        "removePropertyChangeListener",
-                        String.class, PropertyChangeListener.class );
-            _getPcls =
-                beanClass.getMethod(
-                        "getPropertyChangeListeners" );
-            _getPclsNamed =
-                beanClass.getMethod(
-                        "getPropertyChangeListeners",
-                        String.class );
-        }
-        catch ( Exception e )
-        {
-            throw new IllegalArgumentException( e );
-        }
+        int found = 0;
+
+        _addPcl = ReflectionUtils.getMethod(
+                beanClass,
+                "addPropertyChangeListener",
+                PropertyChangeListener.class );
+        if ( _addPcl != null )
+            found++;
+
+        _addPclNamed = ReflectionUtils.getMethod(
+                beanClass,
+                "addPropertyChangeListener",
+                String.class, PropertyChangeListener.class );
+        if ( _addPclNamed != null )
+            found++;
+
+        _removePcl = ReflectionUtils.getMethod(
+                beanClass,
+                "removePropertyChangeListener",
+                PropertyChangeListener.class );
+        if ( _removePcl != null )
+            found++;
+
+        _removePclNamed = ReflectionUtils.getMethod(
+                beanClass,
+                "removePropertyChangeListener",
+                String.class, PropertyChangeListener.class );
+        if ( _removePclNamed != null )
+            found++;
+
+        _getPcls = ReflectionUtils.getMethod(
+                beanClass,
+                "getPropertyChangeListeners" );
+        if ( _getPcls != null )
+            found++;
+
+        _getPclsNamed = ReflectionUtils.getMethod(
+                beanClass,
+                "getPropertyChangeListeners",
+                String.class );
+        if ( _getPclsNamed != null )
+            found++;
+
+        if ( found == 0 )
+            throw new IllegalArgumentException( "Object is not a PropertyChangeSource: " + beanClass );
     }
 
     /**
@@ -110,6 +127,9 @@ public class PropertyAdapter
      */
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
+        if ( _addPcl == null )
+            throw new NoSuchMethodError();
+
         ReflectionUtils.invokeQuiet(
                 _addPcl,
                 _bean,
@@ -126,6 +146,9 @@ public class PropertyAdapter
      */
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
+        if ( _removePcl == null )
+            throw new NoSuchMethodError();
+
         ReflectionUtils.invokeQuiet(
                 _removePcl,
                 _bean,
@@ -143,6 +166,9 @@ public class PropertyAdapter
      */
     public void addPropertyChangeListener( String propertyName, PropertyChangeListener listener)
     {
+        if ( _addPclNamed == null )
+            throw new NoSuchMethodError();
+
         ReflectionUtils.invokeQuiet(
                 _addPclNamed,
                 _bean,
@@ -159,6 +185,9 @@ public class PropertyAdapter
      */
     public void removePropertyChangeListener( String propertyName, PropertyChangeListener listener)
     {
+        if ( _removePclNamed == null )
+            throw new NoSuchMethodError();
+
         ReflectionUtils.invokeQuiet(
                 _removePclNamed,
                 _bean,
@@ -168,6 +197,9 @@ public class PropertyAdapter
 
     public PropertyChangeListener[] getPropertyChangeListeners( String propertyName )
     {
+        if ( _getPclsNamed == null )
+            throw new NoSuchMethodError();
+
         return (PropertyChangeListener[])ReflectionUtils.invokeQuiet(
                 _getPclsNamed,
                 _bean,
@@ -176,6 +208,9 @@ public class PropertyAdapter
 
     public PropertyChangeListener[] getPropertyChangeListeners()
     {
+        if ( _getPcls == null )
+            throw new NoSuchMethodError();
+
         return (PropertyChangeListener[])ReflectionUtils.invokeQuiet(
                 _getPcls,
                 _bean );
