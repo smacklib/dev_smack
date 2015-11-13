@@ -251,7 +251,7 @@ public abstract class AbstractActionExt extends AbstractAction
      * @return The name of the Action; can be {@code null}.
      */
     public String getText() {
-        return getText();
+        return getName();
     }
 
     /**
