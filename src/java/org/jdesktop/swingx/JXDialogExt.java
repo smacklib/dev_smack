@@ -232,8 +232,6 @@ public class JXDialogExt extends JDialog
      * <p>
      * If the given message is null then the info component will be hidden.
      *
-     * @param pIcon
-     *            the icon to set on the info component.
      * @param pMessage
      *            the message to display in the info component.
      */
@@ -434,7 +432,8 @@ public class JXDialogExt extends JDialog
     /**
      * Returns whether the content of the user component has been modified.
      *
-     * @return
+     * @return {@code true} if the content of the user component has been
+     * modified.
      */
     public boolean isModified()
     {
@@ -444,7 +443,7 @@ public class JXDialogExt extends JDialog
     /**
      * Sets whether the content of the user component has been modified.
      *
-     * @param pModified
+     * @param pModified The new status of the modified flag.
      */
     public void setModified(boolean pModified)
     {

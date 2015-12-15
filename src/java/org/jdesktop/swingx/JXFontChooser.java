@@ -281,7 +281,7 @@ public class JXFontChooser extends JComponent
      * @return the selected font
      * @see #setSelectedFont
      * @see java.awt.Font
-     **/
+     */
     public Font getSelectedFont() {
         Font font = new Font(getSelectedFontFamily(), getSelectedFontStyle(), getSelectedFontSize());
         return font;
@@ -292,8 +292,8 @@ public class JXFontChooser extends JComponent
      *
      * @param name
      *            the family name of the selected font.
-     * @see getSelectedFontFamily
-     **/
+     * @see #getSelectedFontFamily()
+     */
     public void setSelectedFontFamily(String name) {
         String[] names = getFontFamilies();
         for (int i = 0; i < names.length; i++) {
