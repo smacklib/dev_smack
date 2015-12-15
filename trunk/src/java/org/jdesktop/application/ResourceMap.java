@@ -21,6 +21,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -94,7 +95,8 @@ import org.jdesktop.smack.util.StringUtils;
  * @see ResourceBundle
  */
 public class ResourceMap {
-    private static Logger logger = Logger.getLogger(ResourceMap.class.getName());
+    private static final Logger LOG =
+            Logger.getLogger(ResourceMap.class.getName());
 
     public static final String KEY_PLATFORM = "platform";
 
@@ -899,7 +901,7 @@ public class ResourceMap {
     public static class PropertyInjectionException extends RuntimeException {
 
         private final String key;
-        private final Component component;
+        private final Object component;
         private final String propertyName;
 
         /**
@@ -908,18 +910,18 @@ public class ResourceMap {
          *
          * @param msg the detail message
          * @param key the name of the resource
-         * @param component the component whose property couldn't be set
+         * @param target the component whose property couldn't be set
          * @param propertyName the name of the component property
          */
-        public PropertyInjectionException(String msg, String key, Component component, String propertyName) {
-            super(String.format("%s: resource %s, property %s, component %s", msg, key, propertyName, component));
+        public PropertyInjectionException(String msg, String key, Object target, String propertyName) {
+            super(String.format("%s: resource %s, property %s, component %s", msg, key, propertyName, target));
             this.key = key;
-            this.component = component;
+            this.component = target;
             this.propertyName = propertyName;
         }
 
         /**
-         * Returns the the name of resource whose value was to be used to set the property
+         * Returns the the name of the resource whose value was to be used to set the property.
          * @return the resource name
          */
         public String getKey() {
@@ -927,10 +929,10 @@ public class ResourceMap {
         }
 
         /**
-         * Returns the component whose property could not be set
-         * @return the component
+         * Returns the bean whose property could not be set.
+         * @return The target bean.
          */
-        public Component getComponent() {
+        public Object getTarget() {
             return component;
         }
 
@@ -1026,7 +1028,7 @@ public class ResourceMap {
                          * This is probably a mistake.
                          */
                         String msg = "component resource lacks property name suffix";
-                        logger.warning(msg);
+                        LOG.warning(msg);
                         break;
                     }
                     String propertyName = key.substring(i + 1);
@@ -1042,7 +1044,7 @@ public class ResourceMap {
                         String msg = String.format(
                                 "[resource %s] component named %s doesn't have a property named %s",
                                 key, componentName, propertyName);
-                        logger.warning(msg);
+                        LOG.warning(msg);
                     }
                 }
             }
@@ -1225,7 +1227,7 @@ public class ResourceMap {
 
             if ( value == null )
             {
-                logger.warning( "No value for @Resource(" + key + ")" );
+                LOG.warning( "No value for @Resource(" + key + ")" );
                 return;
             }
 
@@ -1297,6 +1299,72 @@ public class ResourceMap {
                 injectField(field, target, key);
             }
         }
+    }
+
+    /**
+     * Inject the passed bean's properties from this map. The prefix is
+     * used to find the configuration keys in the map. Keys in the
+     * map have to look like prefix.propertyName. The dot is added to
+     * the prefix.
+     *
+     * @param bean The bean whose properties are injected.
+     * @param prefix The prefix used to filter the map's keys.
+     */
+    public void injectProperties( Object bean, String prefix )
+    {
+        BeanInfo beanInfo;
+        try {
+            beanInfo = Introspector.getBeanInfo(
+                    bean.getClass() );
+        } catch (IntrospectionException e) {
+            throw new IllegalArgumentException( "Introspection failed.", e );
+        }
+
+        // Add the dot.
+        prefix += ".";
+
+        Set<String> definedKeys = new HashSet<String>();
+        for ( String c : keySet() )
+            if ( c.startsWith( prefix ) )
+                definedKeys.add( c );
+
+        if ( definedKeys.size() == 0 )
+            return;
+
+        for ( PropertyDescriptor c : beanInfo.getPropertyDescriptors() )
+        {
+            Method setter = c.getWriteMethod();
+
+            // Skip read-only properties.
+            if ( setter == null )
+                continue;
+
+            String currentKey = prefix + c.getName();
+            if ( ! definedKeys.contains( currentKey ) )
+                continue;
+
+            definedKeys.remove( currentKey );
+
+            try
+            {
+                // This implicitly transforms the key's value.
+                setter.invoke( bean, get( currentKey, c.getPropertyType() ) );
+            }
+            catch ( IllegalAccessException e )
+            {
+                throw new RuntimeException( e );
+            }
+            catch ( InvocationTargetException e )
+            {
+                throw new RuntimeException( e.getCause() );
+            }
+
+            if ( definedKeys.size() == 0 )
+                return;
+        }
+
+        for ( String c : definedKeys )
+            LOG.warning( String.format( "Key '%s' defined in map does not match property.", c ) );
     }
 
     /* Register ResourceConverters that are defined in this class

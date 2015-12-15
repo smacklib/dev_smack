@@ -240,9 +240,6 @@ public class JXErrorPane extends JComponent
      * @param ui
      *            the ErrorPaneUI L&F object
      * @see javax.swing.UIDefaults#getUI
-     * @beaninfo bound: true hidden: true attribute: visualUpdate true
-     *           description: The UI object that implements the Component's
-     *           LookAndFeel.
      */
     public void setUI(ErrorPaneUI ui) {
         super.setUI(ui);
