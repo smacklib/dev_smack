@@ -20,6 +20,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,9 +33,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -94,7 +98,8 @@ import org.jdesktop.smack.util.StringUtils;
  * @see ResourceConverter
  * @see ResourceBundle
  */
-public class ResourceMap {
+public class ResourceMap
+{
     private static final Logger LOG =
             Logger.getLogger(ResourceMap.class.getName());
 
@@ -270,18 +275,53 @@ public class ResourceMap {
 
         if ( ss != null )
             bundlesMap.putAll( ss );
+
+        // This allows to have additional keys defined in a properties
+        // file named like the bundle.  This is experimental.
+
+        File propertiesOverride = new File( bundleName + ".properties" );
+
+        if ( ! propertiesOverride.exists() )
+            return;
+        if ( ! propertiesOverride.canRead() )
+            return;
+
+        LOG.info( "Reading resource override file: " + propertiesOverride.getPath() );
+
+        Properties p = new Properties();
+
+        try
+        {
+            p.load( new FileReader( propertiesOverride ) );
+        }
+        catch ( Exception e )
+        {
+            LOG.log(
+                    Level.WARNING,
+                    "Failed reading: " + propertiesOverride.getPath(),
+                    e );
+            return;
+        }
+
+        for ( Object c : p.keySet() )
+        {
+            String key = c.toString();
+            Object v0 = p.get( key );
+            String value = v0 == null ? null : v0.toString();
+
+            bundlesMap.put( key, value );
+        }
     }
 
     /**
      *
      * @param key
      */
-    private void checkNullKey(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("null key");
-        }
+    private void checkNullKey(String key)
+    {
+        if ( StringUtils.isEmpty( key ) )
+            throw new IllegalArgumentException("empty key");
     }
-
 
     /**
      *
@@ -563,7 +603,7 @@ public class ResourceMap {
             if ( parent == null )
                 return null;
 
-            return getParent().getObject( key, type );
+            return parent.getObject( key, type );
         }
 
         Object value = getResource( key );
@@ -1365,6 +1405,15 @@ public class ResourceMap {
 
         for ( String c : definedKeys )
             LOG.warning( String.format( "Key '%s' defined in map does not match property.", c ) );
+    }
+
+    @Override
+    public String toString()
+    {
+        if ( _bundleNames == null )
+            return "null";
+
+        return StringUtils.concatenate( " ", _bundleNames );
     }
 
     /* Register ResourceConverters that are defined in this class

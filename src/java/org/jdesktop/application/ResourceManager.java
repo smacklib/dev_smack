@@ -56,7 +56,8 @@ public final class ResourceManager
     private final Map<String, ResourceMap> resourceMaps =
                 new ConcurrentHashMap<String, ResourceMap>();
 
-    private List<String> applicationBundleNames = null;
+    private final List<String> _applicationBundleNames;
+
     private ResourceMap _appResourceMap = null;
 
     /**
@@ -95,7 +96,11 @@ public final class ResourceManager
         if ( applicationClass == null )
             throw new IllegalArgumentException( "null applicationClass" );
         _applicationClass = applicationClass;
+        _applicationBundleNames = allBundleNames(
+                _applicationClass,
+                Application.class );
     }
+
     ResourceManager( Application application ) {
         this( application.getClass() );
     }
@@ -307,13 +312,21 @@ public final class ResourceManager
      * @return the Application's ResourceMap
      */
     public ResourceMap getApplicationResourceMap( Locale locale ) {
-        if (_appResourceMap == null) {
-            List<String> appBundleNames = getApplicationBundleNames();
-            ClassLoader classLoader = _applicationClass.getClassLoader();
-            _appResourceMap = createResourceMapChain(locale,classLoader, null, appBundleNames.listIterator());
+        if (_appResourceMap == null)
+        {
+            ClassLoader classLoader =
+                    _applicationClass.getClassLoader();
+
+            _appResourceMap = createResourceMapChain(
+                    locale,
+                    classLoader,
+                    null,
+                    _applicationBundleNames.listIterator());
         }
+
         return _appResourceMap;
     }
+
     public ResourceMap getApplicationResourceMap() {
         return getApplicationResourceMap( Locale.getDefault() );
     }
@@ -345,61 +358,24 @@ public final class ResourceManager
      */
     private void injectResources( Object o, Locale locale )
     {
-        List<Class<?>> inheritanceList =
-            ReflectionUtils.getInheritanceList( o.getClass() );
+        Class<?> clazz = o.getClass();
 
-        Class<?> startClass = inheritanceList.get( 0 );
+        ResourceMap resourceMap = getResourceMap(
+                locale,
+                clazz );
 
         // Perform the injection for the object's class and all its
         // super classes.
         // TODO michab -- Ensure quick return if already injected.
-        for ( Class<?> c : inheritanceList )
+        for ( Class<?> c : ReflectionUtils.getInheritanceList( clazz ) )
         {
             if ( c.getClassLoader() == null )
                 break;
-            getResourceMap( locale, startClass, c ).injectFields( o, c );
+            // TODO: michab: This inject fields is working, but not understandable.
+            // Why do we have to call this here in a loop? Wouldn't it be better to
+            // inject recursively?
+            resourceMap.injectFields( o, c );
         }
-    }
-
-    /**
-     * The names of the ResourceBundles to be shared by the entire
-     * application.  The list is in priority order: resources defined
-     * by the first ResourceBundle shadow resources with the the same
-     * name that come later.
-     * <p>
-     * The default value for this property is a list of {@link
-     * #getClassBundleNames per-class} ResourceBundle names, beginning
-     * with the {@code Application's} class and of each of its
-     * super classes, up to {@code Application.class}.
-     * For example, if the Application's class was
-     * {@code com.foo.bar.MyApp}, and MyApp was a subclass
-     * of {@code SingleFrameApplication.class}, then the
-     * ResourceBundle names would be:
-     * <code><ol>
-     * <li>com.foo.bar.resources.MyApp</li>
-     * <li>javax.swing.application.resources.SingleFrameApplication</li>
-     * <li>javax.swing.application.resources.Application</li>
-     * </code></ol>
-     * <p>
-     * The default value of this property is computed lazily and
-     * cached.  If it's reset, then all ResourceMaps cached by
-     * {@code getResourceMap} will be updated.
-     *
-     * @return names of the ResourceBundles
-     * @see #setApplicationBundleNames
-     * @see #getResourceMap
-     * @see #getClassBundleNames
-     * @see ApplicationContext#getApplication
-     */
-    private List<String> getApplicationBundleNames() {
-        /* Lazily compute an initial value for this property, unless the
-         * application's class hasn't been specified yet.  In that case
-         * we just return a placeholder based on Application.class.
-         */
-        if (applicationBundleNames == null) {
-                applicationBundleNames = allBundleNames(_applicationClass, Application.class);
-        }
-        return applicationBundleNames;
     }
 
     /**
