@@ -256,9 +256,6 @@ public class JXTaskPane extends JPanel implements
    *
    * @param ui the <code>TaskPaneUI</code> L&F object
    * @see javax.swing.UIDefaults#getUI
-   *
-   * @beaninfo bound: true hidden: true description: The UI object that
-   * implements the taskpane group's LookAndFeel.
    */
   public void setUI(TaskPaneUI ui) {
     super.setUI(ui);
@@ -289,9 +286,6 @@ public class JXTaskPane extends JPanel implements
    * Sets the title to be displayed in the border of this pane.
    *
    * @param title the title to be displayed in the border of this pane
-   * @javabean.property
-   *          bound="true"
-   *          preferred="true"
    */
   public void setTitle(String title) {
     String old = this.title;
@@ -313,10 +307,7 @@ public class JXTaskPane extends JPanel implements
    * UIs may impose size constraints for the icon. A size of 16x16 pixels is
    * the recommended icon size.
    *
-   * @param icon the icon to be displayed in the border of this pane
-   * @javabean.property
-   *          bound="true"
-   *          preferred="true"
+   * @param icon the icon to be displayed in the border of this pane.
    */
   public void setIcon(Icon icon) {
     Icon old = this.icon;
@@ -346,8 +337,7 @@ public class JXTaskPane extends JPanel implements
    * the current context.
    *
    * @param special
-   *          true if this pane is "special", false otherwise
-   * @javabean.property bound="true" preferred="true"
+   *          true if this pane is "special", false otherwise.
    */
   public void setSpecial(boolean special) {
       boolean oldValue = isSpecial();
@@ -362,10 +352,6 @@ public class JXTaskPane extends JPanel implements
    * visible if this group is expanded.
    *
    * @see #setCollapsed(boolean)
-   *
-   * @javabean.property
-   *          bound="true"
-   *          preferred="true"
    */
   public void setScrollOnExpand(boolean scrollOnExpand) {
       boolean oldValue = isScrollOnExpand();
@@ -393,10 +379,7 @@ public class JXTaskPane extends JPanel implements
      * animation is complete.
      *
      * @param collapsed
-     *                true to collapse the group, false to expand it
-     * @javabean.property
-     *          bound="true"
-     *          preferred="false"
+     *                true to collapse the group, false to expand it.
      */
     public void setCollapsed(boolean collapsed) {
         collapsePane.setCollapsed(collapsed);
@@ -415,10 +398,7 @@ public class JXTaskPane extends JPanel implements
   /**
    * Enables or disables animation during expand/collapse transition.
    *
-   * @param animated
-   * @javabean.property
-   *          bound="true"
-   *          preferred="true"
+   * @param animated True to activate animation.
    */
   public void setAnimated(boolean animated) {
       boolean oldValue = isAnimated();
