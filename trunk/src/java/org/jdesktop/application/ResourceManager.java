@@ -370,7 +370,15 @@ public final class ResourceManager
      */
     private void injectResources( Object o, Locale locale )
     {
-        Class<?> clazz = o.getClass();
+        Class<?> clazz;
+
+        // If we already received a class instance, use it. Otherwise
+        // get the objects class.  This is allows injection of static
+        // attribute values on library classes.
+        if ( o instanceof Class )
+            clazz = (Class<?>)o;
+        else
+            clazz = o.getClass();
 
         ResourceMap resourceMap = getResourceMap(
                 locale,
