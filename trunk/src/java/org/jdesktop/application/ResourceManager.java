@@ -106,21 +106,21 @@ public final class ResourceManager
     }
 
     /**
-     * Returns a read-only list of the ResourceBundle names for all of
+     * Returns a list of the ResourceBundle names for all of
      * the classes from startClass to (including) stopClass.  The
      * bundle names for each class are #getClassBundleNames(Class).
      * The list is in priority order: resources defined in bundles
      * earlier in the list shadow resources with the same name that
      * appear bundles that come later.
      */
-    static private List<String> allBundleNames(Class<?> startClass, Class<?> stopClass) {
-
+    static private List<String> allBundleNames(Class<?> startClass, Class<?> stopClass)
+    {
         List<String> result = new ArrayList<String>();
 
         Class<?> limitClass = stopClass.getSuperclass(); // could be null
-        for (Class<?> c = startClass; c != limitClass; c = c.getSuperclass()) {
+
+        for (Class<?> c = startClass; c != limitClass; c = c.getSuperclass())
             result.addAll(getClassBundleNames(c));
-        }
 
         return Collections.unmodifiableList(result);
     }
@@ -132,9 +132,13 @@ public final class ResourceManager
      * @param bundleName A resource bundle name.
      * @return The corresponding package name.
      */
-    private String bundlePackageName(String bundleName) {
-        int i = bundleName.lastIndexOf(".");
-        return (i == -1) ? StringUtils.EMPTY_STRING : bundleName.substring(0, i);
+    private static String bundlePackageName( String bundleName )
+    {
+        int idx = bundleName.lastIndexOf( "." );
+
+        return ( idx == -1 ) ?
+                StringUtils.EMPTY_STRING :
+                bundleName.substring( 0, idx );
     }
 
     /**
@@ -148,16 +152,19 @@ public final class ResourceManager
             Locale locale,
             ClassLoader cl,
             ResourceMap root,
-            ListIterator<String> names) {
-        if (!names.hasNext()) {
+            ListIterator<String> names)
+    {
+        if ( !names.hasNext() )
             return root;
-        }
 
         String bundleName0 = names.next();
         String rmBundlePackage = bundlePackageName(bundleName0);
+
         List<String> rmNames = new ArrayList<String>();
         rmNames.add(bundleName0);
-        while (names.hasNext()) {
+
+        while ( names.hasNext())
+        {
             String bundleName = names.next();
             if (rmBundlePackage.equals(bundlePackageName(bundleName))) {
                 rmNames.add(bundleName);
@@ -166,6 +173,7 @@ public final class ResourceManager
                 break;
             }
         }
+
         // Process the tail of the iterator.  A bit lispy.
         ResourceMap parent = createResourceMapChain(
                 locale,
@@ -174,27 +182,6 @@ public final class ResourceManager
                 names);
 
         return new ResourceMap(locale, parent, cl, rmNames);
-    }
-
-    /**
-     * Lazily creates the ResourceMap chain for the class from
-     * startClass to stopClass.
-     */
-    private ResourceMap getClassResourceMap(Locale locale, Class<?> startClass, Class<?> stopClass) {
-
-        String classResourceMapKey = startClass.getName() + stopClass.getName();
-
-        ResourceMap result = resourceMaps.get(classResourceMapKey);
-
-        if (result == null) {
-            List<String> classBundleNames = allBundleNames(startClass, stopClass);
-
-            ClassLoader classLoader = startClass.getClassLoader();
-            ResourceMap appRM = getApplicationResourceMap();
-            result = createResourceMapChain(locale, classLoader, appRM, classBundleNames.listIterator());
-            resourceMaps.put(classResourceMapKey, result);
-        }
-        return result;
     }
 
     /**
@@ -266,21 +253,51 @@ public final class ResourceManager
      * @see ResourceMap#getParent
      * @see ResourceMap#getBundleNames
      */
-    ResourceMap getResourceMap(Locale locale, Class<?> startClass, Class<?> stopClass) {
-        if (startClass == null) {
+    private ResourceMap getResourceMap(Locale locale, Class<?> startClass, Class<?> stopClass)
+    {
+        if (startClass == null)
             throw new IllegalArgumentException("null startClass");
-        }
-        if (stopClass == null) {
+        if (stopClass == null)
             throw new IllegalArgumentException("null stopClass");
-        }
-        if (!stopClass.isAssignableFrom(startClass)) {
+        if (!stopClass.isAssignableFrom(startClass))
             throw new IllegalArgumentException("startClass is not a subclass, or the same as, stopClass");
-        }
-        return getClassResourceMap(locale, startClass, stopClass);
+
+        String classResourceMapKey = startClass.getName() + stopClass.getName();
+
+        ResourceMap result = resourceMaps.get(classResourceMapKey);
+
+        if ( result != null )
+            return result;
+
+        // Get the bundle names for the whole chain of classes.
+        // We put the application bundle names in front of the list to
+        // allow overriding of all resources in the application resources.
+        List<String> classBundleNames =
+                new ArrayList<String>( _applicationBundleNames );
+        classBundleNames.addAll( allBundleNames( startClass, stopClass ) );
+
+        ClassLoader classLoader =
+                startClass.getClassLoader();
+
+        result = createResourceMapChain(
+                locale,
+                classLoader,
+                null,
+                classBundleNames.listIterator() );
+
+        resourceMaps.put(classResourceMapKey, result);
+
+        return result;
     }
 
-    public ResourceMap getResourceMap( Class<?> startClass, Class<?> stopClass) {
+    public ResourceMap getResourceMap( Class<?> startClass, Class<?> stopClass )
+    {
         return getResourceMap( Locale.getDefault(), startClass, stopClass );
+    }
+
+    private ResourceMap getResourceMap( Locale locale, Class<?> cls)
+    {
+        return getResourceMap( locale, cls, cls );
     }
 
     /**
@@ -294,24 +311,13 @@ public final class ResourceManager
      *   specified class's package.
      * @see #getResourceMap(Class, Class)
      */
-    public final ResourceMap getResourceMap( Locale locale, Class<?> cls) {
-        return getResourceMap( locale, cls, cls );
+    public final ResourceMap getResourceMap( Class<?> cls )
+    {
+        return getResourceMap( Locale.getDefault(), cls, cls );
     }
 
-    public final ResourceMap getResourceMap( Class<?> cls ) {
-        return getResourceMap( Locale.getDefault(), cls );
-    }
-
-    /**
-     * Returns the chain of ResourceMaps that's shared by the entire application,
-     * beginning with the resources defined for the application's class.
-     * If the {@code applicationClass} property has not been set, e.g. because
-     * the application has not been {@link Application#launch launched} yet,
-     * then a ResourceMap for just {@code Application.class} is returned.
-     *
-     * @return the Application's ResourceMap
-     */
-    public ResourceMap getApplicationResourceMap( Locale locale ) {
+    private ResourceMap getApplicationResourceMap( Locale locale )
+    {
         if (_appResourceMap == null)
         {
             ClassLoader classLoader =
@@ -327,13 +333,19 @@ public final class ResourceManager
         return _appResourceMap;
     }
 
-    public ResourceMap getApplicationResourceMap() {
+    /**
+     * Returns the chain of ResourceMaps that's shared by the entire application,
+     * beginning with the resources defined for the application's class.
+     * If the {@code applicationClass} property has not been set, e.g. because
+     * the application has not been {@link Application#launch launched} yet,
+     * then a ResourceMap for just {@code Application.class} is returned.
+     *
+     * @return the Application's ResourceMap.
+     */
+    public ResourceMap getApplicationResourceMap()
+    {
         return getApplicationResourceMap( Locale.getDefault() );
     }
-
-    // TODO michab
-//    private final WeakHashMap<Object, Object> _alreadyInjectedInstances =
-//        new WeakHashMap<Object, Object>();
 
     /**
      * Performs injection of attributes marked with the resource annotation.
@@ -371,9 +383,7 @@ public final class ResourceManager
         {
             if ( c.getClassLoader() == null )
                 break;
-            // TODO: michab: This inject fields is working, but not understandable.
-            // Why do we have to call this here in a loop? Wouldn't it be better to
-            // inject recursively?
+
             resourceMap.injectFields( o, c );
         }
     }
@@ -409,7 +419,8 @@ public final class ResourceManager
      * @see #getResourceMap
      * @see #getApplicationBundleNames
      */
-    private static List<String> getClassBundleNames(Class<?> cls) {
+    private static List<String> getClassBundleNames(Class<?> cls)
+    {
         Package packge = cls.getPackage();
 
         String resourcePackage = packge != null ?
