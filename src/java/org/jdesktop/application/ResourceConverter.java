@@ -249,12 +249,16 @@ public abstract class ResourceConverter {
         }
     }
 
-    private static class ArrayResourceConverter extends ResourceConverter {
-
+    private static class ArrayResourceConverter extends ResourceConverter
+    {
         private final ResourceConverter _delegate;
 
-        ArrayResourceConverter( ResourceConverter delegate, Class<?> type ) {
+        ArrayResourceConverter( ResourceConverter delegate, Class<?> type )
+        {
             super( type );
+
+            if ( ! type.isArray() )
+                throw new IllegalArgumentException();
 
             _delegate = delegate;
         }
@@ -264,13 +268,15 @@ public abstract class ResourceConverter {
                 throws ResourceConverterException
         {
             String[] split = StringUtils.splitQuoted( s );
-            Object[] x = (Object[])Array.newInstance( _delegate.type, split.length );
+
+            Object result = Array.newInstance(
+                    getType().getComponentType(), split.length );
 
             int idx = 0;
             for ( String c : split )
-                x[idx++] = _delegate.parseString( c, r );
+                Array.set( result, idx++, _delegate.parseString( c, r ) );
 
-            return x;
+            return result;
         }
     }
 
