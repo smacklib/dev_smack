@@ -295,11 +295,6 @@ public final class ResourceManager
         return getResourceMap( Locale.getDefault(), startClass, stopClass );
     }
 
-    private ResourceMap getResourceMap( Locale locale, Class<?> cls)
-    {
-        return getResourceMap( locale, cls, cls );
-    }
-
     /**
      * Return the ResourceMap chain for the specified class. This is
      * just a convenience method, it's the same as:
@@ -357,19 +352,6 @@ public final class ResourceManager
      */
     public void injectResources( Object o )
     {
-        injectResources( o, Locale.getDefault() );
-    }
-
-    /**
-     * Performs injection of attributes marked with the resource annotation.
-     *
-     * @param o The object whose resources should be injected. Null is not
-     * allowed, array instances are not allowed, primitive classes are not
-     * allowed.
-     * @throws IllegalArgumentException In case a bad object was passed.
-     */
-    private void injectResources( Object o, Locale locale )
-    {
         Class<?> clazz;
 
         // If we already received a class instance, use it. Otherwise
@@ -381,8 +363,7 @@ public final class ResourceManager
             clazz = o.getClass();
 
         ResourceMap resourceMap = getResourceMap(
-                locale,
-                clazz );
+                clazz, Object.class );
 
         // Perform the injection for the object's class and all its
         // super classes.
