@@ -147,4 +147,12 @@ public class MultiMap<KT1, KT2, VT>
 
         return result;
     }
+
+    /**
+     * Remove all values from this map.
+     */
+    public void clear()
+    {
+        _primaryMap.clear();
+    }
 }
