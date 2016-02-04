@@ -54,7 +54,6 @@ public class JXStatusBarExt extends JPanel
     {
         super( new BorderLayout() );
 
-        // Display the Application version on startup.
         add( _messageLabel, BorderLayout.LINE_START );
 
         add( _right, BorderLayout.LINE_END );
@@ -63,6 +62,7 @@ public class JXStatusBarExt extends JPanel
         new PropertyLink( this, "foreground", _right );
         new PropertyLink( this, "background", _messageLabel );
         new PropertyLink( this, "foreground", _messageLabel );
+        new PropertyLink( this, "font", _messageLabel );
     }
 
     /**
