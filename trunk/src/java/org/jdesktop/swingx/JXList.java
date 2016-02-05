@@ -46,7 +46,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ListUI;
 import javax.swing.text.Position.Bias;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.CompoundHighlighter;
 import org.jdesktop.swingx.decorator.Highlighter;
@@ -179,7 +178,6 @@ import org.jdesktop.swingx.table.TableColumnExt;
  * @author Jeanette Winzenburg
  */
 @SuppressWarnings("serial")
-@JavaBean
 public class JXList extends JList {
     @SuppressWarnings("all")
     private static final Logger LOG = Logger.getLogger(JXList.class.getName());
@@ -534,7 +532,7 @@ public class JXList extends JList {
      *
      * @param autoCreateRowSorter whether or not a {@code RowSorter}
      *        should be automatically created
-     * @beaninfo
+     * xbeaninfo
      *        bound: true
      *    preferred: true
      *  description: Whether or not to turn on sorting by default.
