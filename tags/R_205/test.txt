@@ -1,0 +1,6 @@
+webstart on linux /usr/share/icedtea-web/netx.jar
+swingx initial version  https://svn.java.net/svn/swingx~svn rev 4316
+
+On SF: https://sourceforge.net/projects/smackfw/
+
+C:\Program Files\eclipse\plugins\org.apache.ant_1.9.2.v201404171502\lib
