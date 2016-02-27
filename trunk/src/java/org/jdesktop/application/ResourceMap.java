@@ -16,6 +16,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.geom.Point2D;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -1428,6 +1429,7 @@ public class ResourceMap
             new KeyStrokeStringConverter(),
             new DimensionStringConverter(),
             new PointStringConverter(),
+            new Point2dStringConverter(),
             new RectangleStringConverter(),
             new InsetsStringConverter(),
             new EmptyBorderStringConverter()
@@ -1674,6 +1676,19 @@ public class ResourceMap
             Point p = new Point();
             p.setLocation(xy.get(0), xy.get(1));
             return p;
+        }
+    }
+
+    private static class Point2dStringConverter extends ResourceConverter {
+
+        Point2dStringConverter() {
+            super(Point2D.class);
+        }
+
+        @Override
+        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
+            List<Double> xy = parseDoubles(s, 2, "invalid x,y Point string");
+            return new Point2D.Double(xy.get(0), xy.get(1));
         }
     }
 
