@@ -259,7 +259,7 @@ public abstract class AbstractActionExt extends AbstractAction
      * for {@code putValue()} with the {@code Action.NAME} key.
      *
      * @param action the target action.
-     * @param key The name of the Action; can be {@code null}.
+     * @param name The name of the Action; can be {@code null}.
      * @see #setText(String)
      */
     public static void setActionText( Action action,  String name ) {
