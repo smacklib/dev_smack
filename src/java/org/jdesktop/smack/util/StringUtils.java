@@ -266,7 +266,8 @@ public class StringUtils
     /**
      * Quotes a string.
      *
-     * @param part The string to quote.
+     * @param string The string to quote.  A {@code null} is allowed, resulting
+     * in a quoted and empty string.
      * @return The resulting string.
      * @see #splitQuoted(String)
      */
@@ -297,7 +298,8 @@ public class StringUtils
     /**
      * Quotes the passed string.
      *
-     * @param string The string to quote.
+     * @param string The string to quote.  A {@code null} is allowed, resulting
+     * in a quoted and empty string.
      * @return The quoted string.
      */
     public static String quote( String string )
