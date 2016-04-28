@@ -72,4 +72,15 @@ public final class Pipe
     {
         return _readEnd;
     }
+
+    /**
+     * Close the pipe.
+     */
+    public void close()
+    {
+        FileUtils.forceClose(
+                _readEnd );
+        FileUtils.forceClose(
+                _writeEnd );
+    }
 }
