@@ -115,8 +115,9 @@ public final class ReflectionUtils
      * @param classes The types to match.
      * @return A constructor or null if no constructor matched.
      */
+    @SuppressWarnings("unchecked")
     public static <T> Constructor<T> matchConstructorArguments(
-            Constructor<T>[] constructors,
+            Constructor<?>[] constructors,
             Object ... classes  )
     {
         Class<?>[] types = new Class<?>[ classes.length ];
@@ -128,10 +129,10 @@ public final class ReflectionUtils
                     classes[i].getClass();
         }
 
-        for ( Constructor<T> c : constructors )
+        for ( Constructor<?> c : constructors )
         {
             if ( areTypesAssignable( c.getParameterTypes(), types ) )
-                return c;
+                return (Constructor<T>)c;
         }
 
         return null;

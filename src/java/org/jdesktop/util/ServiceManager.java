@@ -1,9 +1,9 @@
 /* $Id$
  *
- * Smack Application.
+ * Common.
  *
  * Released under Gnu Public License
- * Copyright © 2015 Michael G. Binz
+ * Copyright © 2016 Michael G. Binz
  */
 package org.jdesktop.util;
 
@@ -71,10 +71,12 @@ public final class ServiceManager
         if ( _singletons.containsKey(  singletonType ) )
             throw new IllegalArgumentException( "Already initialized: " + singletonType.getName() );
 
-        @SuppressWarnings("unchecked")
         Constructor<T> c = ReflectionUtils.matchConstructorArguments(
-                (Constructor<T>[])singletonType.getConstructors(),
+                singletonType.getConstructors(),
                 objects );
+
+        if ( c == null )
+            throw new IllegalArgumentException( "No matching constructor found." );
 
         try
         {
