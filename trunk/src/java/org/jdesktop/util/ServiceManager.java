@@ -25,7 +25,7 @@ public final class ServiceManager
      * The map of singular application services.
      */
     private static final Map<Class<?>, Object> _singletons =
-            new HashMap<>();
+            new HashMap<Class<?>, Object>();
 
     /**
      * Create an instance.

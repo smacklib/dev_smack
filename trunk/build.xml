@@ -58,6 +58,7 @@
   <path description="Defines the project's classpath." 
         id="pt.common.libraries.id">
     <fileset refid="fs.common.libraries.id"/>
+  	<fileset file="C:/Programme/Java/jdk1.6.0_45/jre/lib/javaws.jar"></fileset>
   </path>
 
   <!-- Inverse to target 'clean'. -->
