@@ -100,19 +100,15 @@ public final class ResourceManager
      * @see ApplicationContext#getResourceManager
      * @see ApplicationContext#getResourceMap
      */
-    ResourceManager( Class<?> applicationClass ) {
+    public ResourceManager( Class<?> applicationClass ) {
         if ( applicationClass == null )
             throw new IllegalArgumentException( "null applicationClass" );
         _applicationClass = applicationClass;
         _applicationBundleNames = allBundleNames(
                 _applicationClass,
-                Application.class );
+                Object.class );
     }
 
-//    ResourceManager( Application application ) {
-//        this( application.getClass() );
-//    }
-//
     /**
      * Returns a list of the ResourceBundle names for all of
      * the classes from startClass to (including) stopClass.  The
