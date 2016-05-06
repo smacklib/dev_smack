@@ -340,7 +340,7 @@ public final class ReflectionUtils
         if ( c == null )
             throw new NullPointerException();
 
-        List<Class<?>> result = new ArrayList<>();
+        List<Class<?>> result = new ArrayList<Class<?>>();
 
         for (
             Class<?> current = c ;

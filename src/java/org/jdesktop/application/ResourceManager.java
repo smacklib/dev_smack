@@ -54,7 +54,7 @@ import org.jdesktop.smack.util.StringUtils;
 public final class ResourceManager
 {
     private final Map<String, ResourceMap> resourceMaps =
-                new ConcurrentHashMap<>();
+                new ConcurrentHashMap<String, ResourceMap>();
 
     private final List<String> _applicationBundleNames;
 
@@ -119,7 +119,7 @@ public final class ResourceManager
      */
     static private List<String> allBundleNames(Class<?> startClass, Class<?> stopClass)
     {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
 
         Class<?> limitClass = stopClass.getSuperclass(); // could be null
 
@@ -164,7 +164,7 @@ public final class ResourceManager
         String bundleName0 = names.next();
         String rmBundlePackage = bundlePackageName(bundleName0);
 
-        List<String> rmNames = new ArrayList<>();
+        List<String> rmNames = new ArrayList<String>();
         rmNames.add(bundleName0);
 
         while ( names.hasNext())
@@ -277,7 +277,7 @@ public final class ResourceManager
         // We put the application bundle names in front of the list to
         // allow overriding of all resources in the application resources.
         List<String> classBundleNames =
-                new ArrayList<>( _applicationBundleNames );
+                new ArrayList<String>( _applicationBundleNames );
         classBundleNames.addAll( allBundleNames( startClass, stopClass ) );
 
         ClassLoader classLoader =
