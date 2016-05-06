@@ -9,6 +9,7 @@
 package org.jdesktop.smack.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,23 +17,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-
 /**
  * Reflection helpers.
  *
  * @version $Rev$
  * @author Michael Binz
  */
-public class ReflectionUtils
+public final class ReflectionUtils
 {
     /**
      * The logger for this class.
      */
-    private static final Logger _log = Logger.getLogger(
+    private static final Logger LOG = Logger.getLogger(
         ReflectionUtils.class.getName() );
-
-
 
     /**
      * Forbid instantiation.
@@ -42,11 +39,8 @@ public class ReflectionUtils
         throw new AssertionError();
     }
 
-
-
     /**
-     * Get a named method from the passed class.  Returns {@code null} if the
-     * method is not found or not accessible.
+     * Get a named method from the passed class.
      *
      * @param pClass The class used to lookup the method.
      * @param name The name of the method.
@@ -65,12 +59,115 @@ public class ReflectionUtils
         }
         catch ( Exception e )
         {
-            _log.log( Level.FINE, e.getClass().getSimpleName(), e );
+            LOG.log( Level.FINE, e.getClass().getSimpleName(), e );
             return null;
         }
     }
 
+    /**
+     * Get a constructor from the passed class.  Returns {@code null} if the
+     * constructor is not found or not accessible.
+     *
+     * @param pClass The class used to lookup the method.
+     * @param parameterTypes The parameter types.
+     * @return A reference to the constructor or {@code null} if the constructor
+     * was not found.
+     */
+    public static <T> Constructor<T> getConstructor(
+            Class<T> pClass,
+            Class<?> ... parameterTypes )
+    {
+        try
+        {
+            return pClass.getConstructor( parameterTypes );
+        }
+        catch ( Exception e )
+        {
+            LOG.log( Level.FINE, e.getClass().getSimpleName(), e );
+            return null;
+        }
+    }
 
+    /**
+     * Find the first constructor matching the passed types.
+     *
+     * @param constructors The constructors to select from.
+     * @param classes The types to match.
+     * @return A constructor or null if no constructor matched.
+     */
+    public static <T> Constructor<T> matchConstructorTypes(
+            Constructor<T>[] constructors,
+            Class<?> ... classes  )
+    {
+        for ( Constructor<T> c : constructors )
+        {
+            if ( areTypesAssignable( c.getParameterTypes(), classes ) )
+                return c;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the first constructor matching the passed types.
+     *
+     * @param constructors The constructors to select from.
+     * @param classes The types to match.
+     * @return A constructor or null if no constructor matched.
+     */
+    public static <T> Constructor<T> matchConstructorArguments(
+            Constructor<T>[] constructors,
+            Object ... classes  )
+    {
+        Class<?>[] types = new Class<?>[ classes.length ];
+
+        for ( int i = 0 ; i < types.length ; i++ )
+        {
+            types[i] = classes[i] == null ?
+                    null :
+                    classes[i].getClass();
+        }
+
+        for ( Constructor<T> c : constructors )
+        {
+            if ( areTypesAssignable( c.getParameterTypes(), types ) )
+                return c;
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if the passed type arrays are assignment-compatible.
+     *
+     * @param assignmentTargets Left side.
+     * @param toAssign Right side. Null slots are always assignable.
+     * @return true if assignment compatible.
+     */
+    private static boolean areTypesAssignable(
+            Class<?>[] assignmentTargets,
+            Class<?>[] toAssign )
+    {
+        if ( assignmentTargets.length != toAssign.length )
+            return false;
+
+        for ( int i = 0 ; i < assignmentTargets.length ; i++ )
+        {
+            // Primitives cannot accept a null parameter.
+            if ( assignmentTargets[i].isPrimitive() && toAssign[i] == null )
+                return false;
+
+            // Null is matching always.
+            boolean assignable =  toAssign == null ?
+                    true :
+                    assignmentTargets[i].isAssignableFrom( toAssign[i] );
+
+            if ( ! assignable )
+                return false;
+        }
+
+        return true;
+    }
 
     /**
      * Normalizes class instances that represent primitive types
@@ -108,8 +205,6 @@ public class ReflectionUtils
         throw new IllegalArgumentException( cl.getName() );
     }
 
-
-
     /**
      * Invoke the passed method.  Simplifies error handling to throwing
      * an untagged exception in every error case.  Note that this includes
@@ -136,8 +231,6 @@ public class ReflectionUtils
             throw new IllegalArgumentException( e );
         }
     }
-
-
 
     /**
      * Invoke the passed method.  Simplifies error handling to throwing
@@ -171,7 +264,7 @@ public class ReflectionUtils
             }
             catch ( ClassCastException ee )
             {
-                _log.log( Level.WARNING, "ITE wrapped throwable.", cause );
+                LOG.log( Level.WARNING, "ITE wrapped throwable.", cause );
                 throw new RuntimeException( cause );
             }
         }
@@ -246,7 +339,7 @@ public class ReflectionUtils
         if ( c == null )
             throw new NullPointerException();
 
-        List<Class<?>> result = new ArrayList<Class<?>>();
+        List<Class<?>> result = new ArrayList<>();
 
         for (
             Class<?> current = c ;

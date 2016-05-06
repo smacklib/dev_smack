@@ -54,7 +54,7 @@ import org.jdesktop.smack.util.StringUtils;
 public final class ResourceManager
 {
     private final Map<String, ResourceMap> resourceMaps =
-                new ConcurrentHashMap<String, ResourceMap>();
+                new ConcurrentHashMap<>();
 
     private final List<String> _applicationBundleNames;
 
@@ -66,6 +66,14 @@ public final class ResourceManager
      * Is never null.
      */
     private final Class<?> _applicationClass;
+
+    /**
+     * Creates an instance.
+     */
+    public ResourceManager()
+    {
+        this( ResourceManager.class );
+    }
 
     /**
      * Construct a {@code ResourceManager}.  Typically applications
@@ -101,10 +109,10 @@ public final class ResourceManager
                 Application.class );
     }
 
-    ResourceManager( Application application ) {
-        this( application.getClass() );
-    }
-
+//    ResourceManager( Application application ) {
+//        this( application.getClass() );
+//    }
+//
     /**
      * Returns a list of the ResourceBundle names for all of
      * the classes from startClass to (including) stopClass.  The
@@ -115,7 +123,7 @@ public final class ResourceManager
      */
     static private List<String> allBundleNames(Class<?> startClass, Class<?> stopClass)
     {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         Class<?> limitClass = stopClass.getSuperclass(); // could be null
 
@@ -160,7 +168,7 @@ public final class ResourceManager
         String bundleName0 = names.next();
         String rmBundlePackage = bundlePackageName(bundleName0);
 
-        List<String> rmNames = new ArrayList<String>();
+        List<String> rmNames = new ArrayList<>();
         rmNames.add(bundleName0);
 
         while ( names.hasNext())
@@ -273,7 +281,7 @@ public final class ResourceManager
         // We put the application bundle names in front of the list to
         // allow overriding of all resources in the application resources.
         List<String> classBundleNames =
-                new ArrayList<String>( _applicationBundleNames );
+                new ArrayList<>( _applicationBundleNames );
         classBundleNames.addAll( allBundleNames( startClass, stopClass ) );
 
         ClassLoader classLoader =
