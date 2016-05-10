@@ -266,23 +266,24 @@ public class StringUtils
     /**
      * Quotes a string.
      *
+     * @param quoteChar The quote character to use.
      * @param string The string to quote.  A {@code null} is allowed, resulting
      * in a quoted and empty string.
      * @return The resulting string.
      * @see #splitQuoted(String)
      */
-    public static String quote( char quoteChar, String part )
+    public static String quote( char quoteChar, String string )
     {
-        if ( ! StringUtils.hasContent( part ) )
+        if ( ! StringUtils.hasContent( string ) )
             return EMPTY_STRING + QUOTE_CHAR + QUOTE_CHAR;
 
         StringBuilder result = new StringBuilder();
 
         result.append( quoteChar );
 
-        for ( int i = 0 ; i < part.length() ; i++ )
+        for ( int i = 0 ; i < string.length() ; i++ )
         {
-            char c = part.charAt( i );
+            char c = string.charAt( i );
 
             if ( c == QUOTE_CHAR )
                 result.append( ESCAPE_CHAR );
@@ -314,10 +315,10 @@ public class StringUtils
      *
      * TODO(micbinz) does not support quoting of quote characters.
      * @param quoteChar The character used for quotes.
-     * @param someString The string to split.
+     * @param string The string to split.
      * @return The split strings.
      */
-    public static String[] splitQuoted( char quoteChar, String someString )
+    public static String[] splitQuoted( char quoteChar, String string )
     {
         // See also http://stackoverflow.com/questions/10695143/split-a-quoted-string-with-a-delimiter
         // for a sketch of solving the same with regular expressions.  Can be made workable, but is even less
@@ -328,7 +329,7 @@ public class StringUtils
         ArrayList<String> result = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
 
-        for ( char c : someString.toCharArray() )
+        for ( char c : string.toCharArray() )
         {
             boolean isDoubleQuote = c == quoteChar;
 
