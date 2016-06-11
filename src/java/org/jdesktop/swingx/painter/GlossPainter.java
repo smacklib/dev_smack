@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -27,8 +27,6 @@ import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
-
-import org.jdesktop.beans.JavaBean;
 
 /**
  * <p>A Painter implementation that simulates a gloss effect. The gloss can
@@ -48,8 +46,6 @@ import org.jdesktop.beans.JavaBean;
  *
  * @author Romain Guy <romain.guy@mac.com>
  */
-@JavaBean
-@SuppressWarnings("nls")
 public class GlossPainter extends AbstractPainter<Object> {
     /**
      * <p>Used to define the position of the gloss on the painted area.</p>
@@ -57,10 +53,10 @@ public class GlossPainter extends AbstractPainter<Object> {
     public enum GlossPosition {
         TOP, BOTTOM
     }
-    
+
     private Paint paint;
     private GlossPosition position;
-    
+
     /**
      * <p>Creates a new gloss painter positioned at the top of the painted
      * area with a 20% translucent white color.</p>
@@ -68,7 +64,7 @@ public class GlossPainter extends AbstractPainter<Object> {
     public GlossPainter() {
         this(new Color(1.0f, 1.0f, 1.0f, 0.2f), GlossPosition.TOP);
     }
-    
+
     /**
      * <p>Creates a new gloss painter positioned at the top of the painted
      * area with the specified paint.</p>
@@ -78,7 +74,7 @@ public class GlossPainter extends AbstractPainter<Object> {
     public GlossPainter(Paint paint) {
         this(paint, GlossPosition.TOP);
     }
-    
+
     /**
      * <p>Creates a new gloss painter positioned at the specified position
      * and using a white, 20% translucent paint.</p>
@@ -88,7 +84,7 @@ public class GlossPainter extends AbstractPainter<Object> {
     public GlossPainter(GlossPosition position) {
         this(new Color(1.0f, 1.0f, 1.0f, 0.2f), position);
     }
-    
+
     /**
      * <p>Creates a new gloss painter positioned at the specified position
      * and painted with the specified paint.</p>

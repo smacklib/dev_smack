@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Intended to be a replacement for {@link javax.swing.event.EventListenerList}.
- * 
+ *
  * @author Joshua Outwater
  * @author Karl Schaefer
  * @see javax.swing.event.EventListenerList
@@ -39,12 +39,12 @@ public class EventListenerMap {
 
     /**
      * Returns a list containing all of the listeners managed by this {@code EventListenerMap}.
-     * 
+     *
      * @return all managed listeners
      */
     public List<EventListener> getListeners() {
         List<EventListener> listeners = new ArrayList<EventListener>();
-        
+
         for (List<? extends EventListener> list : listenerList.values()) {
             listeners.addAll(list);
         }
@@ -54,7 +54,7 @@ public class EventListenerMap {
 
     /**
      * Return a list of all the listeners of the given type.
-     * 
+     *
      * @return all of the listeners of the specified type.
      */
     @SuppressWarnings("unchecked")
@@ -67,16 +67,16 @@ public class EventListenerMap {
     }
 
     /**
-     * Returns the total number of listeners of the supplied type 
+     * Returns the total number of listeners of the supplied type
      * for this listener list.
      */
     public int getListenerCount() {
         int count = 0;
-        
+
         for (List<? extends EventListener> list : listenerList.values()) {
             count += list.size();
         }
-        
+
         return count;
     }
 
@@ -94,12 +94,12 @@ public class EventListenerMap {
 
     /**
      * Adds the listener as a listener of the specified type.
-     * 
+     *
      * @param <T>
      *            the type of the listener to be added
      * @param clazz
      *            the class type to add
-     * @param l
+     * @param listener
      *            the listener to be added
      */
     @SuppressWarnings("unchecked")
@@ -118,12 +118,12 @@ public class EventListenerMap {
 
     /**
      * Removes the listener as a listener of the specified type.
-     * 
+     *
      * @param <T>
      *            the type of the listener to remove
      * @param clazz
      *            the class type to remove
-     * @param l
+     * @param listener
      *            the listener to remove
      */
     @SuppressWarnings("unchecked")

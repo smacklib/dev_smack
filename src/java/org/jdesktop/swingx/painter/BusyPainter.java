@@ -34,20 +34,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.util.PaintUtils;
 
 /**
  * A specific painter that paints an "infinite progress" like animation.
  */
-@JavaBean
 @SuppressWarnings("nls")
 public class BusyPainter extends AbstractPainter<Object> {
 
     /**
      * Direction is used to set the initial direction in which the
      * animation starts.
-     * 
+     *
      * @see BusyPainter#setDirection(Direction)
      */
     public static enum Direction {
@@ -91,7 +89,7 @@ public class BusyPainter extends AbstractPainter<Object> {
     public BusyPainter(int height) {
         this(getScaledDefaultPoint(height), getScaledDefaultTrajectory(height));
     }
-    
+
     /**
      * Initializes painter to the specified trajectory and and point shape. Bounds are dynamically calculated to so the specified trajectory fits in.
      * @param point Point shape.
@@ -314,7 +312,7 @@ public class BusyPainter extends AbstractPainter<Object> {
         return f;
     }
 
-    
+
     /**
      * Calculates length of the linear segment.
      * @param coords Segment coordinates.
@@ -402,15 +400,15 @@ public class BusyPainter extends AbstractPainter<Object> {
 
     /**
      * Calculates the XY point for a given t value.
-     * 
+     *
      * The general spline equation is: x = b0*x0 + b1*x1 + b2*x2 + b3*x3 y =
      * b0*y0 + b1*y1 + b2*y2 + b3*y3 where: b0 = (1-t)^3 b1 = 3 * t * (1-t)^2 b2 =
      * 3 * t^2 * (1-t) b3 = t^3 We know that (x0,y0) == (0,0) and (x1,y1) ==
      * (1,1) for our splines, so this simplifies to: x = b1*x1 + b2*x2 + b3 y =
      * b1*x1 + b2*x2 + b3
-     * 
+     *
      * @author chet
-     * 
+     *
      * @param t parametric value for spline calculation
      */
     private Point2D.Float getXY(float t, float x1, float y1, float x2, float y2) {
@@ -441,7 +439,7 @@ public class BusyPainter extends AbstractPainter<Object> {
          *           = (P1 - 2*Pc + P2)*t^2 + 2*(Pc - P1)*t + P1
          *     t = [0:1]
          *     // thx Jim ...
-         *     
+         *
          *     b0 = (1 -t)^2, b1 = 2*t*(1-t), b2 = t^2
          */
         Point2D.Float xy;
@@ -450,10 +448,10 @@ public class BusyPainter extends AbstractPainter<Object> {
         float b1 = 2 * t * invT ;
         float b2 = t * t;
         xy = new Point2D.Float(b0 * begin.x + (b1 * ctrl.x) + b2* end.x, b0 * begin.y +  (b1 * ctrl.y) + b2* end.y);
-        
+
         return xy;
     }
-    
+
     /**
      * Selects appropriate color for given frame based on the frame position and gradient difference.
      * @param i Frame.
@@ -605,7 +603,7 @@ public class BusyPainter extends AbstractPainter<Object> {
         this.trajectory = trajectory;
         firePropertyChange("trajectory", old, getTrajectory());
     }
-    
+
     /**
      * Gets current direction of spinning.
      * @return Current spinning direction.

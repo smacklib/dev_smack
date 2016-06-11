@@ -77,7 +77,6 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.action.ActionManager;
 import org.jdesktop.swingx.action.Targetable;
 import org.jdesktop.swingx.action.TargetableSupport;
@@ -142,8 +141,8 @@ import org.jdesktop.swingx.search.Searchable;
  *
  * @author Mark Davidson
  */
-@JavaBean
-public class JXEditorPane extends JEditorPane implements /*Searchable, */Targetable {
+@SuppressWarnings("serial")
+public class JXEditorPane extends JEditorPane implements Targetable {
 
     private static final Logger LOG = Logger.getLogger(JXEditorPane.class
             .getName());

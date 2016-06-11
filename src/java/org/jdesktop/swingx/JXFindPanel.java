@@ -31,7 +31,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 import org.jdesktop.swingx.search.PatternModel;
 import org.jdesktop.swingx.search.Searchable;
@@ -44,7 +43,6 @@ import org.jdesktop.swingx.search.Searchable;
  * @author Jeanette Winzenburg
  */
 @SuppressWarnings("serial")
-@JavaBean
 public class JXFindPanel extends AbstractPatternPanel {
 
     public static final String FIND_NEXT_ACTION_COMMAND = "findNext";

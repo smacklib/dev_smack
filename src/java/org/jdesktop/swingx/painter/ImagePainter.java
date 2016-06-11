@@ -33,7 +33,6 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.painter.effects.AreaEffect;
 
 /**
@@ -63,25 +62,23 @@ import org.jdesktop.swingx.painter.effects.AreaEffect;
  *
  * @author Richard
  */
-@JavaBean
-@SuppressWarnings("nls")
 public class ImagePainter extends AbstractAreaPainter<Object> {
     public enum ScaleType { InsideFit, OutsideFit, Distort }
-    
+
     /**
      * Logger to use
      */
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(ImagePainter.class.getName());
-    
+
     /**
      * The image to draw
      */
     private transient BufferedImage img;
-    
+
     private boolean horizontalRepeat;
     private boolean verticalRepeat;
-    
+
     private boolean scaleToFit = false;
     private ScaleType scaleType = ScaleType.InsideFit;
 
@@ -94,7 +91,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public ImagePainter() {
         this((BufferedImage)null);
     }
-    
+
     /**
      * Create a new ImagePainter with the specified image and the Style
      * Style.CENTERED
@@ -104,7 +101,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public ImagePainter(BufferedImage image) {
         this(image,HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
     }
-    
+
     /**
      * Create a new ImagePainter with the specified image and alignment.
      * @param horizontal the horizontal alignment
@@ -121,7 +118,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
         this.setBorderPaint(null);
         this.setDirty(false);
     }
-    
+
     /**
      * Sets the image to paint with.
      * @param image if null, clears the image. Otherwise, this will set the
@@ -135,7 +132,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
             firePropertyChange("image", oldImage, img);
         }
     }
-    
+
     /**
      * Gets the current image used for painting.
      * @return the image used for painting
@@ -143,14 +140,14 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public BufferedImage getImage() {
         return img;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected void doPaint(Graphics2D g, Object component, int width, int height) {
         Shape shape = provideShape(g, component,width,height);
-        
+
         switch (getStyle()) {
             case BOTH:
                 drawBackground(g,shape,width,height);
@@ -168,10 +165,10 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
                 break;
         }
     }
-    
+
     private void drawBackground(Graphics2D g, Shape shape, int width, int height) {
         Paint p = getFillPaint();
-        
+
         if(p != null) {
             if(isPaintStretched()) {
                 p = calculateSnappedPaint(p, width, height);
@@ -179,14 +176,14 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
             g.setPaint(p);
             g.fill(shape);
         }
-        
+
         if(getAreaEffects() != null) {
             for(AreaEffect ef : getAreaEffects()) {
                 ef.apply(g, shape, width, height);
             }
         }
-        
-        
+
+
         if (img != null) {
             int imgWidth = img.getWidth(null);
             int imgHeight = img.getHeight(null);
@@ -194,7 +191,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
                 //image hasn't completed loading, do nothing
             } else {
                 Rectangle rect = shape.getBounds();
-                
+
                 if(verticalRepeat || horizontalRepeat) {
                     Shape oldClip = g.getClip();
                     Shape clip = g.getClip();
@@ -204,7 +201,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
                     Area area = new Area(clip);
                     Insets insets = getInsets();
                     area.intersect(new Area(new Rectangle(insets.left, insets.top, width - insets.left - insets.right, height - insets.top - insets.bottom)));
-                    
+
                     if (verticalRepeat && horizontalRepeat) {
                         area.intersect(new Area(new Rectangle(0, 0, width, height)));
                         g.setClip(area);
@@ -215,7 +212,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
                         area.intersect(new Area(new Rectangle(0, rect.y, width, rect.height)));
                         g.setClip(area);
                     }
-                    
+
                     TexturePaint tp = new TexturePaint(img, rect);
                     g.setPaint(tp);
                     g.fillRect(0,0,width,height);
@@ -291,9 +288,9 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
                 }
             }
         }
-        
+
     }
-    
+
     private void drawBorder(Graphics2D g, Shape shape, int width, int height) {
         if(getBorderPaint() != null) {
             g.setPaint(getBorderPaint());
@@ -301,22 +298,22 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
             g.draw(shape);
         }
     }
-    
+
     public boolean isScaleToFit() {
         return scaleToFit;
     }
-    
+
     public void setScaleToFit(boolean scaleToFit) {
-        boolean old = isScaleToFit(); 
+        boolean old = isScaleToFit();
         this.scaleToFit = scaleToFit;
         setDirty(true);
         firePropertyChange("scaleToFit", old, isScaleToFit());
     }
-    
+
     public ScaleType getScaleType() {
         return scaleType;
     }
-    
+
     public void setScaleType(ScaleType scaleType) {
         ScaleType old = getScaleType();
         this.scaleType = scaleType;
@@ -331,7 +328,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public double getImageScale() {
         return imageScale;
     }
-    
+
     /**
      * Sets the scaling factor used when drawing the image
      * @param imageScale the new image scaling factor
@@ -342,7 +339,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
         setDirty(true);
         firePropertyChange("imageScale",old,this.imageScale);
     }
-    
+
     /**
      * Indicates if the image will be repeated horizontally.
      * @return if the image will be repeated horizontally
@@ -350,7 +347,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public boolean isHorizontalRepeat() {
         return horizontalRepeat;
     }
-    
+
     /**
      * Sets if the image should be repeated horizontally.
      * @param horizontalRepeat the new horizontal repeat value
@@ -369,7 +366,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
     public boolean isVerticalRepeat() {
         return verticalRepeat;
     }
-    
+
     /**
      * Sets if the image should be repeated vertically.
      * @param verticalRepeat new value for the vertical repeat
@@ -380,7 +377,7 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
         setDirty(true);
         firePropertyChange("verticalRepeat",old,this.verticalRepeat);
     }
-    
+
     /**
      *
      */
@@ -390,13 +387,13 @@ public class ImagePainter extends AbstractAreaPainter<Object> {
             BufferedImage bi = getImage();
             int imgWidth = bi.getWidth();
             int imgHeight = bi.getHeight();
-            
+
             return calculateLayout(imgWidth, imgHeight, width, height);
         }
         return new Rectangle(0,0,0,0);
-        
+
     }
-    
+
     /**
      * {@inheritDoc}
      */

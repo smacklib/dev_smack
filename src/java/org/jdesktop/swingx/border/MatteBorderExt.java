@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -29,14 +29,12 @@ import java.awt.Insets;
 import javax.swing.Icon;
 import javax.swing.border.MatteBorder;
 
-import org.jdesktop.beans.JavaBean;
-
 /**
  * Matte border that allows specialized icons for corners and sides.
  *
  * @author Ramesh Gupta
  */
-@JavaBean
+@SuppressWarnings("serial")
 public class MatteBorderExt extends MatteBorder {
     protected Icon[] tileIcons = null;
     private Icon defaultIcon = null;
@@ -163,12 +161,12 @@ public class MatteBorderExt extends MatteBorder {
     protected void paint(Icon icon, Component c, Graphics g, int x, int y,
                              int width, int height) {
         Graphics cg = g.create();
-        
+
         try {
             cg.setClip(x, y, width, height);
             int tileW = icon.getIconWidth();
             int tileH = icon.getIconHeight();
-            int xpos, ypos, startx, starty;
+            int xpos, ypos;
             for (ypos = 0; height - ypos > 0; ypos += tileH) {
                 for (xpos = 0; width - xpos > 0; xpos += tileW) {
                     icon.paintIcon(c, cg, x + xpos, y + ypos);
@@ -184,7 +182,7 @@ public class MatteBorderExt extends MatteBorder {
      */
     protected void paintTopLeft(Component c, Graphics g, int x, int y, int width, int height) {
         Graphics cg = g.create();
-        
+
         try {
             cg.setClip(x, y, width, height);
             tileIcons[0].paintIcon(c, cg, x, y);
@@ -287,14 +285,17 @@ public class MatteBorderExt extends MatteBorder {
                 private int width = 3;
                 private int height = 3;
 
+                @Override
                 public int getIconWidth() {
                     return width;
                 }
 
+                @Override
                 public int getIconHeight() {
                     return height;
                 }
 
+                @Override
                 public void paintIcon(Component c, Graphics g, int x, int y) {
                     g.setColor(c.getBackground().darker().darker());
                     //g.translate(x, y);

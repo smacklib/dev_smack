@@ -25,14 +25,11 @@ package org.jdesktop.swingx.painter;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 
-import org.jdesktop.beans.JavaBean;
-
 /**
  * Applies an alpha value to an entire stack of painters.
  *
  * @author joshy
  */
-@JavaBean
 @SuppressWarnings("nls")
 public class AlphaPainter<T> extends CompoundPainter<T> {
     private float alpha = 1.0f;
@@ -43,7 +40,7 @@ public class AlphaPainter<T> extends CompoundPainter<T> {
     @Override
     protected void doPaint(Graphics2D g, T component, int width, int height) {
         Graphics2D g2 = (Graphics2D) g.create();
-        
+
         try {
         if(getTransform() != null) {
             g2.setTransform(getTransform());
@@ -52,7 +49,7 @@ public class AlphaPainter<T> extends CompoundPainter<T> {
                 g2.setComposite(AlphaComposite.getInstance(
                         AlphaComposite.SRC_OVER, alpha));
         }
-            
+
             super.doPaint(g2, component, width, height);
         } finally {
             g2.dispose();
@@ -64,12 +61,12 @@ public class AlphaPainter<T> extends CompoundPainter<T> {
         AlphaPainter alpha = new AlphaPainter();
         alpha.setAlpha(1f);
         alpha.setPainters(new PinstripePainter(new Color(255,255,255,125),45,20,20));
-        
+
         panel.setBackgroundPainter(new CompoundPainter(
                 new MattePainter(Color.RED),
                 alpha
                 ));
-        
+
         JFrame frame = new JFrame();
         frame.add(panel);
         frame.pack();
@@ -78,7 +75,7 @@ public class AlphaPainter<T> extends CompoundPainter<T> {
     }*/
 
     /**
-     * Returns the current alpha value for this painter. This is the alpha value that will be applied 
+     * Returns the current alpha value for this painter. This is the alpha value that will be applied
      * to all painters set inside this painter. Alpha values will be multiplied. This means if you set an
      * alpha of 0.5 on this painter and you nest a painter inside which uses an alpha of 0.5 then the final
      * pixels drawn will have an alpha of 0.25.
@@ -89,7 +86,7 @@ public class AlphaPainter<T> extends CompoundPainter<T> {
     }
 
     /**
-     * Sets the current alpha value for this painter. This is the alpha value that will be applied 
+     * Sets the current alpha value for this painter. This is the alpha value that will be applied
      * to all painters set inside this painter. Alpha values will be multiplied. This means if you set an
      * alpha of 0.5 on this painter and you nest a painter inside which uses an alpha of 0.5 then the final
      * pixels drawn will have an alpha of 0.25.

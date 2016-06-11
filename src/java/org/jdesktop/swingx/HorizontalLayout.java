@@ -26,7 +26,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.util.Separator;
 
 /**
@@ -35,10 +34,9 @@ import org.jdesktop.swingx.util.Separator;
  * @author Romain Guy <romain.guy@mac.com>
  * @author Karl Schaefer
  */
-@JavaBean
 public class HorizontalLayout extends AbstractLayoutManager {
     private static final long serialVersionUID = 8640046926840737487L;
-    
+
     private int gap;
 
     public HorizontalLayout() {
@@ -63,13 +61,13 @@ public class HorizontalLayout extends AbstractLayoutManager {
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
         Dimension size = parent.getSize();
-        
+
         int height = size.height - insets.top - insets.bottom;
         int width = insets.left;
-        
+
         for (int i = 0, c = parent.getComponentCount(); i < c; i++) {
             Component m = parent.getComponent(i);
-            
+
             if (m.isVisible()) {
                 m.setBounds(width, insets.top, m.getPreferredSize().width, height);
                 width += m.getSize().width + gap;
@@ -91,11 +89,11 @@ public class HorizontalLayout extends AbstractLayoutManager {
                 pref.width += componentPreferredSize.width + sep.get();
             }
         }
-        
+
         Insets insets = parent.getInsets();
         pref.width += insets.left + insets.right;
         pref.height += insets.top + insets.bottom;
-        
+
         return pref;
     }
 }

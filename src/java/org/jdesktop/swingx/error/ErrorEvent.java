@@ -31,9 +31,10 @@ import java.util.EventObject;
  * @see ErrorListener
  * @see ErrorSupport
  */
+@SuppressWarnings("serial")
 public class ErrorEvent extends EventObject {
     private Throwable throwable;
-    
+
     /**
      * Creates a new instance of <CODE>ErrorEvent</CODE>
      * @param throwable The Error or Exception which occurred.
@@ -51,5 +52,5 @@ public class ErrorEvent extends EventObject {
     public Throwable getThrowable() {
         return throwable;
     }
-    
+
 }

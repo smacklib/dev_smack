@@ -36,7 +36,6 @@ import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.painter.effects.AreaEffect;
 
 /**
@@ -45,17 +44,16 @@ import org.jdesktop.swingx.painter.effects.AreaEffect;
  *
  * @author rbair
  */
-@JavaBean
 @SuppressWarnings("nls")
 public class TextPainter extends AbstractAreaPainter<Object> {
     private String text = "";
     private Font font = null;
-    
+
     /** Creates a new instance of TextPainter */
     public TextPainter() {
         this("");
     }
-    
+
     /**
      * Create a new TextPainter which will paint the specified text
      * @param text the text to paint
@@ -63,7 +61,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
     public TextPainter(String text) {
         this(text, null, null);
     }
-    
+
     /**
      * Create a new TextPainter which will paint the specified text with the specified font.
      * @param text the text to paint
@@ -72,7 +70,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
     public TextPainter(String text, Font font) {
         this(text, font, null);
     }
-    
+
     /**
      * Create a new TextPainter which will paint the specified text with the specified paint.
      * @param text the text to paint
@@ -81,7 +79,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
     public TextPainter(String text, Paint paint) {
         this(text, null, paint);
     }
-    
+
     /**
      * Create a new TextPainter which will paint the specified text with the specified font and paint.
      * @param text the text to paint
@@ -93,7 +91,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         this.font = font;
         setFillPaint(paint);
     }
-    
+
     /**
      * Set the font (and font size and style) to be used when drawing the text
      * @param f the new font
@@ -104,7 +102,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         setDirty(true);
         firePropertyChange("font", old, getFont());
     }
-    
+
     /**
      * gets the font (and font size and style) to be used when drawing the text
      * @return the current font
@@ -112,7 +110,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
     public Font getFont() {
         return font;
     }
-    
+
     /**
      * Sets the text to draw
      * @param text the text to draw
@@ -123,7 +121,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         setDirty(true);
         firePropertyChange("text", old, getText());
     }
-    
+
     /**
      * gets the text currently used to draw
      * @return the text to be drawn
@@ -141,28 +139,28 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         if (f != null) {
             g.setFont(f);
         }
-        
+
         Paint paint = getForegroundPaint(getFillPaint(), component);
         String t = calculateText(component);
-        
+
         // get the font metrics
         FontMetrics metrics = g.getFontMetrics(g.getFont());
         //Rectangle2D rect = metrics.getStringBounds(text,g);
-        
+
         int tw = metrics.stringWidth(t);
         int th = metrics.getHeight();
         Rectangle res = calculateLayout(tw, th, width, height);
-        
+
         g.translate(res.x, res.y);
-        
+
         if(isPaintStretched()) {
             paint = calculateSnappedPaint(paint, res.width, res.height);
         }
-        
+
         if (paint != null) {
             g.setPaint(paint);
         }
-        
+
         g.drawString(t, 0, 0 + metrics.getAscent());
         if(getAreaEffects() != null) {
             Shape shape = provideShape(g, component, width, height);
@@ -172,7 +170,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         }
         g.translate(-res.x,-res.y);
     }
-    
+
     private String calculateText(final Object component) {
         // prep the text
         String t = getText();
@@ -191,7 +189,7 @@ public class TextPainter extends AbstractAreaPainter<Object> {
         }
         return t;
     }
-    
+
     private Font calculateFont(final Object component) {
         // prep the various text attributes
         Font f = getComponentFont(getFont(), component);
