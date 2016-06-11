@@ -32,17 +32,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.painter.effects.AreaEffect;
 import org.jdesktop.swingx.util.ShapeUtils;
 
 /**
  * A painter which paints square and rounded rectangles
- * 
+ *
  * @author joshua.marinacci@sun.com
  */
-@JavaBean
-@SuppressWarnings("nls")
 public class RectanglePainter extends AbstractAreaPainter<Object> {
     private boolean rounded = false;
     //private Insets insets = new Insets(0,0,0,0);
@@ -56,7 +53,7 @@ public class RectanglePainter extends AbstractAreaPainter<Object> {
     public RectanglePainter() {
         this(0, 0, 0, 0);
     }
-    
+
     public RectanglePainter(int top, int left, int bottom, int right) {
         this(top, left, bottom, right, 0, 0);
     }
@@ -229,16 +226,16 @@ public class RectanglePainter extends AbstractAreaPainter<Object> {
         g.setPaint(p);
 
         g.setStroke(new BasicStroke(getBorderWidth()));
-        
+
         // shrink the border by 1 px
         if(shape instanceof Rectangle2D) {
             Rectangle2D rect = (Rectangle2D) shape;
-            
+
             g.draw(new Rectangle2D.Double(rect.getX(), rect.getY(),
                     rect.getWidth()-1, rect.getHeight()-1));
         } else if(shape instanceof RoundRectangle2D) {
             RoundRectangle2D rect = (RoundRectangle2D) shape;
-            
+
             g.draw(new RoundRectangle2D.Double(rect.getX(), rect.getY(),
                     rect.getWidth()-1, rect.getHeight()-1,
                     rect.getArcWidth(), rect.getArcHeight()));

@@ -32,7 +32,6 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
@@ -170,7 +169,6 @@ import org.jdesktop.swingx.plaf.LookAndFeelAddons;
  * @author rah003
  */
 @SuppressWarnings("serial")
-@JavaBean
 public class JXErrorPane extends JComponent
 {
     private static final Logger LOG =

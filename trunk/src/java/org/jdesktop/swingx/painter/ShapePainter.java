@@ -32,7 +32,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.painter.effects.AreaEffect;
 
 
@@ -43,7 +42,7 @@ import org.jdesktop.swingx.painter.effects.AreaEffect;
  * will be used. If no fillPaint is specified, the component background color
  * will be used. The shape can be positioned using the insets, horizontal, and
  * vertical properties.</p>
- * 
+ *
  * <p>Here is an example that draws a rectangle aligned on the center right:
  * <pre><code>
  *  Rectangle2D.Double rect = new Rectangle2D.Double(0, 0, 50, 50);
@@ -53,14 +52,13 @@ import org.jdesktop.swingx.painter.effects.AreaEffect;
  * </code></pre>
  * @author rbair
  */
-@JavaBean
 @SuppressWarnings("nls")
 public class ShapePainter extends AbstractAreaPainter<Object> {
     /**
      * The Shape to fillPaint. If null, nothing is painted.
      */
     private Shape shape;
-    
+
     /**
      * Create a new ShapePainter
      */
@@ -71,7 +69,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         this.setFillPaint(Color.RED);
         this.setBorderPaint(Color.BLACK);
     }
-    
+
     /**
      * Create a new ShapePainter with the specified shape.
      *
@@ -82,7 +80,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         super();
         this.shape = shape;
     }
-    
+
     /**
      * Create a new ShapePainter with the specified shape and fillPaint.
      *
@@ -95,7 +93,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         this.shape = shape;
         this.setFillPaint(paint);
     }
-    
+
     /**
      * Create a new ShapePainter with the specified shape and fillPaint. The shape
      * can be filled or stroked (only the outline is painted).
@@ -112,7 +110,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         this.setFillPaint(paint);
         this.setStyle(style == null ? Style.BOTH : style);
     }
-    
+
     /**
      * Sets the shape to fillPaint. This shape is not resized when the component
      * bounds are. To do that, create a custom shape that is bound to the
@@ -127,7 +125,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         setDirty(true);
         firePropertyChange("shape", old, getShape());
     }
-    
+
     /**
      * Gets the current shape
      * @return the Shape to fillPaint. May be null
@@ -135,21 +133,21 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
     public Shape getShape() {
         return shape;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected void doPaint(Graphics2D g, Object component, int w, int h) {
         g.setStroke(new BasicStroke(this.getBorderWidth()));
-        
+
         if(getShape() != null) {
             Shape s = provideShape(g,component, w, h);
             Rectangle bounds = s.getBounds();
             Rectangle rect = calculateLayout(bounds.width, bounds.height, w, h);
             //u.p("rect = " + rect);
             g = (Graphics2D)g.create();
-            
+
             try {
                 g.translate(rect.x, rect.y);
                 //draw/fill the shape
@@ -171,23 +169,23 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         }
     }
     }
-    
+
     private void drawShape(Graphics2D g, Shape s, Object component, int w, int h) {
         g.setPaint(calculateStrokePaint(component, w, h));
         g.draw(s);
     }
-    
+
     private void fillShape(Graphics2D g, Shape s, Object component, int w, int h) {
         g.setPaint(calculateFillPaint(component, w, h));
         g.fill(s);
     }
-    
+
     // shape effect stuff
     @Override
     protected Shape provideShape(Graphics2D g, Object comp, int width, int height) {
         return getShape();
     }
-    
+
     private Paint calculateStrokePaint(Object component, int width, int height) {
         Paint p = getForegroundPaint(getBorderPaint(), component);
         if(isPaintStretched()) {
@@ -195,7 +193,7 @@ public class ShapePainter extends AbstractAreaPainter<Object> {
         }
         return p;
     }
-    
+
     private Paint calculateFillPaint(Object component, int width, int height) {
         //set the fillPaint
         Paint p = getBackgroundPaint(getFillPaint(), component);

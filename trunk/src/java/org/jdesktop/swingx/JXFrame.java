@@ -41,7 +41,6 @@ import javax.swing.JRootPane;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.util.WindowUtils;
 
 /**
@@ -73,7 +72,6 @@ import org.jdesktop.swingx.util.WindowUtils;
  *
  * @author unascribed from JDNC
  */
-@JavaBean
 @SuppressWarnings({ "nls", "serial" })
 public class JXFrame extends JFrame {
     /**

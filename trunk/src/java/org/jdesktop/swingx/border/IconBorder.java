@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -32,7 +32,6 @@ import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.icon.EmptyIcon;
 
 /**
@@ -44,13 +43,13 @@ import org.jdesktop.swingx.icon.EmptyIcon;
  * <p>
  * This border is useful when attempting to add {@code Icon}s to pre-existing
  * components without requiring specialty painting.
- * 
+ *
  * @author Amy Fowler
  * @author Karl Schaefer
- * 
+ *
  * @version 1.1
  */
-@JavaBean
+@SuppressWarnings("serial")
 public class IconBorder implements Border, Serializable {
 
     /**
@@ -61,11 +60,11 @@ public class IconBorder implements Border, Serializable {
     private Icon icon;
     private int iconPosition;
     private Rectangle iconBounds = new Rectangle();
-    
+
     /**
      * Creates an {@code IconBorder} with an empty icon in a trailing position
      * with a padding of 4.
-     * 
+     *
      * @see #EMPTY_ICON
      */
     public IconBorder() {
@@ -75,7 +74,7 @@ public class IconBorder implements Border, Serializable {
     /**
      * Creates an {@code IconBorder} with the specified icon in a trailing
      * position with a padding of 4.
-     * 
+     *
      * @param validIcon
      *            the icon to set. This may be {@code null} to represent an
      *            empty icon.
@@ -88,7 +87,7 @@ public class IconBorder implements Border, Serializable {
     /**
      * Creates an {@code IconBorder} with the specified constraints and a
      * padding of 4.
-     * 
+     *
      * @param validIcon
      *            the icon to set. This may be {@code null} to represent an
      *            empty icon.
@@ -109,12 +108,12 @@ public class IconBorder implements Border, Serializable {
     public IconBorder(Icon validIcon, int iconPosition) {
         this(validIcon, iconPosition, 4);
     }
-    
+
     /**
      * Creates an {@code IconBorder} with the specified constraints. If
      * {@code validIcon} is {@code null}, {@code EMPTY_ICON} is used instead.
      * If {@code padding} is negative, then the border does not use padding.
-     * 
+     *
      * @param validIcon
      *            the icon to set. This may be {@code null} to represent an
      *            empty icon.
@@ -143,7 +142,7 @@ public class IconBorder implements Border, Serializable {
 
     private boolean isValidPosition(int position) {
         boolean result = false;
-        
+
         switch (position) {
         case SwingConstants.LEADING:
         case SwingConstants.TRAILING:
@@ -154,13 +153,14 @@ public class IconBorder implements Border, Serializable {
         default:
             result = false;
         }
-        
+
         return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public Insets getBorderInsets(Component c) {
         int horizontalInset = icon.getIconWidth() + (2 * padding);
         int iconPosition = bidiDecodeLeadingTrailing(c.getComponentOrientation(), this.iconPosition);
@@ -172,7 +172,7 @@ public class IconBorder implements Border, Serializable {
 
     /**
      * Sets the icon for this border.
-     * 
+     *
      * @param validIcon
      *            the icon to set.  This may be {@code null} to represent an
      *            empty icon.
@@ -181,12 +181,13 @@ public class IconBorder implements Border, Serializable {
     public void setIcon(Icon validIcon) {
         this.icon = validIcon == null ? EMPTY_ICON : validIcon;
     }
-    
+
     /**
      * This border is not opaque.
-     * 
+     *
      * @return always returns {@code false}
      */
+    @Override
     public boolean isBorderOpaque() {
         return false;
     }
@@ -194,6 +195,7 @@ public class IconBorder implements Border, Serializable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width,
         int height) {
         int iconPosition = bidiDecodeLeadingTrailing(c.getComponentOrientation(), this.iconPosition);
@@ -215,7 +217,7 @@ public class IconBorder implements Border, Serializable {
     }
 
     /**
-     * Returns EAST or WEST depending on the ComponentOrientation and 
+     * Returns EAST or WEST depending on the ComponentOrientation and
      * the given postion LEADING/TRAILING this method has no effect for other
      * position values
      */
@@ -237,7 +239,7 @@ public class IconBorder implements Border, Serializable {
 
     /**
      * Gets the padding surrounding the icon.
-     * 
+     *
      * @return the padding for the icon. This value is guaranteed to be
      *         nonnegative.
      */
@@ -247,7 +249,7 @@ public class IconBorder implements Border, Serializable {
 
     /**
      * Sets the padding around the icon.
-     * 
+     *
      * @param padding
      *            the padding to set. If {@code padding < 0}, then
      *            {@code padding} will be set to {@code 0}.
@@ -258,7 +260,7 @@ public class IconBorder implements Border, Serializable {
 
     /**
      * Returns the position to place the icon (relative to the component contents).
-     * 
+     *
      * @return one of the following {@code SwingConstants}:
      *        <ul>
      *          <li>{@code LEADING}</li>
@@ -273,7 +275,7 @@ public class IconBorder implements Border, Serializable {
 
     /**
      * Sets the position to place the icon (relative to the component contents).
-     * 
+     *
      * @param iconPosition must be one of the following {@code SwingConstants}:
      *        <ul>
      *          <li>{@code LEADING}</li>

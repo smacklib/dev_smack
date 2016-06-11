@@ -39,7 +39,6 @@ import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicGraphicsUtils;
 
-import org.jdesktop.beans.JavaBean;
 import org.jdesktop.swingx.graphics.FilterComposite;
 import org.jdesktop.swingx.painter.AbstractPainter;
 import org.jdesktop.swingx.painter.Painter;
@@ -69,7 +68,6 @@ import org.jdesktop.swingx.util.PaintUtils;
  * @author Jan Stola
  * @author Karl George Schaefer
  */
-@JavaBean
 @SuppressWarnings({ "nls", "serial" })
 public class JXButton extends JButton implements BackgroundPaintable {
     private class BackgroundButton extends JButton {
@@ -257,15 +255,15 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isSelected() {
             return JXButton.this.isSelected();
         }
-        
+
     }
-    
+
     private class ForegroundButton extends JButton {
         @Override
         public Font getFont() {
             return JXButton.this.getFont();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -274,10 +272,10 @@ public class JXButton extends JButton implements BackgroundPaintable {
             if (fgPainter == null) {
                 return JXButton.this.getForeground();
             }
-            
+
             return PaintUtils.setAlpha(JXButton.this.getForeground(), 0);
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -285,7 +283,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isDefaultButton() {
             return JXButton.this.isDefaultButton();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -293,7 +291,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getDisabledIcon() {
             return JXButton.this.getDisabledIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -301,7 +299,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getDisabledSelectedIcon() {
             return JXButton.this.getDisabledSelectedIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -309,7 +307,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getDisplayedMnemonicIndex() {
             return JXButton.this.getDisplayedMnemonicIndex();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -317,7 +315,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getHorizontalAlignment() {
             return JXButton.this.getHorizontalAlignment();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -325,7 +323,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getHorizontalTextPosition() {
             return JXButton.this.getHorizontalTextPosition();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -333,7 +331,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getIcon() {
             return JXButton.this.getIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -341,7 +339,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getIconTextGap() {
             return JXButton.this.getIconTextGap();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -349,7 +347,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Insets getMargin() {
             return JXButton.this.getMargin();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -357,7 +355,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getMnemonic() {
             return JXButton.this.getMnemonic();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -365,7 +363,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public ButtonModel getModel() {
             return JXButton.this.getModel();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -373,7 +371,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getPressedIcon() {
             return JXButton.this.getPressedIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -381,7 +379,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getRolloverIcon() {
             return JXButton.this.getRolloverIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -389,7 +387,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getRolloverSelectedIcon() {
             return JXButton.this.getRolloverSelectedIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -397,7 +395,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public Icon getSelectedIcon() {
             return JXButton.this.getSelectedIcon();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -405,7 +403,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public String getText() {
             return JXButton.this.getText();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -413,7 +411,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getVerticalAlignment() {
             return JXButton.this.getVerticalAlignment();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -421,7 +419,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public int getVerticalTextPosition() {
             return JXButton.this.getVerticalTextPosition();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -429,7 +427,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isBorderPainted() {
             return JXButton.this.isBorderPainted();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -437,7 +435,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isContentAreaFilled() {
             return false;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -445,7 +443,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean hasFocus() {
             return JXButton.this.hasFocus();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -453,7 +451,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isFocusPainted() {
             return JXButton.this.isFocusPainted();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -461,7 +459,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         public boolean isRolloverEnabled() {
             return JXButton.this.isRolloverEnabled();
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -470,7 +468,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
             return JXButton.this.isSelected();
         }
     }
-    
+
     private ForegroundButton fgStamp;
     @SuppressWarnings("rawtypes")
     private Painter fgPainter;
@@ -479,13 +477,13 @@ public class JXButton extends JButton implements BackgroundPaintable {
     private BackgroundButton bgStamp;
     @SuppressWarnings("rawtypes")
     private Painter bgPainter;
-    
+
     private boolean paintBorderInsets = true;
 
     private Rectangle viewRect = new Rectangle();
     private Rectangle textRect = new Rectangle();
     private Rectangle iconRect = new Rectangle();
-    
+
     /**
      * Creates a button with no set text or icon.
      */
@@ -495,7 +493,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
 
     /**
      * Creates a button with text.
-     * 
+     *
      * @param text
      *            the text of the button
      */
@@ -506,7 +504,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
 
     /**
      * Creates a button where properties are taken from the {@code Action} supplied.
-     * 
+     *
      * @param a
      *            the {@code Action} used to specify the new button
      */
@@ -517,7 +515,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
 
     /**
      * Creates a button with an icon.
-     * 
+     *
      * @param icon
      *            the Icon image to display on the button
      */
@@ -528,7 +526,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
 
     /**
      * Creates a button with initial text and an icon.
-     * 
+     *
      * @param text
      *            the text of the button
      * @param icon
@@ -538,11 +536,11 @@ public class JXButton extends JButton implements BackgroundPaintable {
         super(text, icon);
         init();
     }
-    
+
     private void init() {
         fgStamp = new ForegroundButton();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -563,7 +561,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         firePropertyChange("backgroundPainter", old, getBackgroundPainter());
         repaint();
     }
-    
+
     /**
      * @return the foreground painter for this button
      */
@@ -576,17 +574,17 @@ public class JXButton extends JButton implements BackgroundPaintable {
     public void setForegroundPainter(Painter p) {
         Painter old = getForegroundPainter();
         this.fgPainter = p;
-        
+
         if (fgPainter == null) {
             fgPaint = null;
         } else {
             fgPaint = new PainterPaint(fgPainter, this);
-            
+
             if (bgStamp == null) {
                 bgStamp = new BackgroundButton();
             }
         }
-        
+
         firePropertyChange("foregroundPainter", old, getForegroundPainter());
         repaint();
     }
@@ -617,7 +615,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         this.paintBorderInsets = paintBorderInsets;
         firePropertyChange("paintBorderInsets", old, isPaintBorderInsets());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -626,7 +624,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         if (getComponentCount() == 1 && getComponent(0) instanceof CellRendererPane) {
             return BasicGraphicsUtils.getPreferredButtonSize(fgStamp, getIconTextGap());
         }
-        
+
         return super.getPreferredSize();
     }
 
@@ -640,7 +638,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
         } else {
             if (fgPainter == null) {
                 Graphics2D g2d = (Graphics2D) g.create();
-                
+
                 try{
                     paintWithoutForegroundPainter(g2d);
                 } finally {
@@ -650,7 +648,7 @@ public class JXButton extends JButton implements BackgroundPaintable {
                 paintWithForegroundPainterWithFilters(g);
             } else {
                 Graphics2D g2d = (Graphics2D) g.create();
-                
+
                 try {
                     paintWithForegroundPainterWithoutFilters(g2d);
                 } finally {
@@ -659,20 +657,20 @@ public class JXButton extends JButton implements BackgroundPaintable {
             }
         }
     }
-    
+
     private void paintWithoutForegroundPainter(Graphics2D g2d) {
         if (bgPainter == null) {
             SwingUtilities.paintComponent(g2d, bgStamp, this, 0, 0, getWidth(), getHeight());
         } else {
             SwingXUtilities.paintBackground(this, g2d);
         }
-        
+
         SwingUtilities.paintComponent(g2d, fgStamp, this, 0, 0, getWidth(), getHeight());
     }
-    
+
     private void paintWithForegroundPainterWithoutFilters(Graphics2D g2d) {
         paintWithoutForegroundPainter(g2d);
-        
+
         if (getText() != null && !getText().isEmpty()) {
             Insets i = getInsets();
             viewRect.x = i.left;
@@ -685,62 +683,62 @@ public class JXButton extends JButton implements BackgroundPaintable {
 
             // layout the text and icon
             String text = SwingUtilities.layoutCompoundLabel(
-                this, g2d.getFontMetrics(), getText(), getIcon(), 
+                this, g2d.getFontMetrics(), getText(), getIcon(),
                 getVerticalAlignment(), getHorizontalAlignment(),
                 getVerticalTextPosition(), getHorizontalTextPosition(),
-                viewRect, iconRect, textRect, 
+                viewRect, iconRect, textRect,
                 getText() == null ? 0 : getIconTextGap());
-            
+
             if (!isPaintBorderInsets()) {
                 g2d.translate(i.left, i.top);
             }
-            
+
             g2d.setPaint(fgPaint);
             BasicGraphicsUtils.drawStringUnderlineCharAt(g2d, text, getDisplayedMnemonicIndex(),
                     textRect.x, textRect.y + g2d.getFontMetrics().getAscent());
         }
     }
-    
+
     private void paintWithForegroundPainterWithFilters(Graphics g) {
         BufferedImage im = GraphicsUtilities.createCompatibleTranslucentImage(getWidth(), getHeight());
         Graphics2D g2d = im.createGraphics();
-        
+
         try {
             Graphics gfx = getComponentGraphics(g2d);
             assert gfx == g2d;
-            
+
             paintWithForegroundPainterWithoutFilters(g2d);
         } finally {
             g2d.dispose();
         }
-        
+
         Graphics2D filtered = (Graphics2D) g.create();
-        
+
         try {
             for (BufferedImageOp filter : ((AbstractPainter<?>) fgPainter).getFilters()) {
                 filtered.setComposite(new FilterComposite(filtered.getComposite(), filter));
             }
-            
+
             filtered.drawImage(im, 0, 0, this);
         } finally {
             filtered.dispose();
         }
     }
-    
+
     /**
      * Notification from the <code>UIManager</code> that the L&F has changed.
      * Replaces the current UI object with the latest version from the <code>UIManager</code>.
-     * 
+     *
      * @see javax.swing.JComponent#updateUI
      */
     @Override
     public void updateUI() {
         super.updateUI();
-        
+
         if (bgStamp != null) {
             bgStamp.updateUI();
         }
-        
+
         if (fgStamp != null) {
             fgStamp.updateUI();
         }
