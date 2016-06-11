@@ -11,6 +11,11 @@
 
   <buildnumber/>
 
+    <!-- The jdk-specific product name. -->
+  <property 
+    name="application.title"
+    value="${ant.project.name}-${java.specification.version}" />
+
   <property
     description="The sourcecode position."
     name="in.src"
@@ -26,15 +31,15 @@
     name = "in.lib"
     value = "${basedir}/lib"/>
 
-  <property 
-    description="The local library directory."
+  <property
+    description="The local build directory."
     name = "build.dir"
     value = "${basedir}/build"/>
 
   <property
     description="The name of a directory used for creating the build."
     name="out.bin"
-    value="${build.dir}/ant/${ant.project.name}/class"/>
+    value="${build.dir}/ant/${application.title}/class"/>
 
   <!-- This dir will receive all jars.  The project's main jar as well
        as the 3rd party jars needed by the main.  In case of commons,
@@ -42,7 +47,7 @@
   <property
     description="The name of the target directory for the distributables."
     name="out.dist"
-    value="${build.dir}/dist/${ant.project.name}-${build.number}"/>
+    value="${build.dir}/dist/${application.title}-${build.number}"/>
 
   <property
     description="The name of a directory for the project web site."
@@ -58,7 +63,7 @@
   <path description="Defines the project's classpath." 
         id="pt.common.libraries.id">
     <fileset refid="fs.common.libraries.id"/>
-  	<fileset file="C:/Programme/Java/jdk1.6.0_45/jre/lib/javaws.jar"></fileset>
+  	<fileset file="${java.home}/lib/javaws.jar"></fileset>
   </path>
 
   <!-- Inverse to target 'clean'. -->
@@ -116,7 +121,7 @@
   <target name="jar-bin" depends="resource">
     <!-- Jar the project main jar directly to the final position. -->
     <jar
-      jarfile="${out.dist}/${ant.project.name}-${build.number}.jar"
+      jarfile="${out.dist}/${application.title}-${build.number}.jar"
       basedir="${out.bin}"
       excludes="${in.src}/doc/**">
 
@@ -125,7 +130,7 @@
         <section name="${ant.project.name}">
             <attribute 
                 name="Implementation-Title" 
-                value="${ant.project.name}"/>
+                value="${application.title}"/>
             <attribute 
                 name="Implementation-Version"
                 value="${build.number}"/>
@@ -136,7 +141,7 @@
 
   <target name="jar-src" depends="resource">
     <jar
-      jarfile="${out.dist}/${ant.project.name}-src-${build.number}.jar"
+      jarfile="${out.dist}/${application.title}-src-${build.number}.jar"
       basedir="${in.src}"
       excludes="${in.src}/doc/**">
 
@@ -145,7 +150,7 @@
         <section name="${ant.project.name}">
             <attribute 
                 name="Implementation-Title" 
-                value="${ant.project.name}-src"/>
+                value="${application.title}-src"/>
             <attribute 
                 name="Implementation-Version"
                 value="${build.number}"/>
@@ -155,7 +160,7 @@
   </target>
 
   <target name="jar-javadoc" depends="resource, jdoc">
-    <zip destfile="${out.dist}/${ant.project.name}-javadoc-${build.number}.zip"
+    <zip destfile="${out.dist}/${application.title}-javadoc-${build.number}.zip"
   	       basedir="${out.web}/javadoc"
   	  />
   </target>
@@ -164,10 +169,9 @@
           name="dist"
           depends="jar-bin, jar-src, jar-javadoc">
     <echo>${java.version}</echo>
-    <zip destfile="${out.dist}/../${ant.project.name}-${build.number}.zip"
+    <zip destfile="${out.dist}/../${application.title}-${build.number}.zip"
            basedir="${out.dist}"
       />
-  	
   </target>
 
   <target name="release_sf">
