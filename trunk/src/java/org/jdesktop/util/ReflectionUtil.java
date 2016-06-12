@@ -6,10 +6,12 @@
  * Copyright © 2010 Michael G. Binz
  */
 
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,21 +24,19 @@ import java.util.logging.Logger;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use {@link org.jdesktop.util.ReflectionUtil}
  */
-@Deprecated
-public final class ReflectionUtils
+public final class ReflectionUtil
 {
     /**
      * The logger for this class.
      */
     private static final Logger LOG = Logger.getLogger(
-        ReflectionUtils.class.getName() );
+        ReflectionUtil.class.getName() );
 
     /**
      * Forbid instantiation.
      */
-    private ReflectionUtils()
+    private ReflectionUtil()
     {
         throw new AssertionError();
     }
@@ -353,5 +353,107 @@ public final class ReflectionUtils
         }
 
         return result;
+    }
+
+    /**
+     * Get all annotated fields defined on a class.
+     *
+     * @param source The class to search.
+     * @param annotation The annotation to look up.
+     * @param modifiers The required modifiers.
+     * @return Pairs of fields and field annotations.
+     * The empty list if no annotation was found.
+     */
+    public static <T extends Annotation>
+    List<Pair<Field,T>> getAnnotatedFields(
+            Class<?> source,
+            Class<T> annotation,
+            int modifiers )
+    {
+        List<Pair<Field,T>> result = new ArrayList<>();
+
+        for ( Field c : source.getDeclaredFields() )
+        {
+            // Check for exact match of requested modifiers.
+            if ( modifiers != 0 && (c.getModifiers() & modifiers) != modifiers )
+                continue;
+
+            T a = c.getAnnotation( annotation );
+
+            if ( a == null )
+                continue;
+
+            result.add( new Pair<Field,T>( c, a ) );
+        }
+
+        return result;
+    }
+
+    /**
+     * Get all annotated fields defined on a class.
+     *
+     * @param source The class to search.
+     * @param annotation The annotation to look up.
+     * @param modifiers The required modifiers.
+     * @return Pairs of fields and field annotations.
+     * The empty list if no annotation was found.
+     */
+    public static <T extends Annotation>
+    List<Pair<Field,T>> getAnnotatedFields(
+            Class<?> source,
+            Class<T> annotation )
+    {
+        return getAnnotatedFields( source, annotation, 0 );
+    }
+
+    /**
+     * Get all annotated fields defined on a class.
+     *
+     * @param source The class to search.
+     * @param annotation The annotation to look up.
+     * @param modifiers The required modifiers.
+     * @return Pairs of methods and method annotations.
+     * The empty list if no annotation was found.
+     */
+    public static <T extends Annotation>
+    List<Pair<Method,T>> getAnnotatedMethods(
+            Class<?> source,
+            Class<T> annotation,
+            int modifiers )
+    {
+        List<Pair<Method,T>> result = new ArrayList<>();
+
+        for ( Method c : source.getDeclaredMethods() )
+        {
+            // Check for exact match of requested modifiers.
+            if ( modifiers != 0 && (c.getModifiers() & modifiers) != modifiers )
+                continue;
+
+            T a = c.getAnnotation( annotation );
+
+            if ( a == null )
+                continue;
+
+            result.add( new Pair<Method,T>( c, a ) );
+        }
+
+        return result;
+    }
+
+    /**
+     * Get all annotated fields defined on a class.
+     *
+     * @param source The class to search.
+     * @param annotation The annotation to look up.
+     * @param modifiers The required modifiers.
+     * @return Pairs of methods and method annotations.
+     * The empty list if no annotation was found.
+     */
+    public static <T extends Annotation>
+    List<Pair<Method,T>> getAnnotatedMethods(
+            Class<?> source,
+            Class<T> annotation )
+    {
+        return getAnnotatedMethods( source, annotation, 0 );
     }
 }

@@ -11,8 +11,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jdesktop.smack.util.ReflectionUtils;
-
 /**
  * Management of ApplicationServices.
  *
@@ -71,7 +69,7 @@ public final class ServiceManager
         if ( _singletons.containsKey(  singletonType ) )
             throw new IllegalArgumentException( "Already initialized: " + singletonType.getName() );
 
-        Constructor<T> c = ReflectionUtils.matchConstructorArguments(
+        Constructor<T> c = ReflectionUtil.matchConstructorArguments(
                 singletonType.getConstructors(),
                 objects );
 

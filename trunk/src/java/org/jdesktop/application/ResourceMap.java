@@ -52,9 +52,10 @@ import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.ResourceConverter.ResourceConverterException;
 import org.jdesktop.application.util.PlatformType;
-import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.smack.util.ResourceUtils;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.Pair;
+import org.jdesktop.util.ReflectionUtil;
 
 /**
  * A read-only encapsulation of one or more ResourceBundles that adds
@@ -596,7 +597,7 @@ public class ResourceMap
             throw new IllegalArgumentException("null type");
         }
 
-        type = ReflectionUtils.normalizePrimitives( type );
+        type = ReflectionUtil.normalizePrimitives( type );
 
         if ( ! containsResourceKey( key ) )
         {
@@ -1329,17 +1330,29 @@ public class ResourceMap
 
         String keyPrefix = targetType.getSimpleName() + ".";
 
-        for (Field field : targetType.getDeclaredFields()) {
-            Resource resource = field.getAnnotation(Resource.class);
-            if (resource != null) {
-                String key = resource.key();
+        for ( Pair<Field,Resource> field :
+            ReflectionUtil.getAnnotatedFields(
+                    targetType,
+                    Resource.class ) )
+        {
+            String key = field.b.key();
 
-                if ( ! StringUtils.hasContent( key, true ) )
-                    key = keyPrefix + field.getName();
+            if ( ! StringUtils.hasContent( key, true ) )
+                key = keyPrefix + field.a.getName();
 
-                injectField(field, target, key);
-            }
+            injectField( field.a, target, key );
         }
+//        for (Field field : targetType.getDeclaredFields()) {
+//            Resource resource = field.getAnnotation(Resource.class);
+//            if (resource != null) {
+//                String key = resource.key();
+//
+//                if ( ! StringUtils.hasContent( key, true ) )
+//                    key = keyPrefix + field.getName();
+//
+//                injectField(field, target, key);
+//            }
+//        }
     }
 
     /**
