@@ -7,6 +7,8 @@
  */
 package org.jdesktop.smack.util;
 
+import java.util.Objects;
+
 /**
  * General utilities.
  *
@@ -27,7 +29,9 @@ public class JavaUtils
      * @param b The second object to compare.
      * @return {@code true} if the objects are equal.  Note that this includes
      * that both parameters were {@code null}.
+     * @deprecated As of Java 1.7 use {@link Objects#equals(Object, Object)
      */
+    @Deprecated
     public static boolean equals( Object a, Object b )
     {
         if ( a == null )
