@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -731,9 +732,9 @@ public abstract class Application extends BaseApplication
      */
     public static synchronized Application getInstance() {
 
-        if (Beans.isDesignTime() && application==null) {
-            application = new DesignTimeApplication();
-        }
+//        if (Beans.isDesignTime() && application==null) {
+//            application = new DesignTimeApplication();
+//        }
 
         checkApplicationLaunched();
         return application;
@@ -749,6 +750,7 @@ public abstract class Application extends BaseApplication
     {
         return application != null;
     }
+
     /**
      * Shows the application {@code View}
      * @param view - View to show
@@ -804,29 +806,29 @@ public abstract class Application extends BaseApplication
         }
     }
 
-    /**
-     * Application placeholder class
-     *
-     * Instance of this class is created when client
-     * invokes static method {@code Application.getInstance()}
-     * @author etf
-     * @see Application#getInstance()
-     */
-    private static final class DesignTimeApplication extends Application {
-
-        protected DesignTimeApplication() {
-            ApplicationContext ctx = getContext();
-//            ctx.setApplicationClass(getClass());
-//            ctx.setApplication(this);
-            ResourceMap appResourceMap = ctx.getResourceMap();
-            appResourceMap.setPlatform(PlatformType.DEFAULT);
-        }
-
-        @Override
-        protected void startup() {
-        }
-    }
-
+//    /**
+//     * Application placeholder class
+//     *
+//     * Instance of this class is created when client
+//     * invokes static method {@code Application.getInstance()}
+//     * @author etf
+//     * @see Application#getInstance()
+//     */
+//    private static final class DesignTimeApplication extends Application {
+//
+//        protected DesignTimeApplication() {
+//            ApplicationContext ctx = getContext();
+////            ctx.setApplicationClass(getClass());
+////            ctx.setApplication(this);
+//            ResourceMap appResourceMap = ctx.getResourceMap();
+//            appResourceMap.setPlatform(PlatformType.DEFAULT);
+//        }
+//
+//        @Override
+//        protected void startup() {
+//        }
+//    }
+//
     @Resource
     private String id = getClass().getSimpleName();
     /**

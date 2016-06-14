@@ -22,6 +22,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -38,7 +39,6 @@ import javax.swing.text.Document;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.smack.FontResizer;
 import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.smack.util.OutputStreamForwarder;

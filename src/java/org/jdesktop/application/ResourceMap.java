@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -162,7 +163,7 @@ public class ResourceMap
      * @see #getResourcesDir
      * @see #getBundleNames
      */
-    ResourceMap( Locale locale, ResourceMap parent, ClassLoader classLoader, List<String> bundleNames) {
+    public ResourceMap( Locale locale, ResourceMap parent, ClassLoader classLoader, List<String> bundleNames) {
         if (classLoader == null) {
             throw new IllegalArgumentException("null ClassLoader");
         }
@@ -1320,7 +1321,7 @@ public class ResourceMap
      * @throws IllegalArgumentException if target is null
      * @see #getObject
      */
-    void injectFields(Object target, Class<?> targetType) {
+    public void injectFields(Object target, Class<?> targetType) {
         if (target==null)
             throw new IllegalArgumentException("null target");
         if (targetType.isPrimitive())
@@ -1335,24 +1336,13 @@ public class ResourceMap
                     targetType,
                     Resource.class ) )
         {
-            String key = field.b.key();
+            String key = field.b.mappedName();
 
             if ( ! StringUtils.hasContent( key, true ) )
                 key = keyPrefix + field.a.getName();
 
             injectField( field.a, target, key );
         }
-//        for (Field field : targetType.getDeclaredFields()) {
-//            Resource resource = field.getAnnotation(Resource.class);
-//            if (resource != null) {
-//                String key = resource.key();
-//
-//                if ( ! StringUtils.hasContent( key, true ) )
-//                    key = keyPrefix + field.getName();
-//
-//                injectField(field, target, key);
-//            }
-//        }
     }
 
     /**
