@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.annotation.Resource;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,7 +25,6 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.application.Resource;
 import org.jdesktop.application.TaskMonitor;
 import org.jdesktop.smack.util.StringUtils;
 
