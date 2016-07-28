@@ -56,7 +56,7 @@ public final class ResourceManager
     private final Map<String, ResourceMap> resourceMaps =
                 new ConcurrentHashMap<String, ResourceMap>();
 
-    private final List<String> _applicationBundleNames;
+    private List<String> _applicationBundleNames;
 
     private ResourceMap _appResourceMap = null;
 
@@ -65,7 +65,7 @@ public final class ResourceManager
      * application-wide elements of the resource map.
      * Is never null.
      */
-    private final Class<?> _applicationClass;
+    private Class<?> _applicationClass;
 
     /**
      * Creates an instance.
@@ -103,10 +103,8 @@ public final class ResourceManager
     public ResourceManager( Class<?> applicationClass ) {
         if ( applicationClass == null )
             throw new IllegalArgumentException( "null applicationClass" );
-        _applicationClass = applicationClass;
-        _applicationBundleNames = allBundleNames(
-                _applicationClass,
-                Object.class );
+
+        setApplicationClass( applicationClass );
     }
 
     /**
@@ -428,5 +426,14 @@ public final class ResourceManager
             resourcePackage + "package";
 
         return Arrays.asList( classBundle, packageBundle );
+    }
+
+    void setApplicationClass( Class<?> applicationClass )
+    {
+        _applicationClass = applicationClass;
+        _applicationBundleNames = allBundleNames(
+                _applicationClass,
+                Object.class );
+        _appResourceMap = null;
     }
 }

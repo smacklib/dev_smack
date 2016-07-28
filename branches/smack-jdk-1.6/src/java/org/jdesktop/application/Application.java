@@ -157,10 +157,14 @@ public abstract class Application extends BaseApplication
      */
     protected Application()
     {
+        ResourceManager rm = getApplicationService( ResourceManager.class );
+
+        rm.setApplicationClass( getClass() );
+
         // Inject resource-defined fields on the application instance.
         // This ensures that these are set before the object is
         // accessible to the user.
-        getApplicationService( ResourceManager.class ).injectResources( this );
+        rm.injectResources( this );
 
         context = new ApplicationContext(this);
     }
