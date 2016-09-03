@@ -7,7 +7,6 @@
  */
 package org.jdesktop.util;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,40 +55,34 @@ public final class ServiceManager
         return singletonType.cast( _singletons.get( singletonType ) );
     }
 
+
     /**
      * Get an application service of the specified type.
      *
      * @param singletonType The type of the application service.
      * @return An instance of the requested service.
      */
-    public static synchronized <T> T initApplicationService(
-            Class<T> singletonType,
-            Object...objects  )
+    public static synchronized <T> T initApplicationService( T singletonInstance )
     {
-        if ( _singletons.containsKey(  singletonType ) )
-            throw new IllegalArgumentException( "Already initialized: " + singletonType.getName() );
+        @SuppressWarnings("unchecked")
+        Class<T> c = (Class<T>)singletonInstance.getClass();
 
-        Constructor<T> c = ReflectionUtil.matchConstructorArguments(
-                singletonType.getConstructors(),
-                objects );
+        return initApplicationService( c, singletonInstance );
+    }
 
-        if ( c == null )
-            throw new IllegalArgumentException( "No matching constructor found." );
+    /**
+     * Get an application service of the specified type.
+     *
+     * @param singletonType The type of the application service.
+     * @return An instance of the requested service.
+     */
+    public static synchronized <T> T initApplicationService( Class<T> clazz, T singletonInstance )
+    {
+        if ( ! clazz.isAssignableFrom( singletonInstance.getClass() ) )
+            throw new ClassCastException();
 
-        try
-        {
-            if ( ! c.isAccessible() )
-                c.setAccessible( true );
+        _singletons.put( clazz, singletonInstance );
 
-            T result = c.newInstance( objects );
-
-            _singletons.put( singletonType, result );
-
-            return result;
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
+        return singletonInstance;
     }
 }
