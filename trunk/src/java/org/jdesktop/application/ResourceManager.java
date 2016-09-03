@@ -13,8 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.ReflectionUtil;
 
 
 /**
@@ -372,7 +372,7 @@ public final class ResourceManager
         // Perform the injection for the object's class and all its
         // super classes.
         // TODO michab -- Ensure quick return if already injected.
-        for ( Class<?> c : ReflectionUtils.getInheritanceList( clazz ) )
+        for ( Class<?> c : ReflectionUtil.getInheritanceList( clazz ) )
         {
             if ( c.getClassLoader() == null )
                 break;

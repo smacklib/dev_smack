@@ -55,8 +55,9 @@ import org.jdesktop.application.ResourceConverter.ResourceConverterException;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.ResourceUtils;
 import org.jdesktop.smack.util.StringUtils;
-import org.jdesktop.util.Pair;
 import org.jdesktop.util.ReflectionUtil;
+
+import javafx.util.Pair;
 
 /**
  * A read-only encapsulation of one or more ResourceBundles that adds
@@ -1336,12 +1337,12 @@ public class ResourceMap
                     targetType,
                     Resource.class ) )
         {
-            String key = field.b.mappedName();
+            String key = field.getValue().mappedName();
 
             if ( ! StringUtils.hasContent( key, true ) )
-                key = keyPrefix + field.a.getName();
+                key = keyPrefix + field.getKey().getName();
 
-            injectField( field.a, target, key );
+            injectField( field.getKey(), target, key );
         }
     }
 

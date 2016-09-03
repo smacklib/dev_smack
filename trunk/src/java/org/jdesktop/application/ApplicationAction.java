@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
 
 import javax.swing.ActionMap;
 
-import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.action.MackAction;
+import org.jdesktop.util.ReflectionUtil;
 
 
 /**
@@ -413,19 +413,19 @@ public class ApplicationAction extends MackAction
     private Method propertyGetMethod(String propertyName) {
         Class<?> actionsClass = appAM.getActionsClass();
         // Check for getXxx..
-        Method plainGet = ReflectionUtils.getMethod(
+        Method plainGet = ReflectionUtil.getMethod(
                 actionsClass,
                 propertyMethodName("get", propertyName) );
         if ( plainGet != null )
             return plainGet;
 
-        return ReflectionUtils.getMethod(
+        return ReflectionUtil.getMethod(
                 actionsClass,
                 propertyMethodName("is", propertyName) );
     }
 
     private Method propertySetMethod(String propertyName, Class<?> type) {
-        return ReflectionUtils.getMethod(
+        return ReflectionUtil.getMethod(
                 appAM.getActionsClass(),
                 propertyMethodName("set", propertyName) );
     }
