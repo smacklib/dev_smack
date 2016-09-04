@@ -27,9 +27,9 @@ public final class ServiceManager
     /**
      * Create an instance.
      */
-    public ServiceManager()
+    private ServiceManager()
     {
-        // Catch ctor.
+        throw new AssertionError();
     }
 
     /**
@@ -59,7 +59,7 @@ public final class ServiceManager
     /**
      * Get an application service of the specified type.
      *
-     * @param singletonType The type of the application service.
+     * @param singletonInstance The application service.
      * @return An instance of the requested service.
      */
     public static synchronized <T> T initApplicationService( T singletonInstance )
@@ -71,15 +71,22 @@ public final class ServiceManager
     }
 
     /**
-     * Get an application service of the specified type.
+     * Initialize an application service with a specific instance.
      *
-     * @param singletonType The type of the application service.
-     * @return An instance of the requested service.
+     * @param clazz The service class.
+     * @param singletonInstance The instance to use. The instance has to be assignable
+     * to the passed class.
+     * @return A service instance.
      */
     public static synchronized <T> T initApplicationService( Class<T> clazz, T singletonInstance )
     {
         if ( ! clazz.isAssignableFrom( singletonInstance.getClass() ) )
             throw new ClassCastException();
+
+        if ( _singletons.containsKey( clazz ) )
+            throw new IllegalArgumentException(
+                    "Already initialized: " +
+                    _singletons.get( clazz ) );
 
         _singletons.put( clazz, singletonInstance );
 
