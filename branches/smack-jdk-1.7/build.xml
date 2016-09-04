@@ -64,6 +64,7 @@
         id="pt.common.libraries.id">
     <fileset refid="fs.common.libraries.id"/>
   	<fileset file="${java.home}/lib/javaws.jar"></fileset>
+    <fileset file="${java.home}/lib/jfxrt.jar"></fileset>
   </path>
 
   <!-- Inverse to target 'clean'. -->
