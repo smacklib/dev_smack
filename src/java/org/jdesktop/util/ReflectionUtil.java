@@ -396,7 +396,6 @@ public final class ReflectionUtil
      *
      * @param source The class to search.
      * @param annotation The annotation to look up.
-     * @param modifiers The required modifiers.
      * @return Pairs of fields and field annotations.
      * The empty list if no annotation was found.
      */
@@ -447,7 +446,6 @@ public final class ReflectionUtil
      *
      * @param source The class to search.
      * @param annotation The annotation to look up.
-     * @param modifiers The required modifiers.
      * @return Pairs of methods and method annotations.
      * The empty list if no annotation was found.
      */
