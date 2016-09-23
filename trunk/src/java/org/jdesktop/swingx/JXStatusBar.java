@@ -1,308 +1,200 @@
-/*
- * $Id$
+/* $Id$
  *
- * Copyright 2004 Sun Microsystems, Inc., 4150 Network Circle,
- * Santa Clara, California 95054, U.S.A. All rights reserved.
+ * Mack.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Released under Gnu Public License
+ * Copyright © 2012 Michael G. Binz
  */
-
 package org.jdesktop.swingx;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.awt.Insets;
-
+import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
-import org.jdesktop.swingx.plaf.LookAndFeelAddons;
-import org.jdesktop.swingx.plaf.StatusBarAddon;
-import org.jdesktop.swingx.plaf.StatusBarUI;
+import org.jdesktop.beans.PropertyLink;
+import org.jdesktop.smack.util.StringUtils;
 
 /**
- * <p>A container for <code>JComponents</code> that is typically placed at
- * the bottom of a form and runs the entire width of the form. There are 3
- * important functions that <code>JXStatusBar</code> provides.
- * First, <code>JXStatusBar</code> provides a hook for a pluggable look.
- * There is a definite look associated with status bars on windows, for instance.
- * By implementing a subclass of {@link JComponent}, we provide a way for the
- * pluggable look and feel system to modify the look of the status bar.</p>
- *
- * <p>Second, <code>JXStatusBar</code> comes with its own layout manager. Each item is added to
- * the <code>JXStatusBar</code> with a <code>JXStatusBar.Constraint</code>
- * as the constraint argument. The <code>JXStatusBar.Constraint</code> contains
- * an <code>Insets</code> object, as well as a <code>ResizeBehavior</code>,
- * which can be FIXED or FILL. The resize behaviour applies to the width of
- * components. All components added will maintain there preferred height, and the
- * height of the <code>JXStatusBar</code> will be the height of the highest
- * component plus insets.</p>
- *
- * <p>A constraint with <code>JXStatusBar.Constraint.ResizeBehavior.FIXED</code>
- * will cause the component to occupy a fixed area on the <code>JXStatusBar</code>.
- * The size of the area remains constant when the <code>JXStatusBar</code> is resized.
- * A constraint with this behavior may also take a width value, see
- * {@link JXStatusBar.Constraint#setFixedWidth(int)}. The width is a preferred
- * minimum width. If the component preferred width is greater than the constraint
- * width, the component width will apply.</p>
- *
- * <p>All components with constraint <code>JXStatusBar.Constraint.ResizeBehavior.FILL</code>
- * will share equally any spare space in the <code>JXStatusBar</code>. Spare space
- * is that left over after allowing for all FIXED component and the preferred
- * width of FILL components, plus insets
- *
- * <p>Constructing a <code>JXStatusBar</code> is very straightforward:
- * <pre><code>
- *      JXStatusBar bar = new JXStatusBar();
- *      JLabel statusLabel = new JLabel("Ready");
- *      JXStatusBar.Constraint c1 = new JXStatusBar.Constraint()
- *      c1.setFixedWidth(100);
- *      bar.add(statusLabel, c1);     // Fixed width of 100 with no inserts
- *      JXStatusBar.Constraint c2 = new JXStatusBarConstraint(
- *              JXStatusBar.Constraint.ResizeBehavior.FILL) // Fill with no inserts
- *      JProgressBar pbar = new JProgressBar();
- *      bar.add(pbar, c2);            // Fill with no inserts - will use remaining space
- * </code></pre></p>
- *
- * <p>Two common use cases for status bars include tracking application status and
- * progress. <code>JXStatusBar</code> does not manage these tasks, but instead special components
- * exist or can be created that do manage these tasks. For example, if your application
- * has a TaskManager or some other repository of currently running jobs, you could
- * easily create a TaskManagerProgressBar that tracks those jobs. This component
- * could then be added to the <code>JXStatusBar</code> like any other component.</p>
- *
- * <h2>Client Properties</h2>
- * <p>The BasicStatusBarUI.AUTO_ADD_SEPARATOR client property can be specified, which
- *    will disable the auto-adding of separators. In this case, you must add your own
- *    JSeparator components. To use:
- * <pre><code>
- *      JXStatusBar sbar = new JXStatusBar();
- *      sbar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
- *      sbar.add(comp1);
- *      sbar.add(new JSeparator(JSeparator.VERTICAL));
- *      sbar.add(comp2);
- *      sbar.add(comp3);
- *  </code></pre></p>
- *
- * @author pdoubleya
- * @author rbair
- * @author Karl George Schaefer
+ * Strategy:  Three areas:
+ *  - Message : Displays messages, possibly temporary.
+ *  (Optional: A persistent message can be shadowed by a temporary
+ *  message. A history of messages is kept.)
+ *  - Center area: Can be used for temporary display of components, normally
+ *  ones that are alive displaying progress or short term messages to the user.
+ *  - Application area: Right part of the bar: Used by the application to install
+ *  additional components, like a button for a debug screen or a version number
+ *  display. This area can handle Components as well as Actions. Adding to this
+ *  area is by default from right to left. It is possible to add WEST or EAST
+ *  explicitly.
+
+ * @version $Rev$
+ * @author Michael Binz
  */
 @SuppressWarnings("serial")
-public class JXStatusBar extends JComponent {
-    /**
-     * @see #getUIClassID
-     * @see #readObject
-     */
-    public static final String uiClassID = "StatusBarUI";
+public class JXStatusBar extends JPanel
+{
+    private final JXToolbar _right = new JXToolbar();
 
-    //TODO how to handle UI delegate setting of primitive?
-    private boolean resizeHandleEnabled;
+    private final JLabel _messageLabel = new JLabel();
+
+    private Timer messageTimer;
 
     /**
-     * Initialization that would ideally be moved into various look and feel
-     * classes.
+     * Create an instance.
      */
-    static {
-        LookAndFeelAddons.contribute(new StatusBarAddon());
+    public JXStatusBar()
+    {
+        super( new BorderLayout() );
+
+        add( _messageLabel, BorderLayout.LINE_START );
+
+        add( _right, BorderLayout.LINE_END );
+
+        new PropertyLink( this, "background", _right );
+        new PropertyLink( this, "foreground", _right );
+        new PropertyLink( this, "background", _messageLabel );
+        new PropertyLink( this, "foreground", _messageLabel );
+        new PropertyLink( this, "font", _messageLabel );
     }
 
     /**
-     * Creates a new JXStatusBar
-     */
-    public JXStatusBar() {
-        super();
-        updateUI();
-    }
-
-    /**
-     * @param resizeHandleEnabled the resizeHandleEnabled to set
-     */
-    public void setResizeHandleEnabled(boolean resizeHandleEnabled) {
-        boolean oldValue = isResizeHandleEnabled();
-        this.resizeHandleEnabled = resizeHandleEnabled;
-        firePropertyChange("resizeHandleEnabled", oldValue, isResizeHandleEnabled());
-    }
-
-    /**
-     * @return the resizeHandleEnabled
-     */
-    public boolean isResizeHandleEnabled() {
-        return resizeHandleEnabled;
-    }
-
-    /**
-     * Returns the look and feel (L&F) object that renders this component.
+     * Display the passed message.
      *
-     * @return the StatusBarUI object that renders this component
+     * @param message The message to display.
      */
-    public StatusBarUI getUI() {
-        return (StatusBarUI) ui;
+    public void setMessage( String message )
+    {
+        if ( StringUtils.isEmpty( message ) )
+            // Set a space to ensure we keep our height.
+            message = " ";
+
+        _messageLabel.setText( message );
     }
 
     /**
-     * Sets the look and feel (L&F) object that renders this component.
+     * Display the passed message for a certain duration.  After the duration
+     * passed, the status bar message is cleared.
      *
-     * @param ui
-     *            the StatusBarUI L&F object
-     * @see javax.swing.UIDefaults#getUI
+     * @param message The message to display.
+     * @param displayDuration The time in milliseconds the message is to be
+     * displayed.
      */
-    public void setUI(StatusBarUI ui) {
-        super.setUI(ui);
+    public void setMessage( String message, int displayDuration )
+    {
+        if ( message == null )
+            throw new NullPointerException( "message == null" );
+        if ( displayDuration <= 0 )
+            throw new IllegalArgumentException( "displayDuration <= 0" );
+
+        _messageLabel.setText( message );
+
+        if ( messageTimer == null )
+        {
+            messageTimer = new Timer( 0, new ClearOldMessage() );
+            messageTimer.setRepeats( false );
+        }
+
+        messageTimer.setInitialDelay( displayDuration );
+        messageTimer.restart();
     }
 
     /**
-     * Returns a string that specifies the name of the L&F class that renders
-     * this component.
+     * The component currently displayed in the center of the status bar.
+     * If no component is displayed this is null.
+     */
+    private Component _centerComponent = null;
+
+    /**
+     * Add a component in the center of the status bar.
      *
-     * @return "StatusBarUI"
-     * @see javax.swing.JComponent#getUIClassID
-     * @see javax.swing.UIDefaults#getUI
+     * @param component The component to add. null removes the center component.
      */
-    @Override
-    public String getUIClassID() {
-        return uiClassID;
+    public void addCenter( Component component )
+    {
+        if ( component == null && _centerComponent != null )
+            remove( _centerComponent );
+        else
+            add( component, BorderLayout.CENTER );
+
+        _centerComponent = component;
     }
 
     /**
-     * Notification from the <code>UIManager</code> that the L&F has changed.
-     * Replaces the current UI object with the latest version from the
-     * <code>UIManager</code>.
+     * Add a component to the right-side status bar area.
      *
-     * @see javax.swing.JComponent#updateUI
+     * @param component The component to add.
      */
-    @Override
-    public void updateUI() {
-        setUI((StatusBarUI) LookAndFeelAddons
-                .getUI(this, StatusBarUI.class));
+    public void addRight( Component component )
+    {
+        addRight( component, BorderLayout.LINE_END );
     }
 
     /**
-     * The constraint object to be used with the <code>JXStatusBar</code>. It takes
-     * a ResizeBehaviour, Insets and a Width. Width is only applicable for
-     * ResizeBehavior.FIXED. @see JXStatusBar class documentation.
+     * Add a component to the right-side status bar area.
+     *
+     * @param component The component to add.
+     * @param linePosition One of {@link BorderLayout#LINE_START} or
+     * {@link BorderLayout#LINE_END}.
+     * @throws IllegalArgumentException if the linePostion is unknown or null.
      */
-    public static class Constraint {
-        public static enum ResizeBehavior {FILL, FIXED}
+    public void addRight( Component component, String linePosition )
+    {
+        if ( BorderLayout.LINE_END.equals( linePosition ) )
+            _right.add( component );
+        else if ( BorderLayout.LINE_START.equals( linePosition ) )
+            _right.add( component, 0 );
+        else
+            throw new IllegalArgumentException(
+                    "Unknown position hint: " + linePosition );
+    }
 
-        private Insets insets;
-        private ResizeBehavior resizeBehavior;
-        private int fixedWidth = 0;
+    /**
+     * Add an {@link Action} to the right side status bar area.
+     *
+     * @param action The Action to add.
+     * @return The component that was added for the passed Action.
+     */
+    public JComponent addRight( Action action )
+    {
+        return addRight( action, BorderLayout.LINE_END );
+    }
 
-        /**
-         * Creates a new Constraint with default FIXED behaviour and no insets.
-         */
-        public Constraint() {
-            this(ResizeBehavior.FIXED, null);
-        }
+    /**
+     * Add an {@link Action} to the right-side status bar area.
+     *
+     * @param action The component to add.
+     * @param linePosition One of {@link BorderLayout#LINE_START} or
+     * {@link BorderLayout#LINE_END}.
+     * @return The component that was added for the passed Action.
+     * @throws IllegalArgumentException if the linePostion is unknown or null.
+     */
+    public JComponent addRight( Action action, String linePosition )
+    {
+        if ( BorderLayout.LINE_END.equals( linePosition ) )
+            return _right.add( action );
+        else if ( BorderLayout.LINE_START.equals( linePosition ) )
+            return _right.add( action, 0 );
 
-        /**
-         * Creates a new Constraint with default FIXED behaviour and the given insets
-         *
-         * @param insets may be null. If null, an Insets with 0 values will be used.
-         */
-        public Constraint(Insets insets) {
-            this(ResizeBehavior.FIXED, insets);
-        }
+        throw new IllegalArgumentException(
+                "Unknown position hint: " + linePosition );
+    }
 
-        /**
-         * Creates a new Constraint with default FIXED behaviour and the given fixed
-         * width.
-         *
-         * @param fixedWidth must be >= 0
-         */
-        public Constraint(int fixedWidth) {
-            this(fixedWidth, null);
-        }
-
-        /**
-         * Creates a new Constraint with default FIXED behaviour and the given fixed
-         * width, and using the given Insets.
-         *
-         * @param fixedWidth must be >= 0
-         * @param insets may be null. If null, an Insets with 0 values will be used.
-         */
-        public Constraint(int fixedWidth, Insets insets) {
-            if (fixedWidth < 0) {
-                throw new IllegalArgumentException("fixedWidth must be >= 0");
-            }
-            this.fixedWidth = fixedWidth;
-            this.insets = insets == null ? new Insets(0, 0, 0, 0) : (Insets)insets.clone();
-            this.resizeBehavior = ResizeBehavior.FIXED;
-        }
-
-        /**
-         * Creates a new Constraint with the specified resize behaviour and no insets
-         *
-         * @param resizeBehavior - either JXStatusBar.Constraint.ResizeBehavior.FIXED
-         * or JXStatusBar.Constraint.ResizeBehavior.FILL.
-         */
-        public Constraint(ResizeBehavior resizeBehavior) {
-            this(resizeBehavior, null);
-        }
-
-        /**
-         * Creates a new Constraint with the specified resize behavior and insets.
-         *
-         * @param resizeBehavior - either JXStatusBar.Constraint.ResizeBehavior.FIXED
-         * or JXStatusBar.Constraints.ResizeBehavior.FILL.
-         * @param insets may be null. If null, an Insets with 0 values will be used.
-         */
-        public Constraint(ResizeBehavior resizeBehavior, Insets insets) {
-            this.resizeBehavior = resizeBehavior;
-            this.insets = insets == null ? new Insets(0, 0, 0, 0) : (Insets)insets.clone();
-        }
-
-        /**
-         * Set the fixed width the component added with this
-         * constraint will occupy on the <code>JXStatusBar</code>. Only applies
-         * to ResizeBehavior.FIXED. Will be ignored for ResizeBehavior.FILL.
-         *
-         * @param width - minimum width component will occupy. If 0, the preferred
-         * width of the component will be used.
-         * The width specified must be >= 0
-         */
-        public void setFixedWidth(int width) {
-            if (width < 0) {
-                throw new IllegalArgumentException("width must be >= 0");
-            }
-            fixedWidth = resizeBehavior == ResizeBehavior.FIXED ? width : 0;
-        }
-
-        /**
-         * Returns the ResizeBehavior.
-         *
-         * @return ResizeBehavior
-         */
-        public ResizeBehavior getResizeBehavior() {
-            return resizeBehavior;
-        }
-
-        /**
-         * Returns the insets.
-         *
-         * @return insets
-         */
-        public Insets getInsets() {
-            return (Insets)insets.clone();
-        }
-
-        /**
-         * Get fixed width. Width is zero for resize behavior FILLED
-         * @return the width of this constraint
-         */
-        public int getFixedWidth() {
-            return fixedWidth;
+    /**
+     * Called for timed messages, clears the message area.
+     */
+    private class ClearOldMessage implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            _messageLabel.setText( " " );
         }
     }
 }

@@ -34,10 +34,12 @@ import org.jdesktop.swingx.JXToolbar;
  *  display. This area can handle Components as well as Actions. Adding to this
  *  area is by default from right to left. It is possible to add WEST or EAST
  *  explicitly.
-
+ *
+ * @deprecated Use {@link org.jdesktop.swingx.JXStatusBar}
  * @version $Rev$
  * @author Michael Binz
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class JXStatusBarExt extends JPanel
 {
