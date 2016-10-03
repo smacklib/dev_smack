@@ -13,7 +13,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.PaintEvent;
 import java.beans.Beans;
-import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.EventObject;
@@ -33,6 +32,7 @@ import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.OSXAdapter;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * The base class for Swing applications.
@@ -219,38 +219,26 @@ public abstract class Application extends BaseApplication
      * It's important to perform these initializations early, so that
      * Application static blocks/initializers happen afterwards.
      *
-     * @param applicationClass the {@code Application} class to create
-     * @return created application instance
+     * @param applicationClass the {@code Application} class to create.
+     * @return The application instance.
      */
-    private static <T extends Application> T create(Class<T> applicationClass) throws Exception {
-
-        if (!Beans.isDesignTime()) {
-            /* A common mistake for privileged applications that make
-             * network requests (and aren't applets or web started) is to
-             * not configure the http.proxyHost/Port system properties.
-             * We paper over that issue here.
-             */
-            try {
-                System.setProperty("java.net.useSystemProxies", "true");
-            } catch (SecurityException ignoreException) {
-                // Unsigned apps can't set this property.
-            }
-        }
-
-        /* Construct the Application object.  The following
-         * complications, relative to just calling
-         * applicationClass.newInstance(), allow a privileged app to
-         * have a private static inner Application subclass.
+    private static <T extends Application> T create(
+            Class<T> applicationClass)
+        throws Exception
+    {
+        /* A common mistake for privileged applications that make
+         * network requests (and aren't applets or web started) is to
+         * not configure the http.proxyHost/Port system properties.
+         * We paper over that issue here.
          */
-        Constructor<T> ctor = applicationClass.getDeclaredConstructor();
-        if (!ctor.isAccessible()) {
-            try {
-                ctor.setAccessible(true);
-            } catch (SecurityException ignore) {
-                // ctor.newInstance() will throw an IllegalAccessException
-            }
+        try {
+            System.setProperty("java.net.useSystemProxies", "true");
+        } catch (SecurityException ignoreException) {
+            // Unsigned apps can't set this property.
         }
-        T application = ctor.newInstance();
+
+        T application =
+                ServiceManager.getApplicationService( applicationClass );
 
         // Initialize the ApplicationContext application properties.
         ApplicationContext ctx = application.getContext();
@@ -258,11 +246,16 @@ public abstract class Application extends BaseApplication
         // Load the application resource map, notably the
         // Application.* properties.
         ResourceMap appResourceMap = ctx.getResourceMap();
-        final PlatformType platform = AppHelper.getPlatform();
-        appResourceMap.putResource(ResourceMap.KEY_PLATFORM, platform);
 
-        //Generic registration with the Mac OS X application menu
-        if (PlatformType.OS_X.equals(platform)) {
+        PlatformType platform = AppHelper.getPlatform();
+
+        appResourceMap.putResource(
+                ResourceMap.KEY_PLATFORM,
+                platform );
+
+        // Generic registration with the Mac OS X application menu.
+        if ( PlatformType.OS_X == platform )
+        {
             try {
                 OSXAdapter.setQuitHandler(application, Application.class.getDeclaredMethod("handleQuit", (Class[])null));
             } catch (Exception e) {
@@ -270,8 +263,7 @@ public abstract class Application extends BaseApplication
             }
         }
 
-        if (!Beans.isDesignTime())
-            setLookAndFeel( appResourceMap );
+        setLookAndFeel( appResourceMap );
 
         return application;
     }
