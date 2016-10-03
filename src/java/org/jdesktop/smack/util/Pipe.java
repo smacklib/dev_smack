@@ -16,9 +16,10 @@ import java.io.PipedOutputStream;
 /**
  * A simple pipe.  Write to the write end, read from the read end.
  *
+ * @version $Rev$
  * @author Michael Binz
  */
-public final class Pipe
+public final class Pipe implements org.jdesktop.util.Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;
 
@@ -58,6 +59,7 @@ public final class Pipe
      *
      * @return The write end.
      */
+    @Override
     public OutputStream getWriteEnd()
     {
         return _writeEnd;
@@ -68,6 +70,7 @@ public final class Pipe
      *
      * @return The read end.
      */
+    @Override
     public InputStream getReadEnd()
     {
         return _readEnd;
@@ -76,6 +79,7 @@ public final class Pipe
     /**
      * Close the pipe.
      */
+    @Override
     public void close()
     {
         FileUtils.forceClose(

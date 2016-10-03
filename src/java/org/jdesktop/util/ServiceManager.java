@@ -41,20 +41,21 @@ public final class ServiceManager
     public static synchronized <T> T getApplicationService( Class<T> singletonType )
     {
         if ( !  _singletons.containsKey( singletonType ) )
+        {
             try
             {
                 _singletons.put(
                         singletonType,
-                        singletonType.newInstance() );
+                        ReflectionUtil.createInstanceX( singletonType ) );
             }
             catch ( Exception e )
             {
                 throw new RuntimeException( e );
             }
+        }
 
         return singletonType.cast( _singletons.get( singletonType ) );
     }
-
 
     /**
      * Get an application service of the specified type.
