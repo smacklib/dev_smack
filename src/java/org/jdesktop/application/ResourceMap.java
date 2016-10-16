@@ -8,15 +8,7 @@ package org.jdesktop.application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.geom.Point2D;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -26,8 +18,6 @@ import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +30,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.swing.AbstractButton;
@@ -49,9 +38,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.KeyStroke;
-import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.ResourceConverter.ResourceConverterException;
+import org.jdesktop.application.converters.ColorStringConverter;
+import org.jdesktop.application.converters.DimensionStringConverter;
+import org.jdesktop.application.converters.EmptyBorderStringConverter;
+import org.jdesktop.application.converters.FontStringConverter;
+import org.jdesktop.application.converters.IconStringConverter;
+import org.jdesktop.application.converters.ImageStringConverter;
+import org.jdesktop.application.converters.InsetsStringConverter;
+import org.jdesktop.application.converters.KeyStrokeStringConverter;
+import org.jdesktop.application.converters.Point2dStringConverter;
+import org.jdesktop.application.converters.PointStringConverter;
+import org.jdesktop.application.converters.RectangleStringConverter;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.ResourceUtils;
 import org.jdesktop.smack.util.StringUtils;
@@ -227,7 +226,7 @@ public class ResourceMap
      *
      * @return the classLoader constructor argument
      */
-    private ClassLoader getClassLoader() {
+    public ClassLoader getClassLoader() {
         return _classLoader;
     }
 
@@ -243,7 +242,7 @@ public class ResourceMap
      *
      * @return the the resources directory for this ResourceMap
      */
-    private String getResourcesDir() {
+    public String getResourcesDir() {
         return _resourcesDir;
     }
 
@@ -1421,9 +1420,7 @@ public class ResourceMap
         return StringUtils.concatenate( " ", _bundleNames );
     }
 
-    /* Register ResourceConverters that are defined in this class
-     * and documented here.
-     */
+    // TODO use service loader
     static {
         ResourceConverter[] stringConverters = {
             new ColorStringConverter(),
@@ -1440,300 +1437,6 @@ public class ResourceMap
         };
         for (ResourceConverter sc : stringConverters) {
             ResourceConverter.register(sc);
-        }
-    }
-
-    /**
-     * If path doesn't have a leading "/" then the resourcesDir
-     * is prepended, otherwise the leading "/" is removed.
-     */
-    private static String resourcePath(final String path, ResourceMap resourceMap) {
-        if (path == null) {
-            return null;
-        } else if (path.startsWith("/")) {
-            return (path.length() > 1) ? path.substring(1) : null;
-        } else {
-            return resourceMap.getResourcesDir() + path;
-        }
-    }
-
-    /**
-     *
-     * @param s
-     * @param resourceMap
-     * @return
-     * @throws ResourceConverterException
-     */
-    private static ImageIcon loadImageIcon(String s, ResourceMap resourceMap)
-            throws ResourceConverterException {
-        String rPath = resourcePath(s, resourceMap);
-        if (rPath == null) {
-            String msg = String.format("invalid image/icon path \"%s\"", s);
-            throw new ResourceConverterException(msg, s);
-        }
-        URL url = resourceMap.getClassLoader().getResource(rPath);
-        if (url != null) {
-            return new ImageIcon(url);
-        } else {
-            String msg = String.format("couldn't find Icon resource \"%s\"", s);
-            throw new ResourceConverterException(msg, s);
-        }
-    }
-
-    private static class FontStringConverter extends ResourceConverter {
-
-        FontStringConverter() {
-            super(Font.class);
-        }
-        /* Just delegates to Font.decode.
-         * Typical string is: face-STYLE-size, for example "Arial-PLAIN-12"
-         */
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            return Font.decode(s);
-        }
-    }
-
-    private static class ColorStringConverter extends ResourceConverter {
-
-        ColorStringConverter() {
-            super(Color.class);
-        }
-
-        /**
-         * Parses colors with an alpha channel and comma separated RGB[A] values.
-         * Legal formats for color resources are:
-         * "#RRGGBB",  "#AARRGGBB", "R, G, B", "R, G, B, A"
-         * or the color plain names defined on {@link Color}.
-         * @author Romain Guy
-         */
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-
-            // Implanted michab.
-            {
-                Color result = checkPlainColorName( s );
-                if ( result != null )
-                    return result;
-            }
-            // TODO michab -- check code below for simplification.
-            final Color color;
-
-            if (s.startsWith("#")) {
-                switch (s.length()) {
-                    // RGB/hex color
-                    case 7:
-                        color = Color.decode(s);
-                        break;
-                    // ARGB/hex color
-                    case 9:
-                        int alpha = Integer.decode(s.substring(0, 3));
-                        int rgb = Integer.decode("#" + s.substring(3));
-                        color = new Color(alpha << 24 | rgb, true);
-                        break;
-                    default:
-                        throw new ResourceConverterException("invalid #RRGGBB or #AARRGGBB color string", s);
-                }
-            } else {
-                String[] parts = s.split(",");
-                if (parts.length < 3 || parts.length > 4) {
-                    throw new ResourceConverterException("invalid R, G, B[, A] color string", s);
-                }
-                try {
-                    // with alpha component
-                    if (parts.length == 4) {
-                        int r = Integer.parseInt(parts[0].trim());
-                        int g = Integer.parseInt(parts[1].trim());
-                        int b = Integer.parseInt(parts[2].trim());
-                        int a = Integer.parseInt(parts[3].trim());
-                        color = new Color(r, g, b, a);
-                    } else {
-                        int r = Integer.parseInt(parts[0].trim());
-                        int g = Integer.parseInt(parts[1].trim());
-                        int b = Integer.parseInt(parts[2].trim());
-                        color = new Color(r, g, b);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new ResourceConverterException("invalid R, G, B[, A] color string", s, e);
-                }
-            }
-            return color;
-        }
-
-        private Color checkPlainColorName( String name )
-        {
-            try
-            {
-                Field f = Color.class.getField( name );
-                if ( ! Color.class.equals( f.getType() ) )
-                    return null;
-                if ( ! Modifier.isStatic( f.getModifiers() ) )
-                    return null;
-                return (Color) f.get( null );
-            }
-            catch ( Exception e )
-            {
-                return null;
-            }
-        }
-    }
-
-    private static class IconStringConverter extends ResourceConverter {
-
-        IconStringConverter() {
-            super(Icon.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap resourceMap) throws ResourceConverterException {
-            return loadImageIcon(s, resourceMap);
-        }
-
-        @Override
-        public boolean supportsType(Class<?> testType) {
-            return testType.equals(Icon.class) || testType.equals(ImageIcon.class);
-        }
-    }
-
-    private static class ImageStringConverter extends ResourceConverter {
-
-        ImageStringConverter() {
-            super(Image.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap resourceMap) throws ResourceConverterException {
-            return loadImageIcon(s, resourceMap).getImage();
-        }
-    }
-
-    private static class KeyStrokeStringConverter extends ResourceConverter {
-        private static final String KEYWORD_SHORTCUT = "shortcut";
-        private static final String KEYWORD_META = "meta";
-        private static final String KEYWORD_CONTROL = "control";
-
-        private static final String REPLACE = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ==
-            Event.META_MASK ? KEYWORD_META : KEYWORD_CONTROL;
-        private static final Pattern PATTERN = Pattern.compile(KEYWORD_SHORTCUT);
-
-        KeyStrokeStringConverter() {
-            super(KeyStroke.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) {
-            if (s.contains(KEYWORD_SHORTCUT)) {
-//                int k = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-                s = PATTERN.matcher(s).replaceFirst(REPLACE);
-            }
-            return KeyStroke.getKeyStroke(s);
-        }
-    }
-
-    /* String s is assumed to contain n number substrings separated by
-     * commas.  Return a list of those integers or null if there are too
-     * many, too few, or if a substring can't be parsed.  The format
-     * of the numbers is specified by Double.valueOf().
-     */
-    private static List<Double> parseDoubles(String s, int n, String errorMsg) throws ResourceConverterException {
-        String[] doubleStrings = s.split(",", n + 1);
-        if (doubleStrings.length != n) {
-            throw new ResourceConverterException(errorMsg, s);
-        } else {
-            List<Double> doubles = new ArrayList<Double>(n);
-            for (String doubleString : doubleStrings) {
-                try {
-                    doubles.add(Double.valueOf(doubleString));
-                } catch (NumberFormatException e) {
-                    throw new ResourceConverterException(errorMsg, s, e);
-                }
-            }
-            return doubles;
-        }
-    }
-
-    private static class DimensionStringConverter extends ResourceConverter {
-
-        DimensionStringConverter() {
-            super(Dimension.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> xy = parseDoubles(s, 2, "invalid x,y Dimension string");
-            Dimension d = new Dimension();
-            d.setSize(xy.get(0), xy.get(1));
-            return d;
-        }
-    }
-
-    private static class PointStringConverter extends ResourceConverter {
-
-        PointStringConverter() {
-            super(Point.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> xy = parseDoubles(s, 2, "invalid x,y Point string");
-            Point p = new Point();
-            p.setLocation(xy.get(0), xy.get(1));
-            return p;
-        }
-    }
-
-    private static class Point2dStringConverter extends ResourceConverter {
-
-        Point2dStringConverter() {
-            super(Point2D.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> xy = parseDoubles(s, 2, "invalid x,y Point string");
-            return new Point2D.Double(xy.get(0), xy.get(1));
-        }
-    }
-
-    private static class RectangleStringConverter extends ResourceConverter {
-
-        RectangleStringConverter() {
-            super(Rectangle.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> xywh = parseDoubles(s, 4, "invalid x,y,width,height Rectangle string");
-            Rectangle r = new Rectangle();
-            r.setFrame(xywh.get(0), xywh.get(1), xywh.get(2), xywh.get(3));
-            return r;
-        }
-    }
-
-    private static class InsetsStringConverter extends ResourceConverter {
-
-        InsetsStringConverter() {
-            super(Insets.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> tlbr = parseDoubles(s, 4, "invalid top,left,bottom,right Insets string");
-            return new Insets(tlbr.get(0).intValue(), tlbr.get(1).intValue(), tlbr.get(2).intValue(), tlbr.get(3).intValue());
-        }
-    }
-
-    private static class EmptyBorderStringConverter extends ResourceConverter {
-
-        EmptyBorderStringConverter() {
-            super(EmptyBorder.class);
-        }
-
-        @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
-            List<Double> tlbr = parseDoubles(s, 4, "invalid top,left,bottom,right EmptyBorder string");
-            return new EmptyBorder(tlbr.get(0).intValue(), tlbr.get(1).intValue(), tlbr.get(2).intValue(), tlbr.get(3).intValue());
         }
     }
 }
