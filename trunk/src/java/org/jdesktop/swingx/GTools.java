@@ -28,9 +28,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.util.AppHelper;
 
 /**
  * Tools.
@@ -276,10 +274,10 @@ public class GTools
      *            the component to localize.
      * @see ResourceMap#injectComponents(Component)
      */
-    public static void injectComponents(Component pComponent)
-    {
-        injectComponents(pComponent.getClass(), pComponent);
-    }
+//    public static void injectComponents(Component pComponent)
+//    {
+//        injectComponents(pComponent.getClass(), pComponent);
+//    }
 
     /**
      * Recursively localizes the given component using the resource map of the
@@ -292,12 +290,12 @@ public class GTools
      *            the component to localize.
      * @see ResourceMap#injectComponents(Component)
      */
-    private static void injectComponents(
-        Class<?> pResourceClass,
-        Component pComponent)
-    {
-        getResourceMap(pResourceClass).injectComponents(pComponent);
-    }
+//    private static void injectComponents(
+//        Class<?> pResourceClass,
+//        Component pComponent)
+//    {
+//        getResourceMap(pResourceClass).injectComponents(pComponent);
+//    }
 
     /**
      * The standard gap between the components.
@@ -310,18 +308,18 @@ public class GTools
     static final Border GAP_BORDER = BorderFactory.createEmptyBorder(
             GAP, GAP, GAP, GAP);
 
-    /**
-     * Returns the resource map for the given class.
-     *
-     * @param pClass The target class.
-     * @return The associated ResourceMap
-     * @deprecated Use {@link AppHelper#getResourceMap(Application, Class)}
-     */
-    @Deprecated
-    private static ResourceMap getResourceMap(Class<?> pClass)
-    {
-        return Application.getResourceManager().getResourceMap(pClass);
-    }
+//    /**
+//     * Returns the resource map for the given class.
+//     *
+//     * @param pClass The target class.
+//     * @return The associated ResourceMap
+//     * @deprecated Use {@link AppHelper#getResourceMap(Application, Class)}
+//     */
+//    @Deprecated
+//    private static ResourceMap getResourceMap(Class<?> pClass)
+//    {
+//        return Application.getResourceManager().getResourceMap(pClass);
+//    }
 
     /**
      * This is a library and cannot be instantiated.

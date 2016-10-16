@@ -33,10 +33,10 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.ResourceManager;
 import org.jdesktop.swingx.action.ActionContainerFactory;
 import org.jdesktop.swingx.action.MackAction;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * An extended toolbar that offers a popup menu allowing to select whether
@@ -102,9 +102,11 @@ public class JXToolbar extends JToolBar
 
         // Resolve the resource annotations.
         _showLabels.setName( "showLabelsCheckbox" );
-        ResourceMap rm =
-            Application.getResourceManager().getResourceMap( this.getClass() );
-        rm.injectComponent( _showLabels );
+//        ResourceMap rm =
+//            Application.getResourceManager().getResourceMap( this.getClass() );
+//        rm.injectComponent( _showLabels );
+        ResourceManager rm = ServiceManager.getApplicationService( ResourceManager.class );
+        rm.injectComponent( _showLabels, rm.getResourceMap( getClass() ) );
 
         // Init the state.
         _showLabels.setSelected( _showText );
