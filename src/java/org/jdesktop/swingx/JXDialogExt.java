@@ -19,7 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.jdesktop.application.ResourceManager;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * Generic modal dialog that can display a user-defined UI component.
@@ -194,7 +196,8 @@ public class JXDialogExt extends JDialog
         GTools.registerEsc(this, ACT_CLOSE);
         GTools.registerWindowClosing(this, ACT_CLOSE);
 
-        GTools.injectComponents( this );
+        ResourceManager rm = ServiceManager.getApplicationService( ResourceManager.class );
+        rm.injectComponent( this, rm.getResourceMap( getClass() ) );
     }
 
     /**

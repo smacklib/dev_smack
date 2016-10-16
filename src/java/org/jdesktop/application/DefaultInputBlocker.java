@@ -41,6 +41,8 @@ import javax.swing.Timer;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import org.jdesktop.util.ServiceManager;
+
 final class DefaultInputBlocker extends Task.InputBlocker {
 
     private static final Logger LOG = Logger.getLogger(DefaultInputBlocker.class.getName());
@@ -89,9 +91,12 @@ final class DefaultInputBlocker extends Task.InputBlocker {
      * prefix to all of the components before the second step.
      */
     private void injectBlockingDialogComponents(Component root) {
+        ResourceManager rm =
+                ServiceManager.getApplicationService( ResourceManager.class );
+
         ResourceMap taskResourceMap = getTask().getResourceMap();
         if (taskResourceMap != null) {
-            taskResourceMap.injectComponents(root);
+            rm.injectComponents(root,taskResourceMap);
         }
         ApplicationAction action = getAction();
         if (action != null) {
@@ -100,7 +105,7 @@ final class DefaultInputBlocker extends Task.InputBlocker {
             for (Component c : blockingDialogComponents(root)) {
                 c.setName(actionName + "." + c.getName());
             }
-            actionResourceMap.injectComponents(root);
+            rm.injectComponents( root, actionResourceMap );
         }
     }
 

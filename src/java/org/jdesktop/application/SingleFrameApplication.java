@@ -31,6 +31,7 @@ import javax.swing.JWindow;
 import javax.swing.RootPaneContainer;
 
 import org.jdesktop.application.util.SwingHelper;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * An application base class for simple GUIs with one primary JFrame.
@@ -182,7 +183,11 @@ public abstract class SingleFrameApplication extends Application
      * @see #show(JDialog)
      */
     protected void configureWindow(Window root) {
-        getContext().getResourceMap().injectComponents(root);
+        ResourceManager rm =
+                ServiceManager.getApplicationService( ResourceManager.class );
+
+        rm.injectComponents( root, rm.getApplicationResourceMap() );
+//        getContext().getResourceMap().injectComponents(root);
     }
 
     private void initRootPaneContainer(RootPaneContainer c) {

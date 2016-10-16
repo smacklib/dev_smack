@@ -23,7 +23,6 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
-import org.jdesktop.smack.MackApplication;
 import org.jdesktop.smack.util.StringUtils;
 
 
@@ -163,6 +162,7 @@ public abstract class MackAction extends AbstractActionExt
      * @return The Action's user display text.
      * @see #setText(String)
      */
+    @Override
     public String getText()
     {
         return getName();
@@ -176,6 +176,7 @@ public abstract class MackAction extends AbstractActionExt
      * @param text The new visible action text.
      * @see MackAction#getText()
      */
+    @Override
     public void setText( String text )
     {
         setName( text );
@@ -753,10 +754,10 @@ public abstract class MackAction extends AbstractActionExt
         result = null;
       }
 
-      // Note that getRoot() above can return null without throwing an exception.
-      // As a consequence we need this special condition.
-      if ( result == null )
-         result = Application.getInstance( MackApplication.class ).getMainComponent();
+//      // Note that getRoot() above can return null without throwing an exception.
+//      // As a consequence we need this special condition.
+//      if ( result == null )
+//         result = Application.getInstance( MackApplication.class ).getMainComponent();
 
       // We did our best.
       return result;
