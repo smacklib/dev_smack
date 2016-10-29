@@ -183,13 +183,11 @@ public class StringUtils
         if ( iterable == null )
             return EMPTY_STRING;
 
-        StringBuilder result = null;
+        StringBuilder result = new StringBuilder();
 
         for ( Object c : iterable )
         {
-            if ( result == null )
-                result = new StringBuilder();
-            else
+            if ( result.length() > 0 )
                 result.append( delimiter );
 
             result.append( String.valueOf( c ) );
