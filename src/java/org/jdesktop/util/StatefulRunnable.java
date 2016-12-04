@@ -34,7 +34,7 @@ public abstract class StatefulRunnable<T> implements Runnable
      * @param state The state set in the constructor.
      * @see Runnable#run()
      */
-    abstract void run( T state );
+    protected abstract void run( T state );
 
     /**
      * Calls {@link #run(Object)}.
