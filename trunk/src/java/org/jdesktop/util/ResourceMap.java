@@ -21,8 +21,12 @@ public class ResourceMap extends HashMap<String, String>
 {
     private final String _bundleName;
 
+    private final Class<?> _class;
+
     public ResourceMap( Class<?> cl )
     {
+        _class = cl;
+
         String pack =
                 cl.getPackage().getName();
         if ( StringUtils.isEmpty( pack ) )
@@ -62,5 +66,14 @@ public class ResourceMap extends HashMap<String, String>
     public String getName()
     {
         return _bundleName;
+    }
+
+    public ClassLoader getClassLoader()
+    {
+        return _class.getClassLoader();
+    }
+    public String getResourceDir()
+    {
+        throw new IllegalArgumentException( "Not implemented yet." );
     }
 }

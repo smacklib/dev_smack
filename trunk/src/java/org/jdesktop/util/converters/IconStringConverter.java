@@ -3,8 +3,8 @@ package org.jdesktop.util.converters;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.jdesktop.application.ResourceConverter;
-import org.jdesktop.application.ResourceMap;
+import org.jdesktop.util.ResourceConverter;
+import org.jdesktop.util.ResourceMap;
 
 public class IconStringConverter extends ResourceConverter {
 
@@ -13,7 +13,7 @@ public class IconStringConverter extends ResourceConverter {
     }
 
     @Override
-    public Object parseString(String s, ResourceMap resourceMap) throws ResourceConverterException {
+    public Object parseString(String s, ResourceMap resourceMap) throws Exception {
         return ConverterUtils.loadImageIcon(s, resourceMap);
     }
 
