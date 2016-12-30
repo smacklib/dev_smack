@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +28,9 @@ public class ResourceManager
 
     private final ResourceConverterRegistry _converters =
             new ResourceConverterRegistry();
+
+    private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
+            new WeakHashMap<>();
 
     public ResourceManager()
     {
@@ -54,6 +58,9 @@ public class ResourceManager
 
     public void injectResources( Object instance, Class<?> cIass )
     {
+        if ( instance == null && staticInjectionDone.containsKey( cIass ) )
+            return;
+
         List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
                 cIass,
                 Resource.class,
@@ -75,6 +82,11 @@ public class ResourceManager
         for ( Pair<Field, Resource> c : fields )
         {
             Field f = c.getKey();
+
+            if ( Modifier.isStatic( f.getModifiers() ) &&
+                    staticInjectionDone.containsKey( cIass ) )
+                continue;
+
             Resource r = c.getValue();
 
             String name = r.name();
@@ -104,6 +116,8 @@ public class ResourceManager
                 LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
             }
         }
+
+        staticInjectionDone.put( cIass, rb );
     }
 
     /**
@@ -226,7 +240,14 @@ public class ResourceManager
 
             int idx = 0;
             for ( String c : split )
-                Array.set( result, idx++, _delegate.parseString( c, r ) );
+            {
+                Array.set(
+                        result,
+                        idx++,
+                        _delegate.parseString(
+                                c,
+                                r ) );
+            }
 
             return result;
         }

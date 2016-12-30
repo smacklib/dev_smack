@@ -272,7 +272,7 @@ public class StringUtils
      */
     public static String quote( char quoteChar, String string )
     {
-        if ( ! StringUtils.hasContent( string ) )
+        if ( string == null || string.isEmpty() )
             return EMPTY_STRING + QUOTE_CHAR + QUOTE_CHAR;
 
         StringBuilder result = new StringBuilder();
