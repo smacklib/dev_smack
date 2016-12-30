@@ -1,10 +1,10 @@
-org.jdesktop.util.converters.BooleanStringConverter
-org.jdesktop.util.converters.ByteStringConverter
-org.jdesktop.util.converters.ShortStringConverter
-org.jdesktop.util.converters.IntegerStringConverter
-org.jdesktop.util.converters.LongStringConverter
-org.jdesktop.util.converters.FloatStringConverter
-org.jdesktop.util.converters.DoubleStringConverter
+#org.jdesktop.util.converters.BooleanStringConverter
+#org.jdesktop.util.converters.ByteStringConverter
+#org.jdesktop.util.converters.ShortStringConverter
+#org.jdesktop.util.converters.IntegerStringConverter
+#org.jdesktop.util.converters.LongStringConverter
+#org.jdesktop.util.converters.FloatStringConverter
+#org.jdesktop.util.converters.DoubleStringConverter
 #org.jdesktop.util.converters.ClassStringConverter
 org.jdesktop.util.converters.StringStringConverter
 org.jdesktop.util.converters.UrlStringConverter

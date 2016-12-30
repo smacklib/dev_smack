@@ -79,7 +79,9 @@ public abstract class ResourceConverter
      * Checks whether {@code testType} can be converted with this converter.
      * @param testType The type to test.
      * @return {@code true} if {@code testType} can be converted with this converter.
+     * @deprecated Not longer used.
      */
+    @Deprecated
     public boolean supportsType(Class<?> testType) {
         return type.equals(testType);
     }

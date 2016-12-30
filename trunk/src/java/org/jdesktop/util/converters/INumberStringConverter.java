@@ -1,6 +1,5 @@
 package org.jdesktop.util.converters;
 
-import org.jdesktop.application.ResourceConverter.ResourceConverterException;
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
 
@@ -16,13 +15,16 @@ abstract class INumberStringConverter extends ResourceConverter {
         protected abstract Number parseString(String s, int radix) throws NumberFormatException;
 
         @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
+        public Object parseString(String s, ResourceMap ignore) throws Exception {
             try {
                 String[] nar = s.split("&"); // number ampersand radix
                 int radix = (nar.length == 2) ? Integer.parseInt(nar[1]) : -1;
                 return parseString(nar[0], radix);
             } catch (NumberFormatException e) {
-                throw new ResourceConverterException("invalid " + type.getSimpleName(), s, e);
+                String message = String.format( "Cannot convert '%s' to %s.",
+                        s,
+                        type.getSimpleName() );
+                throw new Exception( message, e );
             }
         }
 
