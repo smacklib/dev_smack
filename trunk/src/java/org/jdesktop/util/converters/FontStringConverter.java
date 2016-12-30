@@ -2,8 +2,10 @@ package org.jdesktop.util.converters;
 
 import java.awt.Font;
 
-import org.jdesktop.application.ResourceConverter;
-import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.ResourceConverter.ResourceConverterException;
+import org.jdesktop.util.ResourceConverter;
+import org.jdesktop.util.ResourceMap;
+
 
 public class FontStringConverter extends ResourceConverter {
 

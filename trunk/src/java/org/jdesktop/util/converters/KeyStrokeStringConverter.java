@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.KeyStroke;
 
-import org.jdesktop.application.ResourceConverter;
-import org.jdesktop.application.ResourceMap;
+import org.jdesktop.util.ResourceConverter;
+import org.jdesktop.util.ResourceMap;
 
 public class KeyStrokeStringConverter extends ResourceConverter {
     private static final String KEYWORD_SHORTCUT = "shortcut";
