@@ -60,6 +60,11 @@ public class ResourceMap extends HashMap<String, String>
         }
     }
 
+    public String get( String key )
+    {
+        return super.get( _class.getSimpleName() + "." + key );
+    }
+
     /**
      * Get the name of the underlying resource bundle.
      */
@@ -72,6 +77,7 @@ public class ResourceMap extends HashMap<String, String>
     {
         return _class.getClassLoader();
     }
+
     public String getResourceDir()
     {
         throw new IllegalArgumentException( "Not implemented yet." );

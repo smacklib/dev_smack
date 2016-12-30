@@ -17,6 +17,11 @@ import org.jdesktop.smack.util.StringUtils;
 
 import javafx.util.Pair;
 
+/**
+ *
+ * @version $Rev$
+ * @author Michael Binz
+ */
 public class ResourceManager
 {
     private final static Logger LOG =
@@ -38,6 +43,14 @@ public class ResourceManager
         }
     }
 
+    public void injectResources( Object o )
+    {
+        if ( o instanceof Class )
+            injectResources( null, (Class<?>)o );
+        else
+            injectResources( o, o.getClass() );
+    }
+
     public void injectResources( Object instance, Class<?> cIass )
     {
         List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
@@ -51,9 +64,10 @@ public class ResourceManager
         ResourceMap rb =
                 new ResourceMap( cIass );
 
-        if ( rb.keySet().size() == 0 )
+        if ( rb.isEmpty() )
         {
-            LOG.warning( "No resources found for class " + cIass.getName() );
+            // @Resource annotations exist, but no property file.
+            LOG.severe( "No resources found for class " + cIass.getName() );
             return;
         }
 
@@ -67,19 +81,38 @@ public class ResourceManager
             if ( StringUtils.isEmpty( name ) )
                 name = f.getName();
 
+            String value = rb.get( name );
 
+            if ( value == null )
+            {
+                LOG.severe( "No resource definition found for field " + f.getName() );
+                continue;
+            }
+
+            try
+            {
+                performInjection( instance, f, value, rb );
+            }
+            catch ( Exception e )
+            {
+                LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
+            }
         }
     }
 
-    public void injectResources( Object o )
-    {
-        if ( o instanceof Class )
-            injectResources( null, (Class<?>)o );
-        else
-            injectResources( o, o.getClass() );
-    }
-
-    private void performInjection( Object instance, Field f, String value, ResourceMap map ) throws Exception
+    /**
+     *
+     * @param instance
+     * @param f
+     * @param value
+     * @param map
+     * @throws Exception
+     */
+    private void performInjection(
+            Object instance,
+            Field f,
+            String value,
+            ResourceMap map ) throws Exception
     {
         boolean accessible = f.isAccessible();
 
@@ -107,6 +140,14 @@ public class ResourceManager
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @param f
+     * @param resource
+     * @param map
+     * @throws Exception
+     */
     private void performInjectionImpl(
             Object instance,
             Field f,
