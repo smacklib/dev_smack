@@ -1,64 +1,48 @@
 package org.jdesktop.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.annotation.Resource;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  *
- * @author Michael
+ *
+ * @version $Revision$
+ * @author Michael Binz
  */
 public class ResourceManagerTest
 {
-    @Resource
-    private String stringResource;
-    @Resource
-    private String[] stringArrayResource;
-
-    @Resource
-    private byte byteResource;
-    @Resource
-    private short shortResource;
-    @Resource
-    private int intResource;
-    @Resource
-    private long longResource;
-
-    @Resource
-    private float floatResource;
-    @Resource
-    private double doubleResource;
+    private final ResourceManager _rm =
+            ServiceManager.getApplicationService( ResourceManager.class );
 
     @Resource
     private String stringCountryCode;
 
-    @Override
-    public String toString()
+    @Before
+    public void testInit()
     {
-        return stringResource;
+        _rm.injectResources( this );
     }
-
-    @Resource
-    private boolean booleanResource;
 
     @Test
-    public void testPrimitiveBoolean()
+    public void testResourceManagerIdentity()
     {
-        assertEquals( 0, 0 );
-    }
-
-    public static void main( String[] args )
-    {
-        ResourceManager rm =
+        ResourceManager fromServiceManager =
                 ServiceManager.getApplicationService( ResourceManager.class );
 
-        ResourceManagerTest test =
-                new ResourceManagerTest();
+        boolean isIdentical =
+                _rm == fromServiceManager;
 
-        rm.injectResources( test );
+        assertTrue( isIdentical );
+    }
 
-        System.out.println( test.toString() );
+    public void testLocalization()
+    {
+        // Works only on German locale.  Make better.
+        assertEquals( "+49", stringCountryCode );
     }
 }
