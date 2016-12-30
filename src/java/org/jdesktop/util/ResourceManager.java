@@ -4,9 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +25,8 @@ public class ResourceManager
     private final static Logger LOG =
             Logger.getLogger( ResourceManager.class.getName() );
 
-    private Map<Class<?>,ResourceConverter> _converters =
-            new HashMap<>();
+    private final ResourceConverterRegistry _converters =
+            new ResourceConverterRegistry();
 
     public ResourceManager()
     {
@@ -41,6 +39,9 @@ public class ResourceManager
 
             _converters.put( type, c );
         }
+
+        for ( ResourceConverterExtension c : ServiceLoader.load( ResourceConverterExtension.class ) )
+            c.extendTypeMap( _converters );
     }
 
     public void injectResources( Object o )
@@ -85,7 +86,12 @@ public class ResourceManager
 
             if ( value == null )
             {
-                LOG.severe( "No resource definition found for field " + f.getName() );
+                String message = String.format(
+                        "No resource key found for field '%s#%s'.",
+                        f.getDeclaringClass(),
+                        f.getName() );
+                LOG.severe(
+                        message );
                 continue;
             }
 
