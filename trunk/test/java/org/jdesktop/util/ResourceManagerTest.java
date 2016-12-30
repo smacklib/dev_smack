@@ -1,9 +1,10 @@
-package org.jdesktop.test;
+package org.jdesktop.util;
+
+import static org.junit.Assert.assertEquals;
 
 import javax.annotation.Resource;
 
-import org.jdesktop.util.ResourceManager;
-import org.jdesktop.util.ServiceManager;
+import org.junit.Test;
 
 /**
  *
@@ -37,6 +38,15 @@ public class ResourceManagerTest
     public String toString()
     {
         return stringResource;
+    }
+
+    @Resource
+    private boolean booleanResource;
+
+    @Test
+    public void testPrimitiveBoolean()
+    {
+        assertEquals( 0, 0 );
     }
 
     public static void main( String[] args )
