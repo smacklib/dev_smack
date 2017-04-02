@@ -521,10 +521,10 @@ public class ApplicationAction extends MackAction
             argument = appAM;
         } else if (pType == ResourceMap.class) {
             argument = getResourceMap();
-        } else if (pType == ApplicationContext.class) {
-            argument = appAM.getContext();
-        } else if (pType == Application.class) {
-            argument = appAM.getContext().getApplication();
+//        } else if (pType == ApplicationContext.class) {
+//            argument = appAM.getContext();
+//        } else if (pType == Application.class) {
+//            argument = appAM.getContext().getApplication();
         } else {
             Exception e = new IllegalArgumentException("unrecognized @Action method parameter");
             actionFailed(e);
@@ -575,8 +575,8 @@ public class ApplicationAction extends MackAction
             if (task.getInputBlocker() == null) {
                 task.setInputBlocker(createInputBlocker(task, actionEvent));
             }
-            final ApplicationContext ctx = appAM.getContext();
-            final TaskService ts = ctx.getTaskService(taskService);
+//            final ApplicationContext ctx = appAM.getContext();
+            final TaskService ts = null; //ctx.getTaskService(taskService);
             if (ts != null) {
                 ts.execute(task);
             } else {

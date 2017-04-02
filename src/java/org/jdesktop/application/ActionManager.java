@@ -5,9 +5,6 @@
  */
 package org.jdesktop.application;
 
-import java.awt.KeyboardFocusManager;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +12,6 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 import javax.swing.ActionMap;
-import javax.swing.JComponent;
 
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.beans.AbstractBeanEdt;
@@ -31,22 +27,15 @@ import org.jdesktop.beans.AbstractBeanEdt;
  * @see ApplicationAction
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
+@Deprecated
 public final class ActionManager extends AbstractBeanEdt
 {
-    private final Application _application;
-    private final ApplicationContext context;
     private final WeakHashMap<Object, WeakReference<ApplicationActionMap>> actionMaps =
             new WeakHashMap<Object, WeakReference<ApplicationActionMap>>();
     private ApplicationActionMap globalActionMap = null;
 
-    public ActionManager( Application a )
+    public ActionManager()
     {
-        // Null check.
-        a.getClass();
-
-        _application = a;
-
-        this.context = a.getContext();
     }
 
     private ApplicationActionMap createActionMapChain(
@@ -61,10 +50,10 @@ public final class ActionManager extends AbstractBeanEdt
         }
         Collections.reverse(classes);
         // Create the ActionMap chain, one per class
-        ApplicationContext ctx = context;
+//        ApplicationContext ctx = context;
         ApplicationActionMap parent = null;
         for (Class<?> cls : classes) {
-            ApplicationActionMap appAM = new ApplicationActionMap(ctx, cls, actionsObject, resourceMap);
+            ApplicationActionMap appAM = new ApplicationActionMap( cls, actionsObject, resourceMap);
             appAM.setParent(parent);
             parent = appAM;
         }
@@ -96,18 +85,12 @@ public final class ActionManager extends AbstractBeanEdt
      */
     public ApplicationActionMap getActionMap() {
         if (globalActionMap == null) {
-            Application appObject = _application;
+            Application appObject = Application.getInstance();
             Class<?> appClass = appObject.getClass();
             ResourceMap resourceMap = AppHelper.getResourceMap( appObject );
             globalActionMap = createActionMapChain(appClass, Application.class, appObject, resourceMap);
-            initProxyActionSupport();  // lazy initialization
         }
         return globalActionMap;
-    }
-
-    private void initProxyActionSupport() {
-        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        kfm.addPropertyChangeListener(new KeyboardFocusPCL());
     }
 
     /**
@@ -178,66 +161,6 @@ public final class ActionManager extends AbstractBeanEdt
         }
     }
 
-    private final class KeyboardFocusPCL implements PropertyChangeListener {
 
-        private final TextActions textActions;
 
-        KeyboardFocusPCL() {
-            textActions = new TextActions(context);
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent e) {
-            if ("permanentFocusOwner".equals(e.getPropertyName())) {
-                JComponent oldOwner = context.getFocusOwner();
-                Object newValue = e.getNewValue();
-                JComponent newOwner = (newValue instanceof JComponent) ? (JComponent) newValue : null;
-                textActions.updateFocusOwner(oldOwner, newOwner);
-                context.setFocusOwner(newOwner);
-                updateAllProxyActions(oldOwner, newOwner);
-            }
-        }
-    }
-
-    /**
-     * For each proxyAction in each ApplicationActionMap, if
-     * the newFocusOwner's ActionMap includes an Action with the same
-     * name then bind the proxyAction to it, otherwise set the proxyAction's
-     * proxyBinding to null.  [TBD: synchronize access to actionMaps]
-     */
-    private void updateAllProxyActions(JComponent oldFocusOwner, JComponent newFocusOwner) {
-        if (newFocusOwner != null) {
-            ActionMap ownerActionMap = newFocusOwner.getActionMap();
-            if (ownerActionMap != null) {
-                updateProxyActions(getActionMap(), ownerActionMap, newFocusOwner);
-                for (WeakReference<ApplicationActionMap> appAMRef : actionMaps.values()) {
-                    ApplicationActionMap appAM = appAMRef.get();
-                    if (appAM == null) {
-                        continue;
-                    }
-                    updateProxyActions(appAM, ownerActionMap, newFocusOwner);
-                }
-            }
-        }
-    }
-
-    /**
-     * For each proxyAction in appAM: if there's an action with the same
-     * name in the focusOwner's ActionMap, then set the proxyAction's proxy
-     * to the matching Action.  In other words: calls to the proxyAction
-     * (actionPerformed) will delegate to the matching Action.
-     */
-    private void updateProxyActions(ApplicationActionMap appAM, ActionMap ownerActionMap, JComponent focusOwner) {
-        for (ApplicationAction proxyAction : appAM.getProxyActions()) {
-            String proxyActionName = proxyAction.getName();
-            javax.swing.Action proxy = ownerActionMap.get(proxyActionName);
-            if (proxy != null) {
-                proxyAction.setProxy(proxy);
-                proxyAction.setProxySource(focusOwner);
-            } else {
-                proxyAction.setProxy(null);
-                proxyAction.setProxySource(null);
-            }
-        }
-    }
 }
