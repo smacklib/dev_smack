@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.jdesktop.smack.util.FileUtils;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * An application service that offers a simple means to store short-term,
@@ -49,10 +50,12 @@ public class ApplicationProperties
      * @param application The application requesting the service.
      */
     @SuppressWarnings("unchecked")
-    ApplicationProperties( Application application )
+    ApplicationProperties()
     {
+        Application application = Application.getInstance();
+
         _localStorage =
-                application.getApplicationService( LocalStorage.class );
+                ServiceManager.getApplicationService( LocalStorage.class );
         _fileName =
                 new File( application.getId() + "_" + application.getVendorId() + ".aps" );
 

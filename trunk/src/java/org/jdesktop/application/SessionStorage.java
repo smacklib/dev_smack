@@ -27,6 +27,7 @@ import org.jdesktop.application.session.SplitPaneProperty;
 import org.jdesktop.application.session.TabbedPaneProperty;
 import org.jdesktop.application.session.TableProperty;
 import org.jdesktop.application.session.WindowProperty;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * Support for storing GUI state that persists between Application sessions.
@@ -105,8 +106,6 @@ public final class SessionStorage
     private final Map<Class<?>, PropertySupport> _propertyMap =
             new HashMap<Class<?>, PropertySupport>();
 
-    private final Application _application;
-
     /**
      * Constructs a SessionStorage object.  The following {@link
      * PropertySupport PropertySupport} objects are registered by default:
@@ -152,13 +151,7 @@ public final class SessionStorage
      * @see #getProperty(Class)
      * @see #getProperty(Component)
      */
-    public SessionStorage(Application a) {
-        if (a == null) {
-            throw new IllegalArgumentException("null context");
-        }
-
-        _application = a;
-
+    public SessionStorage() {
         _propertyMap.put(Window.class, new WindowProperty());
         _propertyMap.put(JTabbedPane.class, new TabbedPaneProperty());
         _propertyMap.put(JSplitPane.class, new SplitPaneProperty());
@@ -321,7 +314,7 @@ public final class SessionStorage
         checkSaveRestoreArgs(root, fileName);
         Map<String, Object> stateMap = new HashMap<String, Object>();
         saveTree(Collections.singletonList(root), stateMap);
-        LocalStorage lst = _application.getApplicationService( LocalStorage.class );
+        LocalStorage lst = ServiceManager.getApplicationService( LocalStorage.class );
         lst.save(stateMap, fileName);
     }
 
@@ -382,7 +375,7 @@ public final class SessionStorage
     @SuppressWarnings("unchecked")
     public void restore(Component root, String fileName) throws IOException {
         checkSaveRestoreArgs(root, fileName);
-        LocalStorage lst = _application.getApplicationService(LocalStorage.class );
+        LocalStorage lst = ServiceManager.getApplicationService(LocalStorage.class );
         Map<String, Object> stateMap = (Map<String, Object>) (lst.load(fileName));
         if (stateMap != null) {
             restoreTree(Collections.singletonList(root), stateMap);

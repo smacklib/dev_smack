@@ -47,7 +47,6 @@ import javax.swing.ActionMap;
 @SuppressWarnings("serial")
 public class ApplicationActionMap extends ActionMap {
 
-    private final ApplicationContext context;
     private final Class<?> actionsClass;
     private final Object actionsObject;
     private final List<ApplicationAction> proxyActions;
@@ -64,10 +63,7 @@ public class ApplicationActionMap extends ActionMap {
      * @param actionsObject the object to be scanned for the actions.
      * @param resourceMap the {@code ResourceMap} to be used for those actions
      */
-    public ApplicationActionMap(ApplicationContext context, Class<?> actionsClass, Object actionsObject, ResourceMap resourceMap) {
-        if (context == null) {
-            throw new IllegalArgumentException("null context");
-        }
+    public ApplicationActionMap(Class<?> actionsClass, Object actionsObject, ResourceMap resourceMap) {
         if (actionsClass == null) {
             throw new IllegalArgumentException("null actionsClass");
         }
@@ -77,22 +73,11 @@ public class ApplicationActionMap extends ActionMap {
         if (!(actionsClass.isInstance(actionsObject))) {
             throw new IllegalArgumentException("actionsObject not an instanceof actionsClass");
         }
-        this.context = context;
         this.actionsClass = actionsClass;
         this.actionsObject = actionsObject;
         this.proxyActions = new ArrayList<ApplicationAction>();
         addAnnotationActions(resourceMap);
         maybeAddActionsPCL();
-    }
-
-    /**
-     * Returns the {@code ApplicationContext}
-     * @return the {@code ApplicationContext}
-     * @deprecated
-     */
-    @Deprecated
-    public final ApplicationContext getContext() {
-        return context;
     }
 
     /**

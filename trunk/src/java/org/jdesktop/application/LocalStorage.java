@@ -62,8 +62,10 @@ public final class LocalStorage extends AbstractBeanEdt {
      * Create an instance.
      * @param a
      */
-    LocalStorage( Application a )
+    LocalStorage()
     {
+        Application a = Application.getInstance();
+
         String vendorId = a.getVendorId();
         String applicationId = a.getId();
 
