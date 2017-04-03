@@ -16,6 +16,7 @@ import org.jdesktop.util.ServiceManager;
  * @version $Rev$
  * @author Michael Binz
  */
+@Deprecated
 class BaseApplication extends AbstractBeanEdt
 {
     /**

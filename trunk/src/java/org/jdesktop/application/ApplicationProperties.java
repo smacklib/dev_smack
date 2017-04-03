@@ -52,12 +52,20 @@ public class ApplicationProperties
     @SuppressWarnings("unchecked")
     ApplicationProperties()
     {
-        Application application = Application.getInstance();
+//        Application application = Application.getInstance();
+//
+//        _fileName =
+//                new File( application.getId() + "_" + application.getVendorId() + ".aps" );
+
+        ApplicationInfo info =
+                ServiceManager.getApplicationService( ApplicationInfo.class );
+
+        _fileName = new File( String.format( "%s_%s.aps",
+                info.getId(),
+                info.getVendorId() ) );
 
         _localStorage =
                 ServiceManager.getApplicationService( LocalStorage.class );
-        _fileName =
-                new File( application.getId() + "_" + application.getVendorId() + ".aps" );
 
         Map<String, String> localMap;
 

@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.beans.AbstractBeanEdt;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * A singleton that manages shared objects, like actions, resources, and tasks,
@@ -96,7 +97,7 @@ public final class ApplicationContext extends AbstractBeanEdt {
      * @see #getActionMap(Object)
      */
     public final ActionManager getActionManager() {
-        return application.getApplicationService( ActionManager.class );
+        return ServiceManager.getApplicationService( ActionManager.class );
     }
 
     /**
@@ -151,21 +152,12 @@ public final class ApplicationContext extends AbstractBeanEdt {
     }
 
     /**
-     * The shared {@link LocalStorage LocalStorage} object.
-     *
-     * @return the shared {@link LocalStorage LocalStorage} object.
-     */
-    public final LocalStorage getLocalStorage() {
-        return application.getApplicationService( LocalStorage.class );
-    }
-
-    /**
      * The shared {@link SessionStorage SessionStorage} object.
      *
      * @return the shared {@link SessionStorage SessionStorage} object.
      */
     public final SessionStorage getSessionStorage() {
-        return application.getApplicationService( SessionStorage.class );
+        return ServiceManager.getApplicationService( SessionStorage.class );
     }
 
     /**
