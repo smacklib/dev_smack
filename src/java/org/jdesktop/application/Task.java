@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.jdesktop.beans.AbstractBeanEdt;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * A type of {@link SwingWorker} that represents an application
@@ -221,7 +222,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V>
     private ResourceMap defaultResourceMap(Application application)
     {
         ResourceManager rm =
-                application.getApplicationService( ResourceManager.class );
+                ServiceManager.getApplicationService( ResourceManager.class );
 
         return rm.getResourceMap( getClass(), Task.class );
     }

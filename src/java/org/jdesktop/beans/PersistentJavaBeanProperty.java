@@ -8,11 +8,11 @@ package org.jdesktop.beans;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.util.StringConverter;
-
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationProperties;
-import org.jdesktop.beans.JavaBeanProperty;
+import org.jdesktop.util.ServiceManager;
+
+import javafx.util.StringConverter;
 
 /**
  * A JavaBean property that uses ApplicationProperties for persistence.
@@ -105,7 +105,7 @@ public class PersistentJavaBeanProperty<T,B> extends JavaBeanProperty<T,B>
 
     private ApplicationProperties getAps()
     {
-        return _app.getApplicationService(
+        return ServiceManager.getApplicationService(
                 ApplicationProperties.class );
     }
 }

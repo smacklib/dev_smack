@@ -787,15 +787,16 @@ public abstract class Application extends BaseApplication
      */
     public static ResourceManager getResourceManager()
     {
-        try
-        {
-            return AppHelper.getResourceManager( getInstance() );
-        }
-        catch ( Exception e )
-        {
-            LOG.warning( "Creating standalone ResourceManager." );
-            return new ResourceManager( Application.class );
-        }
+        return ServiceManager.getApplicationService( ResourceManager.class );
+//        try
+//        {
+//            return AppHelper.getResourceManager( getInstance() );
+//        }
+//        catch ( Exception e )
+//        {
+//            LOG.warning( "Creating standalone ResourceManager." );
+//            return new ResourceManager( Application.class );
+//        }
     }
 
 //    /**
