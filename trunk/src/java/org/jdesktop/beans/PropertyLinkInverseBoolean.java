@@ -8,8 +8,7 @@ package org.jdesktop.beans;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import org.jdesktop.smack.util.JavaUtils;
+import java.util.Objects;
 
 
 
@@ -119,7 +118,7 @@ public class PropertyLinkInverseBoolean
 
         // If the new value and the value on the target are already the
         // same we ignore the call.
-        if ( JavaUtils.equals( _targetProperty.get(), newValue ) )
+        if ( Objects.equals( _targetProperty.get(), newValue ) )
             return;
 
         // Set the value.
