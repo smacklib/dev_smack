@@ -131,7 +131,6 @@ import org.jdesktop.util.ServiceManager;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-@ProxyActions({"cut", "copy", "paste", "delete"})
 public abstract class Application extends BaseApplication
 {
     private static final Logger LOG = Logger.getLogger(Application.class.getName());
