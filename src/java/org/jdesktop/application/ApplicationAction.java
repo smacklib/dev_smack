@@ -102,7 +102,9 @@ import org.jdesktop.util.ReflectionUtil;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see ApplicationContext#getActionMap(Object)
  * @see ResourceMap
+ * @deprecated Use {@link Action8}
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class ApplicationAction extends MackAction
 {
