@@ -19,17 +19,12 @@ import org.jdesktop.util.ServiceManager;
 */
 public class Action8 extends AbstractActionExt
 {
-    public interface AmVoid
-    {
-        void p();
-    }
-
     private final Consumer<ActionEvent> _consumer;
 
     /**
      * Create an instance.
      *
-     * @param action A reference to a method 'method( ActionEvent )'.
+     * @param action A reference to a method 'void method( ActionEvent )'.
      */
     public Action8( Consumer<ActionEvent> action )
     {
@@ -39,11 +34,11 @@ public class Action8 extends AbstractActionExt
     /**
      * Create an instance.
      *
-     * @param action A reference to a method 'method()'.
+     * @param action A reference to a method 'void method()'.
      */
-    public Action8( AmVoid action )
+    public Action8( Runnable action )
     {
-        _consumer = (s) -> action.p();
+        _consumer = (s) -> action.run();
     }
 
     @Override
