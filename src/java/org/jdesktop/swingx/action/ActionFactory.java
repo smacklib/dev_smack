@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -28,13 +28,13 @@ import javax.swing.KeyStroke;
 
 /**
  * A collection of static methods to make it easier to construct
- * Actions. Not sure how usefull they are in reality but it saves a
+ * Actions. Not sure how useful they are in reality but it saves a
  * lot of typing.
  *
  * @author Mark Davidson
  */
-public class ActionFactory {
-
+public class ActionFactory
+{
     /**
      * Factory Methods for creating BoundActions
      */
@@ -153,7 +153,7 @@ public class ActionFactory {
             action.putValue(Action.SHORT_DESCRIPTION, shortDesc);
             action.putValue(Action.LONG_DESCRIPTION, longDesc);
             action.putValue(Action.SMALL_ICON, smallIcon);
-            action.putValue(AbstractActionExt.LARGE_ICON, largeIcon);
+            action.putValue(Action.LARGE_ICON_KEY, largeIcon);
             action.putValue(Action.ACCELERATOR_KEY, accel);
         }
     }

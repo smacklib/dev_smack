@@ -6,20 +6,17 @@
 package org.jdesktop.application;
 
 import java.awt.event.ActionEvent;
+import java.util.function.Consumer;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceManager;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.swingx.action.AbstractActionExt;
+import org.jdesktop.util.ServiceManager;
 
 /**
- * An action taking a method reference as the action delegate.
- * (Smack candidate.)
- *
- * @version $Rev$
- * @author Michael Binz
- */
+* An action taking a method reference as the action delegate.
+*
+* @version $Rev$
+* @author Michael Binz
+*/
 public class Action8 extends AbstractActionExt
 {
     public interface AmVoid
@@ -27,43 +24,32 @@ public class Action8 extends AbstractActionExt
         void p();
     }
 
-    public interface AmAe
-    {
-        void p( ActionEvent e );
-    }
-
-    private final AmAe _amAe;
-    private final AmVoid _amVoid;
+    private final Consumer<ActionEvent> _consumer;
 
     /**
      * Create an instance.
      *
      * @param action A reference to a method 'method( ActionEvent )'.
      */
-    public Action8( AmAe action )
+    public Action8( Consumer<ActionEvent> action )
     {
-        _amAe = action;
-        _amVoid = null;
+        _consumer = action;
     }
 
     /**
      * Create an instance.
      *
-     * @param action A reference to a method 'method( ActionEvent )'.
+     * @param action A reference to a method 'method()'.
      */
     public Action8( AmVoid action )
     {
-        _amAe = null;
-        _amVoid = action;
+        _consumer = (s) -> action.p();
     }
 
     @Override
     public void actionPerformed( ActionEvent e )
     {
-        if ( _amVoid != null )
-            _amVoid.p();
-        else
-            _amAe.p( e );
+        _consumer.accept( e );
     }
 
     /**
@@ -77,18 +63,16 @@ public class Action8 extends AbstractActionExt
      * injection.
      * @return A reference to the action for call chaining.
      */
-    public Action8 inject( Application app, Class<?> context, String key )
+    public Action8 inject( Class<?> context, String key )
     {
-        ResourceMap map = AppHelper.getResourceMap(
-                app,
-                context );
-
-        ResourceManager rm = AppHelper.getResourceManager( app );
-
-        key += ".Action";
-
-        rm.injectProperties( context, key, map );
-
+        ResourceManager rm =
+                ServiceManager.getApplicationService( ResourceManager.class );
+        ResourceMap map =
+                rm.getResourceMap( context );
+        rm.injectProperties(
+                this,
+                key + ".Action",
+                map );
         return this;
     }
 
