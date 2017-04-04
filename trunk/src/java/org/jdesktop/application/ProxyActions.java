@@ -34,11 +34,12 @@ import java.lang.annotation.Target;
  * the action of the component with focus.
  *
  * @author Hans Muller (Hans.Muller@Sun.COM)
+ * @deprecated
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ProxyActions {
+@interface ProxyActions {
 
     String[] value() default {};
 }
