@@ -54,6 +54,7 @@ import org.jdesktop.application.Task.BlockingScope;
  * @see ApplicationActionMap
  * @see ApplicationContext
  * @author Hans Muller (Hans.Muller@Sun.COM)
+ * @deprecated Use {@link Action8}
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
