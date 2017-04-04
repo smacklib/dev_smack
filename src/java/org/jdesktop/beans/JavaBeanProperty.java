@@ -13,8 +13,7 @@ import java.beans.PropertyChangeListenerProxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.jdesktop.smack.util.JavaUtils;
+import java.util.Objects;
 
 /**
  * Support class for implementing java bean properties on components.
@@ -55,7 +54,7 @@ public class JavaBeanProperty<T,B> implements PropertyType<T,B>
     @Override
     public void set( T newValue )
     {
-        if ( JavaUtils.equals( _value, newValue ) )
+        if ( Objects.equals( _value, newValue ) )
             return;
 
         T oldValue = _value;
