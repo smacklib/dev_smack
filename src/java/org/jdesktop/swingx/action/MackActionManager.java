@@ -29,7 +29,9 @@ import org.jdesktop.swingx.JXToolbar;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated
  */
+@Deprecated
 public final class MackActionManager
 {
     private final static MackActionSorter _sorter =

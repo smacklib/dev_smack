@@ -5,12 +5,11 @@
  * Released under Gnu Public License
  * Copyright © 2010 Michael G. Binz
  */
-
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.text.MessageFormat;
 
-
+import org.jdesktop.smack.util.StringUtils;
 
 /**
  * A time duration.  Used for printing and for splitting millisecond times
@@ -18,9 +17,7 @@ import java.text.MessageFormat;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated use org.jdesktop.util.Duration
  */
-@Deprecated
 public final class Duration
 {
     /**

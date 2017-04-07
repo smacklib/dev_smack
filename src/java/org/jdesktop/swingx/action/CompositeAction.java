@@ -29,7 +29,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.Icon;
 
-import org.jdesktop.application.Application;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * A class that represents an action which will fire a sequence of actions.
@@ -105,7 +105,7 @@ public class CompositeAction extends AbstractActionExt {
      */
     public void addAction(String id) {
         ActionManager manager =
-                Application.getInstance().getApplicationService( ActionManager.class );
+                ServiceManager.getApplicationService( ActionManager.class );
 
         Action action = manager.getAction(id);
 

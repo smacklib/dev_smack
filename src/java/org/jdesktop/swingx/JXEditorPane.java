@@ -76,13 +76,13 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import org.jdesktop.application.Application;
 import org.jdesktop.swingx.action.ActionManager;
 import org.jdesktop.swingx.action.Targetable;
 import org.jdesktop.swingx.action.TargetableSupport;
 import org.jdesktop.swingx.plaf.UIAction;
 import org.jdesktop.swingx.search.SearchFactory;
 import org.jdesktop.swingx.search.Searchable;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * <p>
@@ -325,7 +325,7 @@ public class JXEditorPane extends JEditorPane implements Targetable {
         Runnable doEnabled = new Runnable() {
                 @Override
                 public void run() {
-                    ActionManager manager = Application.getInstance().getApplicationService( ActionManager.class );
+                    ActionManager manager = ServiceManager.getApplicationService( ActionManager.class );
                     manager.setEnabled(ACTION_UNDO, undoManager.canUndo());
                     manager.setEnabled(ACTION_REDO, undoManager.canRedo());
                 }
@@ -828,7 +828,7 @@ public class JXEditorPane extends JEditorPane implements Targetable {
             AttributeSet set = elem.getAttributes();
 
             // JW: see comment in updateActionState
-            ActionManager manager = Application.getInstance().getApplicationService( ActionManager.class );
+            ActionManager manager = ServiceManager.getApplicationService( ActionManager.class );
             manager.setSelected("font-bold", StyleConstants.isBold(set));
             manager.setSelected("font-italic", StyleConstants.isItalic(set));
             manager.setSelected("font-underline", StyleConstants.isUnderline(set));
