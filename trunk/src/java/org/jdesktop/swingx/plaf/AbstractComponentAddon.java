@@ -93,17 +93,17 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
         addBasicDefaults(addon, defaults);
     }
 
-    /**
-     * Default implementation calls
-     * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     *
-     * @param addon
-     * @param defaults
-     */
-    protected void addMotifDefaults(LookAndFeelAddons addon,
-            DefaultsList defaults) {
-        addBasicDefaults(addon, defaults);
-    }
+//    /**
+//     * Default implementation calls
+//     * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
+//     *
+//     * @param addon
+//     * @param defaults
+//     */
+//    protected void addMotifDefaults(LookAndFeelAddons addon,
+//            DefaultsList defaults) {
+//        addBasicDefaults(addon, defaults);
+//    }
 
     /**
      * Default implementation calls

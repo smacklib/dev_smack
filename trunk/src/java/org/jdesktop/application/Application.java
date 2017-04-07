@@ -31,6 +31,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.OSXAdapter;
 import org.jdesktop.application.util.PlatformType;
+import org.jdesktop.beans.AbstractBeanEdt;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ServiceManager;
 
@@ -131,7 +132,7 @@ import org.jdesktop.util.ServiceManager;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public abstract class Application
+public abstract class Application extends AbstractBeanEdt
 {
     private static final Logger LOG = Logger.getLogger(Application.class.getName());
 
