@@ -131,7 +131,7 @@ import org.jdesktop.util.ServiceManager;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public abstract class Application extends BaseApplication
+public abstract class Application
 {
     private static final Logger LOG = Logger.getLogger(Application.class.getName());
 
@@ -160,7 +160,7 @@ public abstract class Application extends BaseApplication
         // Inject resource-defined fields on the application instance.
         // This ensures that these are set before the object is
         // accessible to the user.
-        getApplicationService( ResourceManager.class ).injectResources( this );
+        ServiceManager.getApplicationService( ResourceManager.class ).injectResources( this );
 
         context = new ApplicationContext(this);
     }

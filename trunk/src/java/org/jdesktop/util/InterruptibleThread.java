@@ -5,8 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2010 Michael G. Binz
  */
-
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 /**
  * Extends a {@link Thread} with a deterministic interruption flag that is set
@@ -19,9 +18,7 @@ package org.jdesktop.smack.util;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated
  */
-@Deprecated
 public class InterruptibleThread
     extends Thread
 {

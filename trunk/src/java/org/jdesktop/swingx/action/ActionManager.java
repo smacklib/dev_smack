@@ -29,7 +29,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 
-import org.jdesktop.application.Application;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * The ActionManager manages sets of <code>javax.swing.Action</code>s for an
@@ -105,7 +105,7 @@ public class ActionManager
      * Return the singleton instance.
      */
     public static ActionManager getInstance() {
-        return Application.getInstance().getApplicationService( ActionManager.class );
+        return ServiceManager.getApplicationService( ActionManager.class );
     }
 
     /**

@@ -5,9 +5,7 @@
  * Released under Gnu Public License
  * Copyright (c) 2009 Michael G. Binz
  */
-package org.jdesktop.smack.util;
-
-
+package org.jdesktop.util;
 
 /**
  * A class used for execution time profiling.  Instances encapsulate
@@ -16,9 +14,7 @@ package org.jdesktop.smack.util;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated use jdesktop.util
  */
-@Deprecated
 public class TimeProbe
 {
     /**
@@ -26,28 +22,20 @@ public class TimeProbe
      */
     private final String _name;
 
-
-
     /**
      * The UTC ms time of timer start. Zero means not started yet.
      */
     private long _start = 0;
-
-
 
     /**
      * The UTC ms time of timer stop.  Zero means not stopped.
      */
     private long _stop = 0;
 
-
-
     /**
      * A counter used for generating default names;
      */
     private static int _count = 0;
-
-
 
     /**
      * Create a named instance.
@@ -60,8 +48,6 @@ public class TimeProbe
         _name = name;
     }
 
-
-
     /**
      * Create an unnamed instance.
      */
@@ -69,8 +55,6 @@ public class TimeProbe
     {
         this( Integer.toString( ++_count ) );
     }
-
-
 
     /**
      * Start the timer.  Note that a timer can be reused.
@@ -85,8 +69,6 @@ public class TimeProbe
         return this;
     }
 
-
-
     /**
      * Stop the timer.
      *
@@ -98,7 +80,6 @@ public class TimeProbe
 
         return this;
     }
-
 
     /**
      * Get the time duration between the last start and stop
@@ -119,8 +100,6 @@ public class TimeProbe
         return _stop - _start;
     }
 
-
-
     /**
      * Get whether this timer is running, i.e. has been started.
      *
@@ -130,8 +109,6 @@ public class TimeProbe
     {
         return _stop == 0;
     }
-
-
 
     /**
      * Get a printable representation of the timer.  This looks like:

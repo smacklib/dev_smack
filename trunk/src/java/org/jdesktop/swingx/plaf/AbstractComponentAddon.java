@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -25,13 +25,12 @@ import javax.swing.UIManager;
 import org.jdesktop.swingx.plaf.linux.LinuxLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.macosx.MacOSXLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.metal.MetalLookAndFeelAddons;
-import org.jdesktop.swingx.plaf.motif.MotifLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.nimbus.NimbusLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.windows.WindowsLookAndFeelAddons;
 
 /**
  * Ease the work of creating an addon for a component.<br>
- * 
+ *
  * @author <a href="mailto:fred@L2FProd.com">Frederic Lavigne</a>
  * @author Karl Schaefer
  */
@@ -63,7 +62,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
 
     /**
      * Adds default key/value pairs to the given list.
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -74,7 +73,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -85,7 +84,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -97,7 +96,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -109,7 +108,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -121,7 +120,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -133,7 +132,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     /**
      * Default implementation calls
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)}
-     * 
+     *
      * @param addon
      * @param defaults
      */
@@ -144,7 +143,7 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
 
     /**
      * Gets the defaults for the given addon.
-     * 
+     *
      * Based on the addon, it calls
      * {@link #addMacDefaults(LookAndFeelAddons, DefaultsList)} if isMac() or
      * {@link #addMetalDefaults(LookAndFeelAddons, DefaultsList)} if isMetal()
@@ -153,10 +152,10 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
      * if isWindows() or
      * {@link #addBasicDefaults(LookAndFeelAddons, DefaultsList)} if none of the
      * above was called.
-     * 
+     *
      * @param addon
      * @return an array of key/value pairs. For example:
-     * 
+     *
      *         <pre>
      * Object[] uiDefaults = { &quot;Font&quot;, new Font(&quot;Dialog&quot;, Font.BOLD, 12), &quot;Color&quot;,
      *         Color.red, &quot;five&quot;, new Integer(5) };
@@ -170,8 +169,6 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
             addMetalDefaults(addon, defaults);
         } else if (isMac(addon)) {
             addMacDefaults(addon, defaults);
-        } else if (isMotif(addon)) {
-            addMotifDefaults(addon, defaults);
             // PENDING JW: the separation line here looks fishy
             // what about Nimbus on Linux systems?
         } else if (isLinux(addon)) {
@@ -208,13 +205,6 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
      */
     protected boolean isMac(LookAndFeelAddons addon) {
         return addon instanceof MacOSXLookAndFeelAddons;
-    }
-
-    /**
-     * @return true if the addon is the Motif addon or its subclasses
-     */
-    protected boolean isMotif(LookAndFeelAddons addon) {
-        return addon instanceof MotifLookAndFeelAddons;
     }
 
     /**
