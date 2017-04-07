@@ -1,4 +1,4 @@
-/* $Id: PersistentJavaBeanProperty.java 1521 2016-03-22 11:19:28Z Michael $
+/* $Id$
  *
  * Unpublished work.
  * Copyright © 2016 Michael G. Binz
@@ -8,7 +8,6 @@ package org.jdesktop.beans;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationProperties;
 import org.jdesktop.util.ServiceManager;
 
@@ -20,15 +19,13 @@ import javafx.util.StringConverter;
  * @param <T> The property's type.
  * @param <B> The bean the property is part of.
  *
- * @version $Rev: 1521 $
+ * @version $Rev$
  * @author Michael G. Binz
  */
 public class PersistentJavaBeanProperty<T,B> extends JavaBeanProperty<T,B>
 {
     private static final Logger LOG =
             Logger.getLogger( PersistentJavaBeanProperty.class.getName() );
-
-    private Application _app;
 
     private final StringConverter<T> _converter;
 
@@ -47,22 +44,6 @@ public class PersistentJavaBeanProperty<T,B> extends JavaBeanProperty<T,B>
             StringConverter<T> converter )
     {
         super( bean, initialValue, propertyName );
-
-        try
-        {
-            // If the passed object is an application, then this
-            // means we are an application property defined on the
-            // application object. In this case the .getInstance
-            // call is not working. By using the passed object
-            // we allow persistent java bean properties defined
-            // on the application object using inline initialization.
-            // This is cool, cool, cool...
-            _app = (Application)bean;
-        }
-        catch ( ClassCastException e )
-        {
-            _app = Application.getInstance();
-        }
 
         _converter = converter;
 

@@ -15,6 +15,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceManager;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.GTools;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * Help methods on application level.
@@ -35,10 +36,12 @@ public final class AppHelper {
      *
      * @param application The application.
      * @return The associated resource manager.
+     * @deprecated
      */
+    @Deprecated
     public static ResourceManager getResourceManager( Application application )
     {
-        return application.getApplicationService( ResourceManager.class );
+        return ServiceManager.getApplicationService( ResourceManager.class );
     }
 
     /**

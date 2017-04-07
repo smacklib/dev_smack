@@ -62,7 +62,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public int getRowCount()
+  @Override
+public int getRowCount()
   {
     return _delegates[ 0 ].getRowCount();
   }
@@ -72,7 +73,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public int getColumnCount()
+  @Override
+public int getColumnCount()
   {
     return _columnMap.length;
   }
@@ -82,7 +84,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public String getColumnName( int columnIndex )
+  @Override
+public String getColumnName( int columnIndex )
   {
     Column c = _columnMap[columnIndex];
     return c.tableModel.getColumnName( c.idx );
@@ -93,7 +96,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public Class getColumnClass( int columnIndex )
+  @Override
+public Class<?> getColumnClass( int columnIndex )
   {
     Column c = _columnMap[columnIndex];
     return c.tableModel.getColumnClass( c.idx );
@@ -104,7 +108,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public boolean isCellEditable( int rowIndex, int columnIndex )
+  @Override
+public boolean isCellEditable( int rowIndex, int columnIndex )
   {
     Column c = _columnMap[columnIndex];
     return c.tableModel.isCellEditable( rowIndex, c.idx );
@@ -115,7 +120,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public Object getValueAt( int rowIndex, int columnIndex )
+  @Override
+public Object getValueAt( int rowIndex, int columnIndex )
   {
     Column c = _columnMap[columnIndex];
     return c.tableModel.getValueAt( rowIndex, c.idx );
@@ -126,7 +132,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public void setValueAt( Object aValue, int rowIndex, int columnIndex )
+  @Override
+public void setValueAt( Object aValue, int rowIndex, int columnIndex )
   {
     Column c = _columnMap[columnIndex];
     c.tableModel.setValueAt( aValue, rowIndex, c.idx );
@@ -137,7 +144,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public void addTableModelListener( TableModelListener l )
+  @Override
+public void addTableModelListener( TableModelListener l )
   {
     for (int i = 0; i < _delegates.length; i++)
     {
@@ -150,7 +158,8 @@ public class CombinedTableModel
   /*
    * Inherit Javadoc.
    */
-  public void removeTableModelListener( TableModelListener l )
+  @Override
+public void removeTableModelListener( TableModelListener l )
   {
     for (int i = 0; i < _delegates.length; i++)
     {

@@ -17,11 +17,8 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.util.ReflectionUtils;
 import org.jdesktop.swingx.action.MackAction;
-
-
-
+import org.jdesktop.util.ReflectionUtil;
 
 /**
  * A state action that can be linked against a Java Beans boolean
@@ -105,7 +102,7 @@ public class MackBooleanPropertyAction
             if ( params.length != 1 )
                 throw new IllegalArgumentException( "not a single argument" );
             if ( Boolean.class !=
-                    ReflectionUtils.normalizePrimitives( params[0] ) )
+                    ReflectionUtil.normalizePrimitives( params[0] ) )
                 throw new IllegalArgumentException( "not boolean property" );
         }
         catch ( IntrospectionException e )

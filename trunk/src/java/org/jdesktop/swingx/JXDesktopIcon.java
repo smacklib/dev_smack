@@ -23,7 +23,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.annotation.Resource;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -35,7 +34,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.border.AbstractBorder;
 
-import org.jdesktop.application.Application;
 import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.action.AbstractActionExt;
 import org.jdesktop.swingx.util.ComponentDragHandler;
@@ -55,7 +53,6 @@ public abstract class JXDesktopIcon extends Box
     private transient final static JButton _colorPrototype =
             new JButton();
 
-    @Resource
     private static transient Dimension _dimension;
 
     private transient final JLabel _text =
@@ -273,11 +270,6 @@ public abstract class JXDesktopIcon extends Box
             repaint();
         }
     };
-
-    static
-    {
-        Application.getResourceManager().injectResources( JXDesktopIcon.class );
-    }
 
     private static final long serialVersionUID = 5252279373893772433L;
 }
