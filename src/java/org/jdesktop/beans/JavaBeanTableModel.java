@@ -22,7 +22,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.jdesktop.smack.util.ReflectionUtils;
+import org.jdesktop.util.ReflectionUtil;
 
 /**
  * <p>A table model that allows to display a list of Java Beans.
@@ -190,7 +190,7 @@ public class JavaBeanTableModel<B> extends AbstractTableModel
     @Override
     public Class<?> getColumnClass( int columnIndex )
     {
-        return ReflectionUtils.normalizePrimitives(
+        return ReflectionUtil.normalizePrimitives(
                 _columns[columnIndex].getPropertyType() );
     }
 
