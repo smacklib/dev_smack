@@ -39,9 +39,11 @@ import javax.swing.text.Document;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ApplicationInfo;
 import org.jdesktop.smack.FontResizer;
 import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.smack.util.OutputStreamForwarder;
+import org.jdesktop.util.ServiceManager;
 
 /**
  * A console ui component. Connects stream oriented in- and output to a text component.
@@ -775,7 +777,7 @@ public final class JXConsole extends JPanel implements KeyListener {
                 // Message.
                 String.format( FILE_EXISTS_MESSAGE, f.getName() ),
                 // Title.
-                Application.getInstance().getContext().getResourceMap().getString( Application.KEY_APPLICATION_TITLE ),
+                ServiceManager.getApplicationService( ApplicationInfo.class ).getTitle(),
                 // Options
                 JOptionPane.YES_NO_OPTION,
                 //

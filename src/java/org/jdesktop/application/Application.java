@@ -136,10 +136,6 @@ public abstract class Application extends AbstractBeanEdt
 {
     private static final Logger LOG = Logger.getLogger(Application.class.getName());
 
-    public static final String KEY_APPLICATION_ID = "Application.id";
-    public static final String KEY_APPLICATION_TITLE = "Application.title";
-    public static final String KEY_APPLICATION_ICON = "Application.icon";
-    public static final String KEY_APPLICATION_VENDOR_ID = "Application.vendorId";
     private static final String KEY_APPLICATION_LOOKANDFEEL =
             "Application.lookAndFeel";
 
