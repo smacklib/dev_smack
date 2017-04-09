@@ -796,7 +796,8 @@ public final class JXConsole extends JPanel implements KeyListener {
     }
 
     /**
-     * Remove the console's content.
+     * Remove the console's content.  Available as 'actClear' in
+     * JXConsole's action map.
      */
     public void clear()
     {
