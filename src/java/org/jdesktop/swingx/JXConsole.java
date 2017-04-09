@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +39,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Action8;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationInfo;
 import org.jdesktop.smack.FontResizer;
@@ -205,11 +207,11 @@ public final class JXConsole extends JPanel implements KeyListener {
         scrollPane.setViewportView( _text );
 
         // create popup menu
-        _menu.add(new JMenuItem( getNamedAction( "actCopy" ) ) );
-        _menu.add(new JMenuItem( getNamedAction( "actPaste" ) ) );
-        _menu.add(new JMenuItem( getNamedAction( "actSave" ) ) );
-        _menu.add(new JMenuItem( getNamedAction( "actFont" ) ) );
-        _menu.add(new JMenuItem( getNamedAction( "actClear" ) ) );
+        _menu.add(new JMenuItem( getNamedAction( this::actCopy, "actCopy" ) ) );
+        _menu.add(new JMenuItem( getNamedAction( this::actPaste, "actPaste" ) ) );
+        _menu.add(new JMenuItem( getNamedAction( this::actSave, "actSave" ) ) );
+        _menu.add(new JMenuItem( getNamedAction( this::actFont, "actFont" ) ) );
+        _menu.add(new JMenuItem( getNamedAction( this::actClear, "actClear" ) ) );
 
         _text.setComponentPopupMenu( _menu );
 
@@ -217,8 +219,8 @@ public final class JXConsole extends JPanel implements KeyListener {
 
         add( scrollPane, BorderLayout.CENTER );
 
-        addToolbarAction( getNamedAction( "actClear" ), false );
-        addToolbarAction( getNamedAction( "actScrollLock" ), true );
+        addToolbarAction( getActionMap().get( "actClear" ), false );
+        addToolbarAction( getNamedAction( this::actScrollLock, "actScrollLock" ), true );
 
         add( _toolbar, BorderLayout.PAGE_START );
     }
@@ -738,21 +740,17 @@ public final class JXConsole extends JPanel implements KeyListener {
         return result;
     }
 
-
-    @Action
-    public void actCopy( ActionEvent ae )
+    private void actCopy( ActionEvent ae )
     {
         _text.copy();
     }
 
-    @Action
-    public void actPaste( ActionEvent ae )
+    private void actPaste( ActionEvent ae )
     {
         _text.paste();
     }
 
-    @Action
-    public void actFont( ActionEvent ae )
+    private void actFont( ActionEvent ae )
     {
         JXFontChooser fc = new JXFontChooser();
         fc.setSelectedFont(getFont());
@@ -764,8 +762,7 @@ public final class JXConsole extends JPanel implements KeyListener {
     @Resource
     private String FILE_EXISTS_MESSAGE;
 
-    @Action
-    public void actSave( ActionEvent ae ) {
+    private void actSave( ActionEvent ae ) {
         if (JXConsole.saveChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
             return;
         }
@@ -791,8 +788,17 @@ public final class JXConsole extends JPanel implements KeyListener {
         writeFile(f, _text.getText());
     }
 
+    // TODO(michab) compatibility.
     @Action
     public void actClear( ActionEvent ae )
+    {
+        clear();
+    }
+
+    /**
+     * Remove the console's content.
+     */
+    public void clear()
     {
         Document d = _text.getDocument();
 
@@ -810,8 +816,7 @@ public final class JXConsole extends JPanel implements KeyListener {
      *
      * @param ae
      */
-    @Action
-    public void actScrollLock( ActionEvent ae )
+    private void actScrollLock( ActionEvent ae )
     {
         boolean isSelected =
                 ae.getSource() instanceof JToggleButton &&
@@ -896,9 +901,9 @@ public final class JXConsole extends JPanel implements KeyListener {
      * Get the action corresponding to the passed name. The action is entered in the component's
      * action map.
      */
-    private javax.swing.Action getNamedAction( String actionName )
+    private javax.swing.Action getNamedAction( Consumer<ActionEvent> action, String actionName )
     {
-        javax.swing.Action result = Application.getInstance().getContext().getActionMap(this).get( actionName );
+        javax.swing.Action result = new Action8( action ).inject( getClass(), actionName );
 
         if ( result != null && getActionMap().get( actionName ) == null )
             getActionMap().put( actionName, result );
