@@ -11,12 +11,12 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import org.jdesktop.smack.util.FileUtils;
 import org.jdesktop.util.ServiceManager;
 
 /**
@@ -52,11 +52,6 @@ public class ApplicationProperties
     @SuppressWarnings("unchecked")
     ApplicationProperties()
     {
-//        Application application = Application.getInstance();
-//
-//        _fileName =
-//                new File( application.getId() + "_" + application.getVendorId() + ".aps" );
-
         ApplicationInfo info =
                 ServiceManager.getApplicationService( ApplicationInfo.class );
 
@@ -69,21 +64,14 @@ public class ApplicationProperties
 
         Map<String, String> localMap;
 
-        ObjectInputStream is = null;
-        try
+        try ( ObjectInputStream is = new ObjectInputStream(
+                    _localStorage.openInputFile( _fileName ) ) )
         {
-            is = new ObjectInputStream(
-                    _localStorage.openInputFile( _fileName ) );
-
             localMap = (Map<String, String>)is.readObject();
         }
         catch ( Exception e )
         {
             localMap = new HashMap<String, String>();
-        }
-        finally
-        {
-            FileUtils.forceClose( is );
         }
 
         _storage = localMap;
@@ -117,16 +105,13 @@ public class ApplicationProperties
      *
      * @param client The client class.
      * @param key The key. Must not be null.
-     * @param value The value. Must not be null.s
+     * @param value The value. Must not be null.
      */
     public void put( Class<?> client, String key, String value )
     {
-        if ( value == null )
-            throw new NullPointerException();
-
         _storage.put(
                 makeKey( client, key ),
-                value );
+                Objects.requireNonNull( value ) );
 
         flush();
     }
@@ -264,21 +249,15 @@ public class ApplicationProperties
      */
     private void flush()
     {
-        ObjectOutputStream oos = null;
-
-        try
+        try ( ObjectOutputStream oos =
+                new ObjectOutputStream( _localStorage.openOutputFile( _fileName ) ) )
         {
-            oos = new ObjectOutputStream( _localStorage.openOutputFile( _fileName ) );
             oos.writeObject( _storage );
             oos.flush();
         }
         catch ( IOException e )
         {
             L.log( Level.WARNING, "Storing application properties failed.", e );
-        }
-        finally
-        {
-            FileUtils.forceClose( oos );
         }
     }
 
