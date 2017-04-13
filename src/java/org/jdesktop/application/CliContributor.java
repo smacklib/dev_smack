@@ -1,3 +1,8 @@
+/* $Id$
+ *
+ * Released under Gnu Public License
+ * Copyright (c) 2017 Michael G. Binz
+ */
 package org.jdesktop.application;
 
 import java.util.Set;
@@ -6,6 +11,7 @@ import java.util.Set;
  * Allows to discover command line interface programs.
  *
  * @see CliApplication
+ * @version $Rev$
  * @author michab
  */
 public abstract class CliContributor
