@@ -3,7 +3,7 @@
  * Released under Gnu Public License
  * Copyright © 2008-2015 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,16 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
-
 /**
  * A double key map.  The map allows to store a single value for key pairs.
  *
  * @version $Revision$
  * @author Michael Binz
- * @deprecated Use org.jdesktop.util.MultiMap
  */
-@Deprecated
 public class MultiMap<KT1, KT2, VT>
 {
     /**
@@ -36,6 +32,7 @@ public class MultiMap<KT1, KT2, VT>
      * @param k1 The first key.
      * @param k2 The second key.
      * @param pValue The value.
+     * @return The previous value, may be null.
      * @throws NullPointerException If one of the arguments was null.
      */
     public VT put( KT1 k1, KT2 k2, VT pValue )
