@@ -160,16 +160,6 @@ public class ApplicationActionMap extends ActionMap {
                 putAction(actionName, appAction);
             }
         }
-        // @ProxyActions
-        ProxyActions proxyActionsAnnotation = actionsClass.getAnnotation(ProxyActions.class);
-        if (proxyActionsAnnotation != null) {
-            for (String actionName : proxyActionsAnnotation.value()) {
-                ApplicationAction appAction = new ApplicationAction(this, resourceMap, actionName);
-                appAction.setEnabled(false); // will track the enabled property of the Action it's bound to
-                putAction(actionName, appAction);
-                proxyActions.add(appAction);
-            }
-        }
     }
 
     /**
