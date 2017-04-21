@@ -8,9 +8,11 @@
 package org.jdesktop.smack.util;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 
 /**
  * Net related utility classes.
@@ -110,5 +112,48 @@ public class NetUtils
             socket.setSoTimeout( originalTimeout );
             return null;
         }
+    }
+
+    /**
+     * Check if internet is accessible.
+     *
+     * @param site The site url.
+     * @return {@code true} if the site is accessible.
+     */
+    public static boolean testInet( URL site )
+    {
+        return testInet( site, 3 );
+    }
+
+    /**
+     * Check if internet is accessible.
+     *
+     * @param site The site url.
+     * @param timeoutSecs Timeout in seconds.
+     * @return {@code true} if the site is accessible.
+     */
+    public static boolean testInet( URL site, int timeoutSecs )
+    {
+        InetSocketAddress addr =
+                new InetSocketAddress(
+                        site.getHost(),
+                        site.getDefaultPort() );
+
+        try (Socket sock = new Socket())
+        {
+            sock.connect(
+                    addr,
+                    timeoutSecs*1000 );
+            return true;
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+    }
+
+    private NetUtils()
+    {
+        throw new AssertionError();
     }
 }
