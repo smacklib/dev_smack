@@ -10,6 +10,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
+import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
+import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
+
 
 
 
@@ -27,24 +30,6 @@ public class PropertyLink
     private final PropertyProxy<Object,Object> _targetProperty;
 
     private final PropertyAdapter _pa;
-
-    /**
-     * Creates a property update link between the source and target.
-     *
-     * @param source A source property. Changes on this are propagated to the
-     * target object.
-     * @param target The target property.
-     */
-    public PropertyLink(
-            PropertyType<?, ?> source,
-            PropertyType<?, ?> target )
-    {
-        this(
-                source.getBean(),
-                source.getName(),
-                target.getBean(),
-                target.getName() );
-    }
 
     /**
      * Creates a property update link between the source and target.
@@ -96,12 +81,22 @@ public class PropertyLink
      */
     public PropertyLink update()
     {
-        PropertyProxy<Object, Object> sourceProperty =
-                new PropertyProxy<Object, Object>( _propertySrcName, _pa.getBean() );
+        try
+        {
+            ReadOnlyJavaBeanObjectProperty<?> sourceProperty =
+                    ReadOnlyJavaBeanObjectPropertyBuilder.create()
+                        .name( _propertySrcName )
+                        .bean( _pa.getBean() )
+                        .build();
 
-        _targetProperty.set( sourceProperty.get() );
+            _targetProperty.set( sourceProperty.get() );
 
-        return this;
+            return this;
+        }
+        catch ( NoSuchMethodException e )
+        {
+            throw new IllegalArgumentException( e );
+        }
     }
 
     /**
