@@ -6,18 +6,13 @@
 
 package org.jdesktop.beans;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Objects;
-
+import javafx.beans.property.adapter.JavaBeanObjectProperty;
+import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
 
-
-
-
 /**
- * Links a bound property on a source object to a bound property on
+ * Links a bound property on a source object to a property on
  * a target object.
  *
  * @version $Rev$
@@ -25,11 +20,10 @@ import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
  */
 public class PropertyLink
 {
-    private final String _propertySrcName;
-
-    private final PropertyProxy<Object,Object> _targetProperty;
-
-    private final PropertyAdapter _pa;
+    private final ReadOnlyJavaBeanObjectProperty<?>
+        _sourceProperty;
+    private final JavaBeanObjectProperty<Object>
+        _targetProperty;
 
     /**
      * Creates a property update link between the source and target.
@@ -39,7 +33,9 @@ public class PropertyLink
      * target object.
      * @param propName The name of source and target property.
      * @param target The target object.
+     * @deprecated Use static {@link #bind(Object, String, Object)}
      */
+    @Deprecated
     public PropertyLink(
             Object source,
             String propName,
@@ -56,22 +52,42 @@ public class PropertyLink
      * @param propSrcName The name of the source property.
      * @param target The target object.
      * @param propTgtName The name of the target property.
+     * @deprecated Use static {@link #bind(Object, String, Object, String)}
      */
+    @Deprecated
     public PropertyLink(
             Object source,
             String propSrcName,
             Object target,
             String propTgtName )
     {
-        _propertySrcName = propSrcName;
+        // Would be cool if we could match the types of source and target
+        // but this is currently not part of the FX properties API.
+        // Anyway, we fail in both cases at runtime.
+        try
+        {
+            // TODO: Create the property in this special way to prevent
+            // type warnings. I think the typing of JBOPB is plainly wrong.
+            JavaBeanObjectPropertyBuilder<Object> tgtBld =
+                    new JavaBeanObjectPropertyBuilder<>();
+            tgtBld
+                .name( propTgtName )
+                .bean( target );
+            _targetProperty =
+                    tgtBld.build();
 
-        _pa =
-            new PropertyAdapter( source );
+            _sourceProperty =
+                    ReadOnlyJavaBeanObjectPropertyBuilder.create()
+                        .name( propSrcName )
+                        .bean( source )
+                        .build();
 
-        _pa.addPropertyChangeListener( _listener );
-
-        _targetProperty =
-            new PropertyProxy<Object,Object>( propTgtName, target );
+            _targetProperty.bind( _sourceProperty );
+        }
+        catch ( NoSuchMethodException e )
+        {
+            throw new IllegalArgumentException( e );
+        }
     }
 
     /**
@@ -81,22 +97,8 @@ public class PropertyLink
      */
     public PropertyLink update()
     {
-        try
-        {
-            ReadOnlyJavaBeanObjectProperty<?> sourceProperty =
-                    ReadOnlyJavaBeanObjectPropertyBuilder.create()
-                        .name( _propertySrcName )
-                        .bean( _pa.getBean() )
-                        .build();
-
-            _targetProperty.set( sourceProperty.get() );
-
-            return this;
-        }
-        catch ( NoSuchMethodException e )
-        {
-            throw new IllegalArgumentException( e );
-        }
+        _sourceProperty.fireValueChangedEvent();
+        return this;
     }
 
     /**
@@ -105,30 +107,23 @@ public class PropertyLink
      */
     public void dispose()
     {
-        _pa.removePropertyChangeListener( _listener );
+        _sourceProperty.dispose();
+        _targetProperty.dispose();
     }
 
-    /**
-     * A listener for source changes.
-     */
-    private final PropertyChangeListener _listener = new PropertyChangeListener()
+    public static PropertyLink bind(
+            Object source,
+            String propSrcName,
+            Object target,
+            String propTgtName )
     {
-        @Override
-        public void propertyChange( PropertyChangeEvent evt )
-        {
-            // Ignore change events for other properties.
-            if ( ! _propertySrcName.equals( evt.getPropertyName() ) )
-                return;
-
-            Object newValue = evt.getNewValue();
-
-            // If the new value and the value on the target are already the
-            // same we ignore the call.
-            if ( Objects.equals( _targetProperty.get(), newValue ) )
-                return;
-
-            // Set the value.
-            _targetProperty.set( newValue );
-        }
-    };
+        return new PropertyLink( source, propSrcName, target, propTgtName );
+    }
+    public static PropertyLink bind(
+            Object source,
+            String propSrcName,
+            Object target )
+    {
+        return new PropertyLink( source, propSrcName, target, propSrcName );
+    }
 }
