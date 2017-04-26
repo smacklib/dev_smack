@@ -72,6 +72,36 @@ public class Action8 extends AbstractActionExt
     }
 
     /**
+     * Injects this action's JavaBean properties. The property values are
+     * resolved in the ResourceMap of the passed context class.
+     *
+     * @param app The application reference.
+     * @param context The home class of the action that is used to access the
+     * resources.
+     * @param key A prefix used to identify the resource keys used for property
+     * injection.
+     * @return A reference to the action for call chaining.
+     */
+    public Action8 init( Class<?> context, String key )
+    {
+        org.jdesktop.util.ResourceManager rm =
+                ServiceManager.getApplicationService( org.jdesktop.util.ResourceManager.class );
+        org.jdesktop.util.ResourceMap map =
+                rm.getResourceMap( context );
+
+        String resourceKey = String.format(
+                "%s.%s.Action",
+                context.getSimpleName(),
+                key );
+
+        rm.injectProperties(
+                this,
+                resourceKey,
+                map );
+        return this;
+    }
+
+    /**
      * Generated for Action8.java.
      */
     private static final long serialVersionUID = -7056521329585878347L;

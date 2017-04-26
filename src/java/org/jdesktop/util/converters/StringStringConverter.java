@@ -18,10 +18,13 @@ public class StringStringConverter extends ResourceConverter {
     @Override
     public Object parseString( String s, ResourceMap r )
     {
+        // TODO(michab) Goal here is to unquote the string.
+        // Code below is the poor-man's-solution.
+        // TODO a StringUtil.unquote is needed.
         String[] quotedParts = StringUtils.splitQuoted( s );
 
         return StringUtils.concatenate(
-                StringUtils.EMPTY_STRING,
+                " ",
                 quotedParts );
     }
 }
