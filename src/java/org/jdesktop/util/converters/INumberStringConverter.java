@@ -5,11 +5,8 @@ import org.jdesktop.util.ResourceMap;
 
 abstract class INumberStringConverter extends ResourceConverter {
 
-        private final Class<?> primitiveType;
-
         INumberStringConverter(Class<?> type, Class<?> primitiveType) {
             super(type);
-            this.primitiveType = primitiveType;
         }
 
         protected abstract Number parseString(String s, int radix) throws NumberFormatException;
@@ -26,11 +23,6 @@ abstract class INumberStringConverter extends ResourceConverter {
                         type.getSimpleName() );
                 throw new Exception( message, e );
             }
-        }
-
-        @Override
-        public boolean supportsType(Class<?> testType) {
-            return testType.equals(type) || testType.equals(primitiveType);
         }
     }
 

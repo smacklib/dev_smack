@@ -1,8 +1,17 @@
+/* $Id$
+ *
+ * Utilities
+ *
+ * Released under Gnu Public License
+ * Copyright © 2017 Michael G. Binz
+ */
 package org.jdesktop.util;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
@@ -23,9 +32,11 @@ public class ResourceMap extends HashMap<String, String>
 
     private final Class<?> _class;
 
+    private final String _resourcePath;
+
     public ResourceMap( Class<?> cl )
     {
-        _class = cl;
+        _class = Objects.requireNonNull( cl );
 
         String pack =
                 cl.getPackage().getName();
@@ -35,7 +46,10 @@ public class ResourceMap extends HashMap<String, String>
         _bundleName =
                 String.format( "%s.resources.%s",
                         pack,
-                        cl.getSimpleName() );
+                        _class.getSimpleName() );
+
+        _resourcePath =
+                (pack + ".resources.").replace( '.', '/' );
 
         ClassLoader cldr = cl.getClassLoader();
         if ( cldr == null )
@@ -56,13 +70,22 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( MissingResourceException e )
         {
+            // If we found no bundle we simply stay empty, no panic.
             return;
         }
     }
 
-    public String get( String key )
+    /**
+     * Looks up the value for the qualified name. For a key {@code x} and a
+     * map for {@code org.jdesktop.Test} the qualified name is {@code Test.x}.
+     *
+     * @param key The requested key.
+     * @return The associated value.
+     */
+    public Optional<String> getQualified( String key )
     {
-        return super.get( key );
+        return Optional.ofNullable(
+                get( _class.getSimpleName() + "." + key ) );
     }
 
     /**
@@ -79,13 +102,13 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * @return A resource dir, slash-separated, with a leading and a
-     * trailing slash.  For class org.jdesktop.Test the resource dir
-     * is TODO
+     * @return A resource dir, slash-separated, with a trailing slash.
+     * For class org.jdesktop.Test the resource dir
+     * is org/jdesktop/resources/. Used for the resolution of
+     * secondary resources like icons.
      */
     public String getResourceDir()
     {
-        return _class.getPackage().getName().replace( '.', '/' ) + "/resources/";
-//        throw new IllegalArgumentException( "Not implemented yet." );
+        return _resourcePath;
     }
 }
