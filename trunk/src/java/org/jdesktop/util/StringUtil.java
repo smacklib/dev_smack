@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2009-2011 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,16 +15,15 @@ import java.util.Arrays;
 /**
  * Helper operations for strings.
  *
- * Note that this is deprecated kind-of.  Use org.jdesktop.StringUtil instead.
  * @version $Rev$
  * @author Michael Binz
  */
-public class StringUtils
+public class StringUtil
 {
     /**
      * Instantiation forbidden.
      */
-    private StringUtils()
+    private StringUtil()
     {
         throw new AssertionError();
     }

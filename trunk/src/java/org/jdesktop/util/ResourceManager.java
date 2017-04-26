@@ -1,3 +1,10 @@
+/* $Id$
+ *
+ * Utilities
+ *
+ * Released under Gnu Public License
+ * Copyright © 2017 Michael G. Binz
+ */
 package org.jdesktop.util;
 
 import java.beans.BeanInfo;
