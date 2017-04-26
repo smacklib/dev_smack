@@ -1,11 +1,19 @@
 package org.jdesktop.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +40,9 @@ public class ResourceManager
     private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
             new WeakHashMap<>();
 
+    private WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
+            new WeakMapWithProducer<>( ResourceMap::new );
+
     public ResourceManager()
     {
         for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
@@ -48,12 +59,94 @@ public class ResourceManager
             c.extendTypeMap( _converters );
     }
 
+
+    /**
+     * Inject the passed bean's properties from this map. The prefix is
+     * used to find the configuration keys in the map. Keys in the
+     * map have to look like prefix.propertyName. The dot is added to
+     * the prefix.
+     *
+     * @param bean The bean whose properties are injected.
+     * @param prefix The prefix used to filter the map's keys.
+     */
+    public void injectProperties( Object bean, String prefix, ResourceMap map )
+    {
+        BeanInfo beanInfo;
+        try {
+            beanInfo = Introspector.getBeanInfo(
+                    bean.getClass() );
+        } catch (IntrospectionException e) {
+            throw new IllegalArgumentException( "Introspection failed.", e );
+        }
+
+        // Add the dot.
+        prefix += ".";
+
+        Set<String> definedKeys = new HashSet<String>();
+        for ( String c : map.keySet() )
+            if ( c.startsWith( prefix ) )
+                definedKeys.add( c );
+
+        if ( definedKeys.size() == 0 )
+            return;
+
+        for ( PropertyDescriptor c : beanInfo.getPropertyDescriptors() )
+        {
+            Method setter = c.getWriteMethod();
+
+            // Skip read-only properties.
+            if ( setter == null )
+                continue;
+
+            String currentKey = prefix + c.getName();
+            if ( ! definedKeys.contains( currentKey ) )
+                continue;
+
+            definedKeys.remove( currentKey );
+
+            try
+            {
+                // This implicitly transforms the key's value.
+                setter.invoke(
+                        bean,
+                        convert(
+                                c.getPropertyType(),
+                                map.get( currentKey ),
+                                map ) );
+//                        map.get( currentKey, c.getPropertyType() ) );
+            }
+            catch ( IllegalAccessException e )
+            {
+                throw new RuntimeException( e );
+            }
+            catch ( InvocationTargetException e )
+            {
+                throw new RuntimeException( e.getCause() );
+            }
+
+            if ( definedKeys.size() == 0 )
+                return;
+        }
+
+        for ( String c : definedKeys )
+            LOG.warning( String.format( "Key '%s' defined in map does not match property.", c ) );
+    }
+
+
     public void injectResources( Object o )
     {
         if ( o instanceof Class )
             injectResources( null, (Class<?>)o );
         else
             injectResources( o, o.getClass() );
+    }
+
+    /**
+     * @return
+     */
+    public ResourceMap getResourceMap( Class<?> clazz )
+    {
+        return _resourceMapCache.get( clazz );
     }
 
     public void injectResources( Object instance, Class<?> cIass )
@@ -270,5 +363,57 @@ public class ResourceManager
         {
             return _ctor.newInstance( s );
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
+    {
+        ResourceConverter converter =
+                _converters.get( targetType );
+
+        if ( converter == null )
+            converter = synthArrayConverter( targetType );
+
+        if ( converter == null )
+            converter = synthConstructorConverter( targetType );
+
+        if ( converter == null )
+            throw new IllegalArgumentException( "No resource converter found for type: " + targetType );
+
+        try
+        {
+            return (T)converter.parseString( toConvert, map );
+        }
+        catch ( Exception e )
+        {
+            throw new IllegalArgumentException( "Conversion failed.", e );
+        }
+    }
+
+    private ResourceConverter synthArrayConverter( Class<?> targetType )
+    {
+        if ( ! targetType.isArray() )
+            return null;
+
+        ResourceConverter rc = _converters.get(
+                targetType.getComponentType() );
+
+        if ( rc == null )
+            return null;
+
+        return new ArrayResourceConverter( rc, targetType );
+    }
+
+    private ResourceConverter synthConstructorConverter( Class<?> targetType )
+    {
+        Constructor<?> ctor =
+                ReflectionUtil.getConstructor( targetType, String.class );
+
+        if ( ctor == null )
+            return null;
+
+        return new ConstructorResourceConverter(
+                ctor,
+                targetType );
     }
 }

@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.util.MultiMap;
 import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.MultiMap;
 
 /**
  * A base class for console applications.

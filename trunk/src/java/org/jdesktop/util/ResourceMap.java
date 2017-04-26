@@ -62,7 +62,7 @@ public class ResourceMap extends HashMap<String, String>
 
     public String get( String key )
     {
-        return super.get( _class.getSimpleName() + "." + key );
+        return super.get( key );
     }
 
     /**
@@ -78,8 +78,14 @@ public class ResourceMap extends HashMap<String, String>
         return _class.getClassLoader();
     }
 
+    /**
+     * @return A resource dir, slash-separated, with a leading and a
+     * trailing slash.  For class org.jdesktop.Test the resource dir
+     * is TODO
+     */
     public String getResourceDir()
     {
-        throw new IllegalArgumentException( "Not implemented yet." );
+        return _class.getPackage().getName().replace( '.', '/' ) + "/resources/";
+//        throw new IllegalArgumentException( "Not implemented yet." );
     }
 }
