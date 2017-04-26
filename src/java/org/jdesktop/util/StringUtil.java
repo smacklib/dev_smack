@@ -295,6 +295,59 @@ public class StringUtil
     }
 
     /**
+     * Experimental.
+     *
+     * @param quoteChar
+     * @param toUnquote
+     * @return
+     */
+    public static String unquote( char quoteChar, String toUnquote )
+    {
+        if ( toUnquote.indexOf( quoteChar ) == -1 )
+            return toUnquote;
+
+        String intermediate =
+                toUnquote.trim();
+
+        String quoteString =
+                EMPTY_STRING + quoteChar;
+
+        if ( intermediate.startsWith( quoteString ) )
+            intermediate = trim( intermediate, quoteString );
+
+        if ( isEmpty( intermediate ) )
+            return EMPTY_STRING;
+
+        if ( intermediate.indexOf( quoteChar ) == -1 )
+            return intermediate;
+
+        StringBuilder result = new StringBuilder(
+                intermediate.length() );
+
+        for ( int i = 0 ; i < intermediate.length() ; i++ )
+        {
+            char c = intermediate.charAt( i );
+
+            if ( c == quoteChar )
+                throw new IllegalArgumentException( toUnquote );
+
+            if ( c == ESCAPE_CHAR.charAt( 0 ) )
+                // Skip an index when an escape char is found.
+                // If the string ends with an escape char
+                // we get a sioob exception. That's ok.
+                c = intermediate.charAt( ++i );
+
+            result.append( c );
+        }
+
+        return result.toString();
+    }
+    public static String unquote( String toUnquote )
+    {
+        return unquote( QUOTE_CHAR, toUnquote );
+    }
+
+    /**
      * Quotes the passed string.
      *
      * @param string The string to quote.  A {@code null} is allowed, resulting
