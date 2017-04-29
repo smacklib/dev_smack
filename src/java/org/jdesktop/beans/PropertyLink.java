@@ -6,13 +6,17 @@
 
 package org.jdesktop.beans;
 
-import javafx.beans.property.adapter.JavaBeanObjectProperty;
-import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Objects;
+
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
- * Links a bound property on a source object to a property on
+ * Links a bound property on a source object to a bound property on
  * a target object.
  *
  * @version $Rev$
@@ -20,10 +24,12 @@ import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
  */
 public class PropertyLink
 {
-    private final ReadOnlyJavaBeanObjectProperty<?>
+    private final ReadOnlyJavaBeanObjectProperty<Object>
         _sourceProperty;
-    private final JavaBeanObjectProperty<Object>
+    private final PropertyProxy<Object,Object>
         _targetProperty;
+    private final PropertyAdapter
+        _pa;
 
     /**
      * Creates a property update link between the source and target.
@@ -33,9 +39,7 @@ public class PropertyLink
      * target object.
      * @param propName The name of source and target property.
      * @param target The target object.
-     * @deprecated Use static {@link #bind(Object, String, Object)}
      */
-    @Deprecated
     public PropertyLink(
             Object source,
             String propName,
@@ -43,6 +47,8 @@ public class PropertyLink
     {
         this( source, propName, target, propName );
     }
+
+    private final boolean usePcl = true;
 
     /**
      * Creates a property update link between the source and target.
@@ -52,42 +58,37 @@ public class PropertyLink
      * @param propSrcName The name of the source property.
      * @param target The target object.
      * @param propTgtName The name of the target property.
-     * @deprecated Use static {@link #bind(Object, String, Object, String)}
      */
-    @Deprecated
     public PropertyLink(
             Object source,
             String propSrcName,
             Object target,
             String propTgtName )
     {
-        // Would be cool if we could match the types of source and target
-        // but this is currently not part of the FX properties API.
-        // Anyway, we fail in both cases at runtime.
         try
         {
-            // TODO: Create the property in this special way to prevent
-            // type warnings. I think the typing of JBOPB is plainly wrong.
-            JavaBeanObjectPropertyBuilder<Object> tgtBld =
-                    new JavaBeanObjectPropertyBuilder<>();
-            tgtBld
-                .name( propTgtName )
-                .bean( target );
-            _targetProperty =
-                    tgtBld.build();
-
-            _sourceProperty =
-                    ReadOnlyJavaBeanObjectPropertyBuilder.create()
-                        .name( propSrcName )
-                        .bean( source )
-                        .build();
-
-            _targetProperty.bind( _sourceProperty );
+            _sourceProperty = ReadOnlyJavaBeanObjectPropertyBuilder
+                    .create()
+                    .bean( source )
+                    .name( propSrcName )
+                    .build();
         }
         catch ( NoSuchMethodException e )
         {
-            throw new IllegalArgumentException( e );
+            throw new IllegalArgumentException( propSrcName );
         }
+
+        _pa =
+            new PropertyAdapter( source );
+
+        if ( usePcl )
+            _pa.addPropertyChangeListener( _listener );
+        else
+            _sourceProperty.addListener( _listener2 );
+
+        _targetProperty =
+            new PropertyProxy<Object,Object>( propTgtName, target );
+
     }
 
     /**
@@ -97,7 +98,8 @@ public class PropertyLink
      */
     public PropertyLink update()
     {
-        _sourceProperty.fireValueChangedEvent();
+        _targetProperty.set( _sourceProperty.get() );
+
         return this;
     }
 
@@ -107,23 +109,49 @@ public class PropertyLink
      */
     public void dispose()
     {
-        _sourceProperty.dispose();
-        _targetProperty.dispose();
+        if ( usePcl )
+            _pa.removePropertyChangeListener( _listener );
+        else
+            _sourceProperty.removeListener( _listener2 );
     }
 
-    public static PropertyLink bind(
-            Object source,
-            String propSrcName,
-            Object target,
-            String propTgtName )
+    /**
+     * A listener for source changes.
+     */
+    private final PropertyChangeListener _listener = new PropertyChangeListener()
     {
-        return new PropertyLink( source, propSrcName, target, propTgtName );
-    }
-    public static PropertyLink bind(
-            Object source,
-            String propSrcName,
-            Object target )
+        @Override
+        public void propertyChange( PropertyChangeEvent evt )
+        {
+            System.out.println( "L1: " + oid );
+            // Ignore change events for other properties.
+            if ( ! _sourceProperty.getName().equals( evt.getPropertyName() ) )
+                return;
+
+            Object newValue = evt.getNewValue();
+
+            // If the new value and the value on the target are already the
+            // same we ignore the call.
+            if ( Objects.equals( _targetProperty.get(), newValue ) )
+                return;
+
+            // Set the value.
+            _targetProperty.set( newValue );
+        }
+    };
+
+    private final ChangeListener<Object> _listener2 = new ChangeListener<Object>()
     {
-        return new PropertyLink( source, propSrcName, target, propSrcName );
-    }
+        @Override
+        public void changed( ObservableValue<? extends Object> observable,
+                Object oldValue, Object newValue )
+        {
+            System.out.println( "L2: " + oid );
+            _targetProperty.set( newValue );
+        }
+    };
+
+    private static int oidStart;
+
+    private final int oid = ++oidStart;
 }
