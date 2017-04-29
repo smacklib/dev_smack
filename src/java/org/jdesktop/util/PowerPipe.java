@@ -5,25 +5,21 @@
  * Released under Gnu Public License
  * Copyright � 2015 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
-import org.jdesktop.util.Pipe;
-import org.jdesktop.util.PowerPipe;
-
 /**
  * A simple pipe.  Write to the write end, read from the read end.
  *
+ * @version $Id$
  * @author Michael Binz
- * @deprecated Use {@link PowerPipe}
  */
-@Deprecated
-public final class Pipe2
-    implements Pipe, AutoCloseable
+public final class PowerPipe
+    implements Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;
 
@@ -85,7 +81,7 @@ public final class Pipe2
         public void close() throws IOException
         {
             // A close propagates to both ends.
-            Pipe2.this.close();
+            PowerPipe.this.close();
         };
     };
 
@@ -151,7 +147,7 @@ public final class Pipe2
         public void close() throws IOException
         {
             // A close propagates to both ends.
-            Pipe2.this.close();
+            PowerPipe.this.close();
         };
     };
 
@@ -160,7 +156,7 @@ public final class Pipe2
      *
      * @param bufferSize The size of the pipe's internal buffer.
      */
-    public Pipe2( int bufferSize )
+    public PowerPipe( int bufferSize )
     {
         if ( bufferSize <= 0 )
             throw new IllegalArgumentException( "bufferSize must be > 0" );
@@ -172,7 +168,7 @@ public final class Pipe2
     /**
      * Create an instance with a 10k buffer size.
      */
-    public Pipe2()
+    public PowerPipe()
     {
         this( BUFFER_SIZE );
     }

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2015 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -14,17 +14,13 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import org.jdesktop.util.NetUtil;
-
 /**
  * Net related utility classes.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use {@link NetUtil}
  */
-@Deprecated
-public class NetUtils
+public class NetUtil
 {
     /**
      * Get the name of the local host.
@@ -156,7 +152,7 @@ public class NetUtils
         }
     }
 
-    private NetUtils()
+    private NetUtil()
     {
         throw new AssertionError();
     }
