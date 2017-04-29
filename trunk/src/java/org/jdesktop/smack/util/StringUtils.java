@@ -10,6 +10,8 @@ package org.jdesktop.smack.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.jdesktop.util.StringUtil;
+
 
 
 /**
@@ -18,7 +20,9 @@ import java.util.Arrays;
  * Note that this is deprecated kind-of.  Use org.jdesktop.StringUtil instead.
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Use {@link StringUtil}
  */
+@Deprecated
 public class StringUtils
 {
     /**

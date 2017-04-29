@@ -1,4 +1,4 @@
-/* $Id: Loader.java 142 2015-04-14 18:46:49Z michab66 $
+/* $Id$
  *
  * Released under Gnu Public License
  * Copyright © 2008 Michael G. Binz

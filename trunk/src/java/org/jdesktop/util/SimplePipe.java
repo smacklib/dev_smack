@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2012 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,15 +13,15 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.jdesktop.smack.util.FileUtils;
+
 /**
  * A simple pipe.  Write to the write end, read from the read end.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use {@link SimplePipe}
  */
-@Deprecated
-public final class Pipe implements org.jdesktop.util.Pipe
+public final class SimplePipe implements Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;
 
@@ -33,7 +33,7 @@ public final class Pipe implements org.jdesktop.util.Pipe
      *
      * @param bufferSize The size of the pipe's internal buffer.
      */
-    public Pipe( int bufferSize )
+    public SimplePipe( int bufferSize )
     {
         try
         {
@@ -51,7 +51,7 @@ public final class Pipe implements org.jdesktop.util.Pipe
     /**
      * Create an instance with a 10k buffer size.
      */
-    public Pipe()
+    public SimplePipe()
     {
         this( BUFFER_SIZE );
     }

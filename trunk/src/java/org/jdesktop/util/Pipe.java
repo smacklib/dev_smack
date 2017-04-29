@@ -1,4 +1,4 @@
-/* $Id: Pipe.java 225 2016-04-28 16:45:39Z michab66 $
+/* $Id$
  *
  * Common.
  *
@@ -16,7 +16,7 @@ import java.io.OutputStream;
  * @version $Rev$
  * @author Michael Binz
  */
-public interface Pipe
+public interface Pipe extends AutoCloseable
 {
     /**
      * Get the Pipe's write end.
@@ -35,5 +35,6 @@ public interface Pipe
     /**
      * Close the pipe.
      */
+    @Override
     void close();
 }
