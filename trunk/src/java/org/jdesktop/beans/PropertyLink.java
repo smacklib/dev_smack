@@ -12,8 +12,6 @@ import java.util.Objects;
 
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 /**
  * Links a bound property on a source object to a bound property on
@@ -48,8 +46,6 @@ public class PropertyLink
         this( source, propName, target, propName );
     }
 
-    private final boolean usePcl = true;
-
     /**
      * Creates a property update link between the source and target.
      *
@@ -78,17 +74,17 @@ public class PropertyLink
             throw new IllegalArgumentException( propSrcName );
         }
 
+
         _pa =
             new PropertyAdapter( source );
 
-        if ( usePcl )
-            _pa.addPropertyChangeListener( _listener );
-        else
-            _sourceProperty.addListener( _listener2 );
+        // Note that the javafx bindings use weak listeners.  This is the reason
+        // why we can't use them here.  pcl listeners are kept using a strong
+        // reference.
+         _pa.addPropertyChangeListener( _listener );
 
         _targetProperty =
             new PropertyProxy<Object,Object>( propTgtName, target );
-
     }
 
     /**
@@ -109,10 +105,7 @@ public class PropertyLink
      */
     public void dispose()
     {
-        if ( usePcl )
-            _pa.removePropertyChangeListener( _listener );
-        else
-            _sourceProperty.removeListener( _listener2 );
+        _pa.removePropertyChangeListener( _listener );
     }
 
     /**
@@ -123,7 +116,6 @@ public class PropertyLink
         @Override
         public void propertyChange( PropertyChangeEvent evt )
         {
-            System.out.println( "L1: " + oid );
             // Ignore change events for other properties.
             if ( ! _sourceProperty.getName().equals( evt.getPropertyName() ) )
                 return;
@@ -140,18 +132,20 @@ public class PropertyLink
         }
     };
 
-    private final ChangeListener<Object> _listener2 = new ChangeListener<Object>()
+    public static PropertyLink bind(
+            Object source,
+            String propSrcName,
+            Object target,
+            String propTgtName )
     {
-        @Override
-        public void changed( ObservableValue<? extends Object> observable,
-                Object oldValue, Object newValue )
-        {
-            System.out.println( "L2: " + oid );
-            _targetProperty.set( newValue );
-        }
-    };
+        return new PropertyLink( source, propSrcName, target, propTgtName );
+    }
 
-    private static int oidStart;
-
-    private final int oid = ++oidStart;
+    public static PropertyLink bind(
+            Object source,
+            String propSrcName,
+            Object target )
+    {
+        return new PropertyLink( source, propSrcName, target );
+    }
 }
