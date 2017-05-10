@@ -3,7 +3,7 @@
  * Common.
  *
  * Released under Gnu Public License
- * Copyright � 2015 Michael G. Binz
+ * Copyright © 2015 Michael G. Binz
  */
 package org.jdesktop.util;
 
@@ -67,9 +67,7 @@ public final class PowerPipe
         {
             try
             {
-                System.err.println( ">w " + _currentWritePosition );
                 writeImpl( b );
-                System.err.println( "<w " + _currentWritePosition );
             }
             catch ( InterruptedException e )
             {
@@ -132,10 +130,7 @@ public final class PowerPipe
         {
             try
             {
-                System.err.println( ">r " + _currentReadPosition );
-                int result = readImpl();
-                System.err.println( "<r " + _currentReadPosition );
-                return result;
+                return readImpl();
             }
             catch ( InterruptedException e )
             {
@@ -161,7 +156,7 @@ public final class PowerPipe
         if ( bufferSize <= 0 )
             throw new IllegalArgumentException( "bufferSize must be > 0" );
 
-        // Allocate one larger since our invariant requires that
+        // Allocate one larger since our invariant requires that.
         _buffer = new byte[ bufferSize+1 ];
     }
 
