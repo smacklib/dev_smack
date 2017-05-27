@@ -5,6 +5,11 @@
  */
 package org.jdesktop.beans;
 
+import java.util.HashSet;
+import java.util.WeakHashMap;
+
+import org.jdesktop.util.OneToN;
+
 import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
@@ -19,8 +24,8 @@ import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
  */
 public class PropertyLink
 {
-    private static final WeakHolder _holder =
-            new WeakHolder();
+    private static final OneToN<Object, Object, HashSet<Object>> _holder =
+            new OneToN<>( WeakHashMap::new, HashSet::new );
     private final ReadOnlyJavaBeanObjectProperty<?>
         _sourceProperty;
     private final JavaBeanObjectProperty<Object>
@@ -81,7 +86,7 @@ public class PropertyLink
                         .name( propSrcName )
                         .bean( source )
                         .build();
-            _holder.put(
+            _holder.putValue(
                     source,
                     _targetProperty );
             _targetProperty.bind(
