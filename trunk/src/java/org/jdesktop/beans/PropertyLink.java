@@ -146,9 +146,10 @@ public class PropertyLink
      * @param c A converter.
      * @return The passed property with additional persistence bindings.
      */
-    public static <T> ObjectProperty<T> persist(
-            ObjectProperty<T> p,
-            StringConverter<T> c )
+    public static <T,P extends ObjectProperty<T> >
+        P persist(
+                P p,
+                StringConverter<T> c )
     {
         ApplicationProperties a = ServiceManager.getApplicationService(
                 ApplicationProperties.class );
