@@ -8,12 +8,16 @@ package org.jdesktop.beans;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 
+import org.jdesktop.application.ApplicationProperties;
 import org.jdesktop.util.OneToN;
+import org.jdesktop.util.ServiceManager;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
+import javafx.util.StringConverter;
 
 /**
  * Links a bound property on a source object to a property on
@@ -133,5 +137,52 @@ public class PropertyLink
             Object target )
     {
         return new PropertyLink( source, propSrcName, target, propSrcName );
+    }
+
+    /**
+     * Persist the passed property.
+     *
+     * @param p The property to persist.
+     * @param c A converter.
+     * @return The passed property with additional persistence bindings.
+     */
+    public static <T> ObjectProperty<T> persist(
+            ObjectProperty<T> p,
+            StringConverter<T> c )
+    {
+        ApplicationProperties a = ServiceManager.getApplicationService(
+                ApplicationProperties.class );
+
+        // Read the initial value from persistence.
+        T initialValue = c.fromString(
+                a.get( p.getBean().getClass(), p.getName(), null ) );
+
+        // If an initial value was set in persistence ...
+        if ( initialValue != null )
+        {
+            // ... we set it on  the property.
+            p.set( initialValue );
+        }
+        // If we found nothing in persistence, but the property
+        // has a value ...
+        else if ( p.get() != null )
+        {
+            // ... we update persistence.
+            a.put(
+                    p.getBean().getClass(),
+                    p.getName(),
+                    c.toString( p.get() ) );
+        }
+
+        p.addListener( (observable,o,n) ->
+        {
+            // Record all property changes in persistence.
+            a.put(
+                    p.getBean().getClass(),
+                    p.getName(),
+                    c.toString( n ) );
+        } );
+
+        return p;
     }
 }
