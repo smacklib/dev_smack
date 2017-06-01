@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.MultiMap;
+import org.jdesktop.util.StringUtil;
 
 /**
  * A base class for console applications.
@@ -52,9 +52,9 @@ abstract public class CliApplication
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.METHOD )
     protected @interface Command {
-        String name() default StringUtils.EMPTY_STRING;
+        String name() default StringUtil.EMPTY_STRING;
         String[] argumentNames() default {};
-        String shortDescription() default StringUtils.EMPTY_STRING;
+        String shortDescription() default StringUtil.EMPTY_STRING;
     }
 
     /**
@@ -64,9 +64,9 @@ abstract public class CliApplication
     @Target( {ElementType.TYPE, ElementType.PARAMETER} )
     public @interface Named {
         String value()
-            default StringUtils.EMPTY_STRING;
+            default StringUtil.EMPTY_STRING;
         String description()
-            default StringUtils.EMPTY_STRING;
+            default StringUtil.EMPTY_STRING;
     }
 
     /**
@@ -164,7 +164,7 @@ abstract public class CliApplication
             err(
                 "Could not find subcommand '%s'. Allowed are: %s\n",
                 argv[0],
-                StringUtils.concatenate( ", ", commands) );
+                StringUtil.concatenate( ", ", commands) );
 
             return;
         }
@@ -400,7 +400,7 @@ abstract public class CliApplication
 
         String optional =
                 getCommandParameterList( command );
-        if ( StringUtils.hasContent( optional ) )
+        if ( StringUtil.hasContent( optional ) )
         {
             info.append( ": " );
             info.append( optional );
@@ -409,7 +409,7 @@ abstract public class CliApplication
 
         optional =
                 getCommandDescription( command );
-        if ( StringUtils.hasContent( optional ) )
+        if ( StringUtil.hasContent( optional ) )
         {
             info.append( "    " );
             info.append( optional );
@@ -434,7 +434,7 @@ abstract public class CliApplication
         {
             String desc =
                     getApplicationDescription();
-            if ( StringUtils.hasContent( desc ) )
+            if ( StringUtil.hasContent( desc ) )
             {
                 result.append( " -- " );
                 result.append(desc);
@@ -494,7 +494,7 @@ abstract public class CliApplication
                 continue;
 
             String name = commandAnnotation.name();
-            if ( StringUtils.isEmpty( name ) )
+            if ( StringUtil.isEmpty( name ) )
                 name = c.getName();
 
             name = name.toLowerCase();
@@ -532,7 +532,7 @@ abstract public class CliApplication
     {
         String msg = e.getMessage();
 
-        if ( StringUtils.isEmpty( msg ) )
+        if ( StringUtil.isEmpty( msg ) )
             msg = e.getClass().getName();
 
         if ( e instanceof RuntimeException || e instanceof Error )
@@ -590,7 +590,7 @@ abstract public class CliApplication
 
             String msg = e.getMessage();
 
-            if ( StringUtils.isEmpty( msg ) )
+            if ( StringUtil.isEmpty( msg ) )
                 err( e.getClass().getSimpleName() );
             else
                 err( msg );
@@ -689,7 +689,7 @@ abstract public class CliApplication
     {
         Command command = method.getAnnotation( Command.class );
 
-        if ( command != null && StringUtils.hasContent( command.name() ))
+        if ( command != null && StringUtil.hasContent( command.name() ))
             return command.name();
 
         return method.getName();
@@ -702,7 +702,7 @@ abstract public class CliApplication
         if ( command != null )
             return command.shortDescription();
 
-        return StringUtils.EMPTY_STRING;
+        return StringUtil.EMPTY_STRING;
     }
 
     private String getCommandParameterList( Method method )
@@ -710,9 +710,9 @@ abstract public class CliApplication
         String[] list = getCommandParameterListExt( method );
 
         if ( list.length == 0 )
-            return StringUtils.EMPTY_STRING;
+            return StringUtil.EMPTY_STRING;
 
-        return StringUtils.concatenate( ", ", list );
+        return StringUtil.concatenate( ", ", list );
     }
 
     private String[] getCommandParameterListExt( Method method )
@@ -738,7 +738,7 @@ abstract public class CliApplication
         {
             Named named = c.getDeclaredAnnotation( Named.class );
 
-            if ( named != null && StringUtils.hasContent( named.value() ) )
+            if ( named != null && StringUtil.hasContent( named.value() ) )
                 result[idx] = named.value();
             else if ( c.getType().isEnum() )
                 result[idx] = getEnumDocumentation( c.getType() );
@@ -759,13 +759,13 @@ abstract public class CliApplication
             enumNames.add( o.toString() );
 
         if ( enumNames.isEmpty() )
-            return StringUtils.EMPTY_STRING;
+            return StringUtil.EMPTY_STRING;
 
         Collections.sort( enumNames );
 
         return
                 "[" +
-                StringUtils.concatenate( ", ", enumNames ) +
+                StringUtil.concatenate( ", ", enumNames ) +
                 "]";
     }
 
@@ -785,7 +785,7 @@ abstract public class CliApplication
         Named annotation =
                 getClass().getAnnotation( Named.class );
 
-        if ( annotation != null && StringUtils.hasContent( annotation.value() ) )
+        if ( annotation != null && StringUtil.hasContent( annotation.value() ) )
             return annotation.value();
 
         return getClass().getSimpleName();
@@ -804,10 +804,10 @@ abstract public class CliApplication
         Named annotation =
                 getClass().getAnnotation( Named.class );
 
-        if ( annotation != null && StringUtils.hasContent( annotation.description() ) )
+        if ( annotation != null && StringUtil.hasContent( annotation.description() ) )
             return annotation.description();
 
-        return StringUtils.EMPTY_STRING;
+        return StringUtil.EMPTY_STRING;
     }
 
     /**
@@ -867,7 +867,7 @@ abstract public class CliApplication
         String message = String.format(
                 "Unknown enum value: '%s'.  Allowed values are %s.",
                 argument,
-                StringUtils.concatenate( ", ", allowed ) );
+                StringUtil.concatenate( ", ", allowed ) );
 
         throw new IllegalArgumentException( message );
     }

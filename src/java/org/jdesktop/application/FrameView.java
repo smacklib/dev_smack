@@ -7,7 +7,7 @@ package org.jdesktop.application;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * A View implementation using a JFrame.
@@ -96,7 +96,7 @@ public class FrameView extends View {
     {
         f.setName( MAIN_FRAME_NAME );
 
-        if ( StringUtils.isEmpty( f.getTitle() ) )
+        if ( StringUtil.isEmpty( f.getTitle() ) )
             f.setTitle( a.getTitle() );
 
         if ( f.getIconImage() == null && a.getIcon() != null )

@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.PaintEvent;
 import java.beans.Beans;
 import java.util.Collections;
@@ -32,8 +31,8 @@ import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.OSXAdapter;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.beans.AbstractBeanEdt;
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ServiceManager;
+import org.jdesktop.util.StringUtil;
 
 /**
  * The base class for Swing applications.
@@ -282,7 +281,7 @@ public abstract class Application extends AbstractBeanEdt
         // isn't defined we default to "system".
         String lnf =
                 appResourceMap.getString(KEY_APPLICATION_LOOKANDFEEL);
-        if ( StringUtils.isEmpty( lnf ) )
+        if ( StringUtil.isEmpty( lnf ) )
             lnf = "system";
 
         // For default nothing to do.
@@ -303,7 +302,7 @@ public abstract class Application extends AbstractBeanEdt
                 break;
             }
 
-        if ( StringUtils.isEmpty( classname ) )
+        if ( StringUtil.isEmpty( classname ) )
         {
             LOG.warning(
                     "LookAndFeel not found: " +
@@ -661,18 +660,18 @@ public abstract class Application extends AbstractBeanEdt
         return Collections.unmodifiableList( _exitListeners );
     }
 
-    /**
-     * The default {@code Action} for quitting an application,
-     * {@code quit} just exits the application by calling {@code exit(e)}.
-     *
-     * @param e the triggering event
-     * @see #exit(EventObject)
-     */
-    @Action
-    public void quit(ActionEvent e) {
-        exit(e);
-    }
-
+//    /**
+//     * The default {@code Action} for quitting an application,
+//     * {@code quit} just exits the application by calling {@code exit(e)}.
+//     *
+//     * @param e the triggering event
+//     * @see #exit(EventObject)
+//     */
+//    @Action
+//    public void quit(ActionEvent e) {
+//        exit(e);
+//    }
+//
     /**
      * The ApplicationContext for this Application.
      *
@@ -784,40 +783,8 @@ public abstract class Application extends AbstractBeanEdt
     public static ResourceManager getResourceManager()
     {
         return ServiceManager.getApplicationService( ResourceManager.class );
-//        try
-//        {
-//            return AppHelper.getResourceManager( getInstance() );
-//        }
-//        catch ( Exception e )
-//        {
-//            LOG.warning( "Creating standalone ResourceManager." );
-//            return new ResourceManager( Application.class );
-//        }
     }
 
-//    /**
-//     * Application placeholder class
-//     *
-//     * Instance of this class is created when client
-//     * invokes static method {@code Application.getInstance()}
-//     * @author etf
-//     * @see Application#getInstance()
-//     */
-//    private static final class DesignTimeApplication extends Application {
-//
-//        protected DesignTimeApplication() {
-//            ApplicationContext ctx = getContext();
-////            ctx.setApplicationClass(getClass());
-////            ctx.setApplication(this);
-//            ResourceMap appResourceMap = ctx.getResourceMap();
-//            appResourceMap.setPlatform(PlatformType.DEFAULT);
-//        }
-//
-//        @Override
-//        protected void startup() {
-//        }
-//    }
-//
     @Resource
     private String id = getClass().getSimpleName();
     /**
