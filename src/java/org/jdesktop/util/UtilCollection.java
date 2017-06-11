@@ -3,25 +3,26 @@
  * Common.
  *
  * Released under Gnu Public License
- * Copyright © 2012 Michael G. Binz
+ * Copyright © 2012-17 Michael G. Binz
  */
-
-package org.jdesktop.smack.util;
+package org.jdesktop.util;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import com.sun.istack.internal.NotNull;
 
 /**
  * Collection utilities.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use UtilCollection.
  */
-@Deprecated
-public class CollectionUtils
+public class UtilCollection
 {
     /**
      * Creates the intersection of the passed sets.
@@ -51,9 +52,22 @@ public class CollectionUtils
                 (T[]) Array.newInstance( clazz, p.size() ) );
     }
 
+    /**
+     * @param list A list.
+     * @return The last element in the passed list. May be empty
+     * if the list was empty.
+     */
+    public static <T> Optional<T> lastElement( @NotNull List<T> list )
+    {
+        if ( list.isEmpty() )
+            return Optional.empty();
 
+        return Optional.of(
+                list.get(
+                        list.size()-1 ) );
+    }
 
-    private CollectionUtils()
+    private UtilCollection()
     {
         throw new AssertionError();
     }
