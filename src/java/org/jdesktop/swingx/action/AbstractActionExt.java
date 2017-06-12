@@ -30,7 +30,11 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
+
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.adapter.JavaBeanBooleanProperty;
+import javafx.beans.property.adapter.JavaBeanBooleanPropertyBuilder;
 
 /**
  * Extends the concept of the Action to include toggle or group states.
@@ -46,6 +50,27 @@ import org.jdesktop.smack.util.StringUtils;
 public abstract class AbstractActionExt extends AbstractAction
     implements ItemListener
 {
+    public final SimpleBooleanProperty enabledProperty =
+            new SimpleBooleanProperty();
+
+    {
+        enabledProperty.set( isEnabled() );
+
+        try
+        {
+            JavaBeanBooleanPropertyBuilder bb =
+                    JavaBeanBooleanPropertyBuilder.create();
+            JavaBeanBooleanProperty beanEnabled =
+                    bb.bean( this ).name( "enabled" ).build();
+
+            beanEnabled.bindBidirectional( enabledProperty );
+        }
+        catch ( Exception e )
+        {
+            throw new ExceptionInInitializerError();
+        }
+    }
+
     /**
      * The key for the button group
      */
@@ -65,7 +90,9 @@ public abstract class AbstractActionExt extends AbstractAction
 
     /**
      * Copy constructor copies the state.
+     * @deprecated Do not use.
      */
+    @Deprecated
     public AbstractActionExt(AbstractActionExt action) {
         Object[] keys = action.getKeys();
         for (int i = 0; i < keys.length; i++) {
@@ -318,7 +345,7 @@ public abstract class AbstractActionExt extends AbstractAction
     }
 
     public void setMnemonic(String mnemonic) {
-        if ( StringUtils.hasContent( mnemonic ) ) {
+        if ( StringUtil.hasContent( mnemonic ) ) {
             putValue(Action.MNEMONIC_KEY, new Integer(mnemonic.charAt(0)));
         }
     }
