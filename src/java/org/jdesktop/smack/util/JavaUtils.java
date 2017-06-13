@@ -14,7 +14,9 @@ import java.util.Objects;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Will be removed.
  */
+@Deprecated
 public class JavaUtils
 {
     private JavaUtils()
