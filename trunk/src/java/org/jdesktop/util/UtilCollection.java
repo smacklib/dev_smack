@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.sun.istack.internal.NotNull;
-
 /**
  * Collection utilities.
  *
@@ -57,7 +55,7 @@ public class UtilCollection
      * @return The last element in the passed list. May be empty
      * if the list was empty.
      */
-    public static <T> Optional<T> lastElement( @NotNull List<T> list )
+    public static <T> Optional<T> lastElement( List<T> list )
     {
         if ( list.isEmpty() )
             return Optional.empty();
@@ -65,6 +63,18 @@ public class UtilCollection
         return Optional.of(
                 list.get(
                         list.size()-1 ) );
+    }
+
+    /**
+     * Test if an array is empty.
+     *
+     * @param array The array to test. {@code null} is allowed.
+     * @return {@code true} if the array is not null and has a length greater
+     * than zero.
+     */
+    public static <T> boolean isEmptyArray( T[] array )
+    {
+        return array == null || array.length == 0;
     }
 
     private UtilCollection()
