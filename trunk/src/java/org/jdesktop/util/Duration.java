@@ -9,8 +9,6 @@ package org.jdesktop.util;
 
 import java.text.MessageFormat;
 
-import org.jdesktop.smack.util.StringUtils;
-
 /**
  * A time duration.  Used for printing and for splitting millisecond times
  * into their day, hour, minute etc. units.
@@ -189,9 +187,9 @@ public final class Duration
     @Override
     public String toString()
     {
-        String sign = _negative ? "-" : StringUtils.EMPTY_STRING;
+        String sign = _negative ? "-" : StringUtil.EMPTY_STRING;
 
-        String yearDayPrefix = StringUtils.EMPTY_STRING;
+        String yearDayPrefix = StringUtil.EMPTY_STRING;
 
         if ( _days > 0 )
             yearDayPrefix = _days + "d:";
