@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
-import org.jdesktop.smack.util.StringUtils;
-
 /**
  * A map holding all resources defined in the resources for
  * the passed class.  Resources for a class foo.bar.Elk are
@@ -40,8 +38,8 @@ public class ResourceMap extends HashMap<String, String>
 
         String pack =
                 cl.getPackage().getName();
-        if ( StringUtils.isEmpty( pack ) )
-            pack = StringUtils.EMPTY_STRING;
+        if ( StringUtil.isEmpty( pack ) )
+            pack = StringUtil.EMPTY_STRING;
 
         _bundleName =
                 String.format( "%s.resources.%s",
