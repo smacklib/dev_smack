@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Random;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -179,19 +178,18 @@ public class JXTools
     {
         Object key = pAction.getValue(Action.ACTION_COMMAND_KEY);
         if (key == null) {
-            key = pAction.getValue(Action.NAME);
+            key = pKeyStroke.toString();
         }
-        if (key == null) {
-            key = "Action" + new Random().nextInt();
-        }
-        pComp.getInputMap( pCondition ).put( pKeyStroke, key );
-        pComp.getActionMap().put( key, pAction );
-        pAction.putValue(Action.ACCELERATOR_KEY, pKeyStroke );
+
+        pComp.getInputMap( pCondition ).put(
+                pKeyStroke,
+                key );
+        pComp.getActionMap().put(
+                key,
+                pAction );
     }
 
     /**
-     * Returns the application's main frame.
-     *
      * @return The application's main frame.
      */
     public static JFrame getFrame() {
