@@ -64,6 +64,13 @@ public class ResourceManager
             c.extendTypeMap( _converters );
     }
 
+    /**
+     * @param converter A converter to add to the list of known converters.
+     */
+    public void addConverter( ResourceConverter converter )
+    {
+        _converters.put( converter.getType(), converter );
+    }
 
     /**
      * Inject the passed bean's properties from this map. The prefix is

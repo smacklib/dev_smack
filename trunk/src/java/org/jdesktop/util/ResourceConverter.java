@@ -48,7 +48,7 @@ package org.jdesktop.util;
  */
 public abstract class ResourceConverter
 {
-    protected final Class<?> type;
+    private final Class<?> _type;
 
     /**
      * Convert string to object
@@ -61,17 +61,19 @@ public abstract class ResourceConverter
             throws Exception;
 
     /**
-     *
-     * @param type
+     * @param Create a converter for the passed type.
      */
     protected ResourceConverter(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException("null type");
         }
-        this.type = type;
+        this._type = type;
     }
 
-    protected Class<?> getType() {
-        return type;
+    /**
+     * @return The type this converter can handle.
+     */
+    public Class<?> getType() {
+        return _type;
     }
 }
