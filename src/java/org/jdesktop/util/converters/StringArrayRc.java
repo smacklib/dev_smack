@@ -18,7 +18,7 @@ public final class StringArrayRc extends ResourceConverter
     {
         super( String[].class );
 
-        if ( ! type.isArray() )
+        if ( ! getType().isArray() )
             throw new IllegalArgumentException();
     }
 

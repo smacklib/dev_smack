@@ -17,7 +17,7 @@ abstract class NumberStringConverter extends ResourceConverter {
         try {
             return parseString(s);
         } catch (NumberFormatException e) {
-            throw new ResourceConverterException("invalid " + type.getSimpleName(), s, e);
+            throw new ResourceConverterException("invalid " + getType().getSimpleName(), s, e);
         }
     }
 }

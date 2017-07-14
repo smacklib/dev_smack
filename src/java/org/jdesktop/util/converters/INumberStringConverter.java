@@ -20,7 +20,7 @@ abstract class INumberStringConverter extends ResourceConverter {
             } catch (NumberFormatException e) {
                 String message = String.format( "Cannot convert '%s' to %s.",
                         s,
-                        type.getSimpleName() );
+                        getType().getSimpleName() );
                 throw new Exception( message, e );
             }
         }
