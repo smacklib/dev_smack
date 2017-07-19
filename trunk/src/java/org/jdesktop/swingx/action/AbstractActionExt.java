@@ -53,6 +53,10 @@ public abstract class AbstractActionExt extends AbstractAction
     public final SimpleBooleanProperty enabledProperty =
             new SimpleBooleanProperty();
 
+    /**
+     * Prevents the binding from being garbage collected.
+     */
+    private final JavaBeanBooleanProperty _holder;
     {
         enabledProperty.set( isEnabled() );
 
@@ -60,10 +64,10 @@ public abstract class AbstractActionExt extends AbstractAction
         {
             JavaBeanBooleanPropertyBuilder bb =
                     JavaBeanBooleanPropertyBuilder.create();
-            JavaBeanBooleanProperty beanEnabled =
+            _holder =
                     bb.bean( this ).name( "enabled" ).build();
-
-            beanEnabled.bindBidirectional( enabledProperty );
+            _holder.bindBidirectional(
+                    enabledProperty );
         }
         catch ( Exception e )
         {
