@@ -92,25 +92,6 @@ public abstract class AbstractActionExt extends AbstractAction
         this((String) null);
     }
 
-    /**
-     * Copy constructor copies the state.
-     * @deprecated Do not use.
-     */
-    @Deprecated
-    public AbstractActionExt(AbstractActionExt action) {
-        Object[] keys = action.getKeys();
-        for (int i = 0; i < keys.length; i++) {
-            putValue((String)keys[i], action.getValue((String)keys[i]));
-        }
-        this.enabled = action.enabled;
-
-        // Copy change listeners.
-        PropertyChangeListener[] listeners = action.getPropertyChangeListeners();
-        for (int i = 0; i < listeners.length; i++) {
-            addPropertyChangeListener(listeners[i]);
-        }
-    }
-
     public AbstractActionExt(String name) {
         super(name);
     }
@@ -279,7 +260,6 @@ public abstract class AbstractActionExt extends AbstractAction
      * <code>LARGE_ICON</code> key.
      *
      * @param icon the large icon; can be <code>null</code>
-     * @see #LARGE_ICON
      * @see Action#putValue
      */
     public void setLargeIcon(Icon icon) {
@@ -462,7 +442,7 @@ public abstract class AbstractActionExt extends AbstractAction
     }
 
     /**
-     * Sets the group identity of the state action. This is used to
+     * @param group Sets the group identity of the state action. This is used to
      * identify the action as part of a button group.
      */
     public void setGroup(Object group) {
