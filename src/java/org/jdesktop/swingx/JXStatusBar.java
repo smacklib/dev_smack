@@ -53,6 +53,8 @@ public class JXStatusBar extends JPanel
     {
         super( new BorderLayout() );
 
+        _right.setBorder( null );
+
         add( _messageLabel, BorderLayout.LINE_START );
 
         add( _right, BorderLayout.LINE_END );
