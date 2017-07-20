@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * A base class for converting arbitrary types to and from Strings, as well as
@@ -267,7 +267,7 @@ public abstract class ResourceConverter {
         public Object parseString( String s, ResourceMap r )
                 throws ResourceConverterException
         {
-            String[] split = StringUtils.splitQuoted( s );
+            String[] split = StringUtil.splitQuoted( s );
 
             Object result = Array.newInstance(
                     getType().getComponentType(), split.length );

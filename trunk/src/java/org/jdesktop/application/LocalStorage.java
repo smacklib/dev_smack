@@ -35,7 +35,7 @@ import javax.jnlp.ServiceManager;
 import org.jdesktop.application.util.AppHelper;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.beans.AbstractBeanEdt;
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Access to per application, per user, local file storage. The
@@ -70,9 +70,9 @@ public final class LocalStorage extends AbstractBeanEdt {
         String vendorId = a.getVendorId();
         String applicationId = a.getId();
 
-        if ( StringUtils.isEmpty( vendorId ) )
+        if ( StringUtil.isEmpty( vendorId ) )
             throw new IllegalArgumentException("Empty vendorId");
-        if ( StringUtils.isEmpty( applicationId ) )
+        if ( StringUtil.isEmpty( applicationId ) )
             throw new IllegalArgumentException("Empty applicationId");
 
         _vendorId =
