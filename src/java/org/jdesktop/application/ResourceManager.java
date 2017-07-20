@@ -33,8 +33,8 @@ import javax.swing.JMenu;
 import org.jdesktop.application.ResourceMap.InjectFieldException;
 import org.jdesktop.application.ResourceMap.LookupException;
 import org.jdesktop.application.ResourceMap.PropertyInjectionException;
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ReflectionUtil;
+import org.jdesktop.util.StringUtil;
 
 import javafx.util.Pair;
 
@@ -166,7 +166,7 @@ public final class ResourceManager
         int idx = bundleName.lastIndexOf( "." );
 
         return ( idx == -1 ) ?
-                StringUtils.EMPTY_STRING :
+                StringUtil.EMPTY_STRING :
                 bundleName.substring( 0, idx );
     }
 
@@ -443,7 +443,7 @@ public final class ResourceManager
 
         String resourcePackage = packge != null ?
                 packge.getName() + "." :
-                StringUtils.EMPTY_STRING;
+                StringUtil.EMPTY_STRING;
 
         resourcePackage += "resources.";
 
@@ -510,7 +510,7 @@ public final class ResourceManager
         {
             String key = field.getValue().mappedName();
 
-            if ( ! StringUtils.hasContent( key ) )
+            if ( ! StringUtil.hasContent( key ) )
                 key = keyPrefix + field.getKey().getName();
 
             injectField( field.getKey(), target, key, map );

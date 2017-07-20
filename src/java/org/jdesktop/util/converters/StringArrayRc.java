@@ -2,9 +2,9 @@ package org.jdesktop.util.converters;
 
 import java.lang.reflect.Array;
 
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Converts string arrays, handles quoting.
@@ -26,7 +26,7 @@ public final class StringArrayRc extends ResourceConverter
     public Object parseString( String s, ResourceMap r )
             throws Exception
     {
-        String[] split = StringUtils.splitQuoted( s );
+        String[] split = StringUtil.splitQuoted( s );
 
         Object result = Array.newInstance(
                 getType().getComponentType(), split.length );

@@ -42,8 +42,8 @@ import org.jdesktop.application.converters.PointStringConverter;
 import org.jdesktop.application.converters.RectangleStringConverter;
 import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.ResourceUtils;
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ReflectionUtil;
+import org.jdesktop.util.StringUtil;
 
 /**
  * A read-only encapsulation of one or more ResourceBundles that adds
@@ -158,7 +158,7 @@ public class ResourceMap
             throw new IllegalArgumentException("no bundle specified");
         }
         for (String bn : bundleNames) {
-            if ( ! StringUtils.hasContent( bn )) {
+            if ( ! StringUtil.hasContent( bn )) {
                 throw new IllegalArgumentException("invalid bundleName: \"" + bn + "\"");
             }
         }
@@ -183,7 +183,7 @@ public class ResourceMap
      */
     private String bundlePackageName(String bundleName) {
         int i = bundleName.lastIndexOf(".");
-        return (i == -1) ? StringUtils.EMPTY_STRING : bundleName.substring(0, i);
+        return (i == -1) ? StringUtil.EMPTY_STRING : bundleName.substring(0, i);
     }
 
     /**
@@ -309,7 +309,7 @@ public class ResourceMap
      */
     private void checkNullKey(String key)
     {
-        if ( StringUtils.isEmpty( key ) )
+        if ( StringUtil.isEmpty( key ) )
             throw new IllegalArgumentException("empty key");
     }
 
@@ -1353,7 +1353,7 @@ public class ResourceMap
         if ( _bundleNames == null )
             return "null";
 
-        return StringUtils.concatenate( " ", _bundleNames );
+        return StringUtil.concatenate( " ", _bundleNames );
     }
 
     // TODO use service loader
