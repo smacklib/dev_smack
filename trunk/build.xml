@@ -41,13 +41,18 @@
     name="out.bin"
     value="${build.dir}/ant/${application.title}/class"/>
 
+    <property
+      description="The name of the product."
+      name="product.name"
+      value="${application.title}fx-${build.number}"/>
+
   <!-- This dir will receive all jars.  The project's main jar as well
        as the 3rd party jars needed by the main.  In case of commons,
        all the jars copied here can be seen as published for all. -->
   <property
     description="The name of the target directory for the distributables."
     name="out.dist"
-    value="${build.dir}/dist/${application.title}-${build.number}"/>
+    value="${build.dir}/dist/${product.name}"/>
 
   <property
     description="The name of a directory for the project web site."
@@ -57,8 +62,8 @@
     <property
       description="The name of the product."
       name="product.name"
-      value="${application.title}fx-javadoc-${build.number}"/>
-    
+      value="${application.title}fx-${build.number}"/>
+
   <property file="build.properties"></property>
 
   <fileset dir="${in.lib}" id="fs.common.libraries.id">
@@ -146,7 +151,7 @@
 
   <target name="jar-src" depends="resource">
     <jar
-      jarfile="${out.dist}/${product.name}.jar"
+      jarfile="${out.dist}/${product.name}-src.jar"
       basedir="${in.src}"
       excludes="${in.src}/doc/**">
 
@@ -165,7 +170,7 @@
   </target>
 
   <target name="jar-javadoc" depends="resource, jdoc">
-    <zip destfile="${out.dist}/${product.name}.zip"
+    <zip destfile="${out.dist}/${product.name}-javadoc.zip"
   	       basedir="${out.web}/javadoc"
   	  />
   </target>
