@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
 
 import javax.swing.ActionMap;
 
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.action.MackAction;
 import org.jdesktop.util.ReflectionUtil;
+import org.jdesktop.util.StringUtil;
 
 
 /**
@@ -409,7 +409,7 @@ public class ApplicationAction extends MackAction
     }
 
     private String propertyMethodName(String prefix, String propertyName) {
-        return prefix + StringUtils.ensureFirstCharacterUppercase(propertyName);
+        return prefix + StringUtil.ensureFirstCharacterUppercase(propertyName);
     }
 
     private Method propertyGetMethod(String propertyName) {

@@ -30,7 +30,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Encapsulates a snapshop of cell content and default display context
@@ -425,7 +425,7 @@ public class CellContext implements Serializable {
      * @return the component type specific prefix.
      */
     protected String getUIPrefix() {
-        return StringUtils.EMPTY_STRING;
+        return StringUtil.EMPTY_STRING;
     }
 
     /**

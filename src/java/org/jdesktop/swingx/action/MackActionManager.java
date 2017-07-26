@@ -17,9 +17,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 
 import org.jdesktop.application.Application;
-import org.jdesktop.smack.util.MultiMap;
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.JXToolbar;
+import org.jdesktop.util.MultiMap;
+import org.jdesktop.util.StringUtil;
 
 
 /**
@@ -273,7 +273,7 @@ public final class MackActionManager
             // Localize the menu name.
             String itemName =
                 Application.getResourceManager().getResourceMap(getClass()).getString(name.toString());
-            if (!StringUtils.hasContent(itemName))
+            if (!StringUtil.hasContent(itemName))
                 itemName = name.toString();
 
             setName( itemName );

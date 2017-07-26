@@ -32,12 +32,12 @@ import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
 import org.jdesktop.swingx.plaf.ErrorPaneAddon;
 import org.jdesktop.swingx.plaf.ErrorPaneUI;
 import org.jdesktop.swingx.plaf.LookAndFeelAddons;
+import org.jdesktop.util.StringUtil;
 
 /**
  * <p>JXErrorPane is a common error component suitable for displaying errors,
@@ -370,7 +370,7 @@ public class JXErrorPane extends JComponent
         String message = e.getMessage();
 
         // If there's no message...
-        if ( ! StringUtils.hasContent( message ) )
+        if ( ! StringUtil.hasContent( message ) )
             // ...we use the exception's class name.
             message = e.getClass().getSimpleName();
 

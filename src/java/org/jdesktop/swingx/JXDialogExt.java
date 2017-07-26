@@ -20,8 +20,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.jdesktop.application.ResourceManager;
-import org.jdesktop.smack.util.StringUtils;
 import org.jdesktop.util.ServiceManager;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Generic modal dialog that can display a user-defined UI component.
@@ -52,9 +52,9 @@ public class JXDialogExt extends JDialog
      */
     private final JXHeader _info =
         new JXHeader(
-            StringUtils.EMPTY_STRING,
-            StringUtils.EMPTY_STRING,
-            GTools.ICON_INFO );
+            StringUtil.EMPTY_STRING,
+            StringUtil.EMPTY_STRING,
+            JXTools.ICON_INFO );
 
     /**
      * Panel containing the user component and the button box.
@@ -62,8 +62,8 @@ public class JXDialogExt extends JDialog
     private final JPanel _mainPanel =
         new JPanel(
                 new BorderLayout(
-                        GTools.GAP,
-                        GTools.GAP));
+                        JXTools.GAP,
+                        JXTools.GAP));
 
     private final HBox _btnBox = new HBox();
 
@@ -72,7 +72,7 @@ public class JXDialogExt extends JDialog
      * window system close button.
      */
     public final Action ACT_CLOSE =
-        GTools.getAction(
+        JXTools.getAction(
                 this,
                 "closeAction" );
 
@@ -80,7 +80,7 @@ public class JXDialogExt extends JDialog
      * The action fired when the user clicks the Cancel button.
      */
     public final Action ACT_CANCEL =
-        GTools.getAction(
+        JXTools.getAction(
                 this,
                 "cancelAction" );
 
@@ -88,7 +88,7 @@ public class JXDialogExt extends JDialog
      * The action fired when the user clicks the OK button or the Enter key.
      */
     public final Action ACT_OK =
-        GTools.getAction(
+        JXTools.getAction(
                 this,
                 "okAction" );
 
@@ -184,7 +184,7 @@ public class JXDialogExt extends JDialog
 
         add(_info, BorderLayout.PAGE_START);
 
-        _mainPanel.setBorder(GTools.GAP_BORDER);
+        _mainPanel.setBorder(JXTools.GAP_BORDER);
         _mainPanel.add(_btnBox, BorderLayout.PAGE_END);
         add(_mainPanel, BorderLayout.CENTER);
 
@@ -193,8 +193,8 @@ public class JXDialogExt extends JDialog
 
         // We take over the closing of the dialog.
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        GTools.registerEsc(this, ACT_CLOSE);
-        GTools.registerWindowClosing(this, ACT_CLOSE);
+        JXTools.registerEsc(this, ACT_CLOSE);
+        JXTools.registerWindowClosing(this, ACT_CLOSE);
 
         ResourceManager rm = ServiceManager.getApplicationService( ResourceManager.class );
         rm.injectComponent( this, rm.getResourceMap( getClass() ) );
@@ -214,8 +214,8 @@ public class JXDialogExt extends JDialog
     {
         if ( pComponent == null )
         {
-            if ( GTools.getFrame() != null )
-                return GTools.getFrame();
+            if ( JXTools.getFrame() != null )
+                return JXTools.getFrame();
 
             return JOptionPane.getRootFrame();
         }
@@ -240,8 +240,8 @@ public class JXDialogExt extends JDialog
      */
     public void setMessage(String pMessage)
     {
-        if ( ! StringUtils.hasContent(pMessage)) {
-            _info.setDescription( StringUtils.EMPTY_STRING );
+        if ( ! StringUtil.hasContent(pMessage)) {
+            _info.setDescription( StringUtil.EMPTY_STRING );
             _info.setVisible( false );
             return;
         }
@@ -293,7 +293,7 @@ public class JXDialogExt extends JDialog
             _btnBox.addGap();
             _btnBox.addButton(ACT_CANCEL);
             getRootPane().setDefaultButton(okBtn);
-            GTools.registerEnter(this, ACT_OK);
+            JXTools.registerEnter(this, ACT_OK);
         } else if (_dialogButtons == Buttons.CLOSE) {
             _btnBox.addButton(ACT_CLOSE);
         }
@@ -426,7 +426,7 @@ public class JXDialogExt extends JDialog
     {
         if (isModified()) {
             String msg = "msg.confirmThrowChanges";
-            if (!GTools.confirm(this, msg))
+            if (!JXTools.confirm(this, msg))
                 return false;
         }
         return onCancel();
@@ -462,7 +462,7 @@ public class JXDialogExt extends JDialog
      */
     public void submitOnDoubleClickOn(Component pComponent)
     {
-        GTools.registerDoubleClick(pComponent, ACT_OK);
+        JXTools.registerDoubleClick(pComponent, ACT_OK);
     }
 
     /**

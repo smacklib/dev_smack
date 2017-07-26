@@ -43,7 +43,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Creates user interface elements based on action ids and lists of action ids.
@@ -501,7 +501,7 @@ public final class ActionContainerFactory {
         // Don't show the text under the toolbar buttons if they have an icon
         // TODO michab not sure if this is cool ...
         if (button.getIcon() != null) {
-            button.setText( StringUtils.EMPTY_STRING );
+            button.setText( StringUtil.EMPTY_STRING );
         }
     }
 

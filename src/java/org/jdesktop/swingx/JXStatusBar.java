@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.jdesktop.beans.PropertyLink;
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 /**
  * Strategy:  Three areas:
@@ -73,7 +73,7 @@ public class JXStatusBar extends JPanel
      */
     public void setMessage( String message )
     {
-        if ( StringUtils.isEmpty( message ) )
+        if ( StringUtil.isEmpty( message ) )
             // Set a space to ensure we keep our height.
             message = " ";
 
