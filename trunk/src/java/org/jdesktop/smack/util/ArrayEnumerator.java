@@ -9,6 +9,8 @@ package org.jdesktop.smack.util;
 
 import java.util.Enumeration;
 
+import org.jdesktop.util.ReflectionUtil;
+
 
 
 /**
@@ -45,7 +47,8 @@ public class ArrayEnumerator<T>
    *        array.
    * @deprecated Use {@link ReflectionUtils#cloneArray(Object[])}
    */
-  public ArrayEnumerator( T[] theArray, boolean copy )
+  @Deprecated
+public ArrayEnumerator( T[] theArray, boolean copy )
   {
     initialise( theArray, 0, theArray.length, copy );
   }
@@ -62,7 +65,8 @@ public class ArrayEnumerator<T>
    * @throws ArrayIndexOutOfBoundsException If the indices are wrong.
    * @deprecated Use {@link ReflectionUtils#cloneArray(Object[])}
    */
-  public ArrayEnumerator( T[] theArray, int startIdx, int endIdx )
+  @Deprecated
+public ArrayEnumerator( T[] theArray, int startIdx, int endIdx )
   {
     initialise( theArray, startIdx, endIdx, false );
   }
@@ -82,7 +86,8 @@ public class ArrayEnumerator<T>
    * @throws ArrayIndexOutOfBoundsException If the indices are wrong.
    * @deprecated Use {@link ReflectionUtils#cloneArray(Object[])}
    */
-  public ArrayEnumerator( T[] theArray,
+  @Deprecated
+public ArrayEnumerator( T[] theArray,
                           int startIdx,
                           int endIdx,
                           boolean copy )
@@ -97,7 +102,8 @@ public class ArrayEnumerator<T>
    *
    * @return <code>true</code> if there are more elements to enumerate.
    */
-  public boolean hasMoreElements()
+  @Override
+public boolean hasMoreElements()
   {
     return _currentIdx < _endIdx;
   }
@@ -113,7 +119,8 @@ public class ArrayEnumerator<T>
    *         <code>hasMoreElements</code> had returned <code>false</code> in
    *         this case.
    */
-  public T nextElement()
+  @Override
+public T nextElement()
   {
     return _theArray[ _currentIdx++ ];
   }
@@ -132,7 +139,8 @@ public class ArrayEnumerator<T>
    * @throws ArrayIndexOutOfBoundsException If the indices are wrong.
    * @deprecated Used only by deprecated operations.
    */
-  private void initialise( T[] array, int start, int end, boolean copy )
+  @Deprecated
+private void initialise( T[] array, int start, int end, boolean copy )
   {
     // Check the arguments...
     if ( start < 0 ||
@@ -151,7 +159,7 @@ public class ArrayEnumerator<T>
     if ( copy )
     {
       // ...copy only the necessary subset.
-      _theArray = ReflectionUtils.cloneArray( array, start, end-start );
+      _theArray = ReflectionUtil.cloneArray( array, start, end-start );
     }
     else
       // If no copy is requested keep the reference.

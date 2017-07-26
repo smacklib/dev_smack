@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.Task;
-import org.jdesktop.smack.util.StringUtils;
+import org.jdesktop.util.StringUtil;
 
 
 
@@ -99,7 +99,7 @@ public abstract class MackAction extends AbstractActionExt
      */
     protected MackAction( String key )
     {
-        if ( ! StringUtils.hasContent( key, true ) )
+        if ( ! StringUtil.hasContent( key, true ) )
             key = getClass().getSimpleName();
 
         _resourceMap = resourceMap( getClass() );
@@ -118,7 +118,7 @@ public abstract class MackAction extends AbstractActionExt
      */
     protected MackAction( String key, ResourceMap resourceMap )
     {
-        if ( ! StringUtils.hasContent( key, true ) )
+        if ( ! StringUtil.hasContent( key, true ) )
             throw new IllegalArgumentException( "key == null" );
 
         _resourceMap = resourceMap;
@@ -217,7 +217,7 @@ public abstract class MackAction extends AbstractActionExt
             result = getGroup();
 
         if ( result == null )
-            result = StringUtils.EMPTY_STRING;
+            result = StringUtil.EMPTY_STRING;
 
         return result.toString();
     }
@@ -365,7 +365,7 @@ public abstract class MackAction extends AbstractActionExt
             (String)getValue( CATEGORY_SORT_ID );
 
         if ( result == null )
-            return StringUtils.EMPTY_STRING;
+            return StringUtil.EMPTY_STRING;
 
         return result;
     }
@@ -518,13 +518,13 @@ public abstract class MackAction extends AbstractActionExt
         // Action.command => Action.ACTION_COMMAND_KEY
         String actionCommand = resourceMap.getString(
                 makeResourceKeyName( "command" ) );
-        if ( StringUtils.hasContent( actionCommand ) )
+        if ( StringUtil.hasContent( actionCommand ) )
             setActionCommand( actionCommand );
 
         // If no visual was defined for this Action, i.e. no text
         // and no icon, then we default to the action key.
         if ( !iconOrNameSpecified )
-            setName( StringUtils.EMPTY_STRING + getKey() );
+            setName( org.jdesktop.util.StringUtil.EMPTY_STRING + getKey() );
 
         // Check if this is a toolbar action.
         Boolean toolbarFlag = resourceMap.getBoolean(
