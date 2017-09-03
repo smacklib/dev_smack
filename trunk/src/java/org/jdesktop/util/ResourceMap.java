@@ -15,10 +15,16 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
+import junit.framework.AssertionFailedError;
+
 /**
  * A map holding all resources defined in the resources for
  * the passed class.  Resources for a class foo.bar.Elk are
  * defined in the property file foo.bar.resources.Elk.
+ * <p>
+ * A property named "color" in the above resource file is found
+ * by the key 'color' and the key 'Elk.color'.
+ * </p>
  *
  * @version $Rev$
  * @author Michael Binz
@@ -34,7 +40,10 @@ public class ResourceMap extends HashMap<String, String>
 
     public ResourceMap( Class<?> cl )
     {
-        _class = Objects.requireNonNull( cl );
+        _class =
+                Objects.requireNonNull( cl );
+        String simpleName =
+                _class.getSimpleName();
 
         String pack =
                 cl.getPackage().getName();
@@ -44,7 +53,7 @@ public class ResourceMap extends HashMap<String, String>
         _bundleName =
                 String.format( "%s.resources.%s",
                         pack,
-                        _class.getSimpleName() );
+                        simpleName );
 
         _resourcePath =
                 (pack + ".resources.").replace( '.', '/' );
@@ -64,7 +73,29 @@ public class ResourceMap extends HashMap<String, String>
                                     Control.FORMAT_PROPERTIES ) );
 
             for ( String ck : bundle.keySet() )
-                put( ck, bundle.getString( ck ) );
+            {
+                String value =
+                        bundle.getString( ck );
+                String classPrefix =
+                        simpleName + ".";
+
+                if ( ck.equals( classPrefix ) )
+                    throw new AssertionFailedError( "Invalid property name: " + classPrefix );
+
+                put( ck, value );
+                if ( ck.startsWith( classPrefix ) )
+                {
+                    put(
+                            ck.substring( classPrefix.length() ),
+                            value );
+                }
+                else
+                {
+                    put(
+                            classPrefix + ck,
+                            value );
+                }
+            }
         }
         catch ( MissingResourceException e )
         {
