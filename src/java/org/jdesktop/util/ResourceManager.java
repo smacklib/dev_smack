@@ -197,7 +197,7 @@ public class ResourceManager
             String name = r.name();
 
             if ( StringUtil.isEmpty( name ) )
-                name = f.getName();
+                name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
 
             String value = rb.get( name );
 
