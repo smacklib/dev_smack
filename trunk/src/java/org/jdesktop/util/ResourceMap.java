@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
-import junit.framework.AssertionFailedError;
 
 /**
  * A map holding all resources defined in the resources for
@@ -80,7 +79,7 @@ public class ResourceMap extends HashMap<String, String>
                         simpleName + ".";
 
                 if ( ck.equals( classPrefix ) )
-                    throw new AssertionFailedError( "Invalid property name: " + classPrefix );
+                    throw new AssertionError( "Invalid property name: " + classPrefix );
 
                 put( ck, value );
                 if ( ck.startsWith( classPrefix ) )
