@@ -104,17 +104,19 @@
 
 
 
-  <target description="Copies resource files into the build area."
+    <target description="Copies resource files into the build area."
           name="resource"
           depends="class">
-    <echo message="${out.bin}"/>
-    <copy todir="${out.bin}">
-      <fileset dir="${in.src}"
-               excludes="doc/**"
-               includes="**/*.properties,**/*.gif,**/*.png"/>
-    </copy>
-  </target>
-
+        <echo message="${out.bin}"/>
+        <copy todir="${out.bin}">
+            <fileset dir="${in.src}"
+                 excludes="doc/**"
+                 includes="**/*.properties,**/*.gif,**/*.png"/>
+        </copy>
+        <copy todir="${out.bin}/META-INF/services">
+            <fileset dir="${in.src}/META-INF/services" />
+        </copy>
+    </target>
 
   <target name="jdoc" depends="class"
           description="Generates the javadocs into the web area.">
