@@ -25,7 +25,6 @@ import javax.swing.UIManager;
 import org.jdesktop.swingx.plaf.linux.LinuxLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.macosx.MacOSXLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.metal.MetalLookAndFeelAddons;
-import org.jdesktop.swingx.plaf.nimbus.NimbusLookAndFeelAddons;
 import org.jdesktop.swingx.plaf.windows.WindowsLookAndFeelAddons;
 
 /**
@@ -173,8 +172,6 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
             // what about Nimbus on Linux systems?
         } else if (isLinux(addon)) {
             addLinuxDefaults(addon, defaults);
-        } else if (isNimbus(addon)) {
-            addNimbusDefaults(addon, defaults);
         } else {
             // at least add basic defaults
             addBasicDefaults(addon, defaults);
@@ -212,13 +209,6 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
      */
     protected boolean isLinux(LookAndFeelAddons addon) {
         return addon instanceof LinuxLookAndFeelAddons;
-    }
-
-    /**
-     * @return true if the current look and feel is Nimbus
-     */
-    protected boolean isNimbus(LookAndFeelAddons addon) {
-        return addon instanceof NimbusLookAndFeelAddons;
     }
 
     /**
