@@ -8,12 +8,12 @@
 package org.jdesktop.util;
 
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.MissingResourceException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.ResourceBundle.Control;
+
+import org.jdesktop.smack.util.ResourceUtils;
 
 
 /**
@@ -44,62 +44,54 @@ public class ResourceMap extends HashMap<String, String>
         String simpleName =
                 _class.getSimpleName();
 
-        String pack =
-                cl.getPackage().getName();
-        if ( StringUtil.isEmpty( pack ) )
-            pack = StringUtil.EMPTY_STRING;
+        ResourceBundle crb =
+                ResourceUtils.getClassResources( cl );
+
+        if ( crb == null )
+        {
+            _bundleName = StringUtil.EMPTY_STRING;
+            _resourcePath = StringUtil.EMPTY_STRING;
+            return;
+        }
 
         _bundleName =
-                String.format( "%s.resources.%s",
-                        pack,
-                        simpleName );
+                crb.getBaseBundleName();
+
+        assert _bundleName.endsWith( simpleName );
 
         _resourcePath =
-                (pack + ".resources.").replace( '.', '/' );
+                _bundleName.substring(
+                        0, _bundleName.length() -
+                        simpleName.length() ).replace( '.', '/' );
 
-        ClassLoader cldr = cl.getClassLoader();
-        if ( cldr == null )
-            cldr = Thread.currentThread().getContextClassLoader();
+        Map<String, String> bundle =
+                ResourceUtils.preprocessResourceBundle(
+                        crb );
 
-        try
+        String classPrefix =
+                simpleName + ".";
+
+        for ( String ck : bundle.keySet() )
         {
-            ResourceBundle bundle =
-                    ResourceBundle.getBundle(
-                            _bundleName,
-                            Locale.getDefault(),
-                            cldr,
-                            Control.getControl(
-                                    Control.FORMAT_PROPERTIES ) );
+            String value =
+                    bundle.get( ck );
 
-            for ( String ck : bundle.keySet() )
+            if ( ck.equals( classPrefix ) )
+                throw new AssertionError( "Invalid property name: " + classPrefix );
+
+            put( ck, value );
+            if ( ck.startsWith( classPrefix ) )
             {
-                String value =
-                        bundle.getString( ck );
-                String classPrefix =
-                        simpleName + ".";
-
-                if ( ck.equals( classPrefix ) )
-                    throw new AssertionError( "Invalid property name: " + classPrefix );
-
-                put( ck, value );
-                if ( ck.startsWith( classPrefix ) )
-                {
-                    put(
-                            ck.substring( classPrefix.length() ),
-                            value );
-                }
-                else
-                {
-                    put(
-                            classPrefix + ck,
-                            value );
-                }
+                put(
+                        ck.substring( classPrefix.length() ),
+                        value );
             }
-        }
-        catch ( MissingResourceException e )
-        {
-            // If we found no bundle we simply stay empty, no panic.
-            return;
+            else
+            {
+                put(
+                        classPrefix + ck,
+                        value );
+            }
         }
     }
 
@@ -133,7 +125,9 @@ public class ResourceMap extends HashMap<String, String>
      * @return A resource dir, slash-separated, with a trailing slash.
      * For class org.jdesktop.Test the resource dir
      * is org/jdesktop/resources/. Used for the resolution of
-     * secondary resources like icons.
+     * secondary resources like icons. If no underlying resource
+     * bundle existed, then this is null.
+     *
      */
     public String getResourceDir()
     {
