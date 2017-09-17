@@ -4,7 +4,6 @@
  */
 package org.jdesktop.smack.util;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -20,35 +19,6 @@ import java.util.ResourceBundle.Control;
  */
 public class ResourceUtils
 {
-    private static ResourceBundle EMPTY_RESOURCE_BUNDLE = new ResourceBundle()
-    {
-
-        @Override
-        protected Object handleGetObject( String key )
-        {
-            return null;
-        }
-
-        @Override
-        public Enumeration<String> getKeys()
-        {
-            return new Enumeration<String>()
-            {
-                @Override
-                public boolean hasMoreElements()
-                {
-                    return false;
-                }
-
-                @Override
-                public String nextElement()
-                {
-                    throw new IllegalStateException();
-                }
-            };
-        }
-    };
-
     /**
      * Unchecked exception thrown by {@link #getObject} when resource lookup
      * fails, for example because string conversion fails.  This is
@@ -209,18 +179,6 @@ public class ResourceUtils
         return result.toString();
     }
 
-    public static void main( String[] args )
-    {
-
-        ResourceBundle rb = getClassResources( ResourceUtils.class );
-
-        System.err.println(  rb.getKeys().hasMoreElements() );
-        System.err.println(  rb.keySet().size() );
-
-        Map<String, String> pp = preprocessResourceBundle( rb );
-        System.err.println(  pp.size() );
-    }
-
     /**
      * Get class specific resources. If the passed classes full
      * name is "org.good.Class" then this operation loads
@@ -228,8 +186,7 @@ public class ResourceUtils
      *
      * @param c The class for which the resources should be loaded.
      * @return A ResourceBundle. If no resource bundle was found
-     * for the passed class, then the returned resource bundle is
-     * empty.
+     * for the passed class, then the result is {@code null}.
      */
    public static ResourceBundle getClassResources( Class<?> c )
     {
@@ -250,7 +207,7 @@ public class ResourceUtils
         }
         catch ( MissingResourceException e )
         {
-            return EMPTY_RESOURCE_BUNDLE;
+            return null;
         }
     }
 
