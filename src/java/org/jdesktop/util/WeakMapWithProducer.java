@@ -26,7 +26,7 @@ public class WeakMapWithProducer<K,V>
         _factory = factory;
     }
 
-    V get( K key )
+    public V get( K key )
     {
         V result = _cache.get( key );
 
