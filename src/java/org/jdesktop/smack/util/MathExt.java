@@ -135,7 +135,25 @@ public class MathExt
         return round( Math.sqrt( cd - ad ) );
     }
 
+    /**
+     * Pythagoras is a^2 + b^2 = c^2.  This operation computes b from a and c,
+     * i.e. returns sqrt( c^2 - a^2 ).  Note that this same can be used to
+     * compute a.
+     *
+     * @param a Distance a.
+     * @param hypotenuse Distance c.
+     * @return Distance b.
+     */
+    public static double pythagorasD( double hypotenuse, double a )
+    {
+        if ( hypotenuse < a )
+            throw new IllegalArgumentException( hypotenuse + " < " + a );
 
+        double ad = a * a;
+        double cd = hypotenuse * hypotenuse;
+
+        return Math.sqrt( cd - ad );
+    }
 
     /**
      * Find the maximum of the passed numbers.
