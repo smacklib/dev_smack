@@ -8,12 +8,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -38,7 +38,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -60,7 +59,6 @@ import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicGraphicsUtils;
 
 import org.jdesktop.swingx.JXCollapsiblePane;
-import org.jdesktop.swingx.JXHyperlink;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.icon.EmptyIcon;
@@ -68,7 +66,7 @@ import org.jdesktop.swingx.plaf.TaskPaneUI;
 
 /**
  * Base implementation of the <code>JXTaskPane</code> UI.
- * 
+ *
  * @author <a href="mailto:fred@L2FProd.com">Frederic Lavigne</a>
  */
 public class BasicTaskPaneUI extends TaskPaneUI {
@@ -122,17 +120,17 @@ public class BasicTaskPaneUI extends TaskPaneUI {
         LookAndFeel.installColorsAndFont(group, "TaskPane.background",
                 "TaskPane.foreground", "TaskPane.font");
         LookAndFeel.installProperty(group, "opaque", false);
-        
+
         if (isUIInstallable(group.getBorder())) {
             group.setBorder(createPaneBorder());
         }
-        
+
         if (group.getContentPane() instanceof JComponent) {
             JComponent content = (JComponent) group.getContentPane();
-            
+
             LookAndFeel.installColorsAndFont(content,
                     "TaskPane.background", "TaskPane.foreground", "TaskPane.font");
-            
+
             if (isUIInstallable(content.getBorder())) {
                 content.setBorder(createContentPaneBorder());
             }
@@ -181,7 +179,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
     }
 
     /**
-     * Uninstalls previously installed listeners to free component for garbage collection. 
+     * Uninstalls previously installed listeners to free component for garbage collection.
      */
     protected void uninstallListeners() {
         group.removeMouseListener(mouseListener);
@@ -209,15 +207,15 @@ public class BasicTaskPaneUI extends TaskPaneUI {
     /**
      * Evaluates whenever given mouse even have occurred within borders of task pane.
      * @param event Evaluated event.
-     * @return True if event occurred within task pane area, false otherwise. 
+     * @return True if event occurred within task pane area, false otherwise.
      */
     protected boolean isInBorder(MouseEvent event) {
         return event.getY() < getTitleHeight(event.getComponent());
     }
- 
+
         /**
-         * Gets current title height. Default value is 25 if not specified otherwise. Method checks 
-         * provided component for user set font (!instanceof FontUIResource), if font is set, height 
+         * Gets current title height. Default value is 25 if not specified otherwise. Method checks
+         * provided component for user set font (!instanceof FontUIResource), if font is set, height
          * will be calculated from font metrics instead of using internal preset height.
          * @return Current title height.
          */
@@ -226,23 +224,23 @@ public class BasicTaskPaneUI extends TaskPaneUI {
                 JXTaskPane taskPane = (JXTaskPane) c;
                 Font font = taskPane.getFont();
                 int height = titleHeight;
-                
+
                 if (font != null && !(font instanceof FontUIResource)) {
                     height = Math.max(height, taskPane.getFontMetrics(font).getHeight());
                 }
-                
+
                 Icon icon = taskPane.getIcon();
-                
+
                 if (icon != null) {
                     height = Math.max(height, icon.getIconHeight() + 4);
                 }
-                
+
                 return height;
             }
-            
+
             return titleHeight;
         }
-        
+
     /**
      * Creates new border for task pane.
      * @return Fresh border on every call.
@@ -279,7 +277,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
     /**
      * Creates content pane border.
-     * @return Fresh content pane border initialized with current value of TaskPane.borderColor 
+     * @return Fresh content pane border initialized with current value of TaskPane.borderColor
      * on every call.
      */
     protected Border createContentPaneBorder() {
@@ -288,31 +286,6 @@ public class BasicTaskPaneUI extends TaskPaneUI {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
-    @Override
-    public Component createAction(Action action) {
-        JXHyperlink link = new JXHyperlink(action) {
-            @Override
-            public void updateUI() {
-                super.updateUI();
-                // ensure the ui of this link is correctly update on l&f changes
-                configure(this);
-            }
-        };
-        configure(link);
-        return link;
-    }
-
-    /**
-     * Configures internally used hyperlink on new action creation and on every call to 
-     * <code>updateUI()</code>.
-     * @param link Configured hyperlink.
-     */
-    protected void configure(JXHyperlink link) {
-        link.setOpaque(false);
-        link.setBorderPainted(false);
-        link.setFocusPainted(true);
-        link.setForeground(UIManager.getColor("TaskPane.titleForeground"));
-    }
 
     /**
      * Ensures expanded group is visible. Issues delayed request for scrolling to visible.
@@ -367,9 +340,9 @@ public class BasicTaskPaneUI extends TaskPaneUI {
                 group.repaint();
             } else if ("mnemonic".equals(evt.getPropertyName())) {
                 SwingXUtilities.updateMnemonicBinding(group, "toggleCollapsed");
-                
+
                 Border b = group.getBorder();
-                
+
                 if (b instanceof PaneBorder) {
                     int key = (Integer) evt.getNewValue();
                     ((PaneBorder) b).label.setDisplayedMnemonic(key);
@@ -410,7 +383,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
                 e.getComponent().setCursor(null);
                 mouseOver = false;
             }
-            
+
                         group.repaint(0, 0, group.getWidth(), getTitleHeight(group));
         }
 
@@ -421,7 +394,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
             }
         }
     }
-    
+
     /**
      * Toggle expanded action.
      */
@@ -430,16 +403,16 @@ public class BasicTaskPaneUI extends TaskPaneUI {
          * Serial version UID.
          */
         private static final long serialVersionUID = 5676859881615358815L;
-        
+
         public ToggleCollapsedAction() {
             super("toggleCollapsed");
         }
-        
+
         @Override
         public void actionPerformed(ActionEvent e) {
             group.setCollapsed(!group.isCollapsed());
         }
-        
+
         @Override
         public boolean isEnabled() {
             return group.isVisible();
@@ -511,7 +484,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
     /**
      * The border of the taskpane group paints the "text", the "icon", the
      * "expanded" status and the "special" type.
-     * 
+     *
      */
     protected class PaneBorder implements Border, UIResource {
 
@@ -568,7 +541,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
          * Overwritten to always return <code>true</code> to speed up
          * painting. Don't use transparent borders unless providing UI delegate
          * that provides proper return value when calling this method.
-         * 
+         *
          * @see javax.swing.border.Border#isBorderOpaque()
          */
         @Override
@@ -579,7 +552,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
         /**
          * Calculates the preferred border size, its size so all its content
          * fits.
-         * 
+         *
          * @param group
          *            Selected group.
          */
@@ -602,7 +575,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
         /**
          * Paints background of the title. This may differ based on properties
          * of the group.
-         * 
+         *
          * @param group
          *            Selected group.
          * @param g
@@ -619,7 +592,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints current group title.
-         * 
+         *
          * @param group
          *            Selected group.
          * @param g
@@ -651,7 +624,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
         /**
          * Configures label for the group using its title, font, icon and
          * orientation.
-         * 
+         *
          * @param group
          *            Selected group.
          */
@@ -665,7 +638,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints expanded controls. Default implementation does nothing.
-         * 
+         *
          * @param group
          *            Expanded group.
          * @param g
@@ -685,7 +658,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Gets current paint color.
-         * 
+         *
          * @param group
          *            Selected group.
          * @return Color to be used for painting provided group.
@@ -761,7 +734,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints oval 'border' area around the control itself.
-         * 
+         *
          * @param group
          *            Expanded group.
          * @param g
@@ -792,7 +765,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints oval 'border' area around the control itself.
-         * 
+         *
          * @param group
          *            Expanded group.
          * @param g
@@ -822,7 +795,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints controls for the group.
-         * 
+         *
          * @param group
          *            Expanded group.
          * @param g
@@ -853,7 +826,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Paints focused group.
-         * 
+         *
          * @param g
          *            Target graphics.
          * @param paintColor
@@ -875,7 +848,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
         /**
          * Default implementation returns false.
-         * 
+         *
          * @return true if this border wants to display things differently when
          *         the mouse is over it
          */
@@ -886,7 +859,7 @@ public class BasicTaskPaneUI extends TaskPaneUI {
 
     /**
      * Gets size of arc used to round corners.
-     * 
+     *
      * @return size of arc used to round corners of the panel.
      */
     protected int getRoundHeight() {
