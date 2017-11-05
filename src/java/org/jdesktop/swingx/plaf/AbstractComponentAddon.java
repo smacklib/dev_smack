@@ -22,11 +22,6 @@ package org.jdesktop.swingx.plaf;
 
 import javax.swing.UIManager;
 
-import org.jdesktop.swingx.plaf.linux.LinuxLookAndFeelAddons;
-import org.jdesktop.swingx.plaf.macosx.MacOSXLookAndFeelAddons;
-import org.jdesktop.swingx.plaf.metal.MetalLookAndFeelAddons;
-import org.jdesktop.swingx.plaf.windows.WindowsLookAndFeelAddons;
-
 /**
  * Ease the work of creating an addon for a component.<br>
  *
@@ -36,7 +31,7 @@ import org.jdesktop.swingx.plaf.windows.WindowsLookAndFeelAddons;
 @SuppressWarnings("nls")
 public abstract class AbstractComponentAddon implements ComponentAddon {
 
-    private String name;
+    private final String name;
 
     protected AbstractComponentAddon(String name) {
         this.name = name;
@@ -162,20 +157,20 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
      */
     private Object[] getDefaults(LookAndFeelAddons addon) {
         DefaultsList defaults = new DefaultsList();
-        if (isWindows(addon)) {
-            addWindowsDefaults(addon, defaults);
-        } else if (isMetal(addon)) {
-            addMetalDefaults(addon, defaults);
-        } else if (isMac(addon)) {
-            addMacDefaults(addon, defaults);
-            // PENDING JW: the separation line here looks fishy
-            // what about Nimbus on Linux systems?
-        } else if (isLinux(addon)) {
-            addLinuxDefaults(addon, defaults);
-        } else {
-            // at least add basic defaults
+//        if (isWindows(addon)) {
+//            addWindowsDefaults(addon, defaults);
+//        } else if (isMetal(addon)) {
+//            addMetalDefaults(addon, defaults);
+//        } else if (isMac(addon)) {
+//            addMacDefaults(addon, defaults);
+//            // PENDING JW: the separation line here looks fishy
+//            // what about Nimbus on Linux systems?
+//        } else if (isLinux(addon)) {
+//            addLinuxDefaults(addon, defaults);
+//        } else {
+//            // at least add basic defaults
             addBasicDefaults(addon, defaults);
-        }
+//        }
         return defaults.toArray();
     }
 
@@ -183,33 +178,33 @@ public abstract class AbstractComponentAddon implements ComponentAddon {
     // Helper methods to make ComponentAddon developer life easier
     //
 
-    /**
-     * @return true if the addon is the Windows addon or its subclasses
-     */
-    protected boolean isWindows(LookAndFeelAddons addon) {
-        return addon instanceof WindowsLookAndFeelAddons;
-    }
-
-    /**
-     * @return true if the addon is the Metal addon or its subclasses
-     */
-    protected boolean isMetal(LookAndFeelAddons addon) {
-        return addon instanceof MetalLookAndFeelAddons;
-    }
-
-    /**
-     * @return true if the addon is the Mac OS X addon or its subclasses
-     */
-    protected boolean isMac(LookAndFeelAddons addon) {
-        return addon instanceof MacOSXLookAndFeelAddons;
-    }
-
-    /**
-     * @return true if the current look and feel is Linux
-     */
-    protected boolean isLinux(LookAndFeelAddons addon) {
-        return addon instanceof LinuxLookAndFeelAddons;
-    }
+//    /**
+//     * @return true if the addon is the Windows addon or its subclasses
+//     */
+//    protected boolean isWindows(LookAndFeelAddons addon) {
+//        return addon instanceof WindowsLookAndFeelAddons;
+//    }
+//
+//    /**
+//     * @return true if the addon is the Metal addon or its subclasses
+//     */
+//    protected boolean isMetal(LookAndFeelAddons addon) {
+//        return addon instanceof MetalLookAndFeelAddons;
+//    }
+//
+//    /**
+//     * @return true if the addon is the Mac OS X addon or its subclasses
+//     */
+//    protected boolean isMac(LookAndFeelAddons addon) {
+//        return addon instanceof MacOSXLookAndFeelAddons;
+//    }
+//
+//    /**
+//     * @return true if the current look and feel is Linux
+//     */
+//    protected boolean isLinux(LookAndFeelAddons addon) {
+//        return addon instanceof LinuxLookAndFeelAddons;
+//    }
 
     /**
      * @return true if the current look and feel is one of JGoodies Plastic l&fs
