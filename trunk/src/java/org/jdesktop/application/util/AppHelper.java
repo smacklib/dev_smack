@@ -22,7 +22,9 @@ import org.jdesktop.util.ServiceManager;
  *
  * @author Michael Binz
  * @author Vity
+ * @deprecated Will be removed.
  */
+@Deprecated
 public final class AppHelper {
 
     private static PlatformType activePlatformType = null;

@@ -3,7 +3,7 @@
  * Use is subject to license terms.
  */
 
-package org.jdesktop.application.util;
+package org.jdesktop.util;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
