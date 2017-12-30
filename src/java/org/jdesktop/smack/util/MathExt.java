@@ -21,6 +21,24 @@ import java.awt.geom.Point2D;
 public class MathExt
 {
     /**
+     * @return True if the passed integer is odd.
+     * @param integer The value to test.
+     */
+    public static boolean isOdd( long integer )
+    {
+        return (integer & 1) == 1;
+    }
+
+    /**
+     * @return True if the passed integer is even.
+     * @param integer The value to test.
+     */
+    public static boolean isEven( long integer )
+    {
+        return ! isOdd( integer );
+    }
+
+    /**
      * Computes the value of the polynomial with the factors from c for x.
      * The implementation uses the Horner-algorithm.
      *
