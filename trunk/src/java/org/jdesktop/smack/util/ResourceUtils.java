@@ -4,6 +4,7 @@
  */
 package org.jdesktop.smack.util;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class ResourceUtils
     {
         try
         {
-            Map<String, String> result = new HashMap<String, String>();
+            Map<String, String> result = new HashMap<>();
 
             // Preprocessing is currently limited to a single
             // resource bundle. A broader context may be
@@ -209,6 +210,32 @@ public class ResourceUtils
         {
             return null;
         }
+    }
+
+    /**
+     * Load a named resource from the resource package of the passed
+     * class.
+     *
+     * @param c1ass The class used to locate the resource package.
+     * @param name The name of the resource.
+     * @return The resource InputStream.  Note that this must be
+     * closed after use. Never null, throws a RuntimeException if
+     * the resource was not found.
+     */
+    public static InputStream getNamedResourceFor(
+            Class<?> c1ass,
+            String name )
+    {
+        String packageName =
+                "resources/" + name;
+        InputStream result =
+                c1ass.getResourceAsStream( packageName );
+
+        if ( result == null )
+            throw new RuntimeException(
+                    "Resource not found: " + packageName );
+
+        return result;
     }
 
     /**
