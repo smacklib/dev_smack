@@ -4,6 +4,7 @@
  */
 package org.jdesktop.smack.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
@@ -20,6 +21,8 @@ import java.util.ResourceBundle.Control;
  */
 public class ResourceUtils
 {
+    private static final String RESOURCE_PACKAGE_NAME = "resources";
+
     /**
      * Unchecked exception thrown by {@link #getObject} when resource lookup
      * fails, for example because string conversion fails.  This is
@@ -198,7 +201,7 @@ public class ResourceUtils
         if ( lastDotIdx > 0 )
         {
             StringBuilder sb = new StringBuilder( name ) ;
-            sb.insert( lastDotIdx, ".resources" );
+            sb.insert( lastDotIdx, "." + RESOURCE_PACKAGE_NAME );
             name = sb.toString();
         }
 
@@ -222,12 +225,12 @@ public class ResourceUtils
      * closed after use. Never null, throws a RuntimeException if
      * the resource was not found.
      */
-    public static InputStream getNamedResourceFor(
+    public static InputStream getResourceAsStream(
             Class<?> c1ass,
             String name )
     {
         String packageName =
-                "resources/" + name;
+                RESOURCE_PACKAGE_NAME + "/" + name;
         InputStream result =
                 c1ass.getResourceAsStream( packageName );
 
@@ -236,6 +239,48 @@ public class ResourceUtils
                     "Resource not found: " + packageName );
 
         return result;
+    }
+
+    /**
+     * Load a named resource from the resource package of the passed
+     * class.
+     *
+     * @param c1ass The class used to locate the resource package.
+     * @param name The name of the resource.
+     * @return The resource content. Never null, throws a
+     * RuntimeException if the resource was not found.
+     */
+    public static byte[] loadResource(
+            Class<?> c1ass,
+            String name )
+    {
+        InputStream is = getResourceAsStream(
+                c1ass,
+                name );
+
+        // Note Java 9 offers
+        // byte[] array = InputStream.readAllBytes();
+        ByteArrayOutputStream result =
+                new ByteArrayOutputStream();
+
+        try
+        {
+            while ( true )
+            {
+                int c = is.read();
+
+                if ( c == -1 )
+                    return result.toByteArray();
+
+                result.write( c );
+            }
+        }
+        catch ( Exception e )
+        {
+            FileUtils.forceClose( is );
+            throw new RuntimeException(
+                    "Failed reading resource: " + name, e );
+        }
     }
 
     /**
