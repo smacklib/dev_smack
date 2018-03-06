@@ -7,8 +7,12 @@
  */
 package org.jdesktop.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 /**
  * Management of ApplicationServices.
@@ -22,7 +26,7 @@ public final class ServiceManager
      * The map of singular application services.
      */
     private static final Map<Class<?>, Object> _singletons =
-            new HashMap<Class<?>, Object>();
+            new HashMap<>();
 
     /**
      * Create an instance.
@@ -81,16 +85,49 @@ public final class ServiceManager
      */
     public static synchronized <T> T initApplicationService( Class<T> clazz, T singletonInstance )
     {
-        if ( ! clazz.isAssignableFrom( singletonInstance.getClass() ) )
-            throw new ClassCastException();
+        for ( Class<?> c : computeClassRange( clazz, singletonInstance.getClass() ) )
+        {
+            if ( _singletons.containsKey( c ) )
+                throw new IllegalArgumentException(
+                        "Already initialized: " +
+                        _singletons.get( c ) );
 
-        if ( _singletons.containsKey( clazz ) )
-            throw new IllegalArgumentException(
-                    "Already initialized: " +
-                    _singletons.get( clazz ) );
-
-        _singletons.put( clazz, singletonInstance );
+            _singletons.put( c, singletonInstance );
+        }
 
         return singletonInstance;
+    }
+
+    private static List<Class<?>> computeClassRange(
+            Class<?> superclass,
+            Class<?> subclass)
+    {
+        if ( ! isSuperclass( subclass, superclass ) )
+            throw new IllegalArgumentException( "Not superclass." );
+
+        ArrayList<Class<?>> result = new ArrayList<>();
+
+        while ( true )
+        {
+            result.add( subclass );
+            if ( subclass.equals( superclass ))
+                break;
+            subclass = subclass.getSuperclass();
+        }
+
+        return result;
+    }
+
+    private static boolean isSuperclass(
+            Class<?> subclass,
+            Class<?> superclass )
+    {
+        return superclass.isAssignableFrom( subclass );
+    }
+
+    public static void main( String[] args )
+    {
+        System.err.println( isSuperclass( Object.class, QName.class ) );
+        System.err.println( isSuperclass( QName.class, Object.class ) );
     }
 }
