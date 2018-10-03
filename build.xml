@@ -44,7 +44,7 @@
     <property
       description="The name of the product."
       name="product.name"
-      value="${application.title}fx-${build.number}"/>
+      value="${application.title}.${build.number}"/>
 
   <!-- This dir will receive all jars.  The project's main jar as well
        as the 3rd party jars needed by the main.  In case of commons,

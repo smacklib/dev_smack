@@ -24,10 +24,10 @@ public class ResourceUtils
     private static final String RESOURCE_PACKAGE_NAME = "resources";
 
     /**
-     * Unchecked exception thrown by {@link #getObject} when resource lookup
+     * Unchecked exception thrown when resource lookup
      * fails, for example because string conversion fails.  This is
      * not a missing resource exception.  If a resource isn't defined
-     * for a particular key, getObject does not throw an exception.
+     * for a particular key, no exception is thrown.
      */
     @SuppressWarnings("serial")
     private static class LookupException extends RuntimeException {
@@ -125,6 +125,10 @@ public class ResourceUtils
      *
      * The value of evaluateStringExpression("${hello} ${place}") would be
      * "Hello World". The value of ${null} is null.
+     *
+     * @param expr The expression to evaluate.
+     * @param env The resource bundle to use for token look-up.
+     * @return The evaluated expression.
      */
     private static String evaluateStringExpression(
             String expr,
