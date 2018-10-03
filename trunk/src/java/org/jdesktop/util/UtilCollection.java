@@ -27,12 +27,13 @@ public class UtilCollection
      *
      * @param a The first operand for the intersection.
      * @param b The second operand for the intersection.
+     * @param <T> The collection element type.
      * @return A newly allocated set containing the intersections of
      * the passed sets.
      */
     public static <T> Set<T> intersection( Set<T> a, Set<T> b )
     {
-        Set<T> result = new HashSet<T>( a );
+        Set<T> result = new HashSet<>( a );
         result.retainAll( b );
         return result;
     }
@@ -40,6 +41,7 @@ public class UtilCollection
     /**
      * Convert a collection to an array.
      * @param p The collection to convert.
+     * @param <T> The collection element type.
      * @param clazz The element type.
      * @return A newly allocated array of element type clazz.
      */
@@ -52,6 +54,7 @@ public class UtilCollection
 
     /**
      * @param list A list.
+     * @param <T> The collection element type.
      * @return The last element in the passed list. May be empty
      * if the list was empty.
      */
@@ -69,6 +72,7 @@ public class UtilCollection
      * Test if an array is empty.
      *
      * @param array The array to test. {@code null} is allowed.
+     * @param <T> The array element type.
      * @return {@code true} if the array is not null and has a length greater
      * than zero.
      */
