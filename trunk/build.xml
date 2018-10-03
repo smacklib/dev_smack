@@ -139,6 +139,7 @@
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Automatic-Module-Name" value="${ant.project.name}"/>
         <section name="${ant.project.name}">
             <attribute 
                 name="Implementation-Title" 
