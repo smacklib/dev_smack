@@ -21,7 +21,7 @@ public abstract class StatefulRunnable<T> implements Runnable
     }
 
     /**
-     * Access the state.
+     * @return The Runnable's state.
      */
     protected T getState()
     {
