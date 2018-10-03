@@ -104,8 +104,8 @@ public class StringUtil
      * Trims the characters passed in {@code charactersToTrim} from
      * the beginning and the end of {@code stringToTrim}.
      *
-     * @param stringToTrim
-     * @param charactersToTrim
+     * @param stringToTrim The string to be trimmed.
+     * @param charactersToTrim The characters to be trimmed.
      * @return The trimmed string.
      */
     public static String trim( String stringToTrim, String charactersToTrim )
@@ -207,6 +207,7 @@ public class StringUtil
      * @param delimiter The delimiter to use.  Must not be {@code null}.
      * @param array The array used for building the delimited list.
      * {@code null} is allowed, resulting in an empty string.
+     * @param <T> Input array type.
      * @return The result string.
      */
     public static <T> String concatenate( String delimiter, T[] array )
@@ -297,9 +298,9 @@ public class StringUtil
     /**
      * Experimental.
      *
-     * @param quoteChar
-     * @param toUnquote
-     * @return
+     * @param quoteChar The character used as the quote character.
+     * @param toUnquote The string to unquote.
+     * @return  The unquoted string.
      */
     public static String unquote( char quoteChar, String toUnquote )
     {
@@ -342,6 +343,13 @@ public class StringUtil
 
         return result.toString();
     }
+
+    /**
+     * Unquote the passed string using {@value #QUOTE_CHAR} as the quote
+     * character.
+     * @param toUnquote The string to unquote.
+     * @return The unquoted string.
+     */
     public static String unquote( String toUnquote )
     {
         return unquote( QUOTE_CHAR, toUnquote );
@@ -377,7 +385,7 @@ public class StringUtil
 
         boolean inDoubleQuotes = false;
 
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
         for ( char c : string.toCharArray() )
