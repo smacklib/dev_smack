@@ -9,12 +9,12 @@ package org.jdesktop.smack.util;
 
 import java.io.Closeable;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.jdesktop.util.Log;
 import org.jdesktop.util.StringUtil;
 
 /**
@@ -28,8 +28,8 @@ public final class FileUtils
     /**
      * The logger for this class.
      */
-    private static final Log LOG = new Log(
-            FileUtils.class );
+    private static final Logger LOG = Logger.getLogger(
+            FileUtils.class.getSimpleName() );
 
     /**
      * Resolves directories in the passed file list. That is, normal file
@@ -64,8 +64,6 @@ public final class FileUtils
         return fs.toArray( new File[fs.size()] );
     }
 
-
-
     /**
      * Silently closes the passed closeable.  In case the close
      * operation fails, the exception is written into the log.
@@ -84,12 +82,7 @@ public final class FileUtils
         }
         catch (Exception e)
         {
-            Throwable t = e;
-
-            if (t instanceof InvocationTargetException)
-                t = t.getCause();
-
-            LOG.fine(t.getMessage(), t);
+            LOG.log( Level.FINE, e.getMessage(), e);
         }
     }
 
