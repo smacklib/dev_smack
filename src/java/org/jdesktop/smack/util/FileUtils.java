@@ -7,9 +7,9 @@
  */
 package org.jdesktop.smack.util;
 
+import java.io.Closeable;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Vector;
 
 import javax.swing.filechooser.FileFilter;
@@ -68,29 +68,19 @@ public final class FileUtils
 
     /**
      * Silently closes the passed closeable.  In case the close
-     * operation fails the exception is written into the log.
-     * If the passed object does not offer a close operation
-     * an {@link IllegalArgumentException} is thrown.
+     * operation fails, the exception is written into the log.
      *
      * @param closeable The object to close.  If {@code null} is passed
      *          this operation does nothing.
      */
-    public static void forceClose( Object closeable )
+    public static void forceClose( Closeable closeable )
     {
         if ( closeable == null )
             return;
 
-        try {
-            Method closeOperation = closeable.getClass().getMethod( "close" );
-
-            if ( ! closeOperation.isAccessible() )
-                closeOperation.setAccessible( true );
-
-            closeOperation.invoke(closeable);
-        }
-        catch (NoSuchMethodException e)
+        try
         {
-            throw new IllegalArgumentException(e);
+            closeable.close();
         }
         catch (Exception e)
         {
@@ -180,13 +170,5 @@ public final class FileUtils
     private FileUtils()
     {
         throw new AssertionError();
-    }
-
-    public static void main( String[] args )
-    {
-        File f = new File( "blah.txt" );
-        System.err.println( getSuffix( f ) );
-        System.err.println( getSuffix( new File("argh.") ) );
-        System.err.println( replaceSuffix( f, "doc" ) );
     }
 }
