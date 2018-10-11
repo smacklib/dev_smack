@@ -72,7 +72,9 @@ import javafx.util.Pair;
  * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
+ * @deprecated Use {@link org.jdesktop.util.ResourceManager}
  */
+@Deprecated
 public final class ResourceManager
 {
     private final static Logger LOG =
