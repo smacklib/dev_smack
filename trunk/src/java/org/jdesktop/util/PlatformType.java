@@ -42,6 +42,11 @@ public enum PlatformType {
         return resourceSuffix;
     }
 
+    public static boolean is( PlatformType platformType )
+    {
+        return getPlatform() == platformType;
+    }
+
     @Override
     public String toString() {
         return name;
@@ -53,12 +58,14 @@ public enum PlatformType {
      * Determines a platform type the application is running on.
      * @return current platform type
      */
-    public static PlatformType getPlatform() {
+    public static PlatformType getPlatform()
+    {
         if (activePlatformType != null)
             return activePlatformType;
-        activePlatformType = PlatformType.DEFAULT;
-        PrivilegedAction<String> doGetOSName = new PrivilegedAction<String>() {
 
+        activePlatformType = PlatformType.DEFAULT;
+
+        PrivilegedAction<String> doGetOSName = new PrivilegedAction<>() {
             @Override
             public String run() {
                 return System.getProperty("os.name");
