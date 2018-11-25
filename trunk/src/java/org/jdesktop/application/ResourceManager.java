@@ -25,8 +25,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractButton;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 
 import org.jdesktop.application.ResourceMap.InjectFieldException;
@@ -577,37 +575,7 @@ public final class ResourceManager
      * @param key
      */
     private void injectComponentProperty(Component component, PropertyDescriptor pd, String key, ResourceMap map ) {
-        Method setter = pd.getWriteMethod();
-        Class<?> type = pd.getPropertyType();
-        if ((setter != null) && (type != null) && map.containsKey(key)) {
-            Object value = map.getObject(key, type);
-            String propertyName = pd.getName();
-            try {
-                // Note: this could be generalized, we could delegate
-                // to a component property injector.
-                if ("text".equals(propertyName) && (component instanceof AbstractButton)) {
-                    MnemonicText.configure(component, (String) value);
-                } else if ("text".equals(propertyName) && (component instanceof JLabel)) {
-                    MnemonicText.configure(component, (String) value);
-                } else {
-                    setter.invoke(component, value);
-                }
-            } catch (Exception e) {
-                String pdn = pd.getName();
-                String msg = "property setter failed";
-                RuntimeException re = new PropertyInjectionException(msg, key, component, pdn);
-                re.initCause(e);
-                throw re;
-            }
-        } else if (type != null) {
-            String pdn = pd.getName();
-            String msg = "no value specified for resource";
-            throw new PropertyInjectionException(msg, key, component, pdn);
-        } else if (setter == null) {
-            String pdn = pd.getName();
-            String msg = "can't set read-only property";
-            throw new PropertyInjectionException(msg, key, component, pdn);
-        }
+        throw new AssertionError();
     }
 
     /**

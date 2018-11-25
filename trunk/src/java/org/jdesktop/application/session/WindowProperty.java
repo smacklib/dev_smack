@@ -5,19 +5,10 @@
 
 package org.jdesktop.application.session;
 
-import static org.jdesktop.application.util.SwingHelper.computeVirtualGraphicsBounds;
-import static org.jdesktop.application.util.SwingHelper.isResizable;
-
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.Window;
-
-import javax.swing.JFrame;
-
-import org.jdesktop.application.util.SwingHelper;
 
 /**
  * A {@code sessionState} property for Window.
@@ -69,27 +60,28 @@ public class WindowProperty implements PropertySupport {
      */
     @Override
     public Object getSessionState(Component c) {
-        checkComponent(c);
-        int frameState = Frame.NORMAL;
-        if (c instanceof Frame) {
-            frameState = ((Frame) c).getExtendedState();
-        }
-        GraphicsConfiguration gc = c.getGraphicsConfiguration();
-        Rectangle gcBounds = (gc == null) ? null : gc.getBounds();
-        Rectangle frameBounds = c.getBounds();
-        /* If this is a JFrame created by FrameView and it's been maximized,
-         * retrieve the frame's normal (not maximized) bounds.  More info:
-         * see FrameStateListener#windowStateChanged in FrameView.
-         */
-        if ((c instanceof JFrame) && (0 != (frameState & Frame.MAXIMIZED_BOTH))) {
-            frameBounds = SwingHelper.getWindowNormalBounds((JFrame)c);
-        }
-
-        // Michab added null check.
-        if ( frameBounds == null || frameBounds.isEmpty() )
-            return null;
-
-        return new WindowState(frameBounds, gcBounds, getScreenCount(), frameState);
+        throw new AssertionError();
+//        checkComponent(c);
+//        int frameState = Frame.NORMAL;
+//        if (c instanceof Frame) {
+//            frameState = ((Frame) c).getExtendedState();
+//        }
+//        GraphicsConfiguration gc = c.getGraphicsConfiguration();
+//        Rectangle gcBounds = (gc == null) ? null : gc.getBounds();
+//        Rectangle frameBounds = c.getBounds();
+//        /* If this is a JFrame created by FrameView and it's been maximized,
+//         * retrieve the frame's normal (not maximized) bounds.  More info:
+//         * see FrameStateListener#windowStateChanged in FrameView.
+//         */
+//        if ((c instanceof JFrame) && (0 != (frameState & Frame.MAXIMIZED_BOTH))) {
+//            frameBounds = SwingHelper.getWindowNormalBounds((JFrame)c);
+//        }
+//
+//        // Michab added null check.
+//        if ( frameBounds == null || frameBounds.isEmpty() )
+//            return null;
+//
+//        return new WindowState(frameBounds, gcBounds, getScreenCount(), frameState);
     }
 
     /**
@@ -120,27 +112,28 @@ public class WindowProperty implements PropertySupport {
      */
     @Override
     public void setSessionState(Component c, Object state) {
-        checkComponent(c);
-        if ((state != null) && !(state instanceof WindowState)) {
-            throw new IllegalArgumentException("invalid state");
-        }
-        Window w = (Window) c;
-        WindowState windowState = (WindowState) state;
-        SwingHelper.putWindowNormalBounds(w, windowState.getBounds());
-        if (!w.isLocationByPlatform() && (state != null)) {
-
-            Rectangle gcBounds0 = windowState.getGraphicsConfigurationBounds();
-            if (gcBounds0 != null && isResizable(w)) {
-                if (computeVirtualGraphicsBounds().contains(gcBounds0.getLocation())) {
-                    w.setBounds(windowState.getBounds());
-                } else {
-                    w.setSize(windowState.getBounds().getSize());
-                }
-            }
-            if (w instanceof Frame) {
-                ((Frame) w).setExtendedState(windowState.getFrameState());
-
-            }
-        }
+        throw new AssertionError();
+//        checkComponent(c);
+//        if ((state != null) && !(state instanceof WindowState)) {
+//            throw new IllegalArgumentException("invalid state");
+//        }
+//        Window w = (Window) c;
+//        WindowState windowState = (WindowState) state;
+//        SwingHelper.putWindowNormalBounds(w, windowState.getBounds());
+//        if (!w.isLocationByPlatform() && (state != null)) {
+//
+//            Rectangle gcBounds0 = windowState.getGraphicsConfigurationBounds();
+//            if (gcBounds0 != null && isResizable(w)) {
+//                if (computeVirtualGraphicsBounds().contains(gcBounds0.getLocation())) {
+//                    w.setBounds(windowState.getBounds());
+//                } else {
+//                    w.setSize(windowState.getBounds().getSize());
+//                }
+//            }
+//            if (w instanceof Frame) {
+//                ((Frame) w).setExtendedState(windowState.getFrameState());
+//
+//            }
+//        }
     }
 }

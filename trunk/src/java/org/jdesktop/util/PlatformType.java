@@ -7,21 +7,49 @@ package org.jdesktop.util;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+import org.jdesktop.smack.util.ResourceUtils;
 
 /**
- *
  * @author Illya Yalovyy
  */
-public enum PlatformType {
-    DEFAULT ("Default", ""),
-    SOLARIS ("Solaris", "sol", "solaris"),
-    FREE_BSD ("FreeBSD", "bsd", "FreeBSD"),
-    LINUX ("Linux", "lin", "linux"),
-    OS_X ("Mac OS X", "osx", "mac os x"),
-    WINDOWS ("Windows", "win", "windows");
+public enum PlatformType
+{
+    DEFAULT (
+            "Default",
+            StringUtil.EMPTY_STRING ),
+    FREE_BSD (
+            "FreeBSD",
+            "bsd",
+            "FreeBSD"),
+    LINUX (
+            "Linux",
+            "lin",
+            "linux"),
+    OS_X (
+            "Mac OS X",
+            "mac",
+            "mac os x"),
+    WINDOWS (
+            "Windows",
+            "win",
+            "windows");
 
-    private final String name;
-    private final String resourceSuffix;
+    /**
+     * An end user compatible platform name.
+     */
+    public final String name;
+
+    /**
+     * A resource suffix.
+     */
+    public final String resourceSuffix;
+
+    /**
+     * Patterns matched against os.name to detect a platform type.
+     */
     private final String[] patterns;
 
     private PlatformType(String name, String resourcePrefix, String... patterns) {
@@ -30,21 +58,17 @@ public enum PlatformType {
         this.patterns = patterns;
     }
 
-    public String getName() {
-        return name;
+    private String[] getPatterns() {
+        return patterns;
     }
 
-    public String[] getPatterns() {
-        return patterns.clone();
-    }
-
-    public String getResourceSuffix() {
-        return resourceSuffix;
-    }
-
+    /**
+     * @param platformType A platform type.
+     * @return True if the passed platform equals the current platform.
+     */
     public static boolean is( PlatformType platformType )
     {
-        return getPlatform() == platformType;
+        return getPlatform() ==  Objects.requireNonNull( platformType );
     }
 
     @Override
@@ -55,8 +79,7 @@ public enum PlatformType {
     private static PlatformType activePlatformType;
 
     /**
-     * Determines a platform type the application is running on.
-     * @return current platform type
+     * @return The current platform.
      */
     public static PlatformType getPlatform()
     {
@@ -65,14 +88,11 @@ public enum PlatformType {
 
         activePlatformType = PlatformType.DEFAULT;
 
-        PrivilegedAction<String> doGetOSName = new PrivilegedAction<>() {
-            @Override
-            public String run() {
-                return System.getProperty("os.name");
-            }
-        };
+        PrivilegedAction<String> doGetOSName =
+                () -> System.getProperty("os.name");
+        String osName = AccessController.doPrivileged(
+                doGetOSName);
 
-        String osName = AccessController.doPrivileged(doGetOSName);
         if (osName != null) {
             osName = osName.toLowerCase();
             for (PlatformType platformType : PlatformType.values()) {
@@ -83,6 +103,76 @@ public enum PlatformType {
                 }
             }
         }
-        return activePlatformType = PlatformType.DEFAULT;
+
+        return activePlatformType;
+    }
+
+    private static <T> T createDefaultInstance( Class<T> clazz )
+    {
+        try
+        {
+            return clazz.getDeclaredConstructor().newInstance();
+        }
+        catch ( Exception e )
+        {
+            throw new IllegalArgumentException( e );
+        }
+    }
+
+    /**
+     * Load a platform specific class.
+     *
+     * @param pClass The prototype class which may be of interface type.
+     * This classes resources are read and the resource suffix key is
+     * resolved against the class.  If the key is defined, then its
+     * value must be a class name.  This gets loaded and an instance is
+     * returned.
+     * If the key is not defined, then it is tried to create an instance of
+     * the passed class.
+     * Design:  If no fallback exists, pass an interface and handle the
+     * thrown exception as 'Platform not supported'. Otherwise pass a class
+     * with a public constructor.
+     *
+     * @return An instance of the passed class or interface. Throws a runtime
+     * exception if loading fails.
+     */
+    public static <T> T load( Class<T> pClass )
+    {
+        PlatformType platformType =
+                getPlatform();
+
+        if ( platformType == PlatformType.DEFAULT )
+        {
+            // If platform is default, the passed class must be
+            // creatable.
+            return createDefaultInstance( pClass );
+        }
+
+        ResourceBundle resrc =
+                ResourceUtils.getClassResources( pClass );
+
+        String platformClassName =
+                resrc.getString( platformType.resourceSuffix );
+
+        if ( StringUtil.isEmpty( platformClassName ) )
+        {
+            // If no name is defined we try to fall back
+            // on an instance of the passed class.
+            return createDefaultInstance( pClass );
+
+        }
+
+        try
+        {
+            @SuppressWarnings("unchecked")
+            Class<T> resultClass =
+                (Class<T>)pClass.getClassLoader().loadClass( platformClassName );
+
+            return ReflectionUtil.createInstanceX( resultClass );
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( ReflectionUtil.unwrap( e ) );
+        }
     }
 }

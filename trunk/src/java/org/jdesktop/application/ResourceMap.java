@@ -40,8 +40,8 @@ import org.jdesktop.application.converters.KeyStrokeStringConverter;
 import org.jdesktop.application.converters.Point2dStringConverter;
 import org.jdesktop.application.converters.PointStringConverter;
 import org.jdesktop.application.converters.RectangleStringConverter;
-import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.smack.util.ResourceUtils;
+import org.jdesktop.util.PlatformType;
 import org.jdesktop.util.ReflectionUtil;
 import org.jdesktop.util.StringUtil;
 
@@ -88,6 +88,7 @@ import org.jdesktop.util.StringUtil;
  * @see ResourceConverter
  * @see ResourceBundle
  */
+@Deprecated
 public class ResourceMap
 {
     private static final Logger LOG =
@@ -172,7 +173,7 @@ public class ResourceMap
         }
         _parent = parent;
         _classLoader = classLoader;
-        _bundleNames = Collections.unmodifiableList(new ArrayList<String>(bundleNames));
+        _bundleNames = Collections.unmodifiableList(new ArrayList<>(bundleNames));
         _resourcesDir = bpn.replace(".", "/") + "/";
     }
 
@@ -240,8 +241,8 @@ public class ResourceMap
      */
     private synchronized Map<String, Object> getBundlesMap() {
         if (_bundlesMap == null) {
-            String resourceSuffix = getPlatform().getResourceSuffix();
-            Map<String, Object> bundlesMap = new ConcurrentHashMap<String, Object>();
+            String resourceSuffix = StringUtil.EMPTY_STRING;
+            Map<String, Object> bundlesMap = new ConcurrentHashMap<>();
             for (int i = _bundleNames.size() - 1; i >= 0; i--) {
                 populateResourceMap(_bundleNames.get(i), bundlesMap);
                 if (!resourceSuffix.isEmpty())
@@ -319,7 +320,7 @@ public class ResourceMap
      */
     private synchronized Set<String> getBundlesMapKeys() {
         if (bundlesMapKeysP == null) {
-            Set<String> allKeys = new HashSet<String>(getResourceKeySet());
+            Set<String> allKeys = new HashSet<>(getResourceKeySet());
             ResourceMap parent = getParent();
             if (parent != null) {
                 allKeys.addAll(parent.keySet());
