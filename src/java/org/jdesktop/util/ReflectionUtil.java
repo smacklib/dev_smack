@@ -344,7 +344,7 @@ public final class ReflectionUtil
         if ( c == null )
             throw new NullPointerException();
 
-        List<Class<?>> result = new ArrayList<Class<?>>();
+        List<Class<?>> result = new ArrayList<>();
 
         for (
             Class<?> current = c ;
@@ -385,7 +385,7 @@ public final class ReflectionUtil
             if ( a == null )
                 continue;
 
-            result.add( new Pair<Field,T>( c, a ) );
+            result.add( new Pair<>( c, a ) );
         }
 
         return result;
@@ -435,7 +435,7 @@ public final class ReflectionUtil
             if ( a == null )
                 continue;
 
-            result.add( new Pair<Method,T>( c, a ) );
+            result.add( new Pair<>( c, a ) );
         }
 
         return result;
@@ -458,7 +458,7 @@ public final class ReflectionUtil
     }
 
     /**
-     * Create an instance of the passed class usinge the default
+     * Create an instance of the passed class using the default
      * constructor.
      *
      * @param clazz The class to instantiate.
@@ -501,5 +501,18 @@ public final class ReflectionUtil
         }
 
         return ctor.newInstance();
+    }
+
+    /**
+     * @param e The exception to unwrap.
+     * @return If the passed throwable is an {@link InvocationTargetException}
+     * then throws the cause of this, otherwise returns the passed throwbale
+     * unmodified.
+     */
+    public static Throwable unwrap( Throwable e )
+    {
+        if ( e instanceof InvocationTargetException )
+            return e.getCause();
+        return e;
     }
 }

@@ -32,8 +32,8 @@ import javax.jnlp.FileContents;
 import javax.jnlp.PersistenceService;
 import javax.jnlp.ServiceManager;
 
-import org.jdesktop.application.util.PlatformType;
 import org.jdesktop.beans.AbstractBeanEdt;
+import org.jdesktop.util.PlatformType;
 import org.jdesktop.util.StringUtil;
 
 /**
