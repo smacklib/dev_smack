@@ -12,7 +12,6 @@ module framework.smack {
 	uses org.jdesktop.util.ResourceConverterExtension;
 
 	exports org.jdesktop.application;
-	exports org.jdesktop.application.util;
 	exports org.jdesktop.beans;
 	exports org.jdesktop.smack.util;
 	exports org.jdesktop.util;
