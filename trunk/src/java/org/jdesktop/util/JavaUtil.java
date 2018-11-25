@@ -44,7 +44,7 @@ public class JavaUtil
      * Sleep for an amount of milliseconds or until interrupted.
      * @param millis The time to sleep.
      */
-    public void sleep( long millis )
+    public static void sleep( long millis )
     {
         try
         {
@@ -65,7 +65,7 @@ public class JavaUtil
      * Calls the passed operation, ignoring an exception.
      * @param f The operation to call.
      */
-    public void force( Fx operation )
+    public static void force( Fx operation )
     {
         try
         {
