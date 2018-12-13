@@ -353,7 +353,7 @@ public class ResourceManager
         }
 
         // Check if we can synthesize a constructor-based resource converter.
-        if ( targetType.getConstructor( String.class ) != null )
+        if ( ReflectionUtil.getConstructor( targetType, String.class ) != null )
         {
             converter = new ConstructorResourceConverter(
                     targetType.getConstructor( String.class ),

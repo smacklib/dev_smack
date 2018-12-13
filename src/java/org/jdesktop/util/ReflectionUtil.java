@@ -506,7 +506,7 @@ public final class ReflectionUtil
     /**
      * @param e The exception to unwrap.
      * @return If the passed throwable is an {@link InvocationTargetException}
-     * then throws the cause of this, otherwise returns the passed throwbale
+     * then throws the cause of this, otherwise returns the passed throwable
      * unmodified.
      */
     public static Throwable unwrap( Throwable e )

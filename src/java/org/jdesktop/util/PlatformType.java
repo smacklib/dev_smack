@@ -7,8 +7,8 @@ package org.jdesktop.util;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import org.jdesktop.smack.util.ResourceUtils;
 
@@ -148,11 +148,11 @@ public enum PlatformType
             return createDefaultInstance( pClass );
         }
 
-        ResourceBundle resrc =
-                ResourceUtils.getClassResources( pClass );
+        Map<String, String> resrc =
+                ResourceUtils.getClassResourceMap( pClass );
 
         String platformClassName =
-                resrc.getString( platformType.resourceSuffix );
+                resrc.get( platformType.resourceSuffix );
 
         if ( StringUtil.isEmpty( platformClassName ) )
         {
