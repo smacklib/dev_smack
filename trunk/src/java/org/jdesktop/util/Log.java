@@ -14,7 +14,9 @@ import java.util.logging.Logger;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated No replacement.  Use standard logging.
  */
+@Deprecated
 public class Log
 {
     private final Logger _delegate;

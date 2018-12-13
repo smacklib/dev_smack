@@ -6,12 +6,14 @@ package org.jdesktop.smack.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.ResourceBundle.Control;
+import java.util.stream.Collectors;
 
 /**
  * Resource Bundle helpers.
@@ -45,6 +47,41 @@ public class ResourceUtils
     }
 
     /**
+     * Generated. Fixes the fact that {@link ResourceBundle#getBaseBundleName()}
+     * returns null in modular applications.  This bites us when injecting
+     * resources. The class is used in {@link ResourceUtils#getClassResources(Class)}
+     * as the result.
+     */
+    private static class NamedResourceBundle extends ResourceBundle
+    {
+        private final String _name;
+
+        public NamedResourceBundle( String name, ResourceBundle parent )
+        {
+            this.parent = parent;
+            this._name = name;
+        }
+
+        @Override
+        public String getBaseBundleName()
+        {
+            return _name;
+        }
+
+        @Override
+        protected Object handleGetObject( String key )
+        {
+            return null;
+        }
+
+        @Override
+        public Enumeration<String> getKeys()
+        {
+            return parent.getKeys();
+        }
+    }
+
+    /**
      * Populates the passed Map with the preprocessed values from the named
      * resource bundle.
      *
@@ -60,9 +97,9 @@ public class ResourceUtils
         try
         {
             ResourceBundle bundle = ResourceBundle.getBundle( bundleName, loc,
-                    cl,
+                    cl ); /*,
                     // We only want property resource bundles.
-                    Control.getControl( Control.FORMAT_PROPERTIES ) );
+                    Control.getControl( Control.FORMAT_PROPERTIES ) ); */
 
             return preprocessResourceBundle( bundle );
         }
@@ -94,13 +131,13 @@ public class ResourceUtils
             for ( String key : bundle.keySet() )
             {
                 result.put( key,
-                // Note that we perform all preprocessing for the
-                // string values in the resource bundle here.
-                // Later stages of processing see only the evaluated
-                // values.
-                evaluateStringExpression(
-                        bundle.getString( key ),
-                        bundle ) );
+                        // Note that we perform all preprocessing for the
+                        // string values in the resource bundle here.
+                        // Later stages of processing see only the evaluated
+                        // values.
+                        evaluateStringExpression(
+                                bundle.getString( key ),
+                                bundle ) );
             }
 
             return result;
@@ -157,8 +194,8 @@ public class ResourceUtils
                         String resolved = env.getObject( k ).toString();
                         // The resolved string is again evaluated.
                         result.append( evaluateStringExpression(
-                        		resolved,
-                        		env ) );
+                                resolved,
+                                env ) );
                     }
                     else
                     {
@@ -172,7 +209,7 @@ public class ResourceUtils
                 else
                 {
                     String msg =
-                        String.format( "no closing brace in \"%s\"", expr );
+                            String.format( "no closing brace in \"%s\"", expr );
                     throw new LookupException( msg, "<not found>", String.class );
                 }
             }
@@ -191,12 +228,13 @@ public class ResourceUtils
      * Get class specific resources. If the passed classes full
      * name is "org.good.Class" then this operation loads
      * the resource bundle "org/good/resources/Class.properties".
+     * Prefer {@link #getClassResourceMap(Class)}.
      *
      * @param c The class for which the resources should be loaded.
      * @return A ResourceBundle. If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
-   public static ResourceBundle getClassResources( Class<?> c )
+    public static ResourceBundle getClassResources( Class<?> c )
     {
         String name = c.getName();
 
@@ -211,12 +249,35 @@ public class ResourceUtils
 
         try
         {
-            return ResourceBundle.getBundle( name );
+            return new NamedResourceBundle(
+                    name,
+                    ResourceBundle.getBundle( name ) );
         }
         catch ( MissingResourceException e )
         {
             return null;
         }
+    }
+
+    /**
+     * Get class specific resources. If the passed classes full
+     * name is "org.good.Class" then this operation loads
+     * the resource bundle "org/good/resources/Class.properties".
+     *
+     * @param c The class for which the resources should be loaded.
+     * @return A map holding the resource strings. If no resources were
+     * found, then the result is an empty map.
+     */
+    public static Map<String,String> getClassResourceMap( Class<?> c )
+    {
+        ResourceBundle bundle = getClassResources( c );
+
+        if ( bundle == null )
+            return Collections.emptyMap();
+
+        return bundle.keySet().stream().collect( Collectors.toMap(
+                s -> s,
+                s -> bundle.getString( s ) ) );
     }
 
     /**
