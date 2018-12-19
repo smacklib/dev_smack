@@ -23,6 +23,11 @@ public class TimeProbe
     private final String _name;
 
     /**
+     * True if started.
+     */
+    private boolean _isStarted = false;
+
+    /**
      * The UTC ms time of timer start. Zero means not started yet.
      */
     private long _start = 0;
@@ -63,6 +68,7 @@ public class TimeProbe
      */
     public TimeProbe start()
     {
+        _isStarted = true;
         _stop = 0;
         _start = System.currentTimeMillis();
 
@@ -76,6 +82,7 @@ public class TimeProbe
      */
     public TimeProbe stop()
     {
+        _isStarted = false;
         _stop = System.currentTimeMillis();
 
         return this;
@@ -107,7 +114,7 @@ public class TimeProbe
      */
     public boolean isRunning()
     {
-        return _stop == 0;
+        return _isStarted;
     }
 
     /**
