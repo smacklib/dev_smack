@@ -18,4 +18,5 @@ module framework.smack {
     exports org.jdesktop.util;
     exports org.jdesktop.util.converters;
     exports org.smack.fx;
+    exports org.smack.util;
 }
