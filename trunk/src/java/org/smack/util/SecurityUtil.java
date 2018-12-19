@@ -28,12 +28,18 @@ import org.jdesktop.util.ServiceManager;
  */
 public class SecurityUtil
 {
+    private final static String ALGORITHM =
+            "SHA1withDSA";
+    private final static String PROVIDER =
+            "SUN";
+
     /**
+     * Check if the passed data has a valid signature.
      *
-     * @param pub
-     * @param sign
-     * @param data
-     * @return
+     * @param pub The signature's public key.
+     * @param sign The signature.
+     * @param data The signed data.
+     * @return True if the verification succeeded.
      */
     public static boolean performVerify(
             PublicKey pub,
@@ -43,7 +49,7 @@ public class SecurityUtil
         try
         {
             Signature signature =
-                    Signature.getInstance("SHA1withDSA", "SUN");
+                    Signature.getInstance(ALGORITHM, PROVIDER);
 
             signature.initVerify( pub );
             signature.update( data );
@@ -62,11 +68,12 @@ public class SecurityUtil
      * @param priv The key to use.
      * @param data The data to sign.
      * @return The binary signature.
+     * @throws Exception In case of an error.
      */
     public static byte[] performSign( PrivateKey priv, byte[] data ) throws Exception
     {
         Signature signature =
-                Signature.getInstance("SHA1withDSA", "SUN");
+                Signature.getInstance(ALGORITHM, PROVIDER);
 
         signature.initSign(
                 priv );
@@ -83,6 +90,7 @@ public class SecurityUtil
      * @return The certificate, never null. If no certificate is in the file,
      * an exception is thrown.
      * @see #writeCert(X509Certificate, File)
+     * @throws Exception In case of an error.
      */
     public static X509Certificate readCert( InputStream fis )
         throws Exception
@@ -112,6 +120,7 @@ public class SecurityUtil
      * @param f The certificate file.
      * @return The certificate.
      * @see #writeCert(X509Certificate, File)
+     * @throws Exception In case of an error.
      */
     public static X509Certificate readCert( File f ) throws Exception
     {
@@ -125,6 +134,7 @@ public class SecurityUtil
      * @param f The target file. If the file exists the content is
      * overwritten.
      * @see #readCert(File)
+     * @throws Exception In case of an error.
      */
     public static void writeCert( X509Certificate cert, File f )
             throws Exception

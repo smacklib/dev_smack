@@ -62,7 +62,6 @@ public class ActionFx
     /**
      * Injects the action properties of the action's class.
      *
-     * @param app The application reference.
      * @param context The home class of the action that is used to access the
      * resources.
      * @param key A prefix used to identify the resource keys used for property
@@ -86,7 +85,6 @@ public class ActionFx
      * Injects this action's JavaBean properties. The property values are
      * resolved in the ResourceMap of the passed context class.
      *
-     * @param app The application reference.
      * @param context The home class of the action that is used to access the
      * resources.
      * @param key A prefix used to identify the resource keys used for property

@@ -109,7 +109,7 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * Get the name of the underlying resource bundle.
+     * @return The name of the underlying resource bundle.
      */
     public String getName()
     {

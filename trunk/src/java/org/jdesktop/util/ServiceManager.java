@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 /**
  * Management of ApplicationServices.
  *
@@ -39,7 +37,8 @@ public final class ServiceManager
     /**
      * Get an application service of the specified type.
      *
-     * @param singletonType The type of the application service.
+     * @param <T> The service type.
+     * @param singletonType The class of the application service.
      * @return An instance of the requested service.
      */
     public static synchronized <T> T getApplicationService( Class<T> singletonType )
@@ -65,6 +64,7 @@ public final class ServiceManager
      * Get an application service of the specified type.
      *
      * @param singletonInstance The application service.
+     * @param <T> The service type.
      * @return An instance of the requested service.
      */
     public static synchronized <T> T initApplicationService( T singletonInstance )
@@ -78,6 +78,7 @@ public final class ServiceManager
     /**
      * Initialize an application service with a specific instance.
      *
+     * @param <T> The service type.
      * @param clazz The service class.
      * @param singletonInstance The instance to use. The instance has to be assignable
      * to the passed class.
@@ -123,11 +124,5 @@ public final class ServiceManager
             Class<?> superclass )
     {
         return superclass.isAssignableFrom( subclass );
-    }
-
-    public static void main( String[] args )
-    {
-        System.err.println( isSuperclass( Object.class, QName.class ) );
-        System.err.println( isSuperclass( QName.class, Object.class ) );
     }
 }
