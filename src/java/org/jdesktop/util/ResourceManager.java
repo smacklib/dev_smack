@@ -52,14 +52,14 @@ public class ResourceManager
     @Retention(RUNTIME)
     public @interface Resource {
         /**
-         * The name of the resource.  For field annotations,
+         * @return The name of the resource.  For field annotations,
          * the default is the field name.
          */
         String name() default "";
 
         /**
-         * A product specific name that this resource should be mapped to.
-         * The name of this resource, as defined by the <code>name</code>
+         * @return A product specific name that this resource should be mapped
+         * to.  The name of this resource, as defined by the <code>name</code>
          * element or defaulted, is a name that is local to the application
          * component using the resource.  (It's a name in the JNDI
          * <code>java:comp/env</code> namespace.)  Many application servers
@@ -75,7 +75,7 @@ public class ResourceManager
         String mappedName() default "";
 
         /**
-         * Description of this resource.  The description is expected
+         * @return Description of this resource.  The description is expected
          * to be in the default language of the system on which the
          * application is deployed.  The description can be presented
          * to the Deployer to help in choosing the correct resource.
@@ -120,13 +120,14 @@ public class ResourceManager
     }
 
     /**
-     * Inject the passed bean's properties from this map. The prefix is
+     * Inject the passed bean's properties from the passed map. The prefix is
      * used to find the configuration keys in the map. Keys in the
      * map have to look like prefix.propertyName. The dot is added to
      * the prefix.
      *
      * @param bean The bean whose properties are injected.
      * @param prefix The prefix used to filter the map's keys.
+     * @param map Inject the passed bean's properties from this map.
      */
     public void injectProperties( Object bean, String prefix, ResourceMap map )
     {
@@ -201,7 +202,8 @@ public class ResourceManager
     }
 
     /**
-     * @return
+     * @param clazz The class a resource map is requested for.
+     * @return The resource map for the passed class.
      */
     public ResourceMap getResourceMap( Class<?> clazz )
     {
