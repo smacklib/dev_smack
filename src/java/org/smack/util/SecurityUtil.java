@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -17,6 +20,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.jdesktop.util.ResourceManager;
 import org.jdesktop.util.ServiceManager;
@@ -149,6 +157,37 @@ public class SecurityUtil
 
             sw.flush();
         }
+    }
+
+    public static byte[] encrypt(byte[] data, PrivateKey key)
+            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            UnsupportedEncodingException, IllegalBlockSizeException,
+            BadPaddingException, InvalidKeyException
+    {
+        Cipher cipher =
+                Cipher.getInstance( "RSA" );
+        cipher.init(
+                Cipher.ENCRYPT_MODE, key );
+
+        return cipher.doFinal( data );
+    }
+
+    public static byte[] decrypt( byte[] encryptedData, PublicKey key )
+            throws
+                InvalidKeyException,
+                UnsupportedEncodingException,
+                IllegalBlockSizeException,
+                BadPaddingException,
+                NoSuchAlgorithmException,
+                NoSuchPaddingException
+    {
+        Cipher cipher =
+                Cipher.getInstance( "RSA" );
+        cipher.init(
+                Cipher.DECRYPT_MODE, key );
+
+        return cipher.doFinal(
+                encryptedData );
     }
 
     static
