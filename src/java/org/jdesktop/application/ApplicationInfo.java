@@ -9,9 +9,10 @@ package org.jdesktop.application;
 
 import java.util.Objects;
 
-import javax.swing.ImageIcon;
-
+import org.jdesktop.util.ResourceManager;
 import org.jdesktop.util.ServiceManager;
+
+import javafx.scene.image.Image;
 
 /**
  * Application information.
@@ -38,22 +39,22 @@ public class ApplicationInfo
         _applicationClass =
                Objects.requireNonNull( applicationClass );
         ResourceManager rm =
-                ServiceManager.initApplicationService(
-                        new ResourceManager( _applicationClass ) );
-        ResourceMap arm =
-                rm.getApplicationResourceMap();
+                ServiceManager.getApplicationService(
+                        ResourceManager.class );
+        org.jdesktop.util.ResourceMap arm =
+                rm.getResourceMap( _applicationClass );
 
-        id = arm.getString(
+        id = arm.get(
                 "Application.id" );
-        title = arm.getString(
+        title = arm.get(
                 "Application.title" );
-        version = arm.getString(
+        version = arm.get(
                 "Application.version" );
-        icon = arm.getImageIcon(
-                "Application.icon" );
-        vendor = arm.getString(
+        icon = arm.getAs(
+                "Application.icon", Image.class );
+        vendor = arm.get(
                 "Application.vendor" );
-        vendorId = arm.getString(
+        vendorId = arm.get(
                 "Application.vendorId" );
     }
 
@@ -95,13 +96,13 @@ public class ApplicationInfo
         return version;
     }
 
-    private final ImageIcon icon;
+    private final Image icon;
 
     /**
      * Return the application's icon as defined in the resources.
      * @return The application icon.
      */
-    public ImageIcon getIcon()
+    public Image getIcon()
     {
         return icon;
     }

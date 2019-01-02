@@ -17,8 +17,8 @@ import java.util.function.Supplier;
  * A one-to-n relationship. Allows to customize the used map
  * implementation as well as the conrete to-n holder.
  *
- * @version $Id$
- * @author micbinz
+ * @version $Rev$
+ * @author Michael Binz
  *
  * @param <K> The key type.
  * @param <V> The value type.
@@ -33,6 +33,7 @@ public class  OneToN<K,V,C extends Collection<V> >
     /**
      * Create an instance.
      *
+     * @param m A supplier for the initial map content.
      * @param s A factory for the to-n collection.
      */
     public OneToN(

@@ -133,6 +133,7 @@ public enum PlatformType
      * thrown exception as 'Platform not supported'. Otherwise pass a class
      * with a public constructor.
      *
+     * @param <T> The result type.
      * @return An instance of the passed class or interface. Throws a runtime
      * exception if loading fails.
      */

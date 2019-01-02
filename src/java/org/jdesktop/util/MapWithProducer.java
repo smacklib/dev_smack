@@ -25,7 +25,7 @@ public class MapWithProducer<K,V>
     /**
      * Create an instance.
      *
-     * @param The hashmap supplier, for example
+     * @param m The hashmap supplier, for example
      * {@code java.util.WeakHashMap<K,V>::new}.
      *
      * @param factory A content factory.
