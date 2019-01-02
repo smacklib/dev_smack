@@ -55,36 +55,16 @@ public class ResourceManager
          * @return The name of the resource.  For field annotations,
          * the default is the field name.
          */
-        String name() default "";
+        String name() default StringUtil.EMPTY_STRING;
 
         /**
-         * @return A product specific name that this resource should be mapped
-         * to.  The name of this resource, as defined by the <code>name</code>
-         * element or defaulted, is a name that is local to the application
-         * component using the resource.  (It's a name in the JNDI
-         * <code>java:comp/env</code> namespace.)  Many application servers
-         * provide a way to map these local names to names of resources
-         * known to the application server.  This mapped name is often a
-         * <i>global</i> JNDI name, but may be a name of any form. <p>
-         *
-         * Application servers are not required to support any particular
-         * form or type of mapped name, nor the ability to use mapped names.
-         * The mapped name is product-dependent and often installation-dependent.
-         * No use of a mapped name is portable.
+         * @return Description of this resource.
          */
-        String mappedName() default "";
-
-        /**
-         * @return Description of this resource.  The description is expected
-         * to be in the default language of the system on which the
-         * application is deployed.  The description can be presented
-         * to the Deployer to help in choosing the correct resource.
-         */
-        String description() default "";
+        String description() default StringUtil.EMPTY_STRING;
     }
 
     private final ResourceConverterRegistry _converters =
-            new ResourceConverterRegistry();
+            ServiceManager.getApplicationService( ResourceConverterRegistry.class );
 
     private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
             new WeakHashMap<>();
@@ -427,7 +407,7 @@ public class ResourceManager
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
+    <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
     {
         ResourceConverter converter =
                 _converters.get( targetType );

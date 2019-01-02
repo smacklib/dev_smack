@@ -72,6 +72,7 @@ public final class ReflectionUtil
      * Get a constructor from the passed class.  Returns {@code null} if the
      * constructor is not found or not accessible.
      *
+     * @param <T> The result type.
      * @param pClass The class used to lookup the method.
      * @param parameterTypes The parameter types.
      * @return A reference to the constructor or {@code null} if the constructor
@@ -95,6 +96,7 @@ public final class ReflectionUtil
     /**
      * Find the first constructor matching the passed types.
      *
+     * @param <T> The result type.
      * @param constructors The constructors to select from.
      * @param classes The types to match.
      * @return A constructor or null if no constructor matched.
@@ -115,6 +117,7 @@ public final class ReflectionUtil
     /**
      * Find the first constructor matching the passed types.
      *
+     * @param <T> The result type.
      * @param constructors The constructors to select from.
      * @param classes The types to match.
      * @return A constructor or null if no constructor matched.
@@ -360,6 +363,7 @@ public final class ReflectionUtil
     /**
      * Get all annotated fields defined on a class.
      *
+     * @param<T> An annotation type.
      * @param source The class to search.
      * @param annotation The annotation to look up.
      * @param modifiers The required modifiers.
@@ -394,6 +398,7 @@ public final class ReflectionUtil
     /**
      * Get all annotated fields defined on a class.
      *
+     * @param<T> An annotation type.
      * @param source The class to search.
      * @param annotation The annotation to look up.
      * @return Pairs of fields and field annotations.
@@ -410,6 +415,7 @@ public final class ReflectionUtil
     /**
      * Get all annotated fields defined on a class.
      *
+     * @param<T> An annotation type.
      * @param source The class to search.
      * @param annotation The annotation to look up.
      * @param modifiers The required modifiers.
@@ -444,6 +450,7 @@ public final class ReflectionUtil
     /**
      * Get all annotated fields defined on a class.
      *
+     * @param<T> An annotation type.
      * @param source The class to search.
      * @param annotation The annotation to look up.
      * @return Pairs of methods and method annotations.
@@ -461,6 +468,7 @@ public final class ReflectionUtil
      * Create an instance of the passed class using the default
      * constructor.
      *
+     * @param<T> The result type.
      * @param clazz The class to instantiate.
      * @return The instance or {@code null} if the constructor failed.
      */
@@ -482,6 +490,7 @@ public final class ReflectionUtil
      * Create an instance of the passed class using the default
      * constructor.
      *
+     * @param <T> The result type.
      * @param clazz The class to instantiate.
      * @return The instance.
      * @throws Exception If the instance could not be created.

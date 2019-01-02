@@ -3,7 +3,6 @@ package org.jdesktop.util.converters;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.jdesktop.application.ResourceConverter.ResourceConverterException;
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
 
@@ -14,11 +13,11 @@ public class UriStringConverter extends ResourceConverter {
         }
 
         @Override
-        public Object parseString(String s, ResourceMap ignore) throws ResourceConverterException {
+        public Object parseString(String s, ResourceMap ignore) throws Exception {
             try {
                 return new URI(s);
             } catch (URISyntaxException e) {
-                throw new ResourceConverterException("invalid URI", s, e);
+                throw new Exception("invalid URI: " + s, e);
             }
         }
     }

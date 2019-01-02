@@ -133,4 +133,29 @@ public class ResourceMap extends HashMap<String, String>
     {
         return _resourcePath;
     }
+
+    /**
+     * Convert the passed key to a target type.
+     *
+     *
+     * @param <T> The expected target type.
+     * @param targetType The expected result type.
+     * @param key The property key to convert.
+     * @return The conversion result.
+     */
+    public <T> T getAs( String key, Class<T> targetType )
+    {
+        String resolved =
+                get( key );
+        if ( resolved == null )
+            throw new IllegalArgumentException( "Key not found: " + key );
+
+        ResourceManager rm = ServiceManager.getApplicationService(
+                ResourceManager.class );
+
+        return rm.convert(
+                targetType,
+                get( key ),
+                this );
+    }
 }

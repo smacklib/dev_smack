@@ -63,7 +63,7 @@ public class JavaUtil
 
     /**
      * Calls the passed operation, ignoring an exception.
-     * @param f The operation to call.
+     * @param operation The operation to call.
      */
     public static void force( Fx operation )
     {
@@ -81,6 +81,7 @@ public class JavaUtil
     /**
      * Test if an array is empty.
      *
+     * @param <T> The array type.
      * @param array The array to test. {@code null} is allowed.
      * @return {@code true} if the array is not null and has a length greater
      * than zero.

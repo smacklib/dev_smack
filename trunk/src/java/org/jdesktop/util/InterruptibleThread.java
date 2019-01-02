@@ -24,9 +24,8 @@ public class InterruptibleThread
 {
     private volatile boolean _interrupted = false;
 
-
-
     /**
+     * @param r The thread's runnable.
      * @see Thread#Thread(Runnable)
      */
     public InterruptibleThread( Runnable r )
@@ -37,6 +36,8 @@ public class InterruptibleThread
 
 
     /**
+     * @param name The thread's name.
+     * @param r The thread's runnable.
      * @see Thread#Thread(Runnable,String)
      */
     public InterruptibleThread( Runnable r, String name )
@@ -45,6 +46,9 @@ public class InterruptibleThread
     }
 
     /**
+     * @param isDaemon The thread's daemon flag.
+     * @param name The thread's name.
+     * @param r The thread's runnable.
      * @see Thread#Thread(Runnable,String)
      */
     public InterruptibleThread( Runnable r, String name, boolean isDaemon )
@@ -53,8 +57,6 @@ public class InterruptibleThread
 
         setDaemon( isDaemon );
     }
-
-
 
     /**
      * Get the status of the interrupt flag.  This is set when
@@ -69,8 +71,6 @@ public class InterruptibleThread
     {
         return _interrupted || super.isInterrupted();
     }
-
-
 
     /**
      * Sets the interrupted flag and calls the normal
