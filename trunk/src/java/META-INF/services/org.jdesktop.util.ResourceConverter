@@ -9,6 +9,7 @@ org.jdesktop.util.converters.ColorStringConverter
 org.jdesktop.util.converters.DimensionStringConverter
 org.jdesktop.util.converters.EmptyBorderStringConverter
 org.jdesktop.util.converters.FontStringConverter
+org.jdesktop.util.converters.FxImageConverter
 org.jdesktop.util.converters.IconStringConverter
 org.jdesktop.util.converters.ImageStringConverter
 org.jdesktop.util.converters.InsetsStringConverter
