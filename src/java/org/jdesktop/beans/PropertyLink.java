@@ -13,6 +13,7 @@ import org.jdesktop.util.OneToN;
 import org.jdesktop.util.ServiceManager;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.adapter.JavaBeanObjectProperty;
 import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
 import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectProperty;
@@ -186,4 +187,75 @@ public class PropertyLink
 
         return p;
     }
+
+    /**
+     * Persist the passed property.
+     *
+     * @param property The property to persist.
+     * @param converter A converter.
+     * @param key A key used to lookup the property value in the persistence
+     * layer. A good value is the name of the property attribute..
+     * @return The passed property with additional persistence bindings.
+     */
+    public static <T,P extends Property<T> >
+        P persist2(
+                P property,
+                StringConverter<T> converter,
+                String key)
+    {
+        ApplicationProperties a = ServiceManager.getApplicationService(
+                ApplicationProperties.class );
+
+        // Read the initial value from persistence.
+        T initialValue = converter.fromString(
+                a.get( property.getBean().getClass(), key, null ) );
+
+        // If an initial value was set in persistence ...
+        if ( initialValue != null )
+        {
+            // ... we set it on  the property.
+            property.setValue( initialValue );
+        }
+        // If we found nothing in persistence, but the property
+        // has a value ...
+        else if ( property.getValue() != null )
+        {
+            // ... we update persistence.
+            a.put(
+                    property.getBean().getClass(),
+                    key,
+                    converter.toString( property.getValue() ) );
+        }
+
+        property.addListener( (observable,o,n) ->
+        {
+            // Record all property changes in persistence.
+            a.put(
+                    property.getBean().getClass(),
+                    key,
+                    converter.toString( n ) );
+        } );
+
+        return property;
+    }
+
+    /**
+     * The trivial string converter.
+     */
+    public static final StringConverter<String> STRING_STRING_CONVERTER =
+            new StringConverter<>()
+    {
+
+        @Override
+        public String toString( String object )
+        {
+            return object;
+        }
+
+        @Override
+        public String fromString( String string )
+        {
+            return string;
+        }
+    };
 }
