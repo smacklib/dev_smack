@@ -69,7 +69,7 @@ public class ResourceManager
     private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
             new WeakHashMap<>();
 
-    private WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
+    private final WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
             new WeakMapWithProducer<>( ResourceMap::new );
 
     /**
@@ -204,7 +204,7 @@ public class ResourceManager
             return;
 
         ResourceMap rb =
-                new ResourceMap( cIass );
+                getResourceMap( cIass );
 
         if ( rb.isEmpty() )
         {

@@ -251,7 +251,7 @@ public class ResourceUtils
         {
             return new NamedResourceBundle(
                     name,
-                    ResourceBundle.getBundle( name ) );
+                    ResourceBundle.getBundle( name, c.getModule() ) );
         }
         catch ( MissingResourceException e )
         {

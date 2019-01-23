@@ -7,6 +7,8 @@
  */
 package org.jdesktop.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -116,9 +118,36 @@ public class ResourceMap extends HashMap<String, String>
         return _bundleName;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated
     public ClassLoader getClassLoader()
     {
         return _class.getClassLoader();
+    }
+
+    /**
+     * @return The class that this resource map holds resources for.
+     */
+    public Class<?> getResourceClass()
+    {
+        return _class;
+    }
+
+    /**
+     * @return A stream on the content of the result.
+     */
+    public InputStream getResourceAsStream( String name ) throws IOException
+    {
+        InputStream result = _class.getClassLoader().getResourceAsStream(
+                name );
+
+        if ( result != null )
+            return result;
+
+        return
+                _class.getModule().getResourceAsStream( name );
     }
 
     /**
