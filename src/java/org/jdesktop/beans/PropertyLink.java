@@ -194,14 +194,14 @@ public class PropertyLink
      * @param property The property to persist.
      * @param converter A converter.
      * @param key A key used to lookup the property value in the persistence
-     * layer. A good value is the name of the property attribute..
+     * layer. A good value is the name of the property attribute.
      * @return The passed property with additional persistence bindings.
      */
     public static <T,P extends Property<T> >
-        P persist2(
+        P persist(
                 P property,
                 StringConverter<T> converter,
-                String key)
+                String key )
     {
         ApplicationProperties a = ServiceManager.getApplicationService(
                 ApplicationProperties.class );
