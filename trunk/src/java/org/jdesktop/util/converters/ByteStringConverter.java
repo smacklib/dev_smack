@@ -8,7 +8,7 @@ public class ByteStringConverter extends INumberStringConverter {
         }
 
         @Override
-        protected Number parseString(String s, int radix) throws NumberFormatException {
+        public Number parseString(String s, int radix) throws NumberFormatException {
             return (radix == -1) ? Byte.decode(s) : Byte.parseByte(s, radix);
         }
     }

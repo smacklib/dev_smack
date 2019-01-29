@@ -78,14 +78,7 @@ public class ResourceManager
     public ResourceManager()
     {
         for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-        {
-            Class<?> type =  c.getType();
-
-            if ( _converters.containsKey( type ) )
-                LOG.warning( "Duplicate resource converter for: " + type );
-
-            _converters.put( type, c );
-        }
+            addConverter( c );
 
         for ( ResourceConverterExtension c : ServiceLoader.load( ResourceConverterExtension.class ) )
             c.extendTypeMap( _converters );
@@ -96,6 +89,9 @@ public class ResourceManager
      */
     public void addConverter( ResourceConverter converter )
     {
+        if ( _converters.containsKey( converter.getType() ) )
+            LOG.warning( "Duplicate resource converter for: " + converter.getType() );
+
         _converters.put( converter.getType(), converter );
     }
 
