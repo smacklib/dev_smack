@@ -57,8 +57,6 @@ public class MathExt
         return result;
     }
 
-
-
     /**
      * Round a double to an integer.
      *
@@ -69,8 +67,6 @@ public class MathExt
     {
         return (int)Math.round( d );
     }
-
-
 
     /**
      * Compute the distance between points a and b.
@@ -95,8 +91,6 @@ public class MathExt
         return round( Math.hypot( a, b ) );
     }
 
-
-
     /**
      * Compute the distance between two points.
      *
@@ -108,8 +102,6 @@ public class MathExt
     {
         return distance( a.x, a.y, b.x, b.y );
     }
-
-
 
     /**
      * Compute the distance between points a and b.
@@ -436,8 +428,6 @@ public class MathExt
         }
     }
 
-
-
     /**
      * Computes a discrete Fast Fourier Transform.
      *
@@ -513,6 +503,24 @@ public class MathExt
             throw new IllegalArgumentException( "lo >= hi" );
 
         return lo + round( (hi-lo) * Math.random() );
+    }
+
+    /**
+     * Ensure that the passed value is within the range of min to max.
+     *
+     * @param min The lower limit.
+     * @param max The upper limit.
+     * @param value The value to clamp.
+     * @return The clamped value.
+     */
+    public static double clamp( double min, double max, double value )
+    {
+        if (value < min)
+            return min;
+        else if (value > max)
+            return max;
+
+        return value;
     }
 
     /**
