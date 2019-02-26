@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -510,6 +511,25 @@ public final class ReflectionUtil
         }
 
         return ctor.newInstance();
+    }
+
+    /**
+     * Create an array.
+     * @param c The new array's component type.  Note that a primitive type
+     * is not allowed.
+     * @param length The new array's length in range [0..INT_MAX].
+     * @return The newly allocated array.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] makeArray( Class<T> c, int length )
+    {
+        Objects.requireNonNull(
+                c );
+        if ( c.isPrimitive() )
+            throw new IllegalArgumentException(
+                    "Primitive type is not allowed." );
+
+        return (T[])Array.newInstance( c, length );
     }
 
     /**
