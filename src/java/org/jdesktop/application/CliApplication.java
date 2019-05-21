@@ -23,12 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -206,7 +204,7 @@ abstract public class CliApplication
 
         Method selectedCommand = _commandMap.get(
             argv[0].toLowerCase(),
-            new Integer(argv.length - 1) );
+            Integer.valueOf(argv.length - 1) );
 
         if ( selectedCommand != null )
         {
@@ -931,24 +929,5 @@ abstract public class CliApplication
     protected final InputStream in()
     {
         return System.in;
-    }
-
-    /**
-     * Discover the available CliApplications.  Uses a ServiceLoader for discovery.
-     *
-     * @return The available cli classes.
-     */
-    public static Set<Class<? extends CliApplication>> getAvailableClis()
-    {
-        Set<Class<? extends CliApplication>> result =
-                new HashSet<>();
-
-        for ( CliContributor c :
-            ServiceLoader.load( CliContributor.class ) )
-        {
-            result.addAll( c.getClis() );
-        }
-
-        return result;
     }
 }
