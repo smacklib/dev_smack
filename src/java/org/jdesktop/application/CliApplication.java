@@ -5,7 +5,7 @@
  * means, is prohibited without the prior written consent of the copyright
  * owner.
  */
-package com.daimler.tss.ccc.image;
+package org.jdesktop.application;
 
 import java.io.File;
 import java.io.InputStream;
@@ -32,6 +32,9 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jdesktop.util.MultiMap;
+import org.jdesktop.util.StringUtil;
 
 /**
  * A base class for console applications.
