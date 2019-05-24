@@ -109,6 +109,14 @@ abstract public class CliApplication
                 CliApplication::stringToBoolean );
     }
 
+    private String _currentCommand =
+            StringUtil.EMPTY_STRING;
+
+    protected final String currentCommand()
+    {
+        return _currentCommand;
+    }
+
     /**
      * A fallback called if no command was passed or the passed command was
      * unknown. This can be overridden for very simple cli implementations
@@ -208,7 +216,9 @@ abstract public class CliApplication
 
         if ( selectedCommand != null )
         {
-            // We found a matching command ...
+            // We found a matching command.
+            _currentCommand =
+                    getCommandName( selectedCommand );
             executeCommand(
                     selectedCommand,
                     Arrays.copyOfRange( argv, 1, argv.length ) );
