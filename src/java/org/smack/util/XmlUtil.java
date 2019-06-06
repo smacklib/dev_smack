@@ -7,14 +7,22 @@
 package org.smack.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 
-import javax.xml.transform.Source;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * XML utility operations.
@@ -25,35 +33,25 @@ import javax.xml.transform.stream.StreamSource;
 public class XmlUtil
 {
     /**
-     * Transform a file based on an XSLT transformation.
+     * Transform a file based on an XSLT transformation. Access to
+     * non-existent dtds is ignored.
      *
      * @param xslt The transformation.
      * @param toTransform The file to transform.
      * @return The result of the transformation.
      * @throws Exception In case of an error.
      */
-    public static String transform( InputStream xslt, Reader toTransform )
+    public static String transform( InputStream xslt, InputStream toTransform )
             throws Exception
     {
-        TransformerFactory  tFactory =
-                TransformerFactory.newInstance();
-
-        Source xslSource = new
-            StreamSource( xslt );
-        Transformer transformer =
-            tFactory.newTransformer( xslSource );
-
-        ByteArrayOutputStream result =
-                new ByteArrayOutputStream();
-        transformer.transform(
-                new StreamSource( toTransform ),
-                new StreamResult( result ) );
-
-        return result.toString();
+        return transform(
+                new StreamSource( xslt ),
+                new InputSource( toTransform ) );
     }
 
     /**
-     * Transform a file based on an XSLT transformation.
+     * Transform a file based on an XSLT transformation. Access to
+     * non-existent dtds is ignored.
      *
      * @param xslt The transformation.
      * @param toTransform The file to transform.
@@ -63,18 +61,53 @@ public class XmlUtil
     public static String transform( Reader xslt, Reader toTransform )
             throws Exception
     {
-        TransformerFactory  tFactory =
+        return transform(
+                new StreamSource( xslt ),
+                new InputSource( toTransform ) );
+    }
+
+    /**
+     * Transform a file based on an XSLT transformation. Access to
+     * non-existent dtds is ignored.
+     *
+     * @param xslt The transformation.
+     * @param toTransform The file to transform.
+     * @return The result of the transformation.
+     * @throws Exception In case of an error.
+     */
+    private static String transform( StreamSource xslt, InputSource toTransform )
+            throws Exception
+    {
+        XMLReader reader =
+                SAXParserFactory.newInstance().newSAXParser().
+                getXMLReader();
+
+        // Set a resolver that ignores access to non-existent dtds.
+        reader.setEntityResolver(new EntityResolver()
+        {
+            @Override
+            public InputSource resolveEntity(
+                    String publicId,
+                    String systemId)
+                            throws SAXException, IOException
+            {
+                if (systemId.endsWith(".dtd"))
+                    return new InputSource(new StringReader(" "));
+
+                return null;
+            }
+        });
+
+        TransformerFactory tFactory =
                 TransformerFactory.newInstance();
-
-        Source xslSource = new
-            StreamSource( xslt );
         Transformer transformer =
-            tFactory.newTransformer( xslSource );
-
+                tFactory.newTransformer( xslt );
         ByteArrayOutputStream result =
                 new ByteArrayOutputStream();
         transformer.transform(
-                new StreamSource( toTransform ),
+                new SAXSource(
+                        reader,
+                        toTransform),
                 new StreamResult( result ) );
 
         return result.toString();
