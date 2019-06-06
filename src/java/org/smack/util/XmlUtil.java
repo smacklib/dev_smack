@@ -27,7 +27,7 @@ import org.xml.sax.XMLReader;
 /**
  * XML utility operations.
  *
- * @version $Rev$
+ * @version $Id$
  * @author Michael Binz
  */
 public class XmlUtil
