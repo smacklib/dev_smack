@@ -36,18 +36,18 @@ public class CliApplicationTest
 
         String expected =
                 "ApplicationUnderTest\n" +
-                "\n" +
-                "The following commands are supported:\n" +
-                "\n" +
-                "cmdBoolean: boolean\n" +
-                "cmdByte: byte\n" +
-                "cmdDouble: double\n" +
-                "cmdFile: File\n" +
-                "cmdFloat: float\n" +
-                "cmdInt: int\n" +
-                "cmdLong: long\n" +
-                "cmdShort: short\n" +
-                "cmdString: String\n\r\n";
+                        "\n" +
+                        "The following commands are supported:\n" +
+                        "\n" +
+                        "cmdBoolean: boolean\n" +
+                        "cmdByte: byte\n" +
+                        "cmdDouble: double\n" +
+                        "cmdFile: File\n" +
+                        "cmdFloat: float\n" +
+                        "cmdInt: int\n" +
+                        "cmdLong: long\n" +
+                        "cmdShort: short\n" +
+                        "cmdString: String\n\r\n";
         String errOss =
                 errOs.toString();
 
@@ -121,8 +121,8 @@ public class CliApplicationTest
 
             String expected =
                     "cmdFile:" +
-                    tmpFile.getPath() +
-                    "\n";
+                            tmpFile.getPath() +
+                            "\n";
             String outOss =
                     outOs.toString();
 
@@ -135,5 +135,31 @@ public class CliApplicationTest
         {
             tmpFile.delete();
         }
+    }
+
+    @Test
+    public void TestUnknownType() throws Exception
+    {
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTest.main( new String[0] );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        assertTrue( StringUtil.hasContent( errOs.toString() ) );
     }
 }

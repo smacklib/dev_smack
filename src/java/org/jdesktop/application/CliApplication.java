@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +71,35 @@ abstract public class CliApplication
     }
 
     /**
+     * A supplier that uses the passed class' default constructor to
+     * create an instance.
+     *
+     * @param <T> The supplier's result type.
+     */
+    private static class DefaultCtorSupplier<T extends CliApplication>
+        implements Supplier<CliApplication>
+    {
+        private final Class<T> _class;
+
+        public DefaultCtorSupplier( Class<T> claß )
+        {
+            _class = claß;
+        }
+
+        @Override
+        public CliApplication get()
+        {
+            try {
+                Constructor<T> c = _class.getDeclaredConstructor();
+                return c.newInstance();
+            }
+            catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
+    /**
      * A map of all commands implemented by this cli. Keys are
      * command name and number of arguments, the value represents
      * the respective method.
@@ -96,6 +126,12 @@ abstract public class CliApplication
                 String.class,
                 (s) -> s );
         addConverter(
+                Byte.TYPE,
+                CliApplication::stringToByte );
+        addConverter(
+                Short.TYPE,
+                CliApplication::stringToShort );
+        addConverter(
                 Integer.TYPE,
                 CliApplication::stringToInt );
         addConverter(
@@ -106,6 +142,12 @@ abstract public class CliApplication
                 CliApplication::stringToFile );
         addConverter(
                 Boolean.TYPE,
+                CliApplication::stringToBoolean );
+        addConverter(
+                Float.TYPE,
+                CliApplication::stringToBoolean );
+        addConverter(
+                Double.TYPE,
                 CliApplication::stringToBoolean );
     }
 
@@ -274,7 +316,9 @@ abstract public class CliApplication
             instance = (CliApplication) c.newInstance();
         }
         catch (Exception e) {
-            throw new IllegalArgumentException(e.toString());
+            throw new IllegalArgumentException(
+                    e.getMessage(),
+                    e);
         }
 
         instance.launchInstance( argv );
@@ -437,8 +481,8 @@ abstract public class CliApplication
      *
      * @return Usage text.
      */
-    protected String usage() {
-
+    protected String usage()
+    {
         StringBuilder result =
                 new StringBuilder( getApplicationName() );
         {
@@ -508,6 +552,11 @@ abstract public class CliApplication
                 name = c.getName();
 
             name = name.toLowerCase();
+
+            for ( Class<?> current : c.getParameterTypes() )
+                Objects.requireNonNull(
+                        _converters.get( current ),
+                        "No mapper for " + current );
 
             Integer numberOfArgs =
                     Integer.valueOf( c.getParameterTypes().length );
@@ -639,6 +688,30 @@ abstract public class CliApplication
     }
 
     /**
+     * Transform function for a primitive byte.
+     */
+    private static byte stringToByte(String arg) throws Exception {
+        try {
+            return Byte.decode(arg).byteValue();
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
+     * Transform function for a primitive short.
+     */
+    private static short stringToShort(String arg) throws Exception {
+        try {
+            return Short.decode(arg).shortValue();
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
      * Transform function for a primitive integer.
      */
     private static int stringToInt(String arg) throws Exception {
@@ -662,6 +735,30 @@ abstract public class CliApplication
         }
         catch (NumberFormatException e) {
             throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
+     * Transform function for a primitive long.
+     */
+    private static float stringToFloat(String arg) throws Exception {
+        try {
+            return Float.parseFloat( arg );
+        }
+        catch (NumberFormatException e) {
+            throw new Exception( "Not a float: " + arg );
+        }
+    }
+
+    /**
+     * Transform function for a primitive long.
+     */
+    private static double stringToDouble(String arg) throws Exception {
+        try {
+            return Double.parseDouble( arg );
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Not a double: " + arg);
         }
     }
 
@@ -847,7 +944,7 @@ abstract public class CliApplication
         StringConverter<?> transformer =
                 Objects.requireNonNull(
                         _converters.get( targetType ),
-                "Cannot convert " + targetType.getSimpleName() );
+                        "No mapper for " + targetType.getSimpleName() );
 
         return transformer.convert( argument );
     }
