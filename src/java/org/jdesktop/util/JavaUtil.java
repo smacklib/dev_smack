@@ -1,4 +1,4 @@
-/* $Id: JavaUtils.java 323 2017-06-13 20:56:07Z michab66 $
+/* $Id$
  *
  * Common.
  *
@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 /**
  * General utilities.
  *
- * @version $Rev: 323 $
  * @author Michael Binz
  */
 public class JavaUtil
@@ -55,6 +54,9 @@ public class JavaUtil
         }
     }
 
+    /**
+     * A parameterless operation throwing an exception.
+     */
     public interface Fx
     {
         void call()
