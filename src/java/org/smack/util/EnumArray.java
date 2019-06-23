@@ -1,4 +1,4 @@
-/* $Id: EnumArray.java 1755 2017-10-03 10:57:39Z Michael $
+/* $Id$
  *
  * Unpublished work.
  * Copyright © 2016 Michael G. Binz
@@ -48,8 +48,8 @@ public class EnumArray<K extends Enum<K>, V>
     /**
      * Get the value at index.  If this was not set, then the
      * null value is returned.
-     * @param idx
-     * @return
+     * @param idx The index as enumeration element.
+     * @return The value at index.
      */
     @SuppressWarnings("unchecked")
     public V get( K idx )
