@@ -22,9 +22,10 @@ public class EnumArray<K extends Enum<K>, V>
     private final Object[] _values;
 
     /**
-     *
-     * @param c
-     * @param nullValue
+     * Create an enum array.
+     * @param c The enumeration class.
+     * @param nullValue The null value to be returned for indices not
+     * explicitly set.
      */
     public EnumArray( Class<K> c, V nullValue )
     {
@@ -37,8 +38,8 @@ public class EnumArray<K extends Enum<K>, V>
 
     /**
      * Set a value at an index.
-     * @param idx The index.
-     * @param value The value.
+     * @param idx The index as enumeration element.
+     * @param value The value to set.
      */
     public void set( K idx, V value )
     {
