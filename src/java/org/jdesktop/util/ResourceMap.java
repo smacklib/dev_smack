@@ -27,7 +27,6 @@ import org.jdesktop.smack.util.ResourceUtils;
  * by the key 'color' and the key 'Elk.color'.
  * </p>
  *
- * @version $Rev$
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
@@ -137,6 +136,8 @@ public class ResourceMap extends HashMap<String, String>
 
     /**
      * @return A stream on the content of the result.
+     * @param name The resource name.
+     * @throws IOException In case of an error.
      */
     public InputStream getResourceAsStream( String name ) throws IOException
     {

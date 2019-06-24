@@ -1,9 +1,7 @@
-/*
- * Copyright © 2013-16 Daimler TSS. All Rights Reserved.
+/* $Id$
  *
- * Reproduction or transmission in whole or in part, in any form or by any
- * means, is prohibited without the prior written consent of the copyright
- * owner.
+ * Released under Gnu Public License
+ * Copyright © 2013-2019 Michael G. Binz
  */
 package org.jdesktop.application;
 
@@ -28,17 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jdesktop.util.JavaUtil;
 import org.jdesktop.util.MultiMap;
 import org.jdesktop.util.StringUtil;
 
 /**
  * A base class for console applications.
  *
- * @version $Rev: 23216 $
  * @author MICKARG
  * @author MICBINZ
  */
@@ -68,35 +65,6 @@ abstract public class CliApplication
             default StringUtil.EMPTY_STRING;
         String description()
             default StringUtil.EMPTY_STRING;
-    }
-
-    /**
-     * A supplier that uses the passed class' default constructor to
-     * create an instance.
-     *
-     * @param <T> The supplier's result type.
-     */
-    private static class DefaultCtorSupplier<T extends CliApplication>
-        implements Supplier<CliApplication>
-    {
-        private final Class<T> _class;
-
-        public DefaultCtorSupplier( Class<T> claß )
-        {
-            _class = claß;
-        }
-
-        @Override
-        public CliApplication get()
-        {
-            try {
-                Constructor<T> c = _class.getDeclaredConstructor();
-                return c.newInstance();
-            }
-            catch (Exception e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
     }
 
     /**
@@ -145,10 +113,10 @@ abstract public class CliApplication
                 CliApplication::stringToBoolean );
         addConverter(
                 Float.TYPE,
-                CliApplication::stringToBoolean );
+                CliApplication::stringToFloat );
         addConverter(
                 Double.TYPE,
-                CliApplication::stringToBoolean );
+                CliApplication::stringToDouble );
     }
 
     private String _currentCommand =
@@ -351,7 +319,7 @@ abstract public class CliApplication
      * {@code System.exit(0)} is performed after the application command
      * terminates.
      */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv, boolean explicitExit )
+    static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
         try
         {
@@ -375,40 +343,6 @@ abstract public class CliApplication
             LOG.log(Level.FINE, msg, e);
             System.err.println("Failed: " + msg);
         }
-        finally
-        {
-            if ( explicitExit )
-                System.exit( 0 );
-        }
-    }
-
-    /**
-     * Start execution of the console command. This implicitly parses
-     * the parameters and dispatches the call to the matching operation.
-     * <p>
-     * The main operation of an application using {@link #CliApplication()} usually looks like:
-     * </p>
-     *
-     * <pre>
-     * <code>
-     * public class Lin extends CliApplication implements ConsoleCommand
-     * {
-     *     ...
-     *
-     *     public static void main( String[] argv )
-     *     {
-     *         execute( Lin.class, argv );
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * @param cl The implementation class of the console command.
-     * @param argv The unmodified parameter array.
-     */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv )
-    {
-        launch( cl, argv, false );
     }
 
     /**
@@ -423,7 +357,7 @@ abstract public class CliApplication
     private static String getCommandsUsage(Map<Integer, Method> commands, String[] argv) {
 
         Set<Integer> keys = commands.keySet();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         result.append("Possible values:");
 
@@ -612,14 +546,7 @@ abstract public class CliApplication
 
     private void forceClose( AutoCloseable closable )
     {
-        try
-        {
-            closable.close();
-        }
-        catch ( Exception e )
-        {
-            LOG.log( Level.FINE, "AutoClosable#close", e );
-        }
+        JavaUtil.force( closable::close );
     }
 
     /**
