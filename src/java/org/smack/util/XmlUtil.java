@@ -2,7 +2,7 @@
  * $Id$
  *
  * Unpublished work.
- * Copyright © 2018-19 Michael G. Binz
+ * Copyright Â© 2019 Michael G. Binz
  */
 package org.smack.util;
 
@@ -180,7 +180,7 @@ public class XmlUtil
         // Use a Transformer for output
         TransformerFactory tFactory = TransformerFactory.newInstance();
         StreamSource stylesource = new StreamSource(stylesheet);
-        stylesource.setSystemId( stylesheet.getName() );
+        stylesource.setSystemId( stylesheet.getPath() );
         Transformer transformer = tFactory.newTransformer(stylesource);
 
 
