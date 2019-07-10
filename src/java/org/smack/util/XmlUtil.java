@@ -4,7 +4,7 @@
  * Unpublished work.
  * Copyright © 2019 Michael G. Binz
  */
-package com.daimler.tcu.vit.internal.tools.diagdid;
+package org.smack.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -164,13 +164,12 @@ public class XmlUtil
             Map<String,Object> parameters )
             throws Exception
     {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document document;
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        ByteArrayOutputStream bos =
+                new ByteArrayOutputStream();
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
 
         // Set a resolver that ignores access to non-existent dtds.
         builder.setEntityResolver(new EntityResolver()
@@ -188,22 +187,27 @@ public class XmlUtil
             }
         });
 
-        document = builder.parse(datafile);
-
-        // Use a Transformer for output
-        TransformerFactory tFactory = TransformerFactory.newInstance();
-        StreamSource stylesource = new StreamSource(stylesheet);
-        stylesource.setSystemId( stylesheet.getPath() );
-        Transformer transformer = tFactory.newTransformer(stylesource);
+        Document document =
+                builder.parse(datafile);
+        TransformerFactory tFactory =
+                TransformerFactory.newInstance();
+        StreamSource stylesource =
+                new StreamSource(stylesheet);
+        stylesource.setSystemId(
+                stylesheet.getPath() );
+        Transformer transformer =
+                tFactory.newTransformer(stylesource);
 
         parameters.forEach(
                 (k,v) -> transformer.setParameter( k, v ) );
 
-        DOMSource source = new DOMSource(document);
-
-        StreamResult result = new StreamResult(bos);
-        transformer.transform(source, result);
-
+        DOMSource source =
+                new DOMSource(document);
+        StreamResult result =
+                new StreamResult(bos);
+        transformer.transform(
+                source,
+                result);
 
         return bos.toString();
     }
