@@ -4,7 +4,7 @@
  * Unpublished work.
  * Copyright © 2019 Michael G. Binz
  */
-package org.smack.util;
+package com.daimler.tcu.vit.internal.tools.diagdid;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -148,7 +149,19 @@ public class XmlUtil
         return result.toString();
     }
 
-    public static String transform8( File stylesheet, File datafile )
+    /**
+     * This operation works on Java 8.  TODO(micbinz) integrate.
+     *
+     * @param stylesheet The stylesheet.
+     * @param datafile The input to process.
+     * @param parameters Parameters toi be passed to the stylesheet.
+     * @return The processing result.
+     * @throws Exception In case of an error.
+     */
+    public static String transform8(
+            File stylesheet,
+            File datafile,
+            Map<String,Object> parameters )
             throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -183,6 +196,8 @@ public class XmlUtil
         stylesource.setSystemId( stylesheet.getPath() );
         Transformer transformer = tFactory.newTransformer(stylesource);
 
+        parameters.forEach(
+                (k,v) -> transformer.setParameter( k, v ) );
 
         DOMSource source = new DOMSource(document);
 
