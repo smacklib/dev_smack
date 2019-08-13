@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -38,9 +39,28 @@ public class XmlUtilTest
         File xml = makeFileFromStream(
                 getClass().getResourceAsStream( "example.cdd.xml" ) );
 
+        String result = XmlUtil.transform8(
+                styleSheet,
+                xml,
+                Collections.emptyMap() );
+
+        assertNotNull( result );
+        assertEquals( 540225, result.length() );
+    }
+
+    @Test
+    public void TestTransform() throws Exception
+    {
+        File styleSheet = makeFileFromStream(
+                getClass().getResourceAsStream( "cdd_did.xsl" ) );
+        File xml = makeFileFromStream(
+                getClass().getResourceAsStream( "example.cdd.xml" ) );
+
         String result = XmlUtil.transform( styleSheet, xml );
 
         assertNotNull( result );
         assertEquals( 540225, result.length() );
     }
+
+
 }

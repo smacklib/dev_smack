@@ -154,7 +154,7 @@ public class XmlUtil
      *
      * @param stylesheet The stylesheet.
      * @param datafile The input to process.
-     * @param parameters Parameters toi be passed to the stylesheet.
+     * @param parameters Parameters to be passed to the stylesheet.
      * @return The processing result.
      * @throws Exception In case of an error.
      */
