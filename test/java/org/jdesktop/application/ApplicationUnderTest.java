@@ -8,6 +8,11 @@ import java.io.File;
 public class ApplicationUnderTest
     extends CliApplication
 {
+    public enum Day {
+        SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+        THURSDAY, FRIDAY, SATURDAY
+    }
+
     @Command
     private void cmdShort( short i )
     {
@@ -62,6 +67,12 @@ public class ApplicationUnderTest
 
     @Command
     private void cmdBoolean( boolean i )
+    {
+        out( "%s:%s\n", currentCommand(), i );
+    }
+
+    @Command
+    private void cmdEnum( Day i )
     {
         out( "%s:%s\n", currentCommand(), i );
     }

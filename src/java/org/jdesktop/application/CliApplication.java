@@ -488,9 +488,14 @@ abstract public class CliApplication
             name = name.toLowerCase();
 
             for ( Class<?> current : c.getParameterTypes() )
+            {
+                if ( current.isEnum() )
+                    continue;
+
                 Objects.requireNonNull(
                         _converters.get( current ),
                         "No mapper for " + current );
+            }
 
             Integer numberOfArgs =
                     Integer.valueOf( c.getParameterTypes().length );
