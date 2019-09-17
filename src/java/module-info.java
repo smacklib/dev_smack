@@ -1,28 +1,32 @@
 import org.jdesktop.util.converters.BooleanStringConverter;
+import org.jdesktop.util.converters.ColorStringConverter;
+import org.jdesktop.util.converters.FontStringConverter;
 import org.jdesktop.util.converters.FxImageConverter;
 
 /**
  * $Id$
  */
 module framework.smack {
-	requires java.desktop;
-	requires java.jnlp;
-	requires java.logging;
-	requires java.prefs;
-	requires javafx.base;
-	requires javafx.controls;
+    requires java.desktop;
+    requires java.logging;
+    requires java.prefs;
+    requires javafx.base;
+    requires javafx.controls;
 
-	uses org.jdesktop.util.ResourceConverter;
-	uses org.jdesktop.util.ResourceConverterExtension;
+    uses org.jdesktop.util.ResourceConverter;
+    uses org.jdesktop.util.ResourceConverterExtension;
 
     provides org.jdesktop.util.ResourceConverter with
         BooleanStringConverter,
+        // Name collision with jfx.
         org.jdesktop.util.converters.ByteStringConverter,
+        ColorStringConverter,
+        FontStringConverter,
         FxImageConverter;
 
-	exports org.jdesktop.application;
-	exports org.jdesktop.beans;
-	exports org.jdesktop.smack.util;
+    exports org.jdesktop.application;
+    exports org.jdesktop.beans;
+    exports org.jdesktop.smack.util;
     exports org.jdesktop.util;
     exports org.jdesktop.util.converters;
     exports org.smack.fx;

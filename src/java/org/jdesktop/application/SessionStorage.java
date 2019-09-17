@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved.
  * Use is subject to license terms.
@@ -37,7 +36,7 @@ import org.jdesktop.util.ServiceManager;
  * and then restoring that state when the application is restarted.
  * Session state is stored on a per component basis, and only for
  * components with a {@link java.awt.Component#getName name} and for
- * which a {@code PropertySupport} object has been defined and registeres.
+ * which a {@code PropertySupport} object has been defined and registered.
  * SessionState Properties that preserve the {@code bounds} {@code Rectangle}
  * for Windows, the {@code dividerLocation} for {@code JSliderPanes} and the
  * {@code selectedIndex} for {@code JTabbedPanes} are defined by default.  The
@@ -104,7 +103,7 @@ public final class SessionStorage
     private static final Logger LOG = Logger.getLogger(SessionStorage.class.getName());
 
     private final Map<Class<?>, PropertySupport> _propertyMap =
-            new HashMap<Class<?>, PropertySupport>();
+            new HashMap<>();
 
     /**
      * Constructs a SessionStorage object.  The following {@link
@@ -236,7 +235,7 @@ public final class SessionStorage
      * structurally identical to restoreTree().
      */
     private void saveTree(List<Component> roots, Map<String, Object> stateMap) {
-        List<Component> allChildren = new ArrayList<Component>();
+        List<Component> allChildren = new ArrayList<>();
         for (Component root : roots) {
             if (root != null) {
                 PropertySupport p = getProperty(root);
@@ -312,7 +311,7 @@ public final class SessionStorage
      */
     public void save(Component root, String fileName) throws IOException {
         checkSaveRestoreArgs(root, fileName);
-        Map<String, Object> stateMap = new HashMap<String, Object>();
+        Map<String, Object> stateMap = new HashMap<>();
         saveTree(Collections.singletonList(root), stateMap);
         LocalStorage lst = ServiceManager.getApplicationService( LocalStorage.class );
         lst.save(stateMap, fileName);
@@ -327,7 +326,7 @@ public final class SessionStorage
      * structurally identical to saveTree().
      */
     private void restoreTree(List<Component> roots, Map<String, Object> stateMap) {
-        List<Component> allChildren = new ArrayList<Component>();
+        List<Component> allChildren = new ArrayList<>();
         for (Component root : roots) {
             if (root != null) {
                 PropertySupport p = getProperty(root);

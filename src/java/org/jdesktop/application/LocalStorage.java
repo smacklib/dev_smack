@@ -16,21 +16,10 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.jnlp.BasicService;
-import javax.jnlp.FileContents;
-import javax.jnlp.PersistenceService;
-import javax.jnlp.ServiceManager;
 
 import org.jdesktop.beans.AbstractBeanEdt;
 import org.jdesktop.util.PlatformType;
@@ -46,11 +35,8 @@ import org.jdesktop.util.StringUtil;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public final class LocalStorage extends AbstractBeanEdt {
-
-    private static final Logger lOG =
-            Logger.getLogger(LocalStorage.class.getName());
-
+public final class LocalStorage extends AbstractBeanEdt
+{
     private LocalIO localIO = null;
 
     private final File unspecifiedFile = new File("unspecified");
@@ -397,11 +383,9 @@ public final class LocalStorage extends AbstractBeanEdt {
 
     private synchronized LocalIO getLocalIO() {
         if (localIO == null) {
-            localIO = getPersistenceServiceIO();
-            if (localIO == null) {
-                localIO = new LocalFileIO();
-            }
+            localIO = new LocalFileIO();
         }
+
         return localIO;
     }
 
@@ -485,113 +469,6 @@ public final class LocalStorage extends AbstractBeanEdt {
                 throw new IOException("name is not set");
             }
             return new File(getDirectory(), name);
-        }
-    }
-
-    /**
-     * Determine if we're a web started application and the
-     * JNLP PersistenceService is available without forcing
-     * the JNLP API to be class-loaded.  We don't want to
-     * require apps that aren't web started to bundle javaws.jar
-     */
-    private LocalIO getPersistenceServiceIO() {
-        try {
-            Class<?> smClass = Class.forName("javax.jnlp.ServiceManager");
-            Method getServiceNamesMethod = smClass.getMethod("getServiceNames");
-            String[] serviceNames = (String[]) getServiceNamesMethod.invoke(null);
-            boolean psFound = false;
-            boolean bsFound = false;
-            for (String serviceName : serviceNames) {
-                if (serviceName.equals("javax.jnlp.BasicService")) {
-                    bsFound = true;
-                } else if (serviceName.equals("javax.jnlp.PersistenceService")) {
-                    psFound = true;
-                }
-            }
-            if (bsFound && psFound) {
-                return new PersistenceServiceIO();
-            }
-        } catch (Exception ignore) {
-            // either the classes or the services can't be found
-            lOG.log(Level.FINE, ("ServiceManager.lookup failed"), ignore);
-        }
-        return null;
-    }
-
-    private final class PersistenceServiceIO extends LocalIO {
-
-        private final BasicService bs;
-        private final PersistenceService ps;
-
-        PersistenceServiceIO()
-            throws Exception
-        {
-            bs = (BasicService)
-                    ServiceManager.lookup("javax.jnlp.BasicService");
-            ps = (PersistenceService)
-                    ServiceManager.lookup("javax.jnlp.PersistenceService");
-        }
-
-        private URL fileNameToURL(String name) throws IOException {
-            if (name == null) {
-                throw new IOException("name is not set");
-            }
-            try {
-                return new URL(bs.getCodeBase(), name);
-            } catch (MalformedURLException e) {
-                throw new IOException("invalid filename \"" + name + "\"", e);
-            }
-        }
-
-        @Override
-        public InputStream openInputFile(String fileName) throws IOException
-        {
-            URL fileURL = fileNameToURL(fileName);
-            try {
-                return new BufferedInputStream(ps.get(fileURL).getInputStream());
-            } catch (Exception e) {
-                throw new IOException("openInputFile \"" + fileName + "\" failed", e);
-            }
-        }
-
-        @Override
-        public OutputStream openOutputFile(String fileName, boolean append) throws IOException {
-
-            URL fileURL = fileNameToURL(fileName);
-            try {
-                FileContents fc = null;
-                try {
-                    fc = ps.get(fileURL);
-                } catch (FileNotFoundException e) {
-                    /* Verify that the max size for new PersistenceService
-                     * files is >= 100K (2^17) before opening one.
-                     */
-                    long maxSizeRequest = 131072L;
-                    long maxSize = ps.create(fileURL, maxSizeRequest);
-                    if (maxSize >= maxSizeRequest) {
-                        fc = ps.get(fileURL);
-                    }
-                }
-                if ((fc != null) && (fc.canWrite())) {
-                    return new BufferedOutputStream(fc.getOutputStream(!append));
-                } else {
-                    throw new IOException("unable to create FileContents object");
-                }
-            } catch (Exception e) {
-                throw new IOException("openOutputFile \"" + fileName + "\" failed", e);
-            }
-        }
-
-        @Override
-        public boolean deleteFile(String fileName) throws IOException
-        {
-            URL fileURL = fileNameToURL(fileName);
-            try {
-                ps.delete(fileURL);
-                return true;
-            } catch (Exception e) {
-                throw new IOException("openInputFile \"" + fileName + "\" failed", e);
-            }
         }
     }
 }
