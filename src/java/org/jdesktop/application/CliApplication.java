@@ -1,9 +1,7 @@
-/*
- * Copyright © 2013-16 Daimler TSS. All Rights Reserved.
+/* $Id$
  *
- * Reproduction or transmission in whole or in part, in any form or by any
- * means, is prohibited without the prior written consent of the copyright
- * owner.
+ * Released under Gnu Public License
+ * Copyright © 2013-2019 Michael G. Binz
  */
 package org.jdesktop.application;
 
@@ -31,13 +29,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jdesktop.util.JavaUtil;
 import org.jdesktop.util.MultiMap;
 import org.jdesktop.util.StringUtil;
 
 /**
  * A base class for console applications.
  *
- * @version $Rev: 23216 $
  * @author MICKARG
  * @author MICBINZ
  */
@@ -96,6 +94,12 @@ abstract public class CliApplication
                 String.class,
                 (s) -> s );
         addConverter(
+                Byte.TYPE,
+                CliApplication::stringToByte );
+        addConverter(
+                Short.TYPE,
+                CliApplication::stringToShort );
+        addConverter(
                 Integer.TYPE,
                 CliApplication::stringToInt );
         addConverter(
@@ -107,6 +111,12 @@ abstract public class CliApplication
         addConverter(
                 Boolean.TYPE,
                 CliApplication::stringToBoolean );
+        addConverter(
+                Float.TYPE,
+                CliApplication::stringToFloat );
+        addConverter(
+                Double.TYPE,
+                CliApplication::stringToDouble );
     }
 
     private String _currentCommand =
@@ -274,7 +284,9 @@ abstract public class CliApplication
             instance = (CliApplication) c.newInstance();
         }
         catch (Exception e) {
-            throw new IllegalArgumentException(e.toString());
+            throw new IllegalArgumentException(
+                    e.getMessage(),
+                    e);
         }
 
         instance.launchInstance( argv );
@@ -307,7 +319,7 @@ abstract public class CliApplication
      * {@code System.exit(0)} is performed after the application command
      * terminates.
      */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv, boolean explicitExit )
+    static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
         try
         {
@@ -331,40 +343,6 @@ abstract public class CliApplication
             LOG.log(Level.FINE, msg, e);
             System.err.println("Failed: " + msg);
         }
-        finally
-        {
-            if ( explicitExit )
-                System.exit( 0 );
-        }
-    }
-
-    /**
-     * Start execution of the console command. This implicitly parses
-     * the parameters and dispatches the call to the matching operation.
-     * <p>
-     * The main operation of an application using {@link #CliApplication()} usually looks like:
-     * </p>
-     *
-     * <pre>
-     * <code>
-     * public class Lin extends CliApplication implements ConsoleCommand
-     * {
-     *     ...
-     *
-     *     public static void main( String[] argv )
-     *     {
-     *         execute( Lin.class, argv );
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * @param cl The implementation class of the console command.
-     * @param argv The unmodified parameter array.
-     */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv )
-    {
-        launch( cl, argv, false );
     }
 
     /**
@@ -379,7 +357,7 @@ abstract public class CliApplication
     private static String getCommandsUsage(Map<Integer, Method> commands, String[] argv) {
 
         Set<Integer> keys = commands.keySet();
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         result.append("Possible values:");
 
@@ -437,8 +415,8 @@ abstract public class CliApplication
      *
      * @return Usage text.
      */
-    protected String usage() {
-
+    protected String usage()
+    {
         StringBuilder result =
                 new StringBuilder( getApplicationName() );
         {
@@ -509,6 +487,16 @@ abstract public class CliApplication
 
             name = name.toLowerCase();
 
+            for ( Class<?> current : c.getParameterTypes() )
+            {
+                if ( current.isEnum() )
+                    continue;
+
+                Objects.requireNonNull(
+                        _converters.get( current ),
+                        "No mapper for " + current );
+            }
+
             Integer numberOfArgs =
                     Integer.valueOf( c.getParameterTypes().length );
 
@@ -563,14 +551,7 @@ abstract public class CliApplication
 
     private void forceClose( AutoCloseable closable )
     {
-        try
-        {
-            closable.close();
-        }
-        catch ( Exception e )
-        {
-            LOG.log( Level.FINE, "AutoClosable#close", e );
-        }
+        JavaUtil.force( closable::close );
     }
 
     /**
@@ -639,6 +620,30 @@ abstract public class CliApplication
     }
 
     /**
+     * Transform function for a primitive byte.
+     */
+    private static byte stringToByte(String arg) throws Exception {
+        try {
+            return Byte.decode(arg).byteValue();
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
+     * Transform function for a primitive short.
+     */
+    private static short stringToShort(String arg) throws Exception {
+        try {
+            return Short.decode(arg).shortValue();
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
      * Transform function for a primitive integer.
      */
     private static int stringToInt(String arg) throws Exception {
@@ -662,6 +667,30 @@ abstract public class CliApplication
         }
         catch (NumberFormatException e) {
             throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
+        }
+    }
+
+    /**
+     * Transform function for a primitive long.
+     */
+    private static float stringToFloat(String arg) throws Exception {
+        try {
+            return Float.parseFloat( arg );
+        }
+        catch (NumberFormatException e) {
+            throw new Exception( "Not a float: " + arg );
+        }
+    }
+
+    /**
+     * Transform function for a primitive long.
+     */
+    private static double stringToDouble(String arg) throws Exception {
+        try {
+            return Double.parseDouble( arg );
+        }
+        catch (NumberFormatException e) {
+            throw new Exception("Not a double: " + arg);
         }
     }
 
@@ -847,7 +876,7 @@ abstract public class CliApplication
         StringConverter<?> transformer =
                 Objects.requireNonNull(
                         _converters.get( targetType ),
-                "Cannot convert " + targetType.getSimpleName() );
+                        "No mapper for " + targetType.getSimpleName() );
 
         return transformer.convert( argument );
     }
