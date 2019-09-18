@@ -30,7 +30,6 @@ import org.jdesktop.util.StringUtil;
  * shared instance can be received by calling
  * {@link Application#getApplicationService(Class)}.
  *
- * @see SessionStorage
  * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
