@@ -5,17 +5,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.jdesktop.util.ResourceManager.Resource;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  * @author Michael
  */
+@Ignore
 public class ResourceManagerPrimitivesTest
 {
     private final ResourceManager _rm =
             ServiceManager.getApplicationService( ResourceManager.class );
-
 
     @Resource
     private boolean booleanResource;
