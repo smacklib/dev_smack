@@ -5,6 +5,6 @@ Rem clear path.
 path ;
 set JAVA_HOME=
 
-set JDK_NAME=jdk-10.0.2
-set JAVA_HOME=c:\Progra~1\Java\%JDK_NAME%
+set JDK_NAME=jdk11.0.4_10
+set JAVA_HOME=c:\Progra~1\JavaCoretto\%JDK_NAME%
 call %ANT_HOME%\bin\ant.bat clean dist
