@@ -6,6 +6,7 @@
 package org.jdesktop.util.converters;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,10 +42,13 @@ public class FxImageConverter extends ResourceConverter
     @Override
     public Object parseString( String s, ResourceMap r ) throws Exception
     {
+        URL url = r.getClassLoader().getResource(
+                resourcePath( s, r ) );
+
         // Loading the image using the Image( URL ) ctor is not
         // working when used in a OneJar-jar-file, thus the
         // workaround using the stream.
-        try ( InputStream is = r.getResourceAsStream( resourcePath( s, r ) ) )
+        try ( InputStream is = url.openStream() )
         {
             Image result = new Image( is );
 

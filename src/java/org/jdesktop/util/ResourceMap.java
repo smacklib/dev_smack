@@ -57,8 +57,8 @@ public class ResourceMap extends HashMap<String, String>
 
         _bundleName =
                 crb.getBaseBundleName();
-
-        assert _bundleName.endsWith( simpleName );
+        JavaUtil.Assert(
+                _bundleName.endsWith( simpleName ) );
 
         _resourcePath =
                 _bundleName.substring(
@@ -118,9 +118,8 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * @deprecated
+     * @return The class loader of the associated class.
      */
-    @Deprecated
     public ClassLoader getClassLoader()
     {
         return _class.getClassLoader();
@@ -166,7 +165,6 @@ public class ResourceMap extends HashMap<String, String>
 
     /**
      * Convert the passed key to a target type.
-     *
      *
      * @param <T> The expected target type.
      * @param targetType The expected result type.
