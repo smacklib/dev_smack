@@ -77,11 +77,11 @@ public class ResourceManager
      */
     public ResourceManager()
     {
-        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-            addConverter( c );
-
         for ( ResourceConverterExtension c : ServiceLoader.load( ResourceConverterExtension.class ) )
             c.extendTypeMap( _converters );
+
+        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
+            addConverter( c );
     }
 
     /**
@@ -90,7 +90,7 @@ public class ResourceManager
     public void addConverter( ResourceConverter converter )
     {
         if ( _converters.containsKey( converter.getType() ) )
-            LOG.warning( "Duplicate resource converter for: " + converter.getType() );
+            LOG.warning( "Duplicate resource converter for " + converter.getType() + ", " + converter.getClass() );
 
         _converters.put( converter.getType(), converter );
     }
