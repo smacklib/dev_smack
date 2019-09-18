@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>micbinz</groupId>
-  <artifactId>Smack</artifactId>
-  <version>11.0.1-SNAPSHOT</version>
+  <artifactId>smack</artifactId>
+  <version>11-SNAPSHOT</version>
   <name>Smack</name>
   <description>Framework</description>
   <build>
@@ -44,4 +44,7 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>
