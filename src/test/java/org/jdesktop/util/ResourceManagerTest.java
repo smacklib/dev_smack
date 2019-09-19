@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.jdesktop.util.ResourceManager.Resource;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -32,7 +31,6 @@ public class ResourceManagerTest
      * TODO: As soon as this works in Maven, we
      * can re-enable the resource manager tests.
      */
-    @Ignore
     @Test
     public void testModulePlacement()
     {
@@ -53,6 +51,7 @@ public class ResourceManagerTest
         assertTrue( isIdentical );
     }
 
+    @Test
     public void testLocalization()
     {
         // Works only on German locale.  Make better.

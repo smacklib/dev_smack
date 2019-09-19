@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.jdesktop.util.ResourceManager.Resource;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -14,7 +13,6 @@ import org.junit.Test;
  * @version $Revision$
  * @author Michael Binz
  */
-@Ignore
 public class ResourceManagerStringTest
 {
     private final ResourceManager _rm =
@@ -34,8 +32,11 @@ public class ResourceManagerStringTest
     @Test
     public void testString()
     {
-        assertEquals( "Michael Binz", stringResource );
+        // See https://stackoverflow.com/questions/2406975/how-to-escape-the-equals-sign-in-properties-files
+        // Also see my comments in StringStriongConverter.
+        assertEquals( "\"Michael Binz\"", stringResource );
     }
+
     @Test
     public void testStringArray()
     {
