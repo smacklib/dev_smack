@@ -24,7 +24,7 @@ public class ClassStringConverter extends ResourceConverter
         if ( ! getType().isAssignableFrom( resultClass ) )
             throw new ClassCastException( getType().getName() + " is not assignable from " + resultClass.getName() );
 
-        return resultClass.newInstance();
+        return resultClass.getDeclaredConstructor().newInstance();
     }
 }
 

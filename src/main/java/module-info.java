@@ -1,5 +1,7 @@
-/**
+/*
  * $Id$
+ * Released under Gnu Public License
+ * Copyright © 2019 Michael G. Binz
  */
 module framework.smack {
     requires java.desktop;
@@ -30,7 +32,6 @@ module framework.smack {
         org.jdesktop.util.converters.IconStringConverter,
         org.jdesktop.util.converters.ImageStringConverter,
         org.jdesktop.util.converters.InsetsStringConverter,
-        org.jdesktop.util.converters.KeyStrokeStringConverter,
         org.jdesktop.util.converters.Point2dStringConverter,
         org.jdesktop.util.converters.PointStringConverter,
         org.jdesktop.util.converters.RectangleStringConverter;
