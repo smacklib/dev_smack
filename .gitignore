@@ -1,2 +1,6 @@
 /bin/
 /binTest/
+/target/
+/.classpath
+/.project
+/.settings
