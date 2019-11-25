@@ -19,7 +19,7 @@ import org.jdesktop.util.StringUtil;
 /**
  * Uses a Stream and resolves C-like preprocessor commands.
  *
- * @version $Rev: 1923 $
+ * @version $Id$
  * @author OTTALE
  */
 public class StreamPreprocessor extends InputStream{
