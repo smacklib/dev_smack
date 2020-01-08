@@ -98,8 +98,6 @@ public class StringUtil
         return string == null || string.isEmpty();
     }
 
-
-
     /**
      * Trims the characters passed in {@code charactersToTrim} from
      * the beginning and the end of {@code stringToTrim}.
@@ -115,21 +113,30 @@ public class StringUtil
         if ( charactersToTrim == null )
             throw new NullPointerException( "charactersToTrim" );
 
-        int idx1 = 0;
-        while ( -1 != charactersToTrim.indexOf( stringToTrim.charAt( idx1 ) ) )
-            idx1++;
+        int idx1;
+        for ( idx1 = 0 ; idx1 < stringToTrim.length() ; idx1++ ) {
+            if ( -1 == charactersToTrim.indexOf( stringToTrim.charAt( idx1 ) ) ) {
+                break;
+            }
+        }
 
-        int idx2 = stringToTrim.length() -1;
-        while ( -1 != charactersToTrim.indexOf( stringToTrim.charAt( idx2 ) ) )
-            idx2--;
+        int idx2;
+        for ( idx2 = stringToTrim.length() -1 ; idx2 > idx1 ; idx2-- ) {
+            if ( -1 == charactersToTrim.indexOf( stringToTrim.charAt( idx2 ) ) ) {
+                idx2++;
+                break;
+            }
+        }
+
+        // No characters trimmed. Return identity.
+        if ( idx1 == 0 && idx2 == stringToTrim.length() )
+            return stringToTrim;
 
         if ( idx2 <= idx1 )
             return EMPTY_STRING;
 
-        return stringToTrim.substring( idx1, idx2 +1 );
+        return stringToTrim.substring( idx1, idx2 );
     }
-
-
 
     /**
      * Create a string consisting of n occurrences of a single character.
