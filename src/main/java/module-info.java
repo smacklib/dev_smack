@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: 799ce82c626110362a498b8c6891bb33504ed642 $
  * Released under Gnu Public License
  * Copyright © 2019 Michael G. Binz
  */

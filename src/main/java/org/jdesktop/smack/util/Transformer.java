@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: c87413426380d3a3ddcb82eb2b211d345e26b727 $
  *
  * Michael's Application Construction Kit (MACK)
  *

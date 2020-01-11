@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: 14d2e5f82ef690d07e887c4a6643705742fac5ee $
  *
  * Unpublished work.
  * Copyright © 2016 Michael G. Binz
