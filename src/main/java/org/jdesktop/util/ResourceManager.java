@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: dd15e92fffa10c8056bf7f3d5b5b9ae1adc967d2 $
  *
  * Utilities
  *

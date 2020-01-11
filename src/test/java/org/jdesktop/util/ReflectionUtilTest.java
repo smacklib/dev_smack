@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
- * @version $Id$
+ * @version $Id: c143144ba1d3dff0386b58ae6162d12c56e618e0 $
  */
 public class ReflectionUtilTest
 {

@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: 0a8cdcb00e813ff8ed4b7d39dcf435e76a126c87 $
  *
  * Common.
  *

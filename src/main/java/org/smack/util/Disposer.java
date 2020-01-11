@@ -1,13 +1,13 @@
 /*
  * Copyright © 2019 Daimler TSS.
  */
-package com.daimler.tcu.vit.util;
+package org.smack.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.daimler.tcu.vit.internal.VitUtil;
+import org.jdesktop.util.JavaUtil;
 
 /**
  * Supports in managing multiple {@link AutoCloseable}s in a single
@@ -51,7 +51,7 @@ public class Disposer implements AutoCloseable
     public void close()
     {
         for ( AutoCloseable c : _resources ) {
-            VitUtil.force( c::close );
+            JavaUtil.force( c::close );
         }
 
         _resources.clear();

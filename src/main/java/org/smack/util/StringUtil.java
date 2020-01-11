@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2009-2011 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,6 @@ import java.util.Objects;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use smack util.
  */
 public class StringUtil
 {
