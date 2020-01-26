@@ -1,4 +1,4 @@
-/* $Id: 5d30a1a44339e3edc708cb6c57ff40cacb146e95 $
+/* $Id$
  *
  * Released under Gnu Public License
  * Copyright © 2013-2019 Michael G. Binz

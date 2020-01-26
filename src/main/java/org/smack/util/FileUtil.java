@@ -5,10 +5,15 @@
  * Released under Gnu Public License
  * Copyright (c) 2008 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,16 +27,14 @@ import org.jdesktop.util.StringUtil;
  *
  * @version $Rev$s
  * @author Michael Binz
- * @deprecated Use smack.util
  */
-@Deprecated
-public final class FileUtils
+public final class FileUtil
 {
     /**
      * The logger for this class.
      */
     private static final Logger LOG = Logger.getLogger(
-            FileUtils.class.getSimpleName() );
+            FileUtil.class.getSimpleName() );
 
     /**
      * Resolves directories in the passed file list. That is, normal file
@@ -160,9 +163,36 @@ public final class FileUtils
     }
 
     /**
+     * Read a file into an ordered line array.
+     *
+     * @param in The reader to use.
+     * @return The lines read.
+     * @throws IOException In case of an error.
+     */
+    public static List<String> readLines( Reader in ) throws IOException
+    {
+        BufferedReader din =
+                new BufferedReader( in );
+        ArrayList<String> result =
+                new ArrayList<>();
+
+        while ( true )
+        {
+            String c = din.readLine();
+
+            if ( c == null )
+                break;
+
+            result.add( c );
+        }
+
+        return result;
+    }
+
+    /**
      * Instances cannot be created.
      */
-    private FileUtils()
+    private FileUtil()
     {
         throw new AssertionError();
     }
