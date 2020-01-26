@@ -13,8 +13,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jdesktop.util.StringUtil;
 import org.junit.Test;
+import org.smack.util.StringUtil;
 
 public class CliApplicationTest
 {

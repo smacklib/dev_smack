@@ -79,6 +79,6 @@ public class ApplicationUnderTest
 
     public static void main( String[] argv )
     {
-        launch( ApplicationUnderTest.class, argv );
+        launch( ApplicationUnderTest::new, argv );
     }
 }

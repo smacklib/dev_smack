@@ -26,12 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdesktop.util.JavaUtil;
 import org.jdesktop.util.MultiMap;
-import org.jdesktop.util.StringUtil;
+import org.smack.util.StringUtil;
 
 /**
  * A base class for console applications.
@@ -191,8 +192,7 @@ abstract public class CliApplication
     }
 
     /**
-     * Return the list of possible commands in plain text, e.g. "Jan", "Feb",
-     * ..., not "cmdJan".
+     * Return the list of possible commands in plain text, e.g. "Jan", "Feb".
      */
     private String[] listCommands()
     {
@@ -251,45 +251,37 @@ abstract public class CliApplication
     }
 
     /**
-     * Start execution of the console command.  This implicitly parses
+     * Start execution of the console command. This implicitly parses
      * the parameters and dispatches the call to the matching operation.
-     * <p>The main operation of an application using {@link #CliApplication()}
-     * usually looks like:</p>
+     * <p>
+     * The main operation of an application using {@link #CliApplication()} usually looks like:
+     * </p>
      *
-     * <pre><code>
-     * public static void main( String[] argv )
+     * <pre>
+     * <code>
+     * public class Lin extends CliApplication implements ConsoleCommand
      * {
-     *     execute( Lin.class, argv );
-     * }
-     * </code></pre>
+     *     ...
      *
-     * @param cl
-     *            Class of console command.
-     * @param argv
-     *            Name of function such as all given parameters.
+     *     public static void main( String[] argv )
+     *     {
+     *         execute( Lin.class, argv, true );
+     *     }
+     * }
+     * </code>
+     * </pre>
+     *
+     * @param cl The implementation class of the console command.
+     * @param argv The unmodified parameter array.
+     * @param explicitExit If {@code true} is passed then an explicit
+     * {@code System.exit(0)} is performed after the application command
+     * terminates.
      */
-    private static final void launchImpl(
-            Class<? extends CliApplication> cl,
-            String[] argv )
-        throws Exception
+    static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
-        CliApplication instance = null;
-
-        try {
-            Constructor<?> c = cl.getDeclaredConstructor();
-
-            if (!c.isAccessible())
-                c.setAccessible( true );
-
-            instance = (CliApplication) c.newInstance();
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException(
-                    e.getMessage(),
-                    e);
-        }
-
-        instance.launchInstance( argv );
+            launch(
+                    new DefaultCtorReflection<>( cl ),
+                    argv );
     }
 
     /**
@@ -319,11 +311,11 @@ abstract public class CliApplication
      * {@code System.exit(0)} is performed after the application command
      * terminates.
      */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv )
+    static public void launch( Supplier<CliApplication> cl, String[] argv )
     {
         try
         {
-            launchImpl(cl, argv);
+            cl.get().launchInstance( argv );
         }
         catch (RuntimeException e)
         {
@@ -549,11 +541,6 @@ abstract public class CliApplication
         }
     }
 
-    private void forceClose( AutoCloseable closable )
-    {
-        JavaUtil.force( closable::close );
-    }
-
     /**
      * Execute the passed command with the given passed arguments. Each parameter
      * is transformed to the expected type.
@@ -563,8 +550,8 @@ abstract public class CliApplication
      * @param argv
      *            List of arguments.
      */
-    private void executeCommand(Method command, String[] argv) {
-
+    private void executeCommand(Method command, String[] argv)
+    {
         Object[] arguments =
                 new Object[argv.length];
         Class<?>[] params =
@@ -614,7 +601,7 @@ abstract public class CliApplication
             for ( Object c : arguments )
             {
                 if ( c instanceof AutoCloseable )
-                    forceClose( (AutoCloseable)c );
+                    JavaUtil.force( ((AutoCloseable)c)::close );
             }
         }
     }
@@ -968,5 +955,28 @@ abstract public class CliApplication
     protected final InputStream in()
     {
         return System.in;
+    }
+
+    private static class DefaultCtorReflection<T extends CliApplication>
+        implements Supplier<CliApplication>
+    {
+        private final Class<T> _class;
+
+        public DefaultCtorReflection( Class<T> claß )
+        {
+            _class = claß;
+        }
+
+        @Override
+        public CliApplication get()
+        {
+            try {
+                Constructor<T> c = _class.getDeclaredConstructor();
+                return c.newInstance();
+            }
+            catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
     }
 }
