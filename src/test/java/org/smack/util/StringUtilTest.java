@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Daimler TSS.
+ * Copyright © 2019 Michael Binz.
  */
 package org.smack.util;
 
@@ -47,7 +47,7 @@ public class StringUtilTest {
                 StringUtil.trim( toTrim, "$" );
         assertEquals( "Te$st", trimmed );
     }
-    
+
     @Test
     public void testTrim3() {
         String toTrim = "abcTestdef";
