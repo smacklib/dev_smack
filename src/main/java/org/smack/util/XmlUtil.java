@@ -1,5 +1,5 @@
 /**
- * $Id: a7dc4b600c413d3321fe8092e3d1e8f23de7e616 $
+ * $Id$
  *
  * Unpublished work.
  * Copyright © 2019 Michael G. Binz
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -210,6 +211,91 @@ public class XmlUtil
                 result);
 
         return bos.toString();
+    }
+
+    /**
+     * This operation works on Java 8.  TODO(micbinz) integrate.
+     *
+     * @param stylesheet The stylesheet.
+     * @param datafile The input to process.
+     * @param parameters Parameters to be passed to the stylesheet.
+     * @return The processing result.
+     * @throws Exception In case of an error.
+     */
+    public static String transform8(
+            InputStream stylesheet,
+            InputStream datafile,
+            Map<String,Object> parameters )
+            throws Exception
+    {
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        ByteArrayOutputStream bos =
+                new ByteArrayOutputStream();
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+
+        // Set a resolver that ignores access to non-existent dtds.
+        builder.setEntityResolver(new EntityResolver()
+        {
+            @Override
+            public InputSource resolveEntity(
+                    String publicId,
+                    String systemId)
+                            throws SAXException, IOException
+            {
+                if (systemId.endsWith(".dtd"))
+                    return new InputSource(new StringReader(" "));
+
+                return null;
+            }
+        });
+
+        Document document =
+                builder.parse(datafile);
+        TransformerFactory tFactory =
+                TransformerFactory.newInstance();
+        StreamSource stylesource =
+                new StreamSource(stylesheet);
+//        stylesource.setSystemId(
+//                stylesheet.getPath() );
+        Transformer transformer =
+                tFactory.newTransformer(stylesource);
+
+        parameters.forEach(
+                (k,v) -> transformer.setParameter( k, v ) );
+
+        DOMSource source =
+                new DOMSource(document);
+        StreamResult result =
+                new StreamResult(bos);
+        transformer.transform(
+                source,
+                result);
+
+        return bos.toString();
+    }
+
+    public static String transform8(
+            InputStream stylesheet,
+            InputStream datafile )
+            throws Exception
+    {
+        return transform8(
+                stylesheet,
+                datafile,
+                Collections.emptyMap() );
+    }
+
+    public static String transform8(
+            File stylesheet,
+            File datafile )
+            throws Exception
+    {
+        return transform8(
+                stylesheet,
+                datafile,
+                Collections.emptyMap() );
     }
 
     private XmlUtil()

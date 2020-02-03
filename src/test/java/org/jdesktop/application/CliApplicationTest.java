@@ -3,41 +3,19 @@ package org.jdesktop.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.smack.util.FileUtil;
 import org.smack.util.StringUtil;
 
 public class CliApplicationTest
 {
-    private static List<String> readLines( Reader in ) throws IOException
-    {
-        BufferedReader din =
-                new BufferedReader( in );
-
-        ArrayList<String> result = new ArrayList<>();
-
-        while ( true )
-        {
-            String c = din.readLine();
-
-            if ( c == null )
-                break;
-
-            result.add( c );
-        }
-
-        return result;
-    }
-
     @Test
     public void TestHelp() throws IOException
     {
@@ -76,10 +54,10 @@ public class CliApplicationTest
                         "cmdShort: short\n" +
                         "cmdString: String\n\n";
         List<String> expectedLines =
-                readLines(
+                FileUtil.readLines(
                         new StringReader( expectedString ) );
         List<String> receivedLines =
-                readLines(
+                FileUtil.readLines(
                         new StringReader( errOs.toString() ) );
 
         assertEquals(

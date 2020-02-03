@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
+
 public class XmlUtilTest
 {
     private File makeFileFromStream( InputStream is )
@@ -45,7 +46,7 @@ public class XmlUtilTest
                 Collections.emptyMap() );
 
         assertNotNull( result );
-        assertEquals( 540225, result.length() );
+        assertEquals( 15824, result.split( "\\R" ).length );
     }
 
     @Test
@@ -59,8 +60,6 @@ public class XmlUtilTest
         String result = XmlUtil.transform( styleSheet, xml );
 
         assertNotNull( result );
-        assertEquals( 540225, result.length() );
+        assertEquals( 15824, result.split( "\\R" ).length );
     }
-
-
 }
