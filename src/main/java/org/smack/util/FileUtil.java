@@ -20,8 +20,6 @@ import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.jdesktop.util.StringUtil;
-
 /**
  * A library of utility routines for file handling.
  *

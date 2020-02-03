@@ -14,8 +14,6 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.Charset;
 
-import org.jdesktop.util.StringUtil;
-
 /**
  * Uses a Stream and resolves C-like preprocessor commands.
  *

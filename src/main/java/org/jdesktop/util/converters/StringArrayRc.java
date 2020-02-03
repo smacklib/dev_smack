@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
-import org.jdesktop.util.StringUtil;
+import org.smack.util.StringUtil;
 
 /**
  * Converts string arrays, handles quoting.

@@ -1,4 +1,4 @@
-/* $Id: a2d6e414d638f9cafe22c8d5549c4e0f0b299657 $
+/* $Id$
  *
  * Unpublished work.
  * Copyright © 2015 Michael G. Binz
@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import org.jdesktop.util.ResourceManager;
 import org.jdesktop.util.ResourceMap;
 import org.jdesktop.util.ServiceManager;
-import org.jdesktop.util.StringUtil;
+import org.smack.util.StringUtil;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;

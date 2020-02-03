@@ -1,4 +1,4 @@
-/* $Id: 879b9334775b7bd472a664c328497750e732a0fc $
+/* $Id$
  *
  * Common.
  *
@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdesktop.smack.util.OutputStreamForwarder;
-import org.jdesktop.util.StringUtil;
+import org.smack.util.StringUtil;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
