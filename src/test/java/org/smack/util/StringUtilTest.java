@@ -4,6 +4,7 @@
 package org.smack.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -11,7 +12,13 @@ import org.junit.Test;
 /**
  * Test string utils
  */
-public class StringUtilTest {
+public class StringUtilTest
+{
+    @Test
+    public void testEmptyString() {
+        assertNotNull( StringUtil.EMPTY_STRING.length() );
+        assertEquals( 0, StringUtil.EMPTY_STRING.length() );
+    }
 
     @Test
     public void testTrimQuotes() {
