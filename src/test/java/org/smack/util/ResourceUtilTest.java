@@ -1,6 +1,7 @@
 package org.smack.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.StandardCharsets;
 
@@ -18,5 +19,16 @@ public class ResourceUtilTest
         assertEquals(
                 "micbinz",
                 micbinz );
+    }
+    @Test
+    public void testLoadResourceBadName() throws Exception
+    {
+        try
+        {
+            ResourceUtil.loadResource( getClass(), "micbinz.no" );
+            fail( "Must not reach this." );
+        }
+        catch (Exception ignore) {
+        }
     }
 }

@@ -4,7 +4,7 @@
  */
 package org.smack.util;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.jdesktop.smack.util.ResourceUtils;
-import org.jdesktop.util.JavaUtil;
 
 /**
  * Resource Bundle helpers.
@@ -322,32 +321,15 @@ public class ResourceUtil
             Class<?> c1ass,
             String name )
     {
-        InputStream is = getResourceAsStream(
+        try ( InputStream is = getResourceAsStream(
                 c1ass,
-                name );
-
-        // TODO Note Java 9 offers
-        // byte[] array = InputStream.readAllBytes();
-        ByteArrayOutputStream result =
-                new ByteArrayOutputStream();
-
-        try
+                name ) )
         {
-            while ( true )
-            {
-                int c = is.read();
-
-                if ( c == -1 )
-                    return result.toByteArray();
-
-                result.write( c );
-            }
+            return is.readAllBytes();
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            JavaUtil.force( is::close );
-            throw new RuntimeException(
-                    "Failed reading resource: " + name, e );
+            throw new IllegalArgumentException( name, e );
         }
     }
 
