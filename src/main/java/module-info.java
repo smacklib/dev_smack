@@ -1,14 +1,15 @@
 /*
- * $Id: 799ce82c626110362a498b8c6891bb33504ed642 $
+ * $Id$
  * Released under Gnu Public License
  * Copyright © 2019 Michael G. Binz
  */
 module framework.smack {
-    requires java.desktop;
+    requires transitive java.desktop;
     requires java.logging;
     requires java.prefs;
-    requires javafx.base;
+    requires transitive javafx.base;
     requires javafx.controls;
+    requires transitive javafx.graphics;
 
     uses org.jdesktop.util.ResourceConverter;
     uses org.jdesktop.util.ResourceConverterExtension;

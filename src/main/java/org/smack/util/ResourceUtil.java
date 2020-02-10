@@ -2,7 +2,7 @@
  *
  * Copyright © 2014 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -15,15 +15,16 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.jdesktop.smack.util.ResourceUtils;
+import org.jdesktop.util.JavaUtil;
+
 /**
  * Resource Bundle helpers.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Use ResourceUtil
  */
-@Deprecated
-public class ResourceUtils
+public class ResourceUtil
 {
     private static final String RESOURCE_PACKAGE_NAME = "resources";
 
@@ -325,7 +326,7 @@ public class ResourceUtils
                 c1ass,
                 name );
 
-        // Note Java 9 offers
+        // TODO Note Java 9 offers
         // byte[] array = InputStream.readAllBytes();
         ByteArrayOutputStream result =
                 new ByteArrayOutputStream();
@@ -344,7 +345,7 @@ public class ResourceUtils
         }
         catch ( Exception e )
         {
-            FileUtils.forceClose( is );
+            JavaUtil.force( is::close );
             throw new RuntimeException(
                     "Failed reading resource: " + name, e );
         }
@@ -353,7 +354,7 @@ public class ResourceUtils
     /**
      * Forbid instantiation.
      */
-    private ResourceUtils()
+    private ResourceUtil()
     {
         throw new AssertionError();
     }
