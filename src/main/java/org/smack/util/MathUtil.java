@@ -4,10 +4,11 @@
  *
  * Copyright © 2005-2012 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Objects;
 
 
 
@@ -17,10 +18,8 @@ import java.awt.geom.Point2D;
  * @version $Revision$
  * @author Michael Binz
  * @author Dave Hale, Landmark Graphics, 01/24/96
- * @deprecated Use MathUtil
  */
-@Deprecated
-public class MathExt
+public class MathUtil
 {
     /**
      * @return True if the passed integer is odd.
@@ -51,6 +50,10 @@ public class MathExt
      */
     public static double computePolynomial( double x, double[] c )
     {
+        Objects.requireNonNull( c );
+        if ( c.length < 0 )
+            throw new IllegalArgumentException( "Length of c less than one." );
+
         double result = c[0];
 
         for ( int i = 1 ; i < c.length ; i++ )
@@ -71,7 +74,7 @@ public class MathExt
     }
 
     /**
-     * Compute the distance between points a and b.
+     * Compute the integer distance between points a and b.
      *
      * @param ax The x value of point a.
      * @param ay The y value of point a.
@@ -81,7 +84,6 @@ public class MathExt
      */
     public static int distance( int ax, int ay, int bx, int by )
     {
-        // Pythagoras.
         int a = ax - bx;
         int b = ay - by;
 
@@ -94,13 +96,13 @@ public class MathExt
     }
 
     /**
-     * Compute the distance between two points.
+     * Compute the integer distance between two points.
      *
      * @param a The first point.
      * @param b The second point.
      * @return The distance between points a and b.
      */
-    public static int distance( Point a, Point b )
+    public static int distanceInt( Point a, Point b )
     {
         return distance( a.x, a.y, b.x, b.y );
     }
@@ -116,7 +118,6 @@ public class MathExt
      */
     public static double distance( double ax, double ay, double bx, double by )
     {
-        // Pythagoras.
         double a = ax - bx;
         double b = ay - by;
 
@@ -125,7 +126,7 @@ public class MathExt
         if ( b == 0 )
             return Math.abs( a );
 
-        return round( Math.hypot( a, b ) );
+        return Math.hypot( a, b );
     }
 
     /**
@@ -188,8 +189,6 @@ public class MathExt
 
         return result;
     }
-
-
 
     /**
      * Find the minimum of the passed numbers.
@@ -528,7 +527,7 @@ public class MathExt
     /**
      * Hidden constructor.
      */
-    private MathExt()
+    private MathUtil()
     {
         throw new AssertionError();
     }

@@ -15,8 +15,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import org.jdesktop.smack.util.ResourceUtils;
-
 /**
  * Resource Bundle helpers.
  *
@@ -51,7 +49,7 @@ public class ResourceUtil
     /**
      * Generated. Fixes the fact that {@link ResourceBundle#getBaseBundleName()}
      * returns null in modular applications.  This bites us when injecting
-     * resources. The class is used in {@link ResourceUtils#getClassResources(Class)}
+     * resources. The class is used in {@link ResourceUtil#getClassResources(Class)}
      * as the result.
      */
     private static class NamedResourceBundle extends ResourceBundle

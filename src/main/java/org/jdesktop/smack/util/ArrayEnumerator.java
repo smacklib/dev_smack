@@ -1,4 +1,4 @@
-/* $Id: b6b3981782c35fc14fa127c48bc161cee112b6f8 $
+/* $Id$
  *
  * Utilities
  *
@@ -20,7 +20,9 @@ import org.jdesktop.util.ReflectionUtil;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Use Enumeration#asIterator
  */
+@Deprecated
 public class ArrayEnumerator<T>
   implements
     Enumeration<T>
