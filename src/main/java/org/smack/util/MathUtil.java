@@ -82,7 +82,7 @@ public class MathUtil
      * @param by The y value of point b.
      * @return The distance between points a and b.
      */
-    public static int distance( int ax, int ay, int bx, int by )
+    public static int distanceInt( int ax, int ay, int bx, int by )
     {
         int a = ax - bx;
         int b = ay - by;
@@ -104,7 +104,7 @@ public class MathUtil
      */
     public static int distanceInt( Point a, Point b )
     {
-        return distance( a.x, a.y, b.x, b.y );
+        return distanceInt( a.x, a.y, b.x, b.y );
     }
 
     /**
