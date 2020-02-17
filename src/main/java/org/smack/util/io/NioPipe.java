@@ -14,6 +14,7 @@ import java.nio.channels.Pipe;
  * @author Michael Binz
  */
 public final class NioPipe
+    implements org.smack.util.io.Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;
 
@@ -49,6 +50,7 @@ public final class NioPipe
      *
      * @return The write end.
      */
+    @Override
     public OutputStream getWriteEnd()
     {
         return Channels.newOutputStream( _pipe.sink() );
@@ -59,6 +61,7 @@ public final class NioPipe
      *
      * @return The read end.
      */
+    @Override
     public InputStream getReadEnd()
     {
         return Channels.newInputStream( _pipe.source() );
@@ -67,6 +70,7 @@ public final class NioPipe
     /**
      * Close the pipe.
      */
+    @Override
     public void close()
     {
         forceClose( _pipe.sink() );

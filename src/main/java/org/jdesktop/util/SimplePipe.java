@@ -1,4 +1,4 @@
-/* $Id: ae40f6be27f723ceff603789c7321323f0017eec $
+/* $Id$
  *
  * Common.
  *
@@ -20,7 +20,9 @@ import org.jdesktop.smack.util.FileUtils;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Use smack.util.io
  */
+@Deprecated
 public final class SimplePipe implements Pipe
 {
     private static final int BUFFER_SIZE = 10 * 1024;

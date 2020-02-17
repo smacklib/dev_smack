@@ -1,4 +1,4 @@
-/* $Id: 55521288a09ac306a61ab69a76a4478488069d3d $
+/* $Id$
  *
  * Common.
  *
@@ -15,9 +15,11 @@ import java.io.OutputStream;
 /**
  * A simple pipe.  Write to the write end, read from the read end.
  *
- * @version $Id: 55521288a09ac306a61ab69a76a4478488069d3d $
+ * @version $Id$
  * @author Michael Binz
+ * @deprecated Use smack.util.io
  */
+@Deprecated
 public final class PowerPipe
     implements Pipe
 {
