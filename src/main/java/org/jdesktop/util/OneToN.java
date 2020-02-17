@@ -1,4 +1,4 @@
-/* $Id: dbc63893af611b08ed0ea55bcd6c9ca201807b19 $
+/* $Id$
  *
  * Common.
  *
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * A one-to-n relationship. Allows to customize the used map
- * implementation as well as the conrete to-n holder.
+ * implementation as well as the concrete to-n holder.
  *
  * @version $Rev$
  * @author Michael Binz
