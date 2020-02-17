@@ -1,4 +1,4 @@
-/* $Id: fe697928a409fa0237cacec073b66e434ff02e30 $
+/* $Id$
  *
  * Utilities
  *
@@ -14,7 +14,9 @@ package org.jdesktop.util;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Use smack.util
  */
+@Deprecated
 public class TimeProbe
 {
     /**

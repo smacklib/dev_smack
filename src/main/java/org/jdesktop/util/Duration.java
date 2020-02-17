@@ -1,4 +1,4 @@
-/* $Id: 3a9511dfa4bae6b7ab22962def6201661728a457 $
+/* $Id$
  *
  * Common.
  *
@@ -15,7 +15,9 @@ import java.text.MessageFormat;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated use smack.util
  */
+@Deprecated
 public final class Duration
 {
     /**
