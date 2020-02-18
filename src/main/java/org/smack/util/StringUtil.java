@@ -282,7 +282,7 @@ public class StringUtil
     public static String quote( char quoteChar, String string )
     {
         if ( string == null || string.isEmpty() )
-            return EMPTY_STRING + QUOTE_CHAR + QUOTE_CHAR;
+            return EMPTY_STRING + quoteChar + quoteChar;
 
         StringBuilder result = new StringBuilder();
 
@@ -292,7 +292,7 @@ public class StringUtil
         {
             char c = string.charAt( i );
 
-            if ( c == QUOTE_CHAR )
+            if ( c == quoteChar )
                 result.append( ESCAPE_CHAR );
 
             result.append( c );

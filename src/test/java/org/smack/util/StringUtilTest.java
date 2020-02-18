@@ -168,4 +168,70 @@ public class StringUtilTest
                 StringUtil.splitQuoted(
                         "michael \"" ) );
     }
+    @Test
+    public void testSplitQuote9()
+    {
+        // Empty string.
+        assertArrayEquals(
+                new String[]{"ab", StringUtil.EMPTY_STRING, "cd"},
+                StringUtil.splitQuoted(
+                        '\'',
+                        "ab '' cd" ));
+    }
+
+    @Test
+    public void testQuote0()
+    {
+        String q = StringUtil.quote( '!', null );
+        // Empty string.
+        assertEquals(
+                "!!", q );
+        q = StringUtil.unquote( '!', q );
+        // Empty string.
+        assertEquals( StringUtil.EMPTY_STRING, q );
+    }
+    @Test
+    public void testQuote1()
+    {
+        String q = StringUtil.quote( null );
+        // Empty string.
+        assertEquals(
+                "\"\"", q );
+        q = StringUtil.unquote( q );
+        // Empty string.
+        assertEquals( StringUtil.EMPTY_STRING, q );
+    }
+    @Test
+    public void testQuote2()
+    {
+        String q = StringUtil.quote( "micbinz" );
+        // Empty string.
+        assertEquals(
+                "\"micbinz\"", q );
+        q = StringUtil.unquote( q );
+        // Empty string.
+        assertEquals( "micbinz", q );
+    }
+    @Test
+    public void testQuote3()
+    {
+        String q = StringUtil.quote( 'ß', "micbinz" );
+        // Empty string.
+        assertEquals(
+                "ßmicbinzß", q );
+        q = StringUtil.unquote( 'ß', q );
+        // Empty string.
+        assertEquals( "micbinz", q );
+    }
+    @Test
+    public void testQuote4()
+    {
+        String q = StringUtil.quote( 'i', "micbinz" );
+        // Empty string.
+        assertEquals(
+                "im\\icb\\inzi", q );
+        q = StringUtil.unquote( 'i', q );
+        // Empty string.
+        assertEquals( "micbinz", q );
+    }
 }
