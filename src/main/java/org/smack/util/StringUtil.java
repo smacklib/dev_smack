@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import javafx.util.StringConverter;
+
 
 
 /**
@@ -434,6 +436,7 @@ public class StringUtil
 
         return result.toArray( new String[ result.size()] );
     }
+
     /**
      * Splits a whitespace delimited and quoted string as used on command
      * lines into its elements.  For example 'Admiral "von Schneider"' is
@@ -448,36 +451,61 @@ public class StringUtil
         return splitQuoted( QUOTE_CHAR, toSplit );
     }
 
-
-    static void testSplitQuote()
+    private static final StringConverter<byte[]> _arrayConverter = new StringConverter<>()
     {
-        // Test split quote.
-        String[] testCases = {
-                // Plain
-                "ab cd ef",
-                // Whitespace is tab.
-                "ab\tcd\tef",
-                // Whitespace is mixed and at the end.
-                "ab\tcd ef\t \t \t \t \tgh \t",
-                // Quoted simple.
-                "ab \"cd ef\" gh",
-                // Quoted leading and trailing spaces.
-                "ab \" cd ef \" gh",
-                // Last quote not terminated, trailing space.
-                "ab \" cd ef ",
-                // Empty string.
-                "ab \"\" cd",
-                // Pathological: ab" cd ef" -> "ab cd ef"
-                "ab\" cd ef ",
-                // Empty string at eol.
-                "michael \""
-        };
-
-        for ( String c : testCases )
+        @Override
+        public String toString( byte[] array )
         {
-            System.err.println( "parseQuoted( '" + c + "' )" );
-            for ( String c1 : splitQuoted( c ) )
-                System.err.println( "'" + c1 + "'" );
+            var result =
+                    new StringBuilder( array.length * 2 );
+
+            for ( Byte c : array )
+                result.append( String.format( "%02x", c ) );
+
+            return result.toString();
         }
+
+        private byte[] fromStringImpl( String string )
+        {
+            var result = new byte[ string.length() / 2 ];
+
+            if ( (result.length * 2) != string.length() )
+                throw new IllegalArgumentException( string );
+
+            for ( int i = 0 ; i < result.length ; i++ )
+            {
+                int stringIndex =
+                        i * 2;
+                String pair =
+                        string.substring( stringIndex, stringIndex+2 );
+                result[i] = (byte)
+                        Short.parseShort( pair, 16 );
+            }
+
+            return result;
+        }
+
+        @Override
+        public byte[] fromString( String string )
+        {
+            try
+            {
+                return fromStringImpl( string );
+            }
+            catch( Exception e )
+            {
+                return null;
+            }
+        }
+    };
+
+    public static String toHex( byte[] array )
+    {
+        return _arrayConverter.toString( array );
+    }
+
+    public static byte[] fromHex( String signature )
+    {
+        return _arrayConverter.fromString( signature );
     }
 }

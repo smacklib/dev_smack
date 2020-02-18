@@ -83,4 +83,37 @@ public class StringUtilTest
                 StringUtil.trim( toTrim, "abcdef" );
         assertEquals( "Test", trimmed );
     }
+
+    @Test
+    public void testSplitQuote()
+    {
+        // Test split quote.
+        String[] testCases = {
+                // Plain
+                "ab cd ef",
+                // Whitespace is tab.
+                "ab\tcd\tef",
+                // Whitespace is mixed and at the end.
+                "ab\tcd ef\t \t \t \t \tgh \t",
+                // Quoted simple.
+                "ab \"cd ef\" gh",
+                // Quoted leading and trailing spaces.
+                "ab \" cd ef \" gh",
+                // Last quote not terminated, trailing space.
+                "ab \" cd ef ",
+                // Empty string.
+                "ab \"\" cd",
+                // Pathological: ab" cd ef" -> "ab cd ef"
+                "ab\" cd ef ",
+                // Empty string at eol.
+                "michael \""
+        };
+
+        for ( String c : testCases )
+        {
+            System.err.println( "parseQuoted( '" + c + "' )" );
+            for ( String c1 : StringUtil.splitQuoted( c ) )
+                System.err.println( "'" + c1 + "'" );
+        }
+    }
 }
