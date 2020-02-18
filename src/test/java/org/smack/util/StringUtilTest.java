@@ -3,6 +3,7 @@
  */
 package org.smack.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -85,35 +86,86 @@ public class StringUtilTest
     }
 
     @Test
-    public void testSplitQuote()
+    public void testSplitQuote0()
     {
-        // Test split quote.
-        String[] testCases = {
-                // Plain
-                "ab cd ef",
-                // Whitespace is tab.
-                "ab\tcd\tef",
-                // Whitespace is mixed and at the end.
-                "ab\tcd ef\t \t \t \t \tgh \t",
-                // Quoted simple.
-                "ab \"cd ef\" gh",
-                // Quoted leading and trailing spaces.
-                "ab \" cd ef \" gh",
-                // Last quote not terminated, trailing space.
-                "ab \" cd ef ",
-                // Empty string.
-                "ab \"\" cd",
-                // Pathological: ab" cd ef" -> "ab cd ef"
-                "ab\" cd ef ",
-                // Empty string at eol.
-                "michael \""
-        };
+        // Plain
+        assertArrayEquals(
+                new String[]{"ab","cd","ef"},
+                StringUtil.splitQuoted(
+                        "ab cd ef" ) );
+    }
 
-        for ( String c : testCases )
-        {
-            System.err.println( "parseQuoted( '" + c + "' )" );
-            for ( String c1 : StringUtil.splitQuoted( c ) )
-                System.err.println( "'" + c1 + "'" );
-        }
+    @Test
+    public void testSplitQuote1()
+    {
+        // Whitespace is tab.
+        assertArrayEquals(
+                new String[]{"ab","cd","ef"},
+                StringUtil.splitQuoted(
+                        "ab\tcd\tef" ) );
+    }
+    @Test
+    public void testSplitQuote2()
+    {
+        // Whitespace is mixed and at the end.
+        assertArrayEquals(
+                new String[]{"ab","cd","ef","gh"},
+                StringUtil.splitQuoted(
+                        "ab\tcd ef\t \t \t \t \tgh \t" ) );
+    }
+    @Test
+    public void testSplitQuote3()
+    {
+
+        // Quoted simple.
+        assertArrayEquals(
+                new String[]{"ab","cd ef","gh"},
+                StringUtil.splitQuoted(
+                        "ab \"cd ef\" gh" ) );
+    }
+    @Test
+    public void testSplitQuote4()
+    {
+        // Quoted leading and trailing spaces.
+        assertArrayEquals(
+                new String[]{"ab"," cd ef ","gh"},
+                StringUtil.splitQuoted(
+                        "ab \" cd ef \" gh" ) );
+    }
+    @Test
+    public void testSplitQuote5()
+    {
+        // Last quote not terminated, trailing space.
+        assertArrayEquals(
+                new String[]{"ab"," cd ef "},
+                StringUtil.splitQuoted(
+                        "ab \" cd ef " ) );
+    }
+    @Test
+    public void testSplitQuote6()
+    {
+        // Empty string.
+        assertArrayEquals(
+                new String[]{"ab", StringUtil.EMPTY_STRING, "cd"},
+                StringUtil.splitQuoted(
+                        "ab \"\" cd" ));
+    }
+    @Test
+    public void testSplitQuote7()
+    {
+        // Pathological: ab" cd ef" -> "ab cd ef"
+        assertArrayEquals(
+                new String[]{"ab cd ef "},
+                StringUtil.splitQuoted(
+                        "ab\" cd ef " ) );
+    }
+    @Test
+    public void testSplitQuote8()
+    {
+        // Empty string at eol.
+        assertArrayEquals(
+                new String[]{"michael", StringUtil.EMPTY_STRING},
+                StringUtil.splitQuoted(
+                        "michael \"" ) );
     }
 }
