@@ -1,4 +1,4 @@
-/* $Id: 20ba682448af1dc099910f11c36d4e32e646a897 $
+/* $Id$
  *
  * Released under Gnu Public License
  * Copyright © 2017 Michael G. Binz
@@ -13,7 +13,9 @@ import java.util.function.Function;
  *
  * @version $Revision$
  * @author Michael Binz
+ * @deprecated
  */
+@Deprecated
 public class WeakMapWithProducer<K,V>
 {
     private final WeakHashMap<K, V> _cache =

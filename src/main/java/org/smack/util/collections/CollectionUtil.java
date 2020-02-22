@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2012-17 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util.collections;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -19,10 +19,8 @@ import java.util.Set;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated
  */
-@Deprecated
-public class UtilCollection
+public class CollectionUtil
 {
     /**
      * Creates the intersection of the passed sets.
@@ -83,7 +81,7 @@ public class UtilCollection
         return array == null || array.length == 0;
     }
 
-    private UtilCollection()
+    private CollectionUtil()
     {
         throw new AssertionError();
     }

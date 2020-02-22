@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2010 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util.collections;
 
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -23,9 +23,7 @@ import java.util.function.Supplier;
  * @param <K> The key type.
  * @param <V> The value type.
  * @param <C> A container factory.
- * @deprecated
  */
-@Deprecated
 public class  OneToN<K,V,C extends Collection<V> >
 {
     private final AbstractMap<K,C> _map;

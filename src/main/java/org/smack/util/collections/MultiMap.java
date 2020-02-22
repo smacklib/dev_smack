@@ -3,7 +3,7 @@
  * Released under Gnu Public License
  * Copyright © 2008-2015 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util.collections;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,9 +16,7 @@ import java.util.Set;
  *
  * @version $Revision$
  * @author Michael Binz
- * @deprecated
  */
-@Deprecated
 public class MultiMap<KT1, KT2, VT>
 {
     /**

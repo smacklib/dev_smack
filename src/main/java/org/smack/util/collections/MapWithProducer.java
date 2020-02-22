@@ -3,7 +3,7 @@
  * Released under Gnu Public License
  * Copyright © 2018 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util.collections;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -16,7 +16,6 @@ import java.util.function.Supplier;
  * @version $Revision: 351 $
  * @author Michael Binz
  */
-@Deprecated
 public class MapWithProducer<K,V>
 {
     private final AbstractMap<K,V> _cache;
