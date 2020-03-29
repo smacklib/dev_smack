@@ -12,7 +12,10 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -32,7 +35,7 @@ public final class FileUtil
      * The logger for this class.
      */
     private static final Logger LOG = Logger.getLogger(
-            FileUtil.class.getSimpleName() );
+            FileUtil.class.getName() );
 
     /**
      * Resolves directories in the passed file list. That is, normal file
@@ -185,6 +188,39 @@ public final class FileUtil
         }
 
         return result;
+    }
+
+    /**
+     * Deletes a directory recursively.
+     *
+     * @param dir The directory to delete.
+     * @return true if successful.
+     */
+    public static boolean delete( File dir )
+    {
+        if ( ! dir.exists() )
+            return true;
+
+        if ( dir.isFile() )
+            return dir.delete();
+
+        try
+        {
+            Files.walk( dir.toPath() )
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+        }
+        catch ( Exception e )
+        {
+            LOG.log(
+                    Level.WARNING,
+                    "Failed to delete: " + dir.getPath(),
+                    e );
+            return false;
+        }
+
+        return true;
     }
 
     /**
