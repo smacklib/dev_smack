@@ -3,4 +3,5 @@ set -e
 
 export PLATFORM=windows
 
-mvn clean install
+mvn clean source:jar install
+
