@@ -23,7 +23,7 @@ import java.io.OutputStream;
 
 import org.jdesktop.beans.AbstractBeanEdt;
 import org.jdesktop.util.PlatformType;
-import org.jdesktop.util.StringUtil;
+import org.smack.util.StringUtil;
 
 /**
  * Access to per application, per user, local file storage. The

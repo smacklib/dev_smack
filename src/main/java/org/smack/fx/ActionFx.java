@@ -1,7 +1,7 @@
 /* $Id$
  *
  * Unpublished work.
- * Copyright © 2015 Michael G. Binz
+ * Copyright © 2015-20 Michael G. Binz
  */
 package org.smack.fx;
 
@@ -16,6 +16,7 @@ import org.smack.util.StringUtil;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCombination;
 
 /**
 * An action taking a method reference as the action delegate.
@@ -25,7 +26,9 @@ import javafx.scene.image.Image;
 */
 public class ActionFx
 {
-    private static final Logger LOG = Logger.getLogger( ActionFx.class.getName() );
+    private static final Logger LOG =
+            Logger.getLogger( ActionFx.class.getName() );
+
     private final Consumer<ActionEvent> _consumer;
 
     public final SimpleBooleanProperty enabledProperty =
@@ -34,11 +37,12 @@ public class ActionFx
     /**
      * Create an instance.
      *
-     * @param action A reference to a method 'void method( ActionEvent )'.
+     * @param action The ActionEvent consumer to call.
      */
     public ActionFx( Consumer<ActionEvent> action )
     {
-        _consumer = action;
+        _consumer =
+                action;
     }
 
     /**
@@ -48,7 +52,7 @@ public class ActionFx
      */
     public ActionFx( Runnable action )
     {
-        _consumer = (s) -> action.run();
+        this( (s)->action.run() );
     }
 
     public void actionPerformed( ActionEvent e )
@@ -139,5 +143,17 @@ public class ActionFx
     public void setImage( Image image )
     {
         _image = image;
+    }
+
+    private KeyCombination _accelerator;
+
+    public void setAccelerator( KeyCombination accelerator )
+    {
+        _accelerator = accelerator;
+    }
+
+    public KeyCombination getAccelerator()
+    {
+        return _accelerator;
     }
 }
