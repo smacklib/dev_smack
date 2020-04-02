@@ -1,5 +1,9 @@
-/*
- * Copyright © 2019 Daimler TSS.
+/* $Id$
+ *
+ * Common.
+ *
+ * Released under Gnu Public License
+ * Copyright © 2018 Michael G. Binz
  */
 package org.smack.util;
 
