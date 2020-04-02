@@ -1,9 +1,9 @@
-/*
- * Copyright © 2016 Daimler TSS. All Rights Reserved.
+/* $Id$
  *
- * Reproduction or transmission in whole or in part, in any form or by any
- * means, is prohibited without the prior written consent of the copyright
- * owner.
+ * Common.
+ *
+ * Released under Gnu Public License
+ * Copyright © 2016 Michael G. Binz
  */
 package org.smack.util;
 

@@ -8,9 +8,8 @@
 package org.smack.util;
 
 /**
- * The exception used to signal VIT errors.  The exception's message
- * is directly displayed to end users, thus take care that the content
- * is understandable.
+ * An exception that offers constructors that can handle string
+ * formatting.
  *
  * @author micbinz
  */
@@ -49,7 +48,7 @@ public class SmackException extends Exception
     }
 
     /**
-     * Creates a VitException with a formatted message.
+     * Creates an exception with a formatted message.
      *
      * @param message The format specifier.
      * @param args The format arguments
@@ -60,7 +59,7 @@ public class SmackException extends Exception
     }
 
     /**
-     * Creates a VitException with a formatted message.
+     * Creates an exception with a formatted message.
      *
      * @param cause The cause of this exception.
      * @param message The format specifier.
