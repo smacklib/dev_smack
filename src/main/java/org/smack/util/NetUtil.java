@@ -6,7 +6,8 @@
  * Copyright © 2015 Michael G. Binz
  */
 package org.smack.util;
-import java.io.IOException;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
