@@ -1,11 +1,11 @@
-/* $Id: c87413426380d3a3ddcb82eb2b211d345e26b727 $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
  * Released under Gnu Public License
  * Copyright © 2008 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;

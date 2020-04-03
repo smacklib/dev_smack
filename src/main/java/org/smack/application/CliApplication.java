@@ -3,7 +3,7 @@
  * Released under Gnu Public License
  * Copyright © 2013-2019 Michael G. Binz
  */
-package org.jdesktop.application;
+package org.smack.application;
 
 import java.io.File;
 import java.io.InputStream;
@@ -35,13 +35,11 @@ import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
 
 /**
- * @deprecated moved
  * A base class for console applications.
  *
  * @author MICKARG
  * @author MICBINZ
  */
-@Deprecated
 abstract public class CliApplication
 {
     private static final Logger LOG =

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2015 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -21,11 +21,10 @@ import java.util.logging.Logger;
 
 /**
  * Net related utility classes.
- * @deprecated moved
+ *
  * @version $Rev$
  * @author Michael Binz
  */
-@Deprecated
 public class NetUtil
 {
     private static final Logger LOG =

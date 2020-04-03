@@ -1,8 +1,8 @@
-/* $Id: b90f6625a6174c3806f3084876f0ba99ce867b56 $
+/* $Id$
  *
  * Copyright © 2003-2015 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util;
 
 import java.util.Stack;
 

@@ -13,8 +13,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.util.OutputStreamForwarder;
 import org.smack.util.StringUtil;
+import org.smack.util.io.OutputStreamForwarder;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;

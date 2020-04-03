@@ -7,6 +7,7 @@
   <version>11.395</version>
   <name>Smack</name>
   <description>Framework</description>
+  
   <build>
     <plugins>
       <plugin>
@@ -21,8 +22,24 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M3</version>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>libs/</classpathPrefix>
+              <mainClass>
+                org.smack.Cli
+              </mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  
   <dependencies>
     <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-base -->
     <dependency>
