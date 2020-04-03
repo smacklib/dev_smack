@@ -383,7 +383,7 @@ public class IntegerUtil
             byte[] parsed = parse( spayload );
 
             if ( parsed.length > length )
-                throw new SmackException( "Payload '%s' does not fit in the passed length %d.",
+                throw JavaUtil.fmtX( "Payload '%s' does not fit in the passed length %d.",
                         spayload,
                         length );
 
