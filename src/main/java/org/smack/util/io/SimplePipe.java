@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.jdesktop.smack.util.FileUtils;
+import org.jdesktop.util.JavaUtil;
 
 /**
  * A simple pipe.  Write to the write end, read from the read end.
@@ -84,9 +84,9 @@ public final class SimplePipe implements Pipe
     @Override
     public void close()
     {
-        FileUtils.forceClose(
-                _readEnd );
-        FileUtils.forceClose(
-                _writeEnd );
+        JavaUtil.force(
+                _readEnd::close );
+        JavaUtil.force(
+                _writeEnd::close );
     }
 }

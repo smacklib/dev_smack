@@ -1,4 +1,4 @@
-/* $Id: 7acf4e8fa86fa21a3f9affc09c83b567a46bbba1 $
+/* $Id$
  *
  * Utilities
  *
@@ -15,7 +15,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import org.jdesktop.smack.util.ResourceUtils;
+import org.smack.util.ResourceUtil;
+import org.smack.util.StringUtil;
 
 
 /**
@@ -46,7 +47,7 @@ public class ResourceMap extends HashMap<String, String>
                 _class.getSimpleName();
 
         ResourceBundle crb =
-                ResourceUtils.getClassResources( cl );
+                ResourceUtil.getClassResources( cl );
 
         if ( crb == null )
         {
@@ -66,7 +67,7 @@ public class ResourceMap extends HashMap<String, String>
                         simpleName.length() ).replace( '.', '/' );
 
         Map<String, String> bundle =
-                ResourceUtils.preprocessResourceBundle(
+                ResourceUtil.preprocessResourceBundle(
                         crb );
 
         String classPrefix =

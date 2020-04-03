@@ -1,4 +1,4 @@
-/* $Id: 8c0fd6b9fffb15bbdf5f3b9b52c379884f21c24a $
+/* $Id$
  *
  * Michael's Application Construction Kit (MACK)
  *
@@ -43,7 +43,9 @@ import org.jdesktop.smack.util.Transformer;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Not longer supported.
  */
+@Deprecated
 public class DropTableListener implements DropTargetListener
 {
     /*
@@ -66,6 +68,7 @@ public class DropTableListener implements DropTargetListener
     /*
      * Inherit javadoc.
      */
+    @Override
     public void dragEnter( DropTargetDragEvent dtde )
     {
     }
@@ -75,6 +78,7 @@ public class DropTableListener implements DropTargetListener
     /*
      * Inherit javadoc.
      */
+    @Override
     public void drop( DropTargetDropEvent dtde )
     {
         // Used on dnd protocol completion in 'finally' below.

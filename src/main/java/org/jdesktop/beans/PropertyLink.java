@@ -1,4 +1,4 @@
-/* $Id: 1008c00822c57e6654d7b885722c561812dd4c41 $
+/* $Id$
  *
  * Released under Gnu Public License
  * Copyright © 2011-17 Michael G. Binz
@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.WeakHashMap;
 
 import org.jdesktop.application.ApplicationProperties;
-import org.jdesktop.util.OneToN;
 import org.jdesktop.util.ServiceManager;
+import org.smack.util.collections.OneToN;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
