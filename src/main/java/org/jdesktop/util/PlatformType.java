@@ -10,7 +10,8 @@ import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jdesktop.smack.util.ResourceUtils;
+import org.smack.util.ResourceUtil;
+import org.smack.util.StringUtil;
 
 /**
  * @author Illya Yalovyy
@@ -150,7 +151,7 @@ public enum PlatformType
         }
 
         Map<String, String> resrc =
-                ResourceUtils.getClassResourceMap( pClass );
+                ResourceUtil.getClassResourceMap( pClass );
 
         String platformClassName =
                 resrc.get( platformType.resourceSuffix );

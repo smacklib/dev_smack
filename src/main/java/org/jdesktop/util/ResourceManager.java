@@ -30,6 +30,9 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.smack.util.StringUtil;
+import org.smack.util.collections.WeakMapWithProducer;
+
 import javafx.util.Pair;
 
 /**
