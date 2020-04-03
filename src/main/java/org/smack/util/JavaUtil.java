@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2011 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,10 +14,7 @@ import java.util.logging.Logger;
  * General utilities.
  *
  * @author Michael Binz
- *
- * @deprecated moved
  */
-@Deprecated
 public class JavaUtil
 {
     private static final Logger LOG =

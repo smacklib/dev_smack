@@ -1,11 +1,11 @@
-/* $Id: d44067c8b779537f40bf207c9494d1f18bded40b $
+/* $Id$
  *
  * Common.
  *
  * Released under Gnu Public License
  * Copyright © 2012 Michael G. Binz
  */
-package org.jdesktop.smack.util;
+package org.smack.util.io;
 
 import java.io.IOException;
 import java.io.OutputStream;

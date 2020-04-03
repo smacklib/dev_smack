@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  */
-package org.jdesktop.application;
+package org.smack.application;
 
 import java.awt.Rectangle;
 import java.beans.DefaultPersistenceDelegate;
@@ -29,12 +29,11 @@ import org.smack.util.StringUtil;
  * Access to per application, per user, local file storage. The
  * shared instance can be received by calling
  * {@link Application#getApplicationService(Class)}.
- * @deprecated moved
+ *
  * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-@Deprecated
 public final class LocalStorage extends AbstractBeanEdt
 {
     private LocalIO localIO = null;

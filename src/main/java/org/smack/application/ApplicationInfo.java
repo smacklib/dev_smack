@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2016 Michael G. Binz
  */
-package org.jdesktop.application;
+package org.smack.application;
 
 import java.util.Objects;
 
@@ -19,9 +19,7 @@ import javafx.scene.image.Image;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated moved
  */
-@Deprecated
 public class ApplicationInfo
 {
     private final Class<?> _applicationClass;

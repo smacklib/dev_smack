@@ -2,7 +2,7 @@
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  */
-package org.jdesktop.application;
+package org.smack.application;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +33,7 @@ import org.jdesktop.util.ServiceManager;
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated moved
  */
-@Deprecated
 public class ApplicationProperties
 {
     private static final Logger L =
