@@ -449,20 +449,6 @@ public class StringUtil
         return splitQuoted( QUOTE_CHAR, toSplit );
     }
 
-//    private static final StringConverter<byte[]> _arrayConverter = new StringConverter<>()
-//    {
-//        @Override
-//        public String toString( byte[] array )
-//        {
-//            var result =
-//                    new StringBuilder( array.length * 2 );
-//
-//            for ( Byte c : array )
-//                result.append( String.format( "%02x", c ) );
-//
-//            return result.toString();
-//        }
-//
     private static byte[] fromHexImpl( String string )
     {
         if ( MathUtil.isOdd( string.length() ))
@@ -483,6 +469,14 @@ public class StringUtil
         return result;
     }
 
+    /**
+     * Convert an array to a hex string.  The resulting string consists of
+     * an even number of hex figures, for each input byte two.  Example is
+     * for input 1,2,10,15 the result is "01020a0f".
+     *
+     * @param array The array to convert.
+     * @return The result string.
+     */
     public static String toHex( byte[] array )
     {
         var result =
