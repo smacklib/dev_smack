@@ -92,4 +92,36 @@ public class JavaUtil
     {
         return array == null || array.length == 0;
     }
+
+    /**
+     * Create an exception with a formatted message.
+     *
+     * @param fmt The format string.
+     * @param args The arguments.
+     * @return The newly created exception.
+     */
+    public static Exception fmtX( String fmt, Object... args )
+    {
+        return new Exception(
+                String.format( fmt, args ) );
+    }
+
+    /**
+     * Create an exception with a formatted message. Allows to
+     * add a cause.
+     *
+     * @param cause The cause of the created exception.
+     * @param fmt The format string.
+     * @param args The arguments.
+     * @return The newly created exception.
+     */
+    public static Exception fmtX(
+            Throwable cause,
+            String fmt,
+            Object... args )
+    {
+        return new Exception(
+                String.format( fmt, args ),
+                cause );
+    }
 }
