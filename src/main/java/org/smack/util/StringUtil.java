@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-import javafx.util.StringConverter;
-
 
 
 /**
@@ -451,61 +449,67 @@ public class StringUtil
         return splitQuoted( QUOTE_CHAR, toSplit );
     }
 
-    private static final StringConverter<byte[]> _arrayConverter = new StringConverter<>()
+//    private static final StringConverter<byte[]> _arrayConverter = new StringConverter<>()
+//    {
+//        @Override
+//        public String toString( byte[] array )
+//        {
+//            var result =
+//                    new StringBuilder( array.length * 2 );
+//
+//            for ( Byte c : array )
+//                result.append( String.format( "%02x", c ) );
+//
+//            return result.toString();
+//        }
+//
+    private static byte[] fromHexImpl( String string )
     {
-        @Override
-        public String toString( byte[] array )
+        if ( MathUtil.isOdd( string.length() ))
+            throw new IllegalArgumentException( "Length is odd: " + string );
+
+        var result = new byte[ string.length() / 2 ];
+
+        for ( int i = 0 ; i < result.length ; i++ )
         {
-            var result =
-                    new StringBuilder( array.length * 2 );
-
-            for ( Byte c : array )
-                result.append( String.format( "%02x", c ) );
-
-            return result.toString();
+            int stringIndex =
+                    i * 2;
+            String pair =
+                    string.substring( stringIndex, stringIndex+2 );
+            result[i] = (byte)
+                    Short.parseShort( pair, 16 );
         }
 
-        private byte[] fromStringImpl( String string )
-        {
-            var result = new byte[ string.length() / 2 ];
-
-            if ( (result.length * 2) != string.length() )
-                throw new IllegalArgumentException( string );
-
-            for ( int i = 0 ; i < result.length ; i++ )
-            {
-                int stringIndex =
-                        i * 2;
-                String pair =
-                        string.substring( stringIndex, stringIndex+2 );
-                result[i] = (byte)
-                        Short.parseShort( pair, 16 );
-            }
-
-            return result;
-        }
-
-        @Override
-        public byte[] fromString( String string )
-        {
-            try
-            {
-                return fromStringImpl( string );
-            }
-            catch( Exception e )
-            {
-                return null;
-            }
-        }
-    };
+        return result;
+    }
 
     public static String toHex( byte[] array )
     {
-        return _arrayConverter.toString( array );
+        var result =
+                new StringBuilder( array.length * 2 );
+
+        for ( Byte c : array )
+            result.append( String.format( "%02x", c ) );
+
+        return result.toString();
     }
 
-    public static byte[] fromHex( String signature )
+    /**
+     * Convert the passed string into a byte array.  This is
+     * symmetric to {@link #toHex(byte[])}.
+     *
+     * @param string The string to convert.
+     * @return A byte array.  If the string cannot be converted null.
+     */
+    public static byte[] fromHex( String string )
     {
-        return _arrayConverter.fromString( signature );
+        try
+        {
+            return fromHexImpl( string );
+        }
+        catch( Exception e )
+        {
+            return null;
+        }
     }
 }

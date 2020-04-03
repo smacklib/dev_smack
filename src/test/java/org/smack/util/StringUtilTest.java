@@ -6,6 +6,7 @@ package org.smack.util;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -15,6 +16,43 @@ import org.junit.Test;
  */
 public class StringUtilTest
 {
+    @Test
+    public void testToHex()
+    {
+        byte[] ba =
+                new byte[] {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+        String s =
+                StringUtil.toHex( ba );
+        assertEquals( "000102030405060708090a0b0c0d0e0f", s );
+
+        byte[] returned =
+                StringUtil.fromHex( s );
+        assertArrayEquals(
+                ba,
+                returned );
+    }
+
+    @Test
+    public void testToHex2()
+    {
+        // One too short.
+        String s = "000102030405060708090a0b0c0d0e0";
+
+        byte[] ba =
+                StringUtil.fromHex( s );
+        assertNull( ba );
+    }
+
+    @Test
+    public void testToHex3()
+    {
+        String s = "Donald Duck";
+
+        byte[] ba =
+                StringUtil.fromHex( s );
+        assertNull( ba );
+    }
+
     @Test
     public void testEmptyString() {
         assertNotNull( StringUtil.EMPTY_STRING.length() );
