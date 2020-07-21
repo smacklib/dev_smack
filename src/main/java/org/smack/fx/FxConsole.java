@@ -197,13 +197,40 @@ public final class FxConsole extends BorderPane
 
         switch (e.getCode()) {
         case ENTER:
+        {
+            boolean cursorAtEnd =
+                    _text.getCaretPosition() ==
+                    _text.getLength();
+
+            if ( ! cursorAtEnd )
+            {
+                // Enter was pressed after editing in the middle of the line.
+                // The carriage return is already inserted. So here we
+                // compensate.
+                // Get the full text content.
+                StringBuilder s =
+                        new StringBuilder( _text.getText() );
+                // Delete the intermediate carriage return.
+                s.delete(
+                        _text.getCaretPosition()-1,
+                        _text.getCaretPosition() );
+                // Append a carriage return at the end of the text.
+                s.append( '\n' );
+                // Update the text content of the text field.
+                _text.setText( s.toString() );
+                // Place the cursor on the new line.
+                _text.positionCaret( _text.getLength() );
+            }
+
             if (e.getEventType() == KeyEvent.KEY_PRESSED) {
                 enter();
                 resetEditArea();
                 _text.positionCaret(_cmdStart);
             }
+
             e.consume();
             break;
+        }
 
         case UP:
             if (e.getEventType() == KeyEvent.KEY_PRESSED) {
@@ -547,16 +574,16 @@ public final class FxConsole extends BorderPane
 
         // Notify Fx of the new data.
         Platform.runLater( () ->
-        printTakeover( _crossEdtBuffer ) );
+            printTakeover( _crossEdtBuffer ) );
     }
 
     /**
      * If true then scroll lock is active.
      */
-    public final SimpleBooleanProperty lockedProperty =
+    private final SimpleBooleanProperty lockedProperty =
             new SimpleBooleanProperty( this, "locked", false );
     {
-        lockedProperty.addListener( (a,b,c) -> setLocked( c ) );
+        lockedProperty.addListener( (a,b,c) -> setLocked( a,b,c ) );
     }
 
     /**
@@ -564,7 +591,7 @@ public final class FxConsole extends BorderPane
      *
      * @param what The scroll lock status. {@code true} is scroll lock active.
      */
-    public void setLocked( boolean what )
+    private void setLocked( Object o, boolean was, boolean what )
     {
         // Clear the selection if the lock status changed.
         _text.deselect();
