@@ -77,16 +77,6 @@ public class ApplicationUnderTest
         out( "%s:%s\n", currentCommand(), i );
     }
 
-    int getSignatureNumber()
-    {
-        return Integer.parseInt( currentCommand().split( "_" )[1] );
-    }
-
-    public void cmdOverload_0()
-    {
-        out( "%s:%s\n", currentCommand(), getSignatureNumber() );
-    }
-
     public static void main( String[] argv )
     {
         launch( ApplicationUnderTest::new, argv );
