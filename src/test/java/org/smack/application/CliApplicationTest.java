@@ -1,0 +1,133 @@
+package org.smack.application;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.util.List;
+
+import org.junit.Test;
+import org.smack.util.FileUtil;
+import org.smack.util.StringUtil;
+
+public class CliApplicationTest
+{
+    @Test
+    public void TestHelp() throws IOException
+    {
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTest.main( new String[0] );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        String expectedString =
+                "ApplicationUnderTest\n" +
+                        "\n" +
+                        "The following commands are supported:\n" +
+                        "\n" +
+                        "cmdBoolean: boolean\n" +
+                        "cmdByte: byte\n" +
+                        "cmdDouble: double\n" +
+                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]\n" +
+                        "cmdFile: File\n" +
+                        "cmdFloat: float\n" +
+                        "cmdInt: int\n" +
+                        "cmdLong: long\n" +
+                        "cmdShort: short\n" +
+                        "cmdString: String\n\n";
+        List<String> expectedLines =
+                FileUtil.readLines(
+                        new StringReader( expectedString ) );
+        List<String> receivedLines =
+                FileUtil.readLines(
+                        new StringReader( errOs.toString() ) );
+
+        assertEquals(
+                expectedLines,
+                receivedLines );
+    }
+
+    private String dec( Number n )
+    {
+        return StringUtil.EMPTY_STRING +
+                n.longValue();
+    }
+
+    private void TestType(
+            String command,
+            String argument,
+            String expectedCommand,
+            String expectedArg )
+    {
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTest.main( new String[]{ command, argument } );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        assertEquals(
+                StringUtil.EMPTY_STRING,
+                errOs.toString() );
+
+        String expected =
+                String.format( "%s:%s\n",
+                        expectedCommand,
+                        expectedArg );
+        String outOss =
+                outOs.toString();
+
+        assertEquals(
+                expected,
+                outOss );
+    }
+
+    private void TestType( String command, String expectedCommand )
+    {
+        var dummy = "0";
+
+        TestType(
+                command,
+                dummy,
+                expectedCommand,
+                dummy );
+    }
+
+    @Test
+    public void testNameUpperLowerCase()
+    {
+        var act = "cmdByte";
+
+        TestType( act, act );
+        TestType( "cmdbyte", act );
+        TestType( "CMDBYTE", act );
+    }
+}
