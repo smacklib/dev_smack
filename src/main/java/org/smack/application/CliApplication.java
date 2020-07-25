@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -284,6 +283,8 @@ abstract public class CliApplication
         if ( possibleCommands.size() > 0 )
         {
             System.err.println(
+                    "Parameter count does not match. Available alternatives:" );
+            System.err.println(
                     getCommandsUsage(possibleCommands, argv));
             return;
         }
@@ -301,13 +302,13 @@ abstract public class CliApplication
      *
      * <pre>
      * <code>
-     * public class Lin extends CliApplication implements ConsoleCommand
+     * public class Foo extends CliApplication
      * {
      *     ...
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Lin.class, argv, true );
+     *         execute( Foo.class, argv, true );
      *     }
      * }
      * </code>
@@ -388,25 +389,12 @@ abstract public class CliApplication
      *            Argument list as String.
      * @return Usage message for error handling.
      */
-    private static String getCommandsUsage(Map<Integer, Method> commands, String[] argv) {
-
-        Set<Integer> keys = commands.keySet();
+    private String getCommandsUsage(Map<Integer, Method> commands, String[] argv)
+    {
         StringBuilder result = new StringBuilder();
 
-        result.append("Possible values:");
-
-        for (Iterator<Integer> it = keys.iterator(); it.hasNext();) {
-            result.append("\n");
-            Integer paramCount = it.next();
-            Class<?>[] params = commands.get(paramCount)
-                .getParameterTypes();
-
-            for (int i = 0; i < params.length; i++)
-            {
-                result.append(params[i].getSimpleName());
-                result.append(" ");
-            }
-        }
+        commands.values().forEach(
+                c -> result.append( usage( c ) ));
 
         return result.toString();
     }
