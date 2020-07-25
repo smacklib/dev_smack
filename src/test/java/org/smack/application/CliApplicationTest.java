@@ -63,10 +63,60 @@ public class CliApplicationTest
                 receivedLines );
     }
 
-    private String dec( Number n )
+    @Test
+    public void TestArgListNotUnique() throws IOException
     {
-        return StringUtil.EMPTY_STRING +
-                n.longValue();
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTestOverload.main(
+                "cmdoverload 1 2 3 4".split( " " ) );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        String expectedString =
+                "Parameter count does not match. Available alternatives:\n" +
+                "cmdOverload\n" +
+                "cmdOverload: String\n" +
+                "cmdOverload: String, String\n" +
+                "cmdOverload: String, String, String\n" +
+                "\n";
+//                "ApplicationUnderTest\n" +
+//                        "\n" +
+//                        "The following commands are supported:\n" +
+//                        "\n" +
+//                        "cmdBoolean: boolean\n" +
+//                        "cmdByte: byte\n" +
+//                        "cmdDouble: double\n" +
+//                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]\n" +
+//                        "cmdFile: File\n" +
+//                        "cmdFloat: float\n" +
+//                        "cmdInt: int\n" +
+//                        "cmdLong: long\n" +
+//                        "cmdShort: short\n" +
+//                        "cmdString: String\n\n";
+        List<String> expectedLines =
+                FileUtil.readLines(
+                        new StringReader( expectedString ) );
+        List<String> receivedLines =
+                FileUtil.readLines(
+                        new StringReader( errOs.toString() ) );
+
+        assertEquals(
+                expectedLines,
+                receivedLines );
     }
 
     private void TestType(

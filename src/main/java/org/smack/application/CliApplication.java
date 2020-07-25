@@ -261,8 +261,11 @@ abstract public class CliApplication
             return;
         }
 
+        var ciName =
+                new CaseIndependent( argv[0] );
+
         Method selectedCommand = _commandMap.get(
-            new CaseIndependent( argv[0] ),
+            ciName,
             Integer.valueOf(argv.length - 1) );
 
         if ( selectedCommand != null )
@@ -279,7 +282,7 @@ abstract public class CliApplication
         // No command matched, so we check if there are commands
         // where at least the command name matches.
         Map<Integer, Method> possibleCommands =
-                _commandMap.getAll( new CaseIndependent( argv[0] ) );
+                _commandMap.getAll( ciName );
         if ( possibleCommands.size() > 0 )
         {
             System.err.println(
