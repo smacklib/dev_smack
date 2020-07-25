@@ -27,6 +27,10 @@ public class TimeProbeTest
         tp.stop();
         assertTrue( tp.duration() >= TIME );
         // One percent error seems generous.
-        assertTrue( tp.duration() < (TIME + (TIME/100)) );
+
+        int MAX_DURATION = (TIME + (TIME/100));
+
+        System.out.println( MAX_DURATION - tp.duration() );
+        assertTrue( tp.duration() <= MAX_DURATION );
     }
 }

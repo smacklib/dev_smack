@@ -5,6 +5,7 @@ import java.io.File;
 /**
  * Tests type transformations.
  */
+@Deprecated
 public class ApplicationUnderTest
     extends CliApplication
 {

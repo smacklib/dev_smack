@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 /**
  * Tests type transformations.
  */
+@Deprecated
 public class ApplicationUnderTestUnknownType
     extends CliApplication
 {

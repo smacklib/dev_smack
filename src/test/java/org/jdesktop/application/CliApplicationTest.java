@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.smack.util.FileUtil;
 import org.smack.util.StringUtil;
 
+@Deprecated
 public class CliApplicationTest
 {
     @Test
@@ -98,6 +99,7 @@ public class CliApplicationTest
                 expected,
                 outOss );
     }
+
     @Test
     public void TestTypeEnum()
     {
