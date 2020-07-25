@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,8 +28,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import org.jdesktop.util.JavaUtil;
+import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
 
@@ -68,12 +68,51 @@ abstract public class CliApplication
             default StringUtil.EMPTY_STRING;
     }
 
+    private static class CaseIndependent
+    {
+        private final String _name;
+
+        CaseIndependent( String name )
+        {
+            _name =
+                    Objects.requireNonNull(  name );
+        }
+
+        @Override
+        public boolean equals( Object obj )
+        {
+            if ( null == obj )
+                return false;
+            if ( obj == this )
+                return true;
+
+            if ( ! (obj instanceof CaseIndependent ) )
+                return false;
+            CaseIndependent typedObj =
+                    (CaseIndependent)obj;
+
+            return _name.equalsIgnoreCase( typedObj._name );
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return _name.toLowerCase().hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return _name;
+        }
+    }
+
     /**
      * A map of all commands implemented by this cli. Keys are
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<String,Integer,Method> _commandMap =
+    private final MultiMap<CaseIndependent,Integer,Method> _commandMap =
             getCommandMap_( getClass() );
 
     public interface StringConverter<T>
@@ -196,7 +235,9 @@ abstract public class CliApplication
      */
     private String[] listCommands()
     {
-        Set<String> collector = _commandMap.getPrimaryKeys();
+        Set<String> collector =
+                _commandMap.getPrimaryKeys().stream()
+                    .map( c -> c.toString() ).collect( Collectors.toSet() );
 
         String[] result = collector.toArray(
                 new String[collector.size()]);
@@ -220,8 +261,11 @@ abstract public class CliApplication
             return;
         }
 
+        var ciName =
+                new CaseIndependent( argv[0] );
+
         Method selectedCommand = _commandMap.get(
-            argv[0].toLowerCase(),
+            ciName,
             Integer.valueOf(argv.length - 1) );
 
         if ( selectedCommand != null )
@@ -238,9 +282,11 @@ abstract public class CliApplication
         // No command matched, so we check if there are commands
         // where at least the command name matches.
         Map<Integer, Method> possibleCommands =
-                _commandMap.getAll(argv[0]);
+                _commandMap.getAll( ciName );
         if ( possibleCommands.size() > 0 )
         {
+            System.err.println(
+                    "Parameter count does not match. Available alternatives:" );
             System.err.println(
                     getCommandsUsage(possibleCommands, argv));
             return;
@@ -259,13 +305,13 @@ abstract public class CliApplication
      *
      * <pre>
      * <code>
-     * public class Lin extends CliApplication implements ConsoleCommand
+     * public class Foo extends CliApplication
      * {
      *     ...
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Lin.class, argv, true );
+     *         execute( Foo.class, argv, true );
      *     }
      * }
      * </code>
@@ -346,25 +392,12 @@ abstract public class CliApplication
      *            Argument list as String.
      * @return Usage message for error handling.
      */
-    private static String getCommandsUsage(Map<Integer, Method> commands, String[] argv) {
-
-        Set<Integer> keys = commands.keySet();
+    private String getCommandsUsage(Map<Integer, Method> commands, String[] argv)
+    {
         StringBuilder result = new StringBuilder();
 
-        result.append("Possible values:");
-
-        for (Iterator<Integer> it = keys.iterator(); it.hasNext();) {
-            result.append("\n");
-            Integer paramCount = it.next();
-            Class<?>[] params = commands.get(paramCount)
-                .getParameterTypes();
-
-            for (int i = 0; i < params.length; i++)
-            {
-                result.append(params[i].getSimpleName());
-                result.append(" ");
-            }
-        }
+        commands.values().forEach(
+                c -> result.append( usage( c ) ));
 
         return result.toString();
     }
@@ -461,10 +494,11 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private static MultiMap<String,Integer,Method> getCommandMap_(
+    private static MultiMap<CaseIndependent,Integer,Method> getCommandMap_(
             Class<?> targetClass )
     {
-        MultiMap<String,Integer,Method> result = new MultiMap<>();
+        MultiMap<CaseIndependent,Integer,Method> result =
+                new MultiMap<>();
 
         for ( Method c : targetClass.getDeclaredMethods() )
         {
@@ -476,8 +510,6 @@ abstract public class CliApplication
             String name = commandAnnotation.name();
             if ( StringUtil.isEmpty( name ) )
                 name = c.getName();
-
-            name = name.toLowerCase();
 
             for ( Class<?> current : c.getParameterTypes() )
             {
@@ -492,9 +524,11 @@ abstract public class CliApplication
             Integer numberOfArgs =
                     Integer.valueOf( c.getParameterTypes().length );
 
+            var currentName =
+                    new CaseIndependent( name );
             // Check if we already have this command with the same parameter
             // list length. This would be an implementation error.
-            if (result.get(name, numberOfArgs) != null) {
+            if (result.get(currentName, numberOfArgs) != null) {
                 throw new InternalError(
                         "Implementation error. Operation " +
                         name +
@@ -503,7 +537,7 @@ abstract public class CliApplication
                         " parameters is not unique.");
             }
 
-            result.put(name, numberOfArgs, c);
+            result.put( currentName, numberOfArgs, c);
         }
 
         return result;

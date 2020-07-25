@@ -1,11 +1,10 @@
-package org.jdesktop.application;
+package org.smack.application;
 
 import java.io.File;
 
 /**
  * Tests type transformations.
  */
-@Deprecated
 public class ApplicationUnderTest
     extends CliApplication
 {
@@ -17,7 +16,7 @@ public class ApplicationUnderTest
     @Command
     private void cmdShort( short i )
     {
-        out( "%s( %d )", currentCommand(), i );
+        out( "%s:%d\n", currentCommand(), i );
     }
 
     /**
@@ -27,31 +26,31 @@ public class ApplicationUnderTest
     @Command
     private void cmdByte( byte i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%d\n", currentCommand(), i );
     }
 
     @Command
     private void cmdInt( int i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%d\n", currentCommand(), i );
     }
 
     @Command
     private void cmdLong( long i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%d\n", currentCommand(), i );
     }
 
     @Command
     private void cmdFloat( float i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%s\n", currentCommand(), i );
     }
 
     @Command
     private void cmdDouble( double i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%s\n", currentCommand(), i );
     }
 
     @Command
@@ -63,7 +62,7 @@ public class ApplicationUnderTest
     @Command
     private void cmdString( String i )
     {
-        out( "%s:%d", currentCommand(), i );
+        out( "%s:%d\n", currentCommand(), i );
     }
 
     @Command

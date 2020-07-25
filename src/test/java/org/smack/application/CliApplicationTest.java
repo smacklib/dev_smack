@@ -1,10 +1,8 @@
-package org.jdesktop.application;
+package org.smack.application;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -14,7 +12,6 @@ import org.junit.Test;
 import org.smack.util.FileUtil;
 import org.smack.util.StringUtil;
 
-@Deprecated
 public class CliApplicationTest
 {
     @Test
@@ -67,7 +64,7 @@ public class CliApplicationTest
     }
 
     @Test
-    public void TestTypeBoolean()
+    public void TestArgListNotUnique() throws IOException
     {
         PrintStream originalErrOut =
                 System.err;
@@ -81,17 +78,66 @@ public class CliApplicationTest
                 new ByteArrayOutputStream();
         System.setOut( new PrintStream( outOs ) );
 
-        ApplicationUnderTest.main( new String[]{ "cmdBoolean", "true" } );
+        ApplicationUnderTestOverload.main(
+                "cmdoverload 1 2 3 4".split( " " ) );
 
         System.err.flush();
         System.setErr( originalErrOut );
         System.out.flush();
         System.setOut( originalOut );
 
-        assertTrue( StringUtil.isEmpty( errOs.toString() ) );
+        String expectedString =
+                "Parameter count does not match. Available alternatives:\n" +
+                "cmdOverload\n" +
+                "cmdOverload: String\n" +
+                "cmdOverload: String, String\n" +
+                "cmdOverload: String, String, String\n" +
+                "\n";
+        List<String> expectedLines =
+                FileUtil.readLines(
+                        new StringReader( expectedString ) );
+        List<String> receivedLines =
+                FileUtil.readLines(
+                        new StringReader( errOs.toString() ) );
+
+        assertEquals(
+                expectedLines,
+                receivedLines );
+    }
+
+    private void TestType(
+            String command,
+            String argument,
+            String expectedCommand,
+            String expectedArg )
+    {
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTest.main( new String[]{ command, argument } );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        assertEquals(
+                StringUtil.EMPTY_STRING,
+                errOs.toString() );
 
         String expected =
-                "cmdBoolean:true\n";
+                String.format( "%s:%s\n",
+                        expectedCommand,
+                        expectedArg );
         String outOss =
                 outOs.toString();
 
@@ -100,110 +146,24 @@ public class CliApplicationTest
                 outOss );
     }
 
-    @Test
-    public void TestTypeEnum()
+    private void TestType( String command, String expectedCommand )
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        var dummy = "0";
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[]{ "cmdEnum", "Friday" } );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.isEmpty( errOs.toString() ) );
-
-        String expected =
-                "cmdEnum:FRIDAY\n";
-        String outOss =
-                outOs.toString();
-
-        assertEquals(
-                expected,
-                outOss );
-    }
-    @Test
-    public void TestTypeFile() throws Exception
-    {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
-
-        File tmpFile = File.createTempFile( "tmp", "bah" );
-        tmpFile.createNewFile();
-
-        try {
-            PrintStream originalOut =
-                    System.out;
-            ByteArrayOutputStream outOs =
-                    new ByteArrayOutputStream();
-            System.setOut( new PrintStream( outOs ) );
-
-            assertTrue( tmpFile.exists() );
-
-            ApplicationUnderTest.main( new String[]{ "cmdFile", tmpFile.getPath() } );
-
-            System.err.flush();
-            System.setErr( originalErrOut );
-            System.out.flush();
-            System.setOut( originalOut );
-
-            assertTrue( StringUtil.isEmpty( errOs.toString() ) );
-
-            String expected =
-                    "cmdFile:" +
-                            tmpFile.getPath() +
-                            "\n";
-            String outOss =
-                    outOs.toString();
-
-            assertEquals(
-                    expected,
-                    outOss );
-            assertTrue( tmpFile.exists() );
-        }
-        finally
-        {
-            tmpFile.delete();
-        }
+        TestType(
+                command,
+                dummy,
+                expectedCommand,
+                dummy );
     }
 
     @Test
-    public void TestUnknownType() throws Exception
+    public void testNameUpperLowerCase()
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        var act = "cmdByte";
 
-
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[0] );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.hasContent( errOs.toString() ) );
+        TestType( act, act );
+        TestType( "cmdbyte", act );
+        TestType( "CMDBYTE", act );
     }
 }

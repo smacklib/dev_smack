@@ -1,24 +1,30 @@
-package org.jdesktop.application;
+package org.smack.application;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.util.List;
 
 import org.junit.Test;
-import org.smack.util.FileUtil;
 import org.smack.util.StringUtil;
 
-@Deprecated
-public class CliApplicationTest
+public class CliApplicationTypeTest
 {
-    @Test
-    public void TestHelp() throws IOException
+    private String hex( Number n )
+    {
+        return String.format(
+                "0x%x",
+                n.longValue() );
+    }
+    private String dec( Number n )
+    {
+        return StringUtil.EMPTY_STRING +
+                n.longValue();
+    }
+
+    private void TestType( String command, String argument, String exp )
     {
         PrintStream originalErrOut =
                 System.err;
@@ -32,107 +38,107 @@ public class CliApplicationTest
                 new ByteArrayOutputStream();
         System.setOut( new PrintStream( outOs ) );
 
-        ApplicationUnderTest.main( new String[0] );
+        ApplicationUnderTest.main( new String[]{ command, argument } );
 
         System.err.flush();
         System.setErr( originalErrOut );
         System.out.flush();
         System.setOut( originalOut );
 
-        String expectedString =
-                "ApplicationUnderTest\n" +
-                        "\n" +
-                        "The following commands are supported:\n" +
-                        "\n" +
-                        "cmdBoolean: boolean\n" +
-                        "cmdByte: byte\n" +
-                        "cmdDouble: double\n" +
-                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]\n" +
-                        "cmdFile: File\n" +
-                        "cmdFloat: float\n" +
-                        "cmdInt: int\n" +
-                        "cmdLong: long\n" +
-                        "cmdShort: short\n" +
-                        "cmdString: String\n\n";
-        List<String> expectedLines =
-                FileUtil.readLines(
-                        new StringReader( expectedString ) );
-        List<String> receivedLines =
-                FileUtil.readLines(
-                        new StringReader( errOs.toString() ) );
+        assertEquals(
+                StringUtil.EMPTY_STRING,
+                errOs.toString() );
+
+        String expected =
+                String.format( "%s:%s\n", command, exp );
+        String outOss =
+                outOs.toString();
 
         assertEquals(
-                expectedLines,
-                receivedLines );
+                expected,
+                outOss );
+    }
+    private void TestType( String command, String argument )
+    {
+        TestType( command, argument, argument );
+    }
+
+    @Test
+    public void TestTypeByte()
+    {
+        var cmd = "cmdByte";
+        TestType( cmd, dec( Byte.MAX_VALUE ) );
+        TestType( cmd, dec( Byte.MIN_VALUE ) );
+        TestType(
+                cmd,
+                hex( Byte.MAX_VALUE ),
+                dec( Byte.MAX_VALUE ));
+    }
+
+    @Test
+    public void TestTypeShort()
+    {
+        var cmd = "cmdShort";
+        TestType( cmd, dec( Short.MAX_VALUE ) );
+        TestType( cmd, dec( Short.MIN_VALUE ) );
+        TestType(
+                cmd,
+                hex( Short.MAX_VALUE ),
+                dec( Short.MAX_VALUE ));
+    }
+
+    @Test
+    public void TestTypeInteger()
+    {
+        var cmd = "cmdInt";
+        TestType( cmd, dec( Integer.MAX_VALUE ) );
+        TestType( cmd, dec( Integer.MIN_VALUE ) );
+        TestType(
+                cmd,
+                hex( Integer.MAX_VALUE ),
+                dec( Integer.MAX_VALUE ));
+    }
+
+    @Test
+    public void TestTypeLong()
+    {
+        var cmd = "cmdLong";
+        TestType( cmd, dec( Long.MAX_VALUE ) );
+        TestType( cmd, dec( Long.MIN_VALUE ) );
+        TestType(
+                cmd,
+                hex( Long.MAX_VALUE ),
+                dec( Long.MAX_VALUE ));
+    }
+
+    @Test
+    public void TestTypeFloat()
+    {
+        TestType( "cmdFloat", "" + (float)Math.PI );
+    }
+
+    @Test
+    public void TestTypeDouble()
+    {
+        TestType( "cmdDouble", "" + Math.E );
     }
 
     @Test
     public void TestTypeBoolean()
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
-
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[]{ "cmdBoolean", "true" } );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.isEmpty( errOs.toString() ) );
-
-        String expected =
-                "cmdBoolean:true\n";
-        String outOss =
-                outOs.toString();
-
-        assertEquals(
-                expected,
-                outOss );
+        TestType( "cmdBoolean", "true" );
     }
 
     @Test
     public void TestTypeEnum()
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        var EXPECTED = "FRIDAY";
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[]{ "cmdEnum", "Friday" } );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.isEmpty( errOs.toString() ) );
-
-        String expected =
-                "cmdEnum:FRIDAY\n";
-        String outOss =
-                outOs.toString();
-
-        assertEquals(
-                expected,
-                outOss );
+        TestType( "cmdEnum", "Friday", EXPECTED );
+        TestType( "cmdEnum", "friday", EXPECTED );
+        TestType( "cmdEnum", "FRIDAY", EXPECTED );
     }
+
     @Test
     public void TestTypeFile() throws Exception
     {
@@ -144,6 +150,7 @@ public class CliApplicationTest
 
         File tmpFile = File.createTempFile( "tmp", "bah" );
         tmpFile.createNewFile();
+        tmpFile.deleteOnExit();
 
         try {
             PrintStream originalOut =
