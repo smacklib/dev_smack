@@ -93,20 +93,6 @@ public class CliApplicationTest
                 "cmdOverload: String, String\n" +
                 "cmdOverload: String, String, String\n" +
                 "\n";
-//                "ApplicationUnderTest\n" +
-//                        "\n" +
-//                        "The following commands are supported:\n" +
-//                        "\n" +
-//                        "cmdBoolean: boolean\n" +
-//                        "cmdByte: byte\n" +
-//                        "cmdDouble: double\n" +
-//                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]\n" +
-//                        "cmdFile: File\n" +
-//                        "cmdFloat: float\n" +
-//                        "cmdInt: int\n" +
-//                        "cmdLong: long\n" +
-//                        "cmdShort: short\n" +
-//                        "cmdString: String\n\n";
         List<String> expectedLines =
                 FileUtil.readLines(
                         new StringReader( expectedString ) );
