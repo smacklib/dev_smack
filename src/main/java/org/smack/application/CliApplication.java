@@ -612,8 +612,7 @@ abstract public class CliApplication
         }
 
         try {
-
-            if ( ! command.isAccessible() )
+            if ( ! command.canAccess( this ) )
                 command.setAccessible( true );
 
             command.invoke(this, arguments);
@@ -731,8 +730,8 @@ abstract public class CliApplication
 
         return file;
     }
-
     /**
+
      * Transform a string to a boolean.
      *
      * @param arg
@@ -1011,6 +1010,26 @@ abstract public class CliApplication
             catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
+        }
+    }
+
+    private static class CommandHolder
+    {
+        private final Method _op;
+
+        CommandHolder( Method operation )
+        {
+            _op = operation;
+        }
+
+        String getName()
+        {
+            return _op.getName();
+        }
+
+        int getParameterCount()
+        {
+            return _op.getParameterCount();
         }
     }
 }
