@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -403,9 +402,6 @@ abstract public class CliApplication
 
     /**
      * Usage function to get a dynamic help text with all available commands.
-     * Can be overridden by the user for more detailed usage. Command
-     * descriptions can be added in subclass as static String fields with
-     * following name: functionName + DESCRIPTION_MARKER
      *
      * @return Usage text.
      */
@@ -439,27 +435,7 @@ abstract public class CliApplication
     {
         var result = new ArrayList<>( methods );
 
-        Collections.sort( result, new Comparator<CommandHolder>()
-        {
-            private int compare( Method o1, Method o2 )
-            {
-                int result =
-                        o1.getName().compareTo( o2.getName() );
-
-                if ( result != 0 )
-                    return result;
-
-                return
-                        o1.getParameterTypes().length -
-                        o2.getParameterTypes().length;
-            }
-
-            @Override
-            public int compare( CommandHolder o1, CommandHolder o2 )
-            {
-                return compare( o1._op, o2._op );
-            }
-        } );
+        Collections.sort( result, null );
 
         return result;
     }
@@ -926,7 +902,7 @@ abstract public class CliApplication
     }
 
     // TODO(micbinz) create discrete class. nope
-    private class CommandHolder
+    private class CommandHolder implements Comparable<CommandHolder>
     {
         @Deprecated // temporary for refactoring.
         private final Method _op;
@@ -1107,6 +1083,20 @@ abstract public class CliApplication
             }
 
             return info.toString();
+        }
+
+        @Override
+        public int compareTo( CommandHolder o )
+        {
+            int result =
+                    getName().compareTo( o.getName() );
+
+            if ( result != 0 )
+                return result;
+
+            return
+                    getParameterCount() -
+                    o.getParameterCount();
         }
     }
 }
