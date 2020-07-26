@@ -273,8 +273,7 @@ abstract public class CliApplication
             // We found a matching command.
             _currentCommand =
                     selectedCommand.getName() ;
-            executeCommand(
-                    selectedCommand._op,
+            selectedCommand.execute(
                     Arrays.copyOfRange( argv, 1, argv.length ) );
             return;
         }
@@ -499,7 +498,7 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private static MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap_(
+    private MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap_(
             Class<?> targetClass )
     {
         MultiMap<CaseIndependent,Integer,CommandHolder> result =
@@ -592,6 +591,7 @@ abstract public class CliApplication
      * @param argv
      *            List of arguments.
      */
+    @Deprecated // resolve default command.
     private void executeCommand(Method command, String[] argv)
     {
         Object[] arguments =
@@ -1001,8 +1001,8 @@ abstract public class CliApplication
         }
     }
 
-    // TODO(micbinz) create discrete class.
-    private static class CommandHolder
+    // TODO(micbinz) create discrete class. nope
+    private class CommandHolder
     {
         @Deprecated // temporary for refactoring.
         private final Method _op;
@@ -1041,6 +1041,74 @@ abstract public class CliApplication
         private String getDescription()
         {
             return _commandAnnotation.shortDescription();
+        }
+
+        /**
+         * Execute the passed command with the given passed arguments. Each parameter
+         * is transformed to the expected type.
+         *
+         * @param command
+         *            Command to execute.
+         * @param argv
+         *            List of arguments.
+         */
+        private void execute( String ... argv )
+        {
+            Object[] arguments =
+                    new Object[argv.length];
+            Class<?>[] params =
+                    _op.getParameterTypes();
+
+            if ( argv.length != params.length )
+                throw new AssertionError();
+
+            for (int j = 0; j < params.length; j++) try {
+                arguments[j] = transformArgument(
+                        params[j],
+                        argv[j] );
+            } catch ( Exception e ) {
+                err("Parameter %s : ", argv[j]);
+
+                String msg = e.getMessage();
+
+                if ( StringUtil.isEmpty( msg ) )
+                    err( e.getClass().getSimpleName() );
+                else
+                    err( msg );
+
+                return;
+            }
+
+            try {
+                final var self = CliApplication.this;
+
+                if ( ! _op.canAccess( self ) )
+                    _op.setAccessible( true );
+
+                _op.invoke(
+                        self,
+                        arguments);
+            }
+            catch ( InvocationTargetException e )
+            {
+                processCommandException( _op.getName(), e.getCause() );
+            }
+            catch ( Exception e )
+            {
+                // A raw exception must come from our implementation,
+                // so we present a less user friendly stacktrace.
+                e.printStackTrace();
+            }
+            finally
+            {
+                // In case a parameter conversion operation created
+                // 'closeable' objects, ensure that these get freed.
+                for ( Object c : arguments )
+                {
+                    if ( c instanceof AutoCloseable )
+                        JavaUtil.force( ((AutoCloseable)c)::close );
+                }
+            }
         }
     }
 }
