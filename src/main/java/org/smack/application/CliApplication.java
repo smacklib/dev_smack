@@ -272,7 +272,7 @@ abstract public class CliApplication
         {
             // We found a matching command.
             _currentCommand =
-                    getCommandName( selectedCommand._op );
+                    selectedCommand.getName() ;
             executeCommand(
                     selectedCommand._op,
                     Arrays.copyOfRange( argv, 1, argv.length ) );
@@ -397,7 +397,7 @@ abstract public class CliApplication
         StringBuilder result = new StringBuilder();
 
         commands.values().forEach(
-                c -> result.append( usage( c._op ) ));
+                c -> result.append( usage( c ) ));
 
         return result.toString();
     }
@@ -405,14 +405,14 @@ abstract public class CliApplication
     /**
      * Generate help text for a method.
      */
-    private String usage( Method command )
+    private String usage( CommandHolder command )
     {
         StringBuilder info = new StringBuilder();
 
-        info.append( getCommandName( command ) );
+        info.append( command.getName() );
 
         String optional =
-                getCommandParameterList( command );
+                getCommandParameterList( command._op );
         if ( StringUtil.hasContent( optional ) )
         {
             info.append( ": " );
@@ -421,7 +421,7 @@ abstract public class CliApplication
         info.append( "\n" );
 
         optional =
-                getCommandDescription( command );
+                getCommandDescription( command._op );
         if ( StringUtil.hasContent( optional ) )
         {
             info.append( "    " );
@@ -456,7 +456,7 @@ abstract public class CliApplication
         result.append( "\n\nThe following commands are supported:\n\n" );
 
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
-            result.append( usage( command._op ) );
+            result.append( usage( command ) );
 
         return result.toString();
     }
@@ -757,16 +757,6 @@ abstract public class CliApplication
             "Expected boolean: true or false. Received '" + arg + "'.");
     }
 
-    private String getCommandName( Method method )
-    {
-        Command command = method.getAnnotation( Command.class );
-
-        if ( command != null && StringUtil.hasContent( command.name() ))
-            return command.name();
-
-        return method.getName();
-    }
-
     private String getCommandDescription( Method method )
     {
         Command command = method.getAnnotation( Command.class );
@@ -1021,17 +1011,29 @@ abstract public class CliApplication
         }
     }
 
+    // TODO(micbinz) create discrete class.
     private static class CommandHolder
     {
         private final Method _op;
+        private final Command _commandAnnotation;
 
         CommandHolder( Method operation )
         {
-            _op = operation;
+            _op =
+                    operation;
+            _commandAnnotation =
+                    Objects.requireNonNull(
+                            _op.getAnnotation( Command.class ),
+                            "@Command missing." );
         }
 
         String getName()
         {
+            var result = _commandAnnotation.name();
+
+            if ( StringUtil.hasContent( result ))
+                return result;
+
             return _op.getName();
         }
 
