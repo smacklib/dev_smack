@@ -112,7 +112,7 @@ abstract public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<CaseIndependent,Integer,Method> _commandMap =
+    private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
             getCommandMap_( getClass() );
 
     public interface StringConverter<T>
@@ -264,7 +264,7 @@ abstract public class CliApplication
         var ciName =
                 new CaseIndependent( argv[0] );
 
-        Method selectedCommand = _commandMap.get(
+        CommandHolder selectedCommand = _commandMap.get(
             ciName,
             Integer.valueOf(argv.length - 1) );
 
@@ -272,16 +272,16 @@ abstract public class CliApplication
         {
             // We found a matching command.
             _currentCommand =
-                    getCommandName( selectedCommand );
+                    getCommandName( selectedCommand._op );
             executeCommand(
-                    selectedCommand,
+                    selectedCommand._op,
                     Arrays.copyOfRange( argv, 1, argv.length ) );
             return;
         }
 
         // No command matched, so we check if there are commands
         // where at least the command name matches.
-        Map<Integer, Method> possibleCommands =
+        Map<Integer, CommandHolder> possibleCommands =
                 _commandMap.getAll( ciName );
         if ( possibleCommands.size() > 0 )
         {
@@ -392,12 +392,12 @@ abstract public class CliApplication
      *            Argument list as String.
      * @return Usage message for error handling.
      */
-    private String getCommandsUsage(Map<Integer, Method> commands, String[] argv)
+    private String getCommandsUsage(Map<Integer, CommandHolder> commands, String[] argv)
     {
         StringBuilder result = new StringBuilder();
 
         commands.values().forEach(
-                c -> result.append( usage( c ) ));
+                c -> result.append( usage( c._op ) ));
 
         return result.toString();
     }
@@ -455,8 +455,8 @@ abstract public class CliApplication
         }
         result.append( "\n\nThe following commands are supported:\n\n" );
 
-        for ( Method command : sort( _commandMap.getValues() ) )
-            result.append( usage( command ) );
+        for ( CommandHolder command : sort( _commandMap.getValues() ) )
+            result.append( usage( command._op ) );
 
         return result.toString();
     }
@@ -466,14 +466,13 @@ abstract public class CliApplication
      *
      * @return A newly allocated list.
      */
-    private List<Method> sort( Collection<Method> methods )
+    private List<CommandHolder> sort( Collection<CommandHolder> methods )
     {
-        List<Method> result = new ArrayList<>( methods );
+        var result = new ArrayList<>( methods );
 
-        Collections.sort( result, new Comparator<Method>()
+        Collections.sort( result, new Comparator<CommandHolder>()
         {
-            @Override
-            public int compare( Method o1, Method o2 )
+            private int compare( Method o1, Method o2 )
             {
                 int result =
                         o1.getName().compareTo( o2.getName() );
@@ -485,6 +484,12 @@ abstract public class CliApplication
                         o1.getParameterTypes().length -
                         o2.getParameterTypes().length;
             }
+
+            @Override
+            public int compare( CommandHolder o1, CommandHolder o2 )
+            {
+                return compare( o1._op, o2._op );
+            }
         } );
 
         return result;
@@ -494,10 +499,10 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private static MultiMap<CaseIndependent,Integer,Method> getCommandMap_(
+    private static MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap_(
             Class<?> targetClass )
     {
-        MultiMap<CaseIndependent,Integer,Method> result =
+        MultiMap<CaseIndependent,Integer,CommandHolder> result =
                 new MultiMap<>();
 
         for ( Method c : targetClass.getDeclaredMethods() )
@@ -537,7 +542,10 @@ abstract public class CliApplication
                         " parameters is not unique.");
             }
 
-            result.put( currentName, numberOfArgs, c);
+            result.put(
+                    currentName,
+                    numberOfArgs,
+                    new CommandHolder( c ) );
         }
 
         return result;
@@ -1030,6 +1038,11 @@ abstract public class CliApplication
         int getParameterCount()
         {
             return _op.getParameterCount();
+        }
+
+        Method getMethod()
+        {
+            return _op;
         }
     }
 }
