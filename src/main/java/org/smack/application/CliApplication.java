@@ -396,39 +396,9 @@ abstract public class CliApplication
         StringBuilder result = new StringBuilder();
 
         commands.values().forEach(
-                c -> result.append( usage( c ) ));
+                c -> result.append( c.usage() ));
 
         return result.toString();
-    }
-
-    /**
-     * Generate help text for a method.
-     */
-    private String usage( CommandHolder command )
-    {
-        StringBuilder info = new StringBuilder();
-
-        info.append( command.getName() );
-
-        String optional =
-                getCommandParameterList( command._op );
-        if ( StringUtil.hasContent( optional ) )
-        {
-            info.append( ": " );
-            info.append( optional );
-        }
-        info.append( "\n" );
-
-        optional =
-                command.getDescription();
-        if ( StringUtil.hasContent( optional ) )
-        {
-            info.append( "    " );
-            info.append( optional );
-            info.append( "\n" );
-        }
-
-        return info.toString();
     }
 
     /**
@@ -455,7 +425,7 @@ abstract public class CliApplication
         result.append( "\n\nThe following commands are supported:\n\n" );
 
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
-            result.append( usage( command ) );
+            result.append( command.usage() );
 
         return result.toString();
     }
@@ -729,7 +699,7 @@ abstract public class CliApplication
      * @throws Exception If the file does not exist.
      * @return A reference to a file instance if one exists.
      */
-    protected static File stringToFile(String fileName) throws Exception {
+    private static File stringToFile(String fileName) throws Exception {
 
         File file = new File(fileName);
 
@@ -747,7 +717,7 @@ abstract public class CliApplication
      * @return The corresponding boolean.
      * @throws Exception In case of a conversion error.
      */
-    protected static boolean stringToBoolean(String arg) throws Exception {
+    private static boolean stringToBoolean(String arg) throws Exception {
         if (Boolean.TRUE.toString().equalsIgnoreCase(arg))
             return true;
         else if (Boolean.FALSE.toString().equalsIgnoreCase(arg))
@@ -755,52 +725,6 @@ abstract public class CliApplication
 
         throw new Exception(
             "Expected boolean: true or false. Received '" + arg + "'.");
-    }
-
-    private String getCommandParameterList( Method method )
-    {
-        String[] list = getCommandParameterListExt( method );
-
-        if ( list.length == 0 )
-            return StringUtil.EMPTY_STRING;
-
-        return StringUtil.concatenate( ", ", list );
-    }
-
-    private String[] getCommandParameterListExt( Method method )
-    {
-        Class<?>[] parameterTypes =
-                method.getParameterTypes();
-
-        Command command = method.getAnnotation( Command.class );
-
-        // The old-style command parameter documentation has priority.
-        if ( command != null && command.argumentNames().length > 0 )
-        {
-            if ( command.argumentNames().length != parameterTypes.length )
-                LOG.warning( "Command.argumentNames in consistent with " + method );
-
-            return command.argumentNames();
-        }
-
-        // The strategic way of defining parameter documentation.
-        String[] result = new String[ method.getParameterCount() ];
-        int idx = 0;
-        for ( Parameter c : method.getParameters() )
-        {
-            Named named = c.getDeclaredAnnotation( Named.class );
-
-            if ( named != null && StringUtil.hasContent( named.value() ) )
-                result[idx] = named.value();
-            else if ( c.getType().isEnum() )
-                result[idx] = getEnumDocumentation( c.getType() );
-            else
-                result[idx] = c.getType().getSimpleName();
-
-            idx++;
-        }
-
-        return result;
     }
 
     private String getEnumDocumentation( Class<?> c )
@@ -1109,6 +1033,80 @@ abstract public class CliApplication
                         JavaUtil.force( ((AutoCloseable)c)::close );
                 }
             }
+        }
+
+        private String getParameterList()
+        {
+            String[] list = getCommandParameterListExt();
+
+            if ( list.length == 0 )
+                return StringUtil.EMPTY_STRING;
+
+            return StringUtil.concatenate( ", ", list );
+        }
+
+        private String[] getCommandParameterListExt()
+        {
+            Class<?>[] parameterTypes =
+                    _op.getParameterTypes();
+
+            // The old-style command parameter documentation has priority.
+            if ( _commandAnnotation.argumentNames().length > 0 )
+            {
+                if ( _commandAnnotation.argumentNames().length != parameterTypes.length )
+                    LOG.warning( "Command.argumentNames in consistent with " + _op );
+
+                return _commandAnnotation.argumentNames();
+            }
+
+            // The strategic way of defining parameter documentation.
+            String[] result = new String[ getParameterCount() ];
+            int idx = 0;
+            for ( Parameter c : _op.getParameters() )
+            {
+                Named named = c.getDeclaredAnnotation( Named.class );
+
+                if ( named != null && StringUtil.hasContent( named.value() ) )
+                    result[idx] = named.value();
+                else if ( c.getType().isEnum() )
+                    result[idx] = getEnumDocumentation( c.getType() );
+                else
+                    result[idx] = c.getType().getSimpleName();
+
+                idx++;
+            }
+
+            return result;
+        }
+
+        /**
+         * Generate help text for a method.
+         */
+        private String usage()
+        {
+            StringBuilder info = new StringBuilder();
+
+            info.append( getName() );
+
+            String optional =
+                    getParameterList();
+            if ( StringUtil.hasContent( optional ) )
+            {
+                info.append( ": " );
+                info.append( optional );
+            }
+            info.append( "\n" );
+
+            optional =
+                    getDescription();
+            if ( StringUtil.hasContent( optional ) )
+            {
+                info.append( "    " );
+                info.append( optional );
+                info.append( "\n" );
+            }
+
+            return info.toString();
         }
     }
 }
