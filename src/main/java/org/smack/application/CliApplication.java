@@ -692,7 +692,7 @@ abstract public class CliApplication
     }
 
     /**
-     * Transform function for a primitive long.
+     * Transform function for a primitive float.
      */
     private static float stringToFloat(String arg) throws Exception {
         try {
@@ -704,7 +704,7 @@ abstract public class CliApplication
     }
 
     /**
-     * Transform function for a primitive long.
+     * Transform function for a primitive double.
      */
     private static double stringToDouble(String arg) throws Exception {
         try {
