@@ -421,7 +421,7 @@ abstract public class CliApplication
         info.append( "\n" );
 
         optional =
-                getCommandDescription( command._op );
+                command.getDescription();
         if ( StringUtil.hasContent( optional ) )
         {
             info.append( "    " );
@@ -738,8 +738,8 @@ abstract public class CliApplication
 
         return file;
     }
-    /**
 
+    /**
      * Transform a string to a boolean.
      *
      * @param arg
@@ -755,16 +755,6 @@ abstract public class CliApplication
 
         throw new Exception(
             "Expected boolean: true or false. Received '" + arg + "'.");
-    }
-
-    private String getCommandDescription( Method method )
-    {
-        Command command = method.getAnnotation( Command.class );
-
-        if ( command != null )
-            return command.shortDescription();
-
-        return StringUtil.EMPTY_STRING;
     }
 
     private String getCommandParameterList( Method method )
@@ -1014,6 +1004,7 @@ abstract public class CliApplication
     // TODO(micbinz) create discrete class.
     private static class CommandHolder
     {
+        @Deprecated // temporary for refactoring.
         private final Method _op;
         private final Command _commandAnnotation;
 
@@ -1045,6 +1036,11 @@ abstract public class CliApplication
         Method getMethod()
         {
             return _op;
+        }
+
+        private String getDescription()
+        {
+            return _commandAnnotation.shortDescription();
         }
     }
 }
