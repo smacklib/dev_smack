@@ -219,7 +219,7 @@ abstract public class CliApplication
         if (commands.length > 0)
         {
             err(
-                "Could not find subcommand '%s'. Allowed are: %s\n",
+                "Could not find command '%s'. Supported commands: %s%n",
                 argv[0],
                 StringUtil.concatenate( ", ", commands) );
 
