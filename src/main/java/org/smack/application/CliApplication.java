@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +111,7 @@ abstract public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<CaseIndependent,Integer,Method> _commandMap =
+    private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
             getCommandMap_( getClass() );
 
     public interface StringConverter<T>
@@ -220,14 +219,14 @@ abstract public class CliApplication
         if (commands.length > 0)
         {
             err(
-                "Could not find subcommand '%s'. Allowed are: %s\n",
+                "Could not find command '%s'. Supported commands: %s%n",
                 argv[0],
                 StringUtil.concatenate( ", ", commands) );
 
             return;
         }
 
-        System.err.println(usage());
+        err( usage() );
     }
 
     /**
@@ -257,14 +256,14 @@ abstract public class CliApplication
         }
 
         if ( argv.length == 1 && argv[0].equals("?") ) {
-            System.err.println(usage());
+            err(usage());
             return;
         }
 
         var ciName =
                 new CaseIndependent( argv[0] );
 
-        Method selectedCommand = _commandMap.get(
+        CommandHolder selectedCommand = _commandMap.get(
             ciName,
             Integer.valueOf(argv.length - 1) );
 
@@ -272,16 +271,15 @@ abstract public class CliApplication
         {
             // We found a matching command.
             _currentCommand =
-                    getCommandName( selectedCommand );
-            executeCommand(
-                    selectedCommand,
+                    selectedCommand.getName() ;
+            selectedCommand.execute(
                     Arrays.copyOfRange( argv, 1, argv.length ) );
             return;
         }
 
         // No command matched, so we check if there are commands
         // where at least the command name matches.
-        Map<Integer, Method> possibleCommands =
+        Map<Integer, CommandHolder> possibleCommands =
                 _commandMap.getAll( ciName );
         if ( possibleCommands.size() > 0 )
         {
@@ -392,51 +390,18 @@ abstract public class CliApplication
      *            Argument list as String.
      * @return Usage message for error handling.
      */
-    private String getCommandsUsage(Map<Integer, Method> commands, String[] argv)
+    private String getCommandsUsage(Map<Integer, CommandHolder> commands, String[] argv)
     {
         StringBuilder result = new StringBuilder();
 
         commands.values().forEach(
-                c -> result.append( usage( c ) ));
+                c -> result.append( c.usage() ));
 
         return result.toString();
     }
 
     /**
-     * Generate help text for a method.
-     */
-    private String usage( Method command )
-    {
-        StringBuilder info = new StringBuilder();
-
-        info.append( getCommandName( command ) );
-
-        String optional =
-                getCommandParameterList( command );
-        if ( StringUtil.hasContent( optional ) )
-        {
-            info.append( ": " );
-            info.append( optional );
-        }
-        info.append( "\n" );
-
-        optional =
-                getCommandDescription( command );
-        if ( StringUtil.hasContent( optional ) )
-        {
-            info.append( "    " );
-            info.append( optional );
-            info.append( "\n" );
-        }
-
-        return info.toString();
-    }
-
-    /**
      * Usage function to get a dynamic help text with all available commands.
-     * Can be overridden by the user for more detailed usage. Command
-     * descriptions can be added in subclass as static String fields with
-     * following name: functionName + DESCRIPTION_MARKER
      *
      * @return Usage text.
      */
@@ -455,8 +420,8 @@ abstract public class CliApplication
         }
         result.append( "\n\nThe following commands are supported:\n\n" );
 
-        for ( Method command : sort( _commandMap.getValues() ) )
-            result.append( usage( command ) );
+        for ( CommandHolder command : sort( _commandMap.getValues() ) )
+            result.append( command.usage() );
 
         return result.toString();
     }
@@ -466,26 +431,11 @@ abstract public class CliApplication
      *
      * @return A newly allocated list.
      */
-    private List<Method> sort( Collection<Method> methods )
+    private List<CommandHolder> sort( Collection<CommandHolder> methods )
     {
-        List<Method> result = new ArrayList<>( methods );
+        var result = new ArrayList<>( methods );
 
-        Collections.sort( result, new Comparator<Method>()
-        {
-            @Override
-            public int compare( Method o1, Method o2 )
-            {
-                int result =
-                        o1.getName().compareTo( o2.getName() );
-
-                if ( result != 0 )
-                    return result;
-
-                return
-                        o1.getParameterTypes().length -
-                        o2.getParameterTypes().length;
-            }
-        } );
+        Collections.sort( result, null );
 
         return result;
     }
@@ -494,10 +444,10 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private static MultiMap<CaseIndependent,Integer,Method> getCommandMap_(
+    private MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap_(
             Class<?> targetClass )
     {
-        MultiMap<CaseIndependent,Integer,Method> result =
+        MultiMap<CaseIndependent,Integer,CommandHolder> result =
                 new MultiMap<>();
 
         for ( Method c : targetClass.getDeclaredMethods() )
@@ -537,7 +487,10 @@ abstract public class CliApplication
                         " parameters is not unique.");
             }
 
-            result.put( currentName, numberOfArgs, c);
+            result.put(
+                    currentName,
+                    numberOfArgs,
+                    new CommandHolder( c ) );
         }
 
         return result;
@@ -584,6 +537,7 @@ abstract public class CliApplication
      * @param argv
      *            List of arguments.
      */
+    @Deprecated // resolve default command.
     private void executeCommand(Method command, String[] argv)
     {
         Object[] arguments =
@@ -612,8 +566,7 @@ abstract public class CliApplication
         }
 
         try {
-
-            if ( ! command.isAccessible() )
+            if ( ! command.canAccess( this ) )
                 command.setAccessible( true );
 
             command.invoke(this, arguments);
@@ -722,7 +675,7 @@ abstract public class CliApplication
      * @throws Exception If the file does not exist.
      * @return A reference to a file instance if one exists.
      */
-    protected static File stringToFile(String fileName) throws Exception {
+    private static File stringToFile(String fileName) throws Exception {
 
         File file = new File(fileName);
 
@@ -740,7 +693,7 @@ abstract public class CliApplication
      * @return The corresponding boolean.
      * @throws Exception In case of a conversion error.
      */
-    protected static boolean stringToBoolean(String arg) throws Exception {
+    private static boolean stringToBoolean(String arg) throws Exception {
         if (Boolean.TRUE.toString().equalsIgnoreCase(arg))
             return true;
         else if (Boolean.FALSE.toString().equalsIgnoreCase(arg))
@@ -748,72 +701,6 @@ abstract public class CliApplication
 
         throw new Exception(
             "Expected boolean: true or false. Received '" + arg + "'.");
-    }
-
-    private String getCommandName( Method method )
-    {
-        Command command = method.getAnnotation( Command.class );
-
-        if ( command != null && StringUtil.hasContent( command.name() ))
-            return command.name();
-
-        return method.getName();
-    }
-
-    private String getCommandDescription( Method method )
-    {
-        Command command = method.getAnnotation( Command.class );
-
-        if ( command != null )
-            return command.shortDescription();
-
-        return StringUtil.EMPTY_STRING;
-    }
-
-    private String getCommandParameterList( Method method )
-    {
-        String[] list = getCommandParameterListExt( method );
-
-        if ( list.length == 0 )
-            return StringUtil.EMPTY_STRING;
-
-        return StringUtil.concatenate( ", ", list );
-    }
-
-    private String[] getCommandParameterListExt( Method method )
-    {
-        Class<?>[] parameterTypes =
-                method.getParameterTypes();
-
-        Command command = method.getAnnotation( Command.class );
-
-        // The old-style command parameter documentation has priority.
-        if ( command != null && command.argumentNames().length > 0 )
-        {
-            if ( command.argumentNames().length != parameterTypes.length )
-                LOG.warning( "Command.argumentNames in consistent with " + method );
-
-            return command.argumentNames();
-        }
-
-        // The strategic way of defining parameter documentation.
-        String[] result = new String[ method.getParameterCount() ];
-        int idx = 0;
-        for ( Parameter c : method.getParameters() )
-        {
-            Named named = c.getDeclaredAnnotation( Named.class );
-
-            if ( named != null && StringUtil.hasContent( named.value() ) )
-                result[idx] = named.value();
-            else if ( c.getType().isEnum() )
-                result[idx] = getEnumDocumentation( c.getType() );
-            else
-                result[idx] = c.getType().getSimpleName();
-
-            idx++;
-        }
-
-        return result;
     }
 
     private String getEnumDocumentation( Class<?> c )
@@ -1011,6 +898,205 @@ abstract public class CliApplication
             catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
+        }
+    }
+
+    // TODO(micbinz) create discrete class. nope
+    private class CommandHolder implements Comparable<CommandHolder>
+    {
+        @Deprecated // temporary for refactoring.
+        private final Method _op;
+        private final Command _commandAnnotation;
+
+        CommandHolder( Method operation )
+        {
+            _op =
+                    operation;
+            _commandAnnotation =
+                    Objects.requireNonNull(
+                            _op.getAnnotation( Command.class ),
+                            "@Command missing." );
+        }
+
+        String getName()
+        {
+            var result = _commandAnnotation.name();
+
+            if ( StringUtil.hasContent( result ))
+                return result;
+
+            return _op.getName();
+        }
+
+        int getParameterCount()
+        {
+            return _op.getParameterCount();
+        }
+
+        Method getMethod()
+        {
+            return _op;
+        }
+
+        private String getDescription()
+        {
+            return _commandAnnotation.shortDescription();
+        }
+
+        /**
+         * Execute the passed command with the given passed arguments. Each parameter
+         * is transformed to the expected type.
+         *
+         * @param command
+         *            Command to execute.
+         * @param argv
+         *            List of arguments.
+         */
+        private void execute( String ... argv )
+        {
+            Object[] arguments =
+                    new Object[argv.length];
+            Class<?>[] params =
+                    _op.getParameterTypes();
+
+            if ( argv.length != params.length )
+                throw new AssertionError();
+
+            for (int j = 0; j < params.length; j++) try {
+                arguments[j] = transformArgument(
+                        params[j],
+                        argv[j] );
+            } catch ( Exception e ) {
+                err("Parameter %s : ", argv[j]);
+
+                String msg = e.getMessage();
+
+                if ( StringUtil.isEmpty( msg ) )
+                    err( e.getClass().getSimpleName() );
+                else
+                    err( msg );
+
+                return;
+            }
+
+            try {
+                final var self = CliApplication.this;
+
+                if ( ! _op.canAccess( self ) )
+                    _op.setAccessible( true );
+
+                _op.invoke(
+                        self,
+                        arguments);
+            }
+            catch ( InvocationTargetException e )
+            {
+                processCommandException( _op.getName(), e.getCause() );
+            }
+            catch ( Exception e )
+            {
+                // A raw exception must come from our implementation,
+                // so we present a less user friendly stacktrace.
+                e.printStackTrace();
+            }
+            finally
+            {
+                // In case a parameter conversion operation created
+                // 'closeable' objects, ensure that these get freed.
+                for ( Object c : arguments )
+                {
+                    if ( c instanceof AutoCloseable )
+                        JavaUtil.force( ((AutoCloseable)c)::close );
+                }
+            }
+        }
+
+        private String getParameterList()
+        {
+            String[] list = getCommandParameterListExt();
+
+            if ( list.length == 0 )
+                return StringUtil.EMPTY_STRING;
+
+            return StringUtil.concatenate( ", ", list );
+        }
+
+        private String[] getCommandParameterListExt()
+        {
+            Class<?>[] parameterTypes =
+                    _op.getParameterTypes();
+
+            // The old-style command parameter documentation has priority.
+            if ( _commandAnnotation.argumentNames().length > 0 )
+            {
+                if ( _commandAnnotation.argumentNames().length != parameterTypes.length )
+                    LOG.warning( "Command.argumentNames in consistent with " + _op );
+
+                return _commandAnnotation.argumentNames();
+            }
+
+            // The strategic way of defining parameter documentation.
+            String[] result = new String[ getParameterCount() ];
+            int idx = 0;
+            for ( Parameter c : _op.getParameters() )
+            {
+                Named named = c.getDeclaredAnnotation( Named.class );
+
+                if ( named != null && StringUtil.hasContent( named.value() ) )
+                    result[idx] = named.value();
+                else if ( c.getType().isEnum() )
+                    result[idx] = getEnumDocumentation( c.getType() );
+                else
+                    result[idx] = c.getType().getSimpleName();
+
+                idx++;
+            }
+
+            return result;
+        }
+
+        /**
+         * Generate help text for a method.
+         */
+        private String usage()
+        {
+            StringBuilder info = new StringBuilder();
+
+            info.append( getName() );
+
+            String optional =
+                    getParameterList();
+            if ( StringUtil.hasContent( optional ) )
+            {
+                info.append( ": " );
+                info.append( optional );
+            }
+            info.append( "\n" );
+
+            optional =
+                    getDescription();
+            if ( StringUtil.hasContent( optional ) )
+            {
+                info.append( "    " );
+                info.append( optional );
+                info.append( "\n" );
+            }
+
+            return info.toString();
+        }
+
+        @Override
+        public int compareTo( CommandHolder o )
+        {
+            int result =
+                    getName().compareTo( o.getName() );
+
+            if ( result != 0 )
+                return result;
+
+            return
+                    getParameterCount() -
+                    o.getParameterCount();
         }
     }
 }
