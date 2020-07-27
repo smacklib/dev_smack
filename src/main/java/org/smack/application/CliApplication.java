@@ -226,7 +226,7 @@ abstract public class CliApplication
             return;
         }
 
-        System.err.println(usage());
+        err( usage() );
     }
 
     /**
@@ -256,7 +256,7 @@ abstract public class CliApplication
         }
 
         if ( argv.length == 1 && argv[0].equals("?") ) {
-            System.err.println(usage());
+            err(usage());
             return;
         }
 
