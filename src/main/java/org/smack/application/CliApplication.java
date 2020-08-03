@@ -112,7 +112,7 @@ abstract public class CliApplication
      * the respective method.
      */
     private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
-            getCommandMap_( getClass() );
+            getCommandMap( getClass() );
 
     public interface StringConverter<T>
     {
@@ -168,16 +168,14 @@ abstract public class CliApplication
 
     /**
      * A fallback called if no command was passed or the passed command was
-     * unknown. This can be overridden for very simple cli implementations
-     * that do not want or need to support the CliApplication command dispatch.
-     * The default implementation tries to match the passed arguments to a
-     * more specific typed defaultCmd() operation provided by the implementer.
+     * unknown.
      *
      * @param argv
      *            The received command line.
      * @throws Exception In case of errors.
      */
-    protected void defaultCmd(String[] argv) throws Exception
+    protected void defaultCmd( String[] argv )
+            throws Exception
     {
         err( usage() );
     }
@@ -185,7 +183,8 @@ abstract public class CliApplication
     /**
      * Perform the launch of the cli instance.
      */
-    private void launchInstance( String[] argv ) throws Exception
+    private void launchInstance( String[] argv )
+            throws Exception
     {
         if ( argv.length == 0 ) {
             defaultCmd(argv);
@@ -248,7 +247,8 @@ abstract public class CliApplication
      * Start execution of the console command. This implicitly parses
      * the parameters and dispatches the call to the matching operation.
      * <p>
-     * The main operation of an application using {@link #CliApplication()} usually looks like:
+     * The main operation of an application using {@link #CliApplication()}
+     * usually looks like:
      * </p>
      *
      * <pre>
@@ -267,9 +267,6 @@ abstract public class CliApplication
      *
      * @param cl The implementation class of the console command.
      * @param argv The unmodified parameter array.
-     * @param explicitExit If {@code true} is passed then an explicit
-     * {@code System.exit(0)} is performed after the application command
-     * terminates.
      */
     static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
@@ -287,13 +284,13 @@ abstract public class CliApplication
      *
      * <pre>
      * <code>
-     * public class Lin extends CliApplication implements ConsoleCommand
+     * public class Duck extends CliApplication
      * {
      *     ...
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Lin.class, argv, true );
+     *         execute( Duck.class, argv, true );
      *     }
      * }
      * </code>
@@ -301,9 +298,6 @@ abstract public class CliApplication
      *
      * @param cl The implementation class of the console command.
      * @param argv The unmodified parameter array.
-     * @param explicitExit If {@code true} is passed then an explicit
-     * {@code System.exit(0)} is performed after the application command
-     * terminates.
      */
     static public void launch( Supplier<CliApplication> cl, String[] argv )
     {
@@ -394,7 +388,7 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap_(
+    private MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap(
             Class<?> targetClass )
     {
         MultiMap<CaseIndependent,Integer,CommandHolder> result =

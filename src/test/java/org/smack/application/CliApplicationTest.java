@@ -64,6 +64,48 @@ public class CliApplicationTest
     }
 
     @Test
+    public void testHelpDefault() throws IOException
+    {
+        PrintStream originalErrOut =
+                System.err;
+        ByteArrayOutputStream errOs =
+                new ByteArrayOutputStream();
+        System.setErr( new PrintStream( errOs ) );
+
+        PrintStream originalOut =
+                System.out;
+        ByteArrayOutputStream outOs =
+                new ByteArrayOutputStream();
+        System.setOut( new PrintStream( outOs ) );
+
+        ApplicationUnderTestDefault.main( new String[0] );
+
+        System.err.flush();
+        System.setErr( originalErrOut );
+        System.out.flush();
+        System.setOut( originalOut );
+
+        String expectedString =
+                "ApplicationUnderTestDefault\n" +
+                        "\n" +
+                        "The following commands are supported:\n" +
+                        "\n" +
+                        "*\n" +
+                        "*: String\n" +
+                        "*: String, String\n";
+        List<String> expectedLines =
+                FileUtil.readLines(
+                        new StringReader( expectedString ) );
+        List<String> receivedLines =
+                FileUtil.readLines(
+                        new StringReader( errOs.toString() ) );
+
+        assertEquals(
+                expectedLines,
+                receivedLines );
+    }
+
+    @Test
     public void testArgListNotUnique() throws IOException
     {
         PrintStream originalErrOut =
