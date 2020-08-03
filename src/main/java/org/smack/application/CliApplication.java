@@ -23,11 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
@@ -85,12 +83,7 @@ abstract public class CliApplication
             if ( obj == this )
                 return true;
 
-            if ( ! (obj instanceof CaseIndependent ) )
-                return false;
-            CaseIndependent typedObj =
-                    (CaseIndependent)obj;
-
-            return _name.equalsIgnoreCase( typedObj._name );
+            return _name.equalsIgnoreCase( obj.toString() );
         }
 
         @Override
@@ -105,6 +98,13 @@ abstract public class CliApplication
             return _name;
         }
     }
+
+    /**
+     * A name to be used if the command should be callable without
+     * a dedicated name.
+     */
+    public static final CaseIndependent UNNAMED =
+            new CaseIndependent( "*" );
 
     /**
      * A map of all commands implemented by this cli. Keys are
@@ -179,70 +179,7 @@ abstract public class CliApplication
      */
     protected void defaultCmd(String[] argv) throws Exception
     {
-        // Default behavior without any arguments is printing the
-        // normal '?' help.
-        if (argv.length == 0)
-        {
-            System.err.println(usage());
-            return;
-        }
-
-        // Support only *public* methods for now.
-        Method[] methods = getClass().getMethods();
-        Method candidate = null;
-
-        for (int i = 0; i < methods.length; i++)
-        {
-            Method c = methods[i];
-
-            if (!"defaultCmd".equals(c.getName()))
-                continue;
-            // Ignore this method (the one we are in).
-            if (!c.getDeclaringClass().equals(getClass()))
-                continue;
-            if (c.getParameterTypes().length != argv.length)
-                continue;
-
-            if (candidate != null)
-                throw new InternalError("defaultCmd options ambiguous.");
-
-            candidate = c;
-        }
-
-        if (candidate != null) {
-            executeCommand(candidate, argv);
-            return;
-        }
-
-        String[] commands = listCommands();
-
-        if (commands.length > 0)
-        {
-            err(
-                "Could not find command '%s'. Supported commands: %s%n",
-                argv[0],
-                StringUtil.concatenate( ", ", commands) );
-
-            return;
-        }
-
         err( usage() );
-    }
-
-    /**
-     * Return the list of possible commands in plain text, e.g. "Jan", "Feb".
-     */
-    private String[] listCommands()
-    {
-        Set<String> collector =
-                _commandMap.getPrimaryKeys().stream()
-                    .map( c -> c.toString() ).collect( Collectors.toSet() );
-
-        String[] result = collector.toArray(
-                new String[collector.size()]);
-
-        Arrays.sort(result);
-        return result;
     }
 
     /**
@@ -287,6 +224,19 @@ abstract public class CliApplication
                     "Parameter count does not match. Available alternatives:" );
             System.err.println(
                     getCommandsUsage(possibleCommands, argv));
+            return;
+        }
+
+        // Check if we got an unnamed command.
+        selectedCommand = _commandMap.get(
+                UNNAMED,
+                argv.length );
+        if ( selectedCommand != null )
+        {
+            _currentCommand =
+                    selectedCommand.getName() ;
+            selectedCommand.execute(
+                    argv );
             return;
         }
 
@@ -477,7 +427,7 @@ abstract public class CliApplication
             var currentName =
                     new CaseIndependent( name );
             // Check if we already have this command with the same parameter
-            // list length. This would be an implementation error.
+            // list length. This is an implementation error.
             if (result.get(currentName, numberOfArgs) != null) {
                 throw new InternalError(
                         "Implementation error. Operation " +
@@ -525,71 +475,6 @@ abstract public class CliApplication
             err( "%s failed: %s\n",
                     commandName,
                     msg );
-        }
-    }
-
-    /**
-     * Execute the passed command with the given passed arguments. Each parameter
-     * is transformed to the expected type.
-     *
-     * @param command
-     *            Command to execute.
-     * @param argv
-     *            List of arguments.
-     */
-    @Deprecated // resolve default command.
-    private void executeCommand(Method command, String[] argv)
-    {
-        Object[] arguments =
-                new Object[argv.length];
-        Class<?>[] params =
-                command.getParameterTypes();
-
-        if ( argv.length != params.length )
-            throw new AssertionError();
-
-        for (int j = 0; j < params.length; j++) try {
-            arguments[j] = transformArgument(
-                    params[j],
-                    argv[j] );
-        } catch ( Exception e ) {
-            err("Parameter %s : ", argv[j]);
-
-            String msg = e.getMessage();
-
-            if ( StringUtil.isEmpty( msg ) )
-                err( e.getClass().getSimpleName() );
-            else
-                err( msg );
-
-            return;
-        }
-
-        try {
-            if ( ! command.canAccess( this ) )
-                command.setAccessible( true );
-
-            command.invoke(this, arguments);
-        }
-        catch ( InvocationTargetException e )
-        {
-            processCommandException( command.getName(), e.getCause() );
-        }
-        catch ( Exception e )
-        {
-            // A raw exception must come from our implementation,
-            // so we present a less user friendly stacktrace.
-            e.printStackTrace();
-        }
-        finally
-        {
-            // In case a parameter conversion operation created
-            // 'closeable' objects, ensure that these get freed.
-            for ( Object c : arguments )
-            {
-                if ( c instanceof AutoCloseable )
-                    JavaUtil.force( ((AutoCloseable)c)::close );
-            }
         }
     }
 
@@ -901,10 +786,11 @@ abstract public class CliApplication
         }
     }
 
-    // TODO(micbinz) create discrete class. nope
+    /**
+     * Encapsulates a command.
+     */
     private class CommandHolder implements Comparable<CommandHolder>
     {
-        @Deprecated // temporary for refactoring.
         private final Method _op;
         private final Command _commandAnnotation;
 
@@ -931,11 +817,6 @@ abstract public class CliApplication
         int getParameterCount()
         {
             return _op.getParameterCount();
-        }
-
-        Method getMethod()
-        {
-            return _op;
         }
 
         private String getDescription()

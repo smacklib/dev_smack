@@ -15,7 +15,7 @@ import org.smack.util.StringUtil;
 public class CliApplicationTest
 {
     @Test
-    public void TestHelp() throws IOException
+    public void testHelp() throws IOException
     {
         PrintStream originalErrOut =
                 System.err;
@@ -50,7 +50,7 @@ public class CliApplicationTest
                         "cmdInt: int\n" +
                         "cmdLong: long\n" +
                         "cmdShort: short\n" +
-                        "cmdString: String\n\n";
+                        "cmdString: String\n";
         List<String> expectedLines =
                 FileUtil.readLines(
                         new StringReader( expectedString ) );
@@ -64,7 +64,7 @@ public class CliApplicationTest
     }
 
     @Test
-    public void TestArgListNotUnique() throws IOException
+    public void testArgListNotUnique() throws IOException
     {
         PrintStream originalErrOut =
                 System.err;
@@ -105,7 +105,7 @@ public class CliApplicationTest
                 receivedLines );
     }
 
-    private void TestType(
+    private void testType(
             String command,
             String argument,
             String expectedCommand,
@@ -146,11 +146,11 @@ public class CliApplicationTest
                 outOss );
     }
 
-    private void TestType( String command, String expectedCommand )
+    private void testType( String command, String expectedCommand )
     {
         var dummy = "0";
 
-        TestType(
+        testType(
                 command,
                 dummy,
                 expectedCommand,
@@ -162,8 +162,8 @@ public class CliApplicationTest
     {
         var act = "cmdByte";
 
-        TestType( act, act );
-        TestType( "cmdbyte", act );
-        TestType( "CMDBYTE", act );
+        testType( act, act );
+        testType( "cmdbyte", act );
+        testType( "CMDBYTE", act );
     }
 }
