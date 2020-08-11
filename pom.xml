@@ -8,6 +8,14 @@
   <name>Smack</name>
   <description>Framework</description>
   
+  <distributionManagement>
+   <repository>
+     <id>github</id>
+     <name>GitHub OWNER Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/michab66/dev_smack</url>
+   </repository>
+  </distributionManagement>
+
   <build>
     <plugins>
       <plugin>
