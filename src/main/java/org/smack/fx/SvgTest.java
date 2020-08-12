@@ -8,6 +8,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
+/**
+ * https://stackoverflow.com/questions/30702977/how-to-resize-button-containing-svg-image
+ * @author MICBINZ
+ */
 public class SvgTest extends Application{
 
 	private final int MIN_BUTTON_SIZE = 10;
