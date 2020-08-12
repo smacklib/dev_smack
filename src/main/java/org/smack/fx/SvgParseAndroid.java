@@ -14,6 +14,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.smack.application.CliApplication;
+import org.w3c.dom.NodeList;
 
 /**
  * https://developer.android.com/guide/topics/graphics/vector-drawable-resources
@@ -23,7 +24,6 @@ import org.smack.application.CliApplication;
 public class SvgParseAndroid
     extends CliApplication
 {
-
     private class SimpleNamespaceContext implements NamespaceContext {
 
         private final Map<String, String> PREF_MAP =
@@ -86,6 +86,39 @@ public class SvgParseAndroid
         String s = x;
 
         out( "Got: '%s'%n", s );
+    }
+
+    @Command
+    private void ns( File f )
+            throws Exception
+    {
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware( true );
+        out( "Namespace aware: %s%n",
+                factory.isNamespaceAware() );
+
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+        org.w3c.dom.Document doc =
+                builder.parse( f );
+        XPathFactory xPathfactory =
+                XPathFactory.newInstance();
+        XPath xpath =
+                xPathfactory.newXPath();
+
+//        SimpleNamespaceContext snspctx = new SimpleNamespaceContext();
+//        snspctx.add( "android", "http://schemas.android.com/apk/res/android" );
+//        xpath.setNamespaceContext( snspctx );
+
+        XPathExpression expr = xpath.compile( "//namespace::*" );
+
+        NodeList x = (NodeList)expr.evaluate( doc, XPathConstants.NODESET );
+
+
+        out( "Found %d nodes.%n", x.getLength() );
+        for ( int i = 0 ; i < x.getLength() ; i++ )
+            out( "%d: '%s'%n", i, x.item( i ) );
     }
 
     public static void main(String[] argv) {
