@@ -1,38 +1,55 @@
 package org.smack.fx;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class SvgTest extends Application{
 
-	private static final double REQUIRED_WIDTH = 50.0;
-	private static final double REQUIRED_HEIGHT = 30.0;
+	private final int MIN_BUTTON_SIZE = 10;
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		SvgImage svg = new SvgImage();
-		svg.setContent("M 289.00,74.00 C 299.18,61.21 307.32,52.80 320.00,42.42 331.43,33.07 343.66,26.03 357.00,19.84 427.64,-12.98 509.92,2.91 564.42,58.28 583.93,78.10 595.94,99.15 605.58,125.00 607.76,130.86 611.37,144.75 612.54,151.00 613.15,154.23 613.28,160.06 615.58,162.44 617.49,164.42 624.11,165.84 627.00,166.86 634.80,169.62 639.97,172.04 647.00,176.42 673.69,193.07 692.76,221.39 695.83,253.00 700.60,302.03 676.64,345.41 630.00,364.00 621.17,367.52 608.48,370.99 599.00,371.00 599.00,371.00 106.00,371.00 106.00,371.00 96.50,370.99 87.00,368.97 78.00,366.00 36.29,352.22 6.21,312.25 6.00,268.00 5.77,219.90 34.76,179.34 81.00,165.02 96.78,160.14 107.02,161.00 123.00,161.00 124.59,150.68 130.49,137.79 136.05,129.00 150.70,105.88 173.22,88.99 200.00,82.65 213.13,79.55 219.79,79.85 233.00,80.00 247.37,80.17 264.61,85.94 277.00,93.00 279.11,86.37 284.67,79.45 289.00,74.00 Z");
-		resize(svg, REQUIRED_WIDTH, REQUIRED_HEIGHT);
-		Scene scene = new Scene(new StackPane(svg), 200, 200);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        HBox root = new HBox();
+        root.setAlignment(Pos.CENTER);
+        SVGPath svg = new SVGPath();
+        svg.setContent("M87.5,50.002C87.5,29.293,70.712,12.5,50,12.5c-20.712,0-37.5,16.793-37.5,37.502C12.5,70.712,29.288,87.5,50,87.5" +
+                "c6.668,0,12.918-1.756,18.342-4.809c0.61-0.22,1.049-0.799,1.049-1.486c0-0.622-0.361-1.153-0.882-1.413l0.003-0.004l-6.529-4.002" +
+        "L61.98,75.79c-0.274-0.227-0.621-0.369-1.005-0.369c-0.238,0-0.461,0.056-0.663,0.149l-0.014-0.012" +
+        "C57.115,76.847,53.64,77.561,50,77.561c-15.199,0-27.56-12.362-27.56-27.559c0-15.195,12.362-27.562,27.56-27.562" +
+        "c14.322,0,26.121,10.984,27.434,24.967C77.428,57.419,73.059,63,69.631,63c-1.847,0-3.254-1.23-3.254-3.957" +
+        "c0-0.527,0.176-1.672,0.264-2.111l4.163-19.918l-0.018,0c0.012-0.071,0.042-0.136,0.042-0.21c0-0.734-0.596-1.33-1.33-1.33h-7.23" +
+        "c-0.657,0-1.178,0.485-1.286,1.112l-0.025-0.001l-0.737,3.549c-1.847-3.342-5.629-5.893-10.994-5.893" +
+        "c-10.202,0-19.877,9.764-19.877,21.549c0,8.531,5.101,14.775,13.632,14.775c4.75,0,9.587-2.727,12.665-7.035l0.088,0.527" +
+        "c0.615,3.342,9.843,7.576,15.121,7.576c7.651,0,16.617-5.156,16.617-19.932l-0.022-0.009C87.477,51.13,87.5,50.569,87.5,50.002z" +
+        "M56.615,56.844c-1.935,2.727-5.101,5.805-9.763,5.805c-4.486,0-7.212-3.166-7.212-7.738c0-6.422,5.013-12.754,12.049-12.754" +
+        "c3.958,0,6.245,2.551,7.124,4.486L56.615,56.844z");
 
-	private void resize(SVGPath svg, double width, double height) {
+        Button buttonWithGraphics = new Button();
+        buttonWithGraphics.setGraphic(svg);
 
-		double originalWidth = svg.prefWidth(-1);
-		double originalHeight = svg.prefHeight(originalWidth);
+        // Bind the Image scale property to the buttons size
+        svg.scaleXProperty().bind(buttonWithGraphics.widthProperty().divide(100));
+        svg.scaleYProperty().bind(buttonWithGraphics.heightProperty().divide(100));
 
-		double scaleX = width / originalWidth;
-		double scaleY = height / originalHeight;
+        // Declare a minimum size for the button
+        buttonWithGraphics.setMinSize(MIN_BUTTON_SIZE, MIN_BUTTON_SIZE);
 
-		svg.setScaleX(scaleX);
-		svg.setScaleY(scaleY);
-	}
+        root.getChildren().addAll(buttonWithGraphics);
+        root.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
+                double size = Math.max(MIN_BUTTON_SIZE, Math.min(newBounds.getWidth(), newBounds.getHeight()));
+                buttonWithGraphics.setPrefSize(size, size);
+            }
+        );
 
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 	public static void main(String[] args) {
 		launch(args);
 	}
