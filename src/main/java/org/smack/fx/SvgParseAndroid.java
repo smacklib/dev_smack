@@ -24,14 +24,14 @@ import org.w3c.dom.NodeList;
  *
  */
 public class SvgParseAndroid
-    extends CliApplication
+extends CliApplication
 {
     private static class NamespaceContextImpl
-        // Deliberate inheritance to inherit the normal iteration operations and a
-        // ordentlichen toString().
-        extends HashMap<String, String>
-        implements NamespaceContext
-   {
+    // Deliberate inheritance to inherit the normal iteration operations and a
+    // ordentlichen toString().
+    extends HashMap<String, String>
+    implements NamespaceContext
+    {
         Map<String, String> m;
 
         public NamespaceContextImpl() {
@@ -51,6 +51,42 @@ public class SvgParseAndroid
         public Iterator<String> getPrefixes(String uri) {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public static String getXPath(
+            File xmlDocument,
+            String expression
+            ) throws Exception
+    {
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware( true );
+
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+        org.w3c.dom.Document doc =
+                builder.parse( xmlDocument );
+        XPathFactory xPathfactory =
+                XPathFactory.newInstance();
+        XPath xpath =
+                xPathfactory.newXPath();
+
+        xpath.setNamespaceContext(
+                getNamespaces( xmlDocument ) );
+
+        XPathExpression expr =
+                xpath.compile( expression );
+
+        return expr.evaluate( doc, XPathConstants.STRING ).toString();
+    }
+
+    public static double getXPathAsDouble(
+            File xmlDocument,
+            String expression
+            ) throws Exception
+    {
+        return Double.parseDouble(
+                getXPath( xmlDocument, expression ) );
     }
 
     public static List<String> getXPath(
@@ -178,7 +214,7 @@ public class SvgParseAndroid
         out( "Found %d nodes.%n", nsContext.size() );
         nsContext.forEach(
                 (k,v) ->
-                    out( "%s=\"%s\"%n", k, v ) );
+                out( "%s=\"%s\"%n", k, v ) );
     }
 
     public static void main(String[] argv) {
