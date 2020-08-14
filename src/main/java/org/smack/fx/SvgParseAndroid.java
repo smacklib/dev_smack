@@ -1,8 +1,10 @@
 package org.smack.fx;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -24,23 +26,20 @@ import org.w3c.dom.NodeList;
 public class SvgParseAndroid
     extends CliApplication
 {
-    private class SimpleNamespaceContext implements NamespaceContext {
+    private static class NamespaceContextImpl
+        // Deliberate inheritance to inherit the normal iteration operations and a
+        // ordentlichen toString().
+        extends HashMap<String, String>
+        implements NamespaceContext
+   {
+        Map<String, String> m;
 
-        private final Map<String, String> PREF_MAP =
-                new HashMap<String,String>();
-
-        public SimpleNamespaceContext() {
-        }
-
-        public SimpleNamespaceContext add( String prefix, String uri )
-        {
-            PREF_MAP.put( prefix, uri );
-            return this;
+        public NamespaceContextImpl() {
         }
 
         @Override
         public String getNamespaceURI(String prefix) {
-            return PREF_MAP.get(prefix);
+            return get(prefix);
         }
 
         @Override
@@ -52,6 +51,77 @@ public class SvgParseAndroid
         public Iterator<String> getPrefixes(String uri) {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public static List<String> getXPath(
+            File xmlDocument,
+            String ... expressions
+            ) throws Exception
+    {
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware( true );
+
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+        org.w3c.dom.Document doc =
+                builder.parse( xmlDocument );
+        XPathFactory xPathfactory =
+                XPathFactory.newInstance();
+        XPath xpath =
+                xPathfactory.newXPath();
+
+        xpath.setNamespaceContext(
+                getNamespaces( xmlDocument ) );
+
+        var result =
+                new ArrayList<String>();
+
+        for ( String c : expressions )
+        {
+            XPathExpression expr =
+                    xpath.compile( c );
+
+            result.add(
+                    expr.evaluate( doc, XPathConstants.STRING ).toString() );
+        }
+
+        return result;
+    }
+
+    public static NamespaceContextImpl getNamespaces( File xmlDocument ) throws Exception
+    {
+        DocumentBuilderFactory factory =
+                DocumentBuilderFactory.newInstance();
+        // Needs to be true for getLocalName() below to return meaningful data.
+        factory.setNamespaceAware( true );
+
+        DocumentBuilder builder =
+                factory.newDocumentBuilder();
+        org.w3c.dom.Document doc =
+                builder.parse( xmlDocument );
+        XPathFactory xPathfactory =
+                XPathFactory.newInstance();
+        XPath xpath =
+                xPathfactory.newXPath();
+
+        XPathExpression expr = xpath.compile( "//namespace::*" );
+
+        NodeList x = (NodeList)expr.evaluate( doc, XPathConstants.NODESET );
+
+        NamespaceContextImpl result =
+                new NamespaceContextImpl();
+
+        for ( int i = 0 ; i < x.getLength() ; i++ )
+        {
+            var q =
+                    x.item( i );
+            result.put(
+                    q.getLocalName(),
+                    q.getNodeValue() );
+        }
+
+        return result;
     }
 
     @Command
@@ -75,10 +145,8 @@ public class SvgParseAndroid
         XPath xpath =
                 xPathfactory.newXPath();
 
-        SimpleNamespaceContext snspctx = new SimpleNamespaceContext();
-        snspctx.add( "android", "http://schemas.android.com/apk/res/android" );
-
-        xpath.setNamespaceContext( snspctx );
+        xpath.setNamespaceContext(
+                getNamespaces( f ) );
 
         XPathExpression expr = xpath.compile( expression );
 
@@ -89,36 +157,28 @@ public class SvgParseAndroid
     }
 
     @Command
+    private void xpath( File f, String expression, String x2 )
+            throws Exception
+    {
+        err( "Expressions: '%s', '%s'%n", expression, x2 );
+
+        var results = getXPath( f, expression, x2 );
+
+        out( "Got: '%s'%n", results.get( 0 ) );
+        out( "Got: '%s'%n", results.get( 1 ) );
+    }
+
+    @Command
     private void ns( File f )
             throws Exception
     {
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware( true );
-        out( "Namespace aware: %s%n",
-                factory.isNamespaceAware() );
+        var nsContext =
+                getNamespaces( f );
 
-        DocumentBuilder builder =
-                factory.newDocumentBuilder();
-        org.w3c.dom.Document doc =
-                builder.parse( f );
-        XPathFactory xPathfactory =
-                XPathFactory.newInstance();
-        XPath xpath =
-                xPathfactory.newXPath();
-
-//        SimpleNamespaceContext snspctx = new SimpleNamespaceContext();
-//        snspctx.add( "android", "http://schemas.android.com/apk/res/android" );
-//        xpath.setNamespaceContext( snspctx );
-
-        XPathExpression expr = xpath.compile( "//namespace::*" );
-
-        NodeList x = (NodeList)expr.evaluate( doc, XPathConstants.NODESET );
-
-
-        out( "Found %d nodes.%n", x.getLength() );
-        for ( int i = 0 ; i < x.getLength() ; i++ )
-            out( "%d: '%s'%n", i, x.item( i ) );
+        out( "Found %d nodes.%n", nsContext.size() );
+        nsContext.forEach(
+                (k,v) ->
+                    out( "%s=\"%s\"%n", k, v ) );
     }
 
     public static void main(String[] argv) {
