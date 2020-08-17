@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
@@ -20,8 +21,6 @@ public class SvgTest extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        HBox root = new HBox();
-        root.setAlignment(Pos.CENTER);
 
         SVGPath svg = new SVGPath();
 
@@ -34,11 +33,16 @@ public class SvgTest extends Application{
         var viewportWidth =
                 SvgParseAndroid.getXPathAsDouble(
                         new File( "ic_car.xml" ), "vector/@android:viewportWidth" );
+        var tint =
+                SvgParseAndroid.getXPathAs(
+                        new File( "ic_car.xml" ),
+                        "vector/@android:tint",
+                        Color::web );
 
         svg.setContent( content );
-
         Button buttonWithGraphics = new Button();
         buttonWithGraphics.setGraphic(svg);
+        svg.setFill( tint );
 
         // Bind the Image scale property to the buttons size
         svg.scaleXProperty().bind(
@@ -51,6 +55,8 @@ public class SvgTest extends Application{
                 MIN_BUTTON_SIZE,
                 MIN_BUTTON_SIZE);
 
+        HBox root = new HBox();
+        root.setAlignment(Pos.CENTER);
         root.getChildren().addAll(buttonWithGraphics);
         root.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
                 double size = Math.max(MIN_BUTTON_SIZE, Math.min(newBounds.getWidth(), newBounds.getHeight()));

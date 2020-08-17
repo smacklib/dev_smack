@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -26,14 +26,13 @@ import org.w3c.dom.NodeList;
 public class SvgParseAndroid
 extends CliApplication
 {
+    @SuppressWarnings("serial")
     private static class NamespaceContextImpl
     // Deliberate inheritance to inherit the normal iteration operations and a
     // ordentlichen toString().
     extends HashMap<String, String>
     implements NamespaceContext
     {
-        Map<String, String> m;
-
         public NamespaceContextImpl() {
         }
 
@@ -80,13 +79,24 @@ extends CliApplication
         return expr.evaluate( doc, XPathConstants.STRING ).toString();
     }
 
+    public static <R> R getXPathAs(
+            File xmlDocument,
+            String xpath,
+            Function<String, R> converter ) throws Exception
+    {
+        return converter.apply(
+                getXPath( xmlDocument, xpath ) );
+    }
+
     public static double getXPathAsDouble(
             File xmlDocument,
             String expression
             ) throws Exception
     {
-        return Double.parseDouble(
-                getXPath( xmlDocument, expression ) );
+        return getXPathAs(
+                xmlDocument,
+                expression,
+                Double::parseDouble );
     }
 
     public static List<String> getXPath(
