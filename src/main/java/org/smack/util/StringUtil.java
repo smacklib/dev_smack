@@ -10,6 +10,7 @@ package org.smack.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 
 
@@ -505,5 +506,51 @@ public class StringUtil
         {
             return null;
         }
+    }
+
+    private static String changeCaseFirstCharacter(
+            String operand,
+            Function<Character, Boolean> predicate,
+            Function<Character, Character> modifier )
+    {
+        operand =
+                Objects.requireNonNull( operand );
+        char first =
+                operand.charAt( 0 );
+        String rest =
+                operand.substring( 1 );
+        if ( predicate.apply( first ) )
+            return operand;
+        first =
+                modifier.apply( first );
+        return new StringBuilder()
+                .append( first )
+                .append( rest ).toString();
+    }
+
+    public static String firstUppercase( String s )
+    {
+        return changeCaseFirstCharacter(
+                s,
+                Character::isUpperCase,
+                Character::toUpperCase );
+    }
+    public static String firstLowercase( String s )
+    {
+        return changeCaseFirstCharacter(
+                s,
+                Character::isLowerCase,
+                Character::toLowerCase );
+    }
+
+    public static void main( String[] args )
+    {
+        System.out.println( firstUppercase( " aaa " ) );
+        System.out.println( firstLowercase( "/ack" ) );
+        System.out.println( firstUppercase( "Üack" ) );
+        System.out.println( firstLowercase( "Michael" ) );
+        System.out.println( firstLowercase( "michael" ) );
+        System.out.println( firstUppercase( "Michael" ) );
+        System.out.println( firstUppercase( "michael" ) );
     }
 }
