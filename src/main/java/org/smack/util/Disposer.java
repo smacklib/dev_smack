@@ -3,15 +3,13 @@
  * Common.
  *
  * Released under Gnu Public License
- * Copyright © 2019 Michael G. Binz
+ * Copyright © 2019-20 Michael G. Binz
  */
 package org.smack.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.jdesktop.util.JavaUtil;
 
 /**
  * Supports in managing multiple {@link AutoCloseable}s in a single
@@ -21,7 +19,7 @@ import org.jdesktop.util.JavaUtil;
  */
 public class Disposer implements AutoCloseable
 {
-    private List<AutoCloseable> _resources =
+    private final List<AutoCloseable> _resources =
             new ArrayList<>();
 
     /**
