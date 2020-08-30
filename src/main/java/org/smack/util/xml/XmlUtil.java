@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -274,23 +275,28 @@ public class XmlUtil
     }
 
     public static <R> R getXPathAs(
+            Function<String, R> converter,
             File xmlDocument,
-            String xpath,
-            Function<String, R> converter ) throws Exception
+            String xpath )
+                    throws Exception
     {
         return converter.apply(
                 getXPath( xmlDocument, xpath ) );
     }
 
-    public static double getXPathAsDouble(
+    public static <R> List<R> getXPathAs(
+            Function<String, R> converter,
             File xmlDocument,
-            String expression
-            ) throws Exception
+            String ... expressions )
+                    throws Exception
     {
-        return getXPathAs(
+        List<String> strings = getXPath(
                 xmlDocument,
-                expression,
-                Double::parseDouble );
+                expressions );
+        List<R> result =
+                strings.stream().map( converter ).collect(
+                        Collectors.toList() );
+        return result;
     }
 
     /**

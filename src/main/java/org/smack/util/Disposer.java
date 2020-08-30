@@ -3,7 +3,7 @@
  * Common.
  *
  * Released under Gnu Public License
- * Copyright © 2019 Michael G. Binz
+ * Copyright © 2019-20 Michael G. Binz
  */
 package org.smack.util;
 
