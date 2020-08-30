@@ -2,6 +2,8 @@ package org.smack.fx;
 
 import java.io.File;
 
+import org.smack.util.xml.XmlUtil;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,19 +27,21 @@ public class SvgTest extends Application{
         SVGPath svg = new SVGPath();
 
         var content =
-                SvgParseAndroid.getXPath(
+                XmlUtil.getXPath(
                         new File( "ic_car.xml" ), "vector/path/@android:pathData" );
         var viewportHeight =
-                SvgParseAndroid.getXPathAsDouble(
+                XmlUtil.getXPathAs(
+                        Double::parseDouble,
                         new File( "ic_car.xml" ), "vector/@android:viewportHeight" );
         var viewportWidth =
-                SvgParseAndroid.getXPathAsDouble(
+                XmlUtil.getXPathAs(
+                        Double::parseDouble,
                         new File( "ic_car.xml" ), "vector/@android:viewportWidth" );
         var tint =
-                SvgParseAndroid.getXPathAs(
+                XmlUtil.getXPathAs(
+                        Color::web,
                         new File( "ic_car.xml" ),
-                        "vector/@android:tint",
-                        Color::web );
+                        "vector/@android:tint" );
 
         svg.setContent( content );
         Button buttonWithGraphics = new Button();
