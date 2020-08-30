@@ -24,12 +24,12 @@ import org.w3c.dom.NodeList;
  *
  */
 public class SvgParseAndroid
-extends CliApplication
+    extends CliApplication
 {
     @SuppressWarnings("serial")
     private static class NamespaceContextImpl
     // Deliberate inheritance to inherit the normal iteration operations and a
-    // ordentlichen toString().
+    // decent toString() operation.
     extends HashMap<String, String>
     implements NamespaceContext
     {
