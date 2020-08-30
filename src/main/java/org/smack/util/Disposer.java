@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.jdesktop.util.JavaUtil;
-
 /**
  * Supports in managing multiple {@link AutoCloseable}s in a single
  * try-with-resources.
@@ -21,7 +19,7 @@ import org.jdesktop.util.JavaUtil;
  */
 public class Disposer implements AutoCloseable
 {
-    private List<AutoCloseable> _resources =
+    private final List<AutoCloseable> _resources =
             new ArrayList<>();
 
     /**
