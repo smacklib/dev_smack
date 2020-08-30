@@ -274,29 +274,25 @@ public class XmlUtil
                     .get( 0 );
     }
 
-    public static <R> R getXPathAs(
-            Function<String, R> converter,
-            File xmlDocument,
-            String xpath )
+    /**
+     * Evaluate an xpath against an XML-document.
+     *
+     * @param xmlDocument The document.
+     * @param expression The xpath.
+     * @return The result of the expression.  The empty string if the
+     * expression did not select data.
+     * @throws Exception In case of an error.  Note that it is no error
+     * if the xpath does not select data.
+     */
+    public static String getXPath(
+            InputStream xmlDocument,
+            String expression )
                     throws Exception
     {
-        return converter.apply(
-                getXPath( xmlDocument, xpath ) );
-    }
-
-    public static <R> List<R> getXPathAs(
-            Function<String, R> converter,
-            File xmlDocument,
-            String ... expressions )
-                    throws Exception
-    {
-        List<String> strings = getXPath(
+        return getXPath(
                 xmlDocument,
-                expressions );
-        List<R> result =
-                strings.stream().map( converter ).collect(
-                        Collectors.toList() );
-        return result;
+                new String[] { expression } )
+                    .get( 0 );
     }
 
     /**
@@ -319,8 +315,26 @@ public class XmlUtil
 
         DocumentBuilder builder =
                 factory.newDocumentBuilder();
-        org.w3c.dom.Document doc =
+        Document doc =
                 builder.parse( xmlDocument );
+
+        return getXPath( doc, expressions );
+    }
+
+    /**
+     * Evaluate a set of xpath-expressions against an XML-document.
+     *
+     * @param xmlDocument The document.
+     * @param expressions The xpath.
+     * @return The result of the expressions in a list.
+     * @throws Exception In case of an error.
+     * @see #getXPath(File, String)
+     */
+    private static List<String> getXPath(
+            Document xmlDocument,
+            String ... expressions )
+                    throws Exception
+    {
         XPathFactory xPathfactory =
                 XPathFactory.newInstance();
         XPath xpath =
@@ -338,23 +352,81 @@ public class XmlUtil
                     xpath.compile( c );
 
             result.add(
-                    expr.evaluate( doc, XPathConstants.STRING ).toString() );
+                    expr.evaluate( xmlDocument, XPathConstants.STRING ).toString() );
         }
 
         return result;
     }
 
-    private static NamespaceContextImpl getNamespaces( File xmlDocument ) throws Exception
+    public static List<String> getXPath(
+            InputStream xmlDocument,
+            String ... expressions
+            ) throws Exception
     {
         DocumentBuilderFactory factory =
                 DocumentBuilderFactory.newInstance();
-        // Needs to be true for getLocalName() below to return meaningful data.
         factory.setNamespaceAware( true );
 
         DocumentBuilder builder =
                 factory.newDocumentBuilder();
-        org.w3c.dom.Document doc =
+        Document doc =
                 builder.parse( xmlDocument );
+
+        return getXPath( doc, expressions );
+    }
+
+    public static <R> R getXPathAs(
+            Function<String, R> converter,
+            File xmlDocument,
+            String xpath )
+                    throws Exception
+    {
+        return converter.apply(
+                getXPath( xmlDocument, xpath ) );
+    }
+
+    public static <R> R getXPathAs(
+            Function<String, R> converter,
+            InputStream xmlDocument,
+            String xpath )
+                    throws Exception
+    {
+        return converter.apply(
+                getXPath( xmlDocument, xpath ) );
+    }
+
+    public static <R> List<R> getXPathAs(
+            Function<String, R> converter,
+            File xmlDocument,
+            String ... expressions )
+                    throws Exception
+    {
+        List<String> strings = getXPath(
+                xmlDocument,
+                expressions );
+        List<R> result =
+                strings.stream().map( converter ).collect(
+                        Collectors.toList() );
+        return result;
+    }
+
+    public static <R> List<R> getXPathAs(
+            Function<String, R> converter,
+            InputStream xmlDocument,
+            String ... expressions )
+                    throws Exception
+    {
+        List<String> strings = getXPath(
+                xmlDocument,
+                expressions );
+        List<R> result =
+                strings.stream().map( converter ).collect(
+                        Collectors.toList() );
+        return result;
+    }
+
+    private static NamespaceContextImpl getNamespaces( Document doc ) throws Exception
+    {
         XPathFactory xPathfactory =
                 XPathFactory.newInstance();
         XPath xpath =

@@ -106,6 +106,48 @@ public class XmlUtilTest
     }
 
     @Test
+    public void testXpathStream() throws Exception
+    {
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            String result =
+                    XmlUtil.getXPath(
+                            styleSheet,
+                            "/vector/@micbinz" );
+            assertNotNull( result );
+            assertNotNull( "binz" );
+        }
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            String result =
+                    XmlUtil.getXPath( styleSheet, "/vector/@android:height" );
+            assertNotNull( result );
+            assertNotNull( "24dp" );
+        }
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            String result =
+                    XmlUtil.getXPath( styleSheet, "/vector/path/@android:fillColor" );
+            assertNotNull( result );
+            assertNotNull( "#FF000000" );
+        }
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            var result =
+                    XmlUtil.getXPath(
+                            styleSheet,
+                            "/vector/@micbinz",
+                            "/vector/@android:height",
+                            "/vector/path/@android:fillColor" );
+            assertNotNull( result );
+            assertEquals( 3, result.size() );
+            assertEquals( "binz", result.get( 0 ) );
+            assertEquals( "24dp", result.get( 1 ) );
+            assertEquals( "#FF000000", result.get( 2 ) );
+        }
+    }
+
+    @Test
     public void testXpathBad() throws Exception
     {
         File styleSheet = makeFileFromStream(
@@ -132,6 +174,7 @@ public class XmlUtilTest
             assertEquals( "313", result );
         }
     }
+
     @Test
     public void testXpathConversion() throws Exception
     {
@@ -159,6 +202,44 @@ public class XmlUtilTest
             assertEquals( 314, (int)result.get( 1 ) );
         }
         try {
+            XmlUtil.getXPathAs(
+                    Integer::parseInt,
+                    styleSheet,
+                    "/gibs/nich" );
+            fail();
+        }
+        catch ( NumberFormatException expected )
+        {
+        }
+    }
+
+    @Test
+    public void testXpathConversionStream() throws Exception
+    {
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            int result =
+                    XmlUtil.getXPathAs(
+                            Integer::parseInt,
+                            styleSheet,
+                            "/vector/donaldian"  );
+            assertEquals( 313, result );
+        }
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
+            var result =
+                    XmlUtil.getXPathAs(
+                            Integer::parseInt,
+                            styleSheet,
+                            "/vector/donaldian",
+                            "/vector/donaldianInc" );
+            assertNotNull( result );
+            assertEquals( 2, result.size() );
+            assertEquals( 313, (int)result.get( 0 ) );
+            assertEquals( 314, (int)result.get( 1 ) );
+        }
+        try ( var styleSheet = getClass().getResourceAsStream( "ic_car.xml" ) )
+        {
             XmlUtil.getXPathAs(
                     Integer::parseInt,
                     styleSheet,
