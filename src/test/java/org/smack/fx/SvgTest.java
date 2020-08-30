@@ -25,10 +25,21 @@ public class SvgTest extends Application{
     public void start(Stage primaryStage) throws Exception {
 
         SVGPath svg = new SVGPath();
-
+        {
         var content =
                 XmlUtil.getXPath(
                         new File( "ic_car.xml" ), "vector/path/@android:pathData" );
+        svg.setContent( content );
+        }
+        {
+        var tint =
+                XmlUtil.getXPathAs(
+                        Color::web,
+                        new File( "ic_car.xml" ),
+                        "vector/@android:tint" );
+        svg.setFill( tint );
+        }
+
         var viewportHeight =
                 XmlUtil.getXPathAs(
                         Double::parseDouble,
@@ -37,16 +48,9 @@ public class SvgTest extends Application{
                 XmlUtil.getXPathAs(
                         Double::parseDouble,
                         new File( "ic_car.xml" ), "vector/@android:viewportWidth" );
-        var tint =
-                XmlUtil.getXPathAs(
-                        Color::web,
-                        new File( "ic_car.xml" ),
-                        "vector/@android:tint" );
 
-        svg.setContent( content );
         Button buttonWithGraphics = new Button();
         buttonWithGraphics.setGraphic(svg);
-        svg.setFill( tint );
 
         // Bind the Image scale property to the buttons size
         svg.scaleXProperty().bind(
