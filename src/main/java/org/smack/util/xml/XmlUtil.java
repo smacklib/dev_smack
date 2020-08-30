@@ -4,7 +4,7 @@
  * Unpublished work.
  * Copyright © 2019 Michael G. Binz
  */
-package org.smack.util;
+package org.smack.util.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,9 +36,7 @@ import org.xml.sax.XMLReader;
  * XML utility operations.
  *
  * @author Michael G. Binz
- * @deprecated Use {@link org.smack.util.xml.XmlUtil}.
  */
-@Deprecated
 public class XmlUtil
 {
     /**
