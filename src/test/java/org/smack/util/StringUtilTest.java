@@ -261,6 +261,7 @@ public class StringUtilTest
         // Empty string.
         assertEquals( "micbinz", q );
     }
+
     @Test
     public void testQuote4()
     {
@@ -271,5 +272,31 @@ public class StringUtilTest
         q = StringUtil.unquote( 'i', q );
         // Empty string.
         assertEquals( "micbinz", q );
+    }
+
+    @Test
+    public void testFirstUpLo()
+    {
+        assertEquals(
+                "Aaa",
+                StringUtil.firstUppercase( "aaa" ) );
+        assertEquals(
+                "aaa",
+                StringUtil.firstLowercase( "aaa" ) );
+        assertEquals(
+                "Aaa",
+                StringUtil.firstUppercase( "Aaa" ) );
+        assertEquals(
+                "aaa",
+                StringUtil.firstLowercase( "Aaa" ) );
+        assertEquals(
+                " Aaa",
+                StringUtil.firstLowercase( " Aaa" ) );
+        assertEquals(
+                "/ack",
+                StringUtil.firstLowercase( "/ack" ) );
+        assertEquals(
+                "üps",
+                StringUtil.firstLowercase( "Üps" ) );
     }
 }
