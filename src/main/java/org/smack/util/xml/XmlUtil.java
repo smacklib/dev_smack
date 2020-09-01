@@ -8,9 +8,9 @@ package org.smack.util.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,11 +21,9 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
@@ -33,12 +31,13 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.smack.util.Disposer;
+import org.smack.util.StringUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  * XML utility operations.
@@ -77,26 +76,11 @@ public class XmlUtil
     public static String transform( InputStream xslt, InputStream toTransform )
             throws Exception
     {
-        return transform(
-                new StreamSource( xslt ),
-                new InputSource( toTransform ) );
-    }
-
-    /**
-     * Transform a file based on an XSLT transformation. Access to
-     * non-existent dtds is ignored.
-     *
-     * @param xslt The transformation.
-     * @param toTransform The file to transform.
-     * @return The result of the transformation.
-     * @throws Exception In case of an error.
-     */
-    public static String transform( Reader xslt, Reader toTransform )
-            throws Exception
-    {
-        return transform(
-                new StreamSource( xslt ),
-                new InputSource( toTransform ) );
+        return transformImpl(
+                xslt,
+                toTransform,
+                null,
+                Collections.emptyMap() );
     }
 
     /**
@@ -121,39 +105,6 @@ public class XmlUtil
 
     /**
      * Transform a file based on an XSLT transformation. Access to
-     * non-existent dtds is ignored.
-     *
-     * @param xslt The transformation.
-     * @param toTransform The file to transform.
-     * @return The result of the transformation.
-     * @throws Exception In case of an error.
-     */
-    private static String transform( StreamSource xslt, InputSource toTransform )
-            throws Exception
-    {
-        XMLReader reader =
-                SAXParserFactory.newInstance().newSAXParser().
-                getXMLReader();
-
-        reader.setEntityResolver(
-                EMPTY_DTD_RESOLVER );
-        TransformerFactory tFactory =
-                TransformerFactory.newInstance();
-        Transformer transformer =
-                tFactory.newTransformer( xslt );
-        ByteArrayOutputStream result =
-                new ByteArrayOutputStream();
-        transformer.transform(
-                new SAXSource(
-                        reader,
-                        toTransform),
-                new StreamResult( result ) );
-
-        return result.toString();
-    }
-
-    /**
-     * Transform a file based on an XSLT transformation. Access to
      * non-existent dtds is ignored.  This version of the operation
      * internally sets the systemId of the xslt, so that access on the
      * stylesheet via the xls 'document( '' )' operation works.
@@ -168,40 +119,14 @@ public class XmlUtil
             File stylesheet,
             File datafile,
             Map<String,Object> parameters )
-            throws Exception
+                    throws Exception
     {
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance();
-        ByteArrayOutputStream bos =
-                new ByteArrayOutputStream();
-        DocumentBuilder builder =
-                factory.newDocumentBuilder();
+        return transformImpl(
+                new FileInputStream( stylesheet ),
+                new FileInputStream( datafile ),
+                stylesheet.getPath(),
+                parameters );
 
-        builder.setEntityResolver(
-                EMPTY_DTD_RESOLVER );
-        Document document =
-                builder.parse(datafile);
-        TransformerFactory tFactory =
-                TransformerFactory.newInstance();
-        StreamSource stylesource =
-                new StreamSource(stylesheet);
-        stylesource.setSystemId(
-                stylesheet.getPath() );
-        Transformer transformer =
-                tFactory.newTransformer(stylesource);
-
-        parameters.forEach(
-                (k,v) -> transformer.setParameter( k, v ) );
-
-        DOMSource source =
-                new DOMSource(document);
-        StreamResult result =
-                new StreamResult(bos);
-        transformer.transform(
-                source,
-                result);
-
-        return bos.toString();
     }
 
     /**
@@ -213,65 +138,78 @@ public class XmlUtil
      * @return The processing result.
      * @throws Exception In case of an error.
      */
-    public static String transform8(
+    public static String transform(
             InputStream stylesheet,
             InputStream datafile,
             Map<String,Object> parameters )
-            throws Exception
+                    throws Exception
     {
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance();
-        ByteArrayOutputStream bos =
-                new ByteArrayOutputStream();
-        DocumentBuilder builder =
-                factory.newDocumentBuilder();
-
-        builder.setEntityResolver(
-                EMPTY_DTD_RESOLVER );
-        Document document =
-                builder.parse(datafile);
-        TransformerFactory tFactory =
-                TransformerFactory.newInstance();
-        StreamSource stylesource =
-                new StreamSource(stylesheet);
-//        stylesource.setSystemId(
-//                stylesheet.getPath() );
-        Transformer transformer =
-                tFactory.newTransformer(stylesource);
-
-        parameters.forEach(
-                (k,v) -> transformer.setParameter( k, v ) );
-
-        DOMSource source =
-                new DOMSource(document);
-        StreamResult result =
-                new StreamResult(bos);
-        transformer.transform(
-                source,
-                result);
-
-        return bos.toString();
+        return transformImpl(
+                stylesheet,
+                datafile,
+                null,
+                parameters );
     }
 
     /**
-     * Evaluate an xpath against an XML-document.
+     * Internal implementation of transform including resource management.
+     * The passed input streams get closed after processing.
      *
-     * @param xmlDocument The document.
-     * @param expression The xpath.
-     * @return The result of the expression.  The empty string if the
-     * expression did not select data.
-     * @throws Exception In case of an error.  Note that it is no error
-     * if the xpath does not select data.
+     * @param stylesheet The stylesheet.
+     * @param datafile The input to process.
+     * @param systemId An optional system id.  Pass null if not needed.
+     * @param parameters Parameters to be passed to the stylesheet.
+     * @return The processing result.
+     * @throws Exception In case of an error.
      */
-    public static String getXPath(
-            File xmlDocument,
-            String expression )
+    private static String transformImpl(
+            InputStream stylesheet,
+            InputStream datafile,
+            String systemId,
+            Map<String,Object> parameters )
                     throws Exception
     {
-        return getXPath(
-                xmlDocument,
-                new String[] { expression } )
-                    .get( 0 );
+        try ( Disposer d = new Disposer() )
+        {
+            d.register( stylesheet );
+            d.register( datafile );
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+            ByteArrayOutputStream bos =
+                    new ByteArrayOutputStream();
+            DocumentBuilder builder =
+                    factory.newDocumentBuilder();
+
+            builder.setEntityResolver(
+                    EMPTY_DTD_RESOLVER );
+            Document document =
+                    builder.parse(datafile);
+            TransformerFactory tFactory =
+                    TransformerFactory.newInstance();
+            StreamSource stylesource =
+                    new StreamSource(stylesheet);
+
+            if ( StringUtil.hasContent( systemId ) )
+                stylesource.setSystemId(
+                        systemId );
+
+            Transformer transformer =
+                    tFactory.newTransformer(stylesource);
+
+            parameters.forEach(
+                    (k,v) -> transformer.setParameter( k, v ) );
+
+            DOMSource source =
+                    new DOMSource(document);
+            StreamResult result =
+                    new StreamResult(bos);
+            transformer.transform(
+                    source,
+                    result);
+
+            return bos.toString();
+        }
     }
 
     /**
@@ -292,33 +230,28 @@ public class XmlUtil
         return getXPath(
                 xmlDocument,
                 new String[] { expression } )
-                    .get( 0 );
+                .get( 0 );
     }
 
     /**
-     * Evaluate a set of xpath-expressions against an XML-document.
+     * Evaluate an xpath against an XML-document.
      *
      * @param xmlDocument The document.
-     * @param expressions The xpath.
-     * @return The result of the expressions in a list.
-     * @throws Exception In case of an error.
-     * @see #getXPath(File, String)
+     * @param expression The xpath.
+     * @return The result of the expression.  The empty string if the
+     * expression did not select data.
+     * @throws Exception In case of an error.  Note that it is no error
+     * if the xpath does not select data.
      */
-    public static List<String> getXPath(
-            File xmlDocument,
-            String ... expressions
-            ) throws Exception
+    public static List<String> getXPathNodes(
+            InputStream xmlDocument,
+            String expression )
+                    throws Exception
     {
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware( true );
-
-        DocumentBuilder builder =
-                factory.newDocumentBuilder();
-        Document doc =
-                builder.parse( xmlDocument );
-
-        return getXPath( doc, expressions );
+        return getXPathNodes(
+                xmlDocument,
+                new String[] { expression } )
+                .get( 0 );
     }
 
     /**
@@ -358,31 +291,88 @@ public class XmlUtil
         return result;
     }
 
+    /**
+     * Evaluate a set of xpath-expressions against an XML-document.
+     *
+     * @param xmlDocument The document.
+     * @param expressions The xpath.
+     * @return The result of the expressions in a list.
+     * @throws Exception In case of an error.
+     * @see #getXPath(File, String)
+     */
+    private static List<List<String>> getXPathNodes(
+            Document xmlDocument,
+            String ... expressions )
+                    throws Exception
+    {
+        XPathFactory xPathfactory =
+                XPathFactory.newInstance();
+        XPath xpath =
+                xPathfactory.newXPath();
+
+        xpath.setNamespaceContext(
+                getNamespaces( xmlDocument ) );
+
+        var result =
+                new ArrayList<List<String>>();
+
+        for ( String c : expressions )
+        {
+            XPathExpression expr =
+                    xpath.compile( c );
+
+            NodeList x =
+                    (NodeList)expr.evaluate( xmlDocument, XPathConstants.NODESET );
+
+            var list = new ArrayList<String>( x.getLength() );
+
+            for ( int i = 0 ; i < x.getLength() ; i++ )
+                list.add( x.item( i ).getTextContent()  );
+
+            result.add( list );
+        }
+
+        return result;
+    }
+
     public static List<String> getXPath(
             InputStream xmlDocument,
             String ... expressions
             ) throws Exception
     {
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware( true );
+        try ( xmlDocument )
+        {
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware( true );
 
-        DocumentBuilder builder =
-                factory.newDocumentBuilder();
-        Document doc =
-                builder.parse( xmlDocument );
+            DocumentBuilder builder =
+                    factory.newDocumentBuilder();
+            Document doc =
+                    builder.parse( xmlDocument );
 
-        return getXPath( doc, expressions );
+            return getXPath( doc, expressions );
+        }
     }
 
-    public static <R> R getXPathAs(
-            Function<String, R> converter,
-            File xmlDocument,
-            String xpath )
-                    throws Exception
+    public static List<List<String>> getXPathNodes(
+            InputStream xmlDocument,
+            String ... expressions
+            ) throws Exception
     {
-        return converter.apply(
-                getXPath( xmlDocument, xpath ) );
+        try ( xmlDocument )
+        {
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware( true );
+
+            DocumentBuilder builder =
+                    factory.newDocumentBuilder();
+            Document doc =
+                    builder.parse( xmlDocument );
+
+            return getXPathNodes( doc, expressions );
+        }
     }
 
     public static <R> R getXPathAs(
@@ -393,21 +383,6 @@ public class XmlUtil
     {
         return converter.apply(
                 getXPath( xmlDocument, xpath ) );
-    }
-
-    public static <R> List<R> getXPathAs(
-            Function<String, R> converter,
-            File xmlDocument,
-            String ... expressions )
-                    throws Exception
-    {
-        List<String> strings = getXPath(
-                xmlDocument,
-                expressions );
-        List<R> result =
-                strings.stream().map( converter ).collect(
-                        Collectors.toList() );
-        return result;
     }
 
     public static <R> List<R> getXPathAs(
