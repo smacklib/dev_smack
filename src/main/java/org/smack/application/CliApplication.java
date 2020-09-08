@@ -126,7 +126,7 @@ abstract public class CliApplication
             getCommandMap( getClass() );
 
     private final Map<CaseIndependent,FunctionalUtil.ConsumerX<String>> _propertyMap =
-            getPropertyMap( getClass() );
+            getPropertyMap( this );
 
     public interface StringConverter<T>
     {
@@ -509,9 +509,11 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private Map<CaseIndependent, FunctionalUtil.ConsumerX<String>> getPropertyMap(
-            Class<?> targetClass )
+    private static Map<CaseIndependent, FunctionalUtil.ConsumerX<String>> getPropertyMap(
+            Object targetInstance )
     {
+        var targetClass =
+                targetInstance.getClass();
         var result =
                 new HashMap<CaseIndependent,FunctionalUtil.ConsumerX<String>>();
 
@@ -528,11 +530,8 @@ abstract public class CliApplication
 
             var type = c.getType();
 
-            if ( type.isEnum() )
-                continue;
-
-            var converter = Objects.requireNonNull(
-                    _converters.get( type ),
+            if ( ! canTransform( type ) )
+                throw new RuntimeException(
                     "No mapper for " + type );
 
             var currentName =
@@ -541,21 +540,10 @@ abstract public class CliApplication
             JavaUtil.Assert(
                     ! result.containsKey( currentName ) );
             FunctionalUtil.ConsumerX<String> set = s -> {
-                c.set( this, converter.convert( s ) );
+                c.set(
+                        targetInstance,
+                        transformArgument( type, s ) );
             };
-
-            if ( type.equals( Boolean.TYPE ) )
-                try
-                {
-                    var x = converter.convert( "true" );
-                    c.set( this, Boolean.TRUE );
-                    set.accept( "true" );
-                }
-                catch ( Exception e )
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
 
             result.put( currentName, set );
         }
@@ -769,7 +757,7 @@ abstract public class CliApplication
      * a special mapping for enums and the type map
      * for all other types.
      */
-    private final Object transformArgument(
+    private static final Object transformArgument(
             Class<?> targetType,
             String argument )
         throws Exception
@@ -791,10 +779,17 @@ abstract public class CliApplication
         return transformer.convert( argument );
     }
 
+    private static boolean canTransform( Class<?> targetType )
+    {
+        if ( targetType.isEnum() )
+            return true;
+        return _converters.containsKey( targetType );
+    }
+
     /**
      * Convert an argument to an enum instance.
      */
-    private final Object transformEnum(
+    private static final Object transformEnum(
             Class<?> targetEnum,
             String argument )
         throws IllegalArgumentException
