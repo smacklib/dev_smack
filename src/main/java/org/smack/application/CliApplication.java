@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.smack.util.FunctionalUtil;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
@@ -50,6 +51,16 @@ abstract public class CliApplication
     protected @interface Command {
         String name() default StringUtil.EMPTY_STRING;
         String[] argumentNames() default {};
+        String shortDescription() default StringUtil.EMPTY_STRING;
+    }
+
+    /**
+     * Used to mark cli command operations.
+     */
+    @Retention( RetentionPolicy.RUNTIME )
+    @Target( ElementType.FIELD )
+    protected @interface Property {
+        String name() default StringUtil.EMPTY_STRING;
         String shortDescription() default StringUtil.EMPTY_STRING;
     }
 
@@ -114,9 +125,16 @@ abstract public class CliApplication
     private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
             getCommandMap( getClass() );
 
+    private final Map<CaseIndependent,FunctionalUtil.ConsumerX<String>> _propertyMap =
+            getPropertyMap( getClass() );
+
     public interface StringConverter<T>
     {
         T convert( String s ) throws Exception;
+    }
+    public interface ConsumerX<T>
+    {
+        void consume( T s ) throws Exception;
     }
 
     private static final HashMap<Class<?>,StringConverter<?>> _converters =
@@ -196,6 +214,8 @@ abstract public class CliApplication
             return;
         }
 
+        argv = processProperties( argv );
+
         var ciName =
                 new CaseIndependent( argv[0] );
 
@@ -241,6 +261,51 @@ abstract public class CliApplication
 
         // Nothing matched, we forward this to default handling.
         defaultCmd( argv );
+    }
+
+    private void processProperty( String property )
+        throws Exception
+    {
+        var value =
+                "true";
+        var equals =
+                property.indexOf( "=" );
+        if ( equals > 0 )
+        {
+            value = property.substring( equals+1 );
+            property = property.substring( 0, equals );
+        }
+
+        var setter = _propertyMap.get(
+                new CaseIndependent( property ) );
+
+        if ( setter == null )
+            throw new Exception( "Unknown property:" + property );
+
+        setter.accept( value );
+    }
+
+    private String[] processProperties( String[] argv )
+        throws Exception
+    {
+        var result = new ArrayList<String>();
+
+        for ( var c : argv )
+        {
+            if ( c.startsWith( "--" ) )
+                c = c.substring( 2 );
+            else if ( c.startsWith( "-" ) )
+                c = c.substring( 1 );
+            else
+            {
+                result.add( c );
+                continue;
+            }
+
+            processProperty( c );
+        }
+
+        return result.toArray( new String[result.size()] );
     }
 
     /**
@@ -435,6 +500,64 @@ abstract public class CliApplication
                     currentName,
                     numberOfArgs,
                     new CommandHolder( c ) );
+        }
+
+        return result;
+    }
+
+    /**
+     * Get a map of all commands that allows to access a single command based on
+     * its name and argument list.
+     */
+    private Map<CaseIndependent, FunctionalUtil.ConsumerX<String>> getPropertyMap(
+            Class<?> targetClass )
+    {
+        var result =
+                new HashMap<CaseIndependent,FunctionalUtil.ConsumerX<String>>();
+
+        for ( var c : targetClass.getDeclaredFields() )
+        {
+            Property commandAnnotation =
+                c.getAnnotation( Property.class );
+            if ( commandAnnotation == null )
+                continue;
+
+            String name = commandAnnotation.name();
+            if ( StringUtil.isEmpty( name ) )
+                name = c.getName();
+
+            var type = c.getType();
+
+            if ( type.isEnum() )
+                continue;
+
+            var converter = Objects.requireNonNull(
+                    _converters.get( type ),
+                    "No mapper for " + type );
+
+            var currentName =
+                    new CaseIndependent( name );
+
+            JavaUtil.Assert(
+                    ! result.containsKey( currentName ) );
+            FunctionalUtil.ConsumerX<String> set = s -> {
+                c.set( this, converter.convert( s ) );
+            };
+
+            if ( type.equals( Boolean.TYPE ) )
+                try
+                {
+                    var x = converter.convert( "true" );
+                    c.set( this, Boolean.TRUE );
+                    set.accept( "true" );
+                }
+                catch ( Exception e )
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            result.put( currentName, set );
         }
 
         return result;
