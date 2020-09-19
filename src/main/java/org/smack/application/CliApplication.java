@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.smack.util.FunctionalUtil;
+import org.jdesktop.util.ReflectionUtil;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
@@ -125,7 +126,7 @@ abstract public class CliApplication
     private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
             getCommandMap( getClass() );
 
-    private final Map<CaseIndependent,FunctionalUtil.ConsumerX<String>> _propertyMap =
+    private final Map<String,PropertyHolder> _propertyMap =
             getPropertyMap( this );
 
     public interface StringConverter<T>
@@ -266,8 +267,7 @@ abstract public class CliApplication
     private void processProperty( String property )
         throws Exception
     {
-        var value =
-                "true";
+        String value = null;
         var equals =
                 property.indexOf( "=" );
         if ( equals > 0 )
@@ -277,14 +277,25 @@ abstract public class CliApplication
         }
 
         var setter = _propertyMap.get(
-                new CaseIndependent( property ) );
-
+                property );
         if ( setter == null )
-            throw new Exception( "Unknown property:" + property );
+            throw new Exception( "Unknown property: " + property );
 
-        setter.accept( value );
+        if ( setter.isBooleanType() && value == null )
+            value = "true";
+
+        setter.set( value );
     }
 
+    /**
+     * Processes the properties in the passed command line arguments.
+     * Properties are qualified by a '-' or '--' prefix.
+     *
+     * @param argv The command line arguments.
+     * @return A newly allocated set of command line arguments with
+     * properties removed.
+     * @throws Exception In case the conversion fails.
+     */
     private String[] processProperties( String[] argv )
         throws Exception
     {
@@ -432,6 +443,18 @@ abstract public class CliApplication
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
             result.append( command.usage() );
 
+        if ( ! _propertyMap.isEmpty() )
+        {
+            result.append( StringUtil.EOL );
+            result.append( "Properties:" );
+            result.append( StringUtil.EOL );
+            _propertyMap.values().stream().sorted().forEach( c ->
+            {
+                result.append( c.usage() );
+                result.append( StringUtil.EOL );
+            } );
+        }
+
         return result.toString();
     }
 
@@ -509,13 +532,13 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private static Map<CaseIndependent, FunctionalUtil.ConsumerX<String>> getPropertyMap(
+    private Map<String, PropertyHolder> getPropertyMap(
             Object targetInstance )
     {
         var targetClass =
                 targetInstance.getClass();
         var result =
-                new HashMap<CaseIndependent,FunctionalUtil.ConsumerX<String>>();
+                new HashMap<String, PropertyHolder>();
 
         for ( var c : targetClass.getDeclaredFields() )
         {
@@ -524,28 +547,12 @@ abstract public class CliApplication
             if ( commandAnnotation == null )
                 continue;
 
-            String name = commandAnnotation.name();
-            if ( StringUtil.isEmpty( name ) )
-                name = c.getName();
+            var property =
+                    new PropertyHolder( c );
 
-            var type = c.getType();
-
-            if ( ! canTransform( type ) )
-                throw new RuntimeException(
-                    "No mapper for " + type );
-
-            var currentName =
-                    new CaseIndependent( name );
-
-            JavaUtil.Assert(
-                    ! result.containsKey( currentName ) );
-            FunctionalUtil.ConsumerX<String> set = s -> {
-                c.set(
-                        targetInstance,
-                        transformArgument( type, s ) );
-            };
-
-            result.put( currentName, set );
+            result.put(
+                    property.getName(),
+                    property );
         }
 
         return result;
@@ -779,13 +786,6 @@ abstract public class CliApplication
         return transformer.convert( argument );
     }
 
-    private static boolean canTransform( Class<?> targetType )
-    {
-        if ( targetType.isEnum() )
-            return true;
-        return _converters.containsKey( targetType );
-    }
-
     /**
      * Convert an argument to an enum instance.
      */
@@ -895,6 +895,80 @@ abstract public class CliApplication
             catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
+        }
+    }
+
+    /**
+     * Encapsulates a command.
+     */
+    private class PropertyHolder implements Comparable<PropertyHolder>
+    {
+        private final Field _field;
+        private final Property _property;
+
+        PropertyHolder( Field field )
+        {
+            _field = field;
+            _property = Objects.requireNonNull(
+                    field.getAnnotation( Property.class ) );
+        }
+
+        String getName()
+        {
+            String name = _property.name();
+
+            if ( StringUtil.hasContent( name ) )
+                return name;
+
+            return _field.getName();
+        }
+
+        void set( String value )
+                throws Exception
+        {
+            var self = CliApplication.this;
+
+            _field.set(
+                    self,
+                    transformArgument(
+                            _field.getType(),
+                            value ) );
+        }
+
+        boolean isBooleanType()
+        {
+            return
+                    ReflectionUtil.normalizePrimitives( _field.getType() ) == Boolean.class;
+        }
+
+        String usage()
+        {
+            var type =
+                    _field.getType();
+            var typeDoc = type.isEnum() ?
+                    getEnumDocumentation( type ) :
+                    type.getSimpleName();
+
+            var result = String.format(
+                    "-%s=(%s)",
+                    getName(),
+                    typeDoc );
+
+            var description =
+                    _property.shortDescription();
+            if ( StringUtil.isEmpty( description ) )
+                return result;
+
+            return result + " : " + description;
+        }
+
+        @Override
+        public int compareTo( PropertyHolder o )
+        {
+            int result =
+                    getName().compareTo( o.getName() );
+
+            return result;
         }
     }
 
@@ -1023,7 +1097,7 @@ abstract public class CliApplication
             if ( _commandAnnotation.argumentNames().length > 0 )
             {
                 if ( _commandAnnotation.argumentNames().length != parameterTypes.length )
-                    LOG.warning( "Command.argumentNames in consistent with " + _op );
+                    LOG.warning( "Command.argumentNames inconsistent with " + _op );
 
                 return _commandAnnotation.argumentNames();
             }

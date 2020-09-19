@@ -165,7 +165,11 @@ public class StringUtil
      */
     public static final String EMPTY_STRING = "";
 
-
+    /**
+     * The platform-dependent end of line.  Use instead of
+     * "\n".
+     */
+    public static final String EOL = String.format( "%n" );
 
     /**
      * Creates a delimited string from the elements in the passed container.
