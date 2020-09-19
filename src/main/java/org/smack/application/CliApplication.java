@@ -11,6 +11,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -540,22 +542,47 @@ abstract public class CliApplication
         var result =
                 new HashMap<String, PropertyHolder>();
 
-        for ( var c : targetClass.getDeclaredFields() )
-        {
-            Property commandAnnotation =
-                c.getAnnotation( Property.class );
-            if ( commandAnnotation == null )
-                continue;
+//        for ( var c : targetClass.getDeclaredFields() )
+//        {
+//            Property commandAnnotation =
+//                c.getAnnotation( Property.class );
+//            if ( commandAnnotation == null )
+//                continue;
+//
+//            var property =
+//                    new PropertyHolder( c );
+//
+//            result.put(
+//                    property.getName(),
+//                    property );
+//        }
 
-            var property =
-                    new PropertyHolder( c );
-
-            result.put(
-                    property.getName(),
-                    property );
-        }
+        processAnnotation(
+                Property.class,
+                targetClass::getDeclaredFields,
+                (f,a) -> {
+                    var p = new PropertyHolder( f );
+                    result.put(
+                            p.getName(),
+                            p );
+                } );
 
         return result;
+    }
+
+    // Pure orgasm ...
+    private static <
+        T extends AccessibleObject,
+        A extends java.lang.annotation.Annotation> void processAnnotation(
+            Class<A> classs,
+            Supplier<T[]> x,
+            BiConsumer<T, A>c)
+    {
+        Arrays.asList( x.get() )
+            .stream()
+            .filter(
+                s -> s.isAnnotationPresent( classs ) )
+            .forEach( s -> c.accept( s, s.getAnnotation( classs ) ) );
     }
 
     /**
