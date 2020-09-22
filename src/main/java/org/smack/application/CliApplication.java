@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -290,6 +291,35 @@ abstract public class CliApplication
     }
 
     /**
+     * Check if the arguments is a possible property name.
+     * This filters arguments like '-313' which is *not*
+     * a possible property name.
+     *
+     * @param candidate A property name candidate.
+     * @return An optional that contains the bare property
+     * name. If this is empty this was not a valid property name.
+     */
+    private Optional<String> getNameIfProperty( String candidate )
+    {
+        if ( StringUtil.isEmpty( candidate ) )
+            return Optional.empty();
+
+        if ( ! candidate.startsWith( "-" ) )
+            return Optional.empty();
+
+        try {
+            Double.parseDouble( candidate );
+        }
+        catch ( NumberFormatException e )
+        {
+            return Optional.of(
+                    StringUtil.trim( candidate, "-" ) );
+        }
+
+        return Optional.empty();
+    }
+
+    /**
      * Processes the properties in the passed command line arguments.
      * Properties are qualified by a '-' or '--' prefix.
      *
@@ -305,17 +335,12 @@ abstract public class CliApplication
 
         for ( var c : argv )
         {
-            if ( c.startsWith( "--" ) )
-                c = c.substring( 2 );
-            else if ( c.startsWith( "-" ) )
-                c = c.substring( 1 );
-            else
-            {
-                result.add( c );
-                continue;
-            }
+            var propertyName = getNameIfProperty( c );
 
-            processProperty( c );
+            if ( propertyName.isPresent() )
+                processProperty( propertyName.get() );
+            else
+                result.add( c );
         }
 
         return result.toArray( new String[result.size()] );
@@ -484,48 +509,45 @@ abstract public class CliApplication
         MultiMap<CaseIndependent,Integer,CommandHolder> result =
                 new MultiMap<>();
 
-        for ( Method c : targetClass.getDeclaredMethods() )
-        {
-            Command commandAnnotation =
-                c.getAnnotation( Command.class );
-            if ( commandAnnotation == null )
-                continue;
+        processAnnotation(
+                Command.class,
+                targetClass::getDeclaredMethods,
+                (c,a) -> {
+                    String name = a.name();
+                    if ( StringUtil.isEmpty( name ) )
+                        name = c.getName();
 
-            String name = commandAnnotation.name();
-            if ( StringUtil.isEmpty( name ) )
-                name = c.getName();
+                    for ( Class<?> current : c.getParameterTypes() )
+                    {
+                        if ( current.isEnum() )
+                            continue;
 
-            for ( Class<?> current : c.getParameterTypes() )
-            {
-                if ( current.isEnum() )
-                    continue;
+                        Objects.requireNonNull(
+                                _converters.get( current ),
+                                "No mapper for " + current );
+                    }
 
-                Objects.requireNonNull(
-                        _converters.get( current ),
-                        "No mapper for " + current );
-            }
+                    Integer numberOfArgs =
+                            Integer.valueOf( c.getParameterTypes().length );
 
-            Integer numberOfArgs =
-                    Integer.valueOf( c.getParameterTypes().length );
+                    var currentName =
+                            new CaseIndependent( name );
+                    // Check if we already have this command with the same parameter
+                    // list length. This is an implementation error.
+                    if (result.get(currentName, numberOfArgs) != null) {
+                        throw new InternalError(
+                                "Implementation error. Operation " +
+                                name +
+                                " with " +
+                                numberOfArgs +
+                                " parameters is not unique.");
+                    }
 
-            var currentName =
-                    new CaseIndependent( name );
-            // Check if we already have this command with the same parameter
-            // list length. This is an implementation error.
-            if (result.get(currentName, numberOfArgs) != null) {
-                throw new InternalError(
-                        "Implementation error. Operation " +
-                        name +
-                        " with " +
-                        numberOfArgs +
-                        " parameters is not unique.");
-            }
-
-            result.put(
-                    currentName,
-                    numberOfArgs,
-                    new CommandHolder( c ) );
-        }
+                    result.put(
+                            currentName,
+                            numberOfArgs,
+                            new CommandHolder( c ) );
+                } );
 
         return result;
     }
@@ -541,21 +563,6 @@ abstract public class CliApplication
                 targetInstance.getClass();
         var result =
                 new HashMap<String, PropertyHolder>();
-
-//        for ( var c : targetClass.getDeclaredFields() )
-//        {
-//            Property commandAnnotation =
-//                c.getAnnotation( Property.class );
-//            if ( commandAnnotation == null )
-//                continue;
-//
-//            var property =
-//                    new PropertyHolder( c );
-//
-//            result.put(
-//                    property.getName(),
-//                    property );
-//        }
 
         processAnnotation(
                 Property.class,
