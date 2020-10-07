@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -54,6 +53,10 @@ abstract public class CliApplication
     @Target( ElementType.METHOD )
     protected @interface Command {
         String name() default StringUtil.EMPTY_STRING;
+        /**
+         * Use Named.
+         */
+        @Deprecated
         String[] argumentNames() default {};
         String shortDescription() default StringUtil.EMPTY_STRING;
     }
@@ -64,6 +67,9 @@ abstract public class CliApplication
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.FIELD )
     protected @interface Property {
+        /**
+         * Single dash arg.
+         */
         String name() default StringUtil.EMPTY_STRING;
         String shortDescription() default StringUtil.EMPTY_STRING;
     }
@@ -291,32 +297,31 @@ abstract public class CliApplication
     }
 
     /**
-     * Check if the arguments is a possible property name.
+     * Check if the argument is a possible property name.
      * This filters arguments like '-313' which is *not*
-     * a possible property name.
+     * an allowed property name.
      *
      * @param candidate A property name candidate.
-     * @return An optional that contains the bare property
-     * name. If this is empty this was not a valid property name.
+     * @return A valid property name or null if the
+     * passed candidate was not an allowed property name.
      */
-    private Optional<String> getNameIfProperty( String candidate )
+    private String getNameIfProperty( String candidate )
     {
         if ( StringUtil.isEmpty( candidate ) )
-            return Optional.empty();
+            return null;
 
         if ( ! candidate.startsWith( "-" ) )
-            return Optional.empty();
+            return null;
 
         try {
             Double.parseDouble( candidate );
         }
         catch ( NumberFormatException e )
         {
-            return Optional.of(
-                    StringUtil.trim( candidate, "-" ) );
+            return StringUtil.trim( candidate, "-" );
         }
 
-        return Optional.empty();
+        return null;
     }
 
     /**
@@ -337,8 +342,8 @@ abstract public class CliApplication
         {
             var propertyName = getNameIfProperty( c );
 
-            if ( propertyName.isPresent() )
-                processProperty( propertyName.get() );
+            if ( propertyName != null )
+                processProperty( propertyName );
             else
                 result.add( c );
         }
@@ -373,9 +378,9 @@ abstract public class CliApplication
      */
     static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
-            launch(
-                    new DefaultCtorReflection<>( cl ),
-                    argv );
+        launch(
+                new DefaultCtorReflection<>( cl ),
+                argv );
     }
 
     /**
