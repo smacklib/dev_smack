@@ -39,7 +39,10 @@ module framework.smack {
     exports org.jdesktop.beans;
     exports org.jdesktop.util;
     exports org.jdesktop.util.converters;
+    exports org.smack.application;
     exports org.smack.fx;
     exports org.smack.util;
     exports org.smack.util.collections;
+    exports org.smack.util.io;
+    exports org.smack.util.xml;
 }
