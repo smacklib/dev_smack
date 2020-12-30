@@ -25,9 +25,16 @@ public class ApplicationUnderTestProperties extends CliApplication
     @Property( name = "level" )
     public Level levelProperty = Level.ALL;
 
+    @Command
     public void c_booleanProperty()
     {
         out( "%s%n", booleanProperty );
+    }
+
+    @Command
+    public void c_levelProperty()
+    {
+        out( "%s%n", levelProperty );
     }
 
     @Command
@@ -52,6 +59,8 @@ public class ApplicationUnderTestProperties extends CliApplication
                     {
                     case "INFO":
                         return Level.INFO;
+                    case "WARNING":
+                        return Level.WARNING;
                     default:
                         return Level.OFF;
                     }

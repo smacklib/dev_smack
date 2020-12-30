@@ -44,7 +44,7 @@ public class CliApplicationTest
             var errx = errb.toString();
             if ( StringUtil.hasContent( errx ) )
                 for ( String c : errx.split( StringUtil.EOL ) )
-                    out.add( c );
+                    err.add( c );
         }
     }
 
