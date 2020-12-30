@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 
-public class CliApplicationOverloadTest
+public class CliApplicationPropertyTest
 {
     @Test
     public void testBooleanSet() throws IOException
