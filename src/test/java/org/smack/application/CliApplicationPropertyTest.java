@@ -11,6 +11,27 @@ import org.junit.Test;
 public class CliApplicationPropertyTest
 {
     @Test
+    public void testIntExplicit() throws IOException
+    {
+        final var err =
+                new ArrayList<String>();
+        final var out =
+                new ArrayList<String>();
+
+        CliApplicationTest.execCli(
+                out,
+                err,
+                ApplicationUnderTestProperties::main,
+                "setIntExplicit",
+                "-313",
+                "-intProperty=1");
+
+        assertEquals( 0, err.size() );
+        assertEquals( 1, out.size() );
+        assertEquals( "-313", out.get( 0 ) );
+    }
+
+    @Test
     public void testBooleanSet() throws IOException
     {
         final var err =

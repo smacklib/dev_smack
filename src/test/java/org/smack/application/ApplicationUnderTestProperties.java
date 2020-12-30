@@ -38,6 +38,13 @@ public class ApplicationUnderTestProperties extends CliApplication
     }
 
     @Command
+    public void setIntExplicit( int value )
+    {
+        intProperty = value;
+        out( "%s%n", intProperty );
+    }
+
+    @Command
     public void hello()
     {
         out( "booleanProperty=%s%n", booleanProperty );
