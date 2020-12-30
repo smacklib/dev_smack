@@ -3,9 +3,7 @@ package org.smack.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 
 import org.junit.Test;
 import org.smack.util.StringUtil;
@@ -145,7 +143,6 @@ public class CliApplicationTypeTest
             final var out =
                     new StringBuilder();
 
-
             CliApplicationTest.execCli(
                     out,
                     err,
@@ -173,26 +170,17 @@ public class CliApplicationTypeTest
     @Test
     public void TestUnknownType() throws Exception
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
+        CliApplicationTest.execCli(
+                out,
+                err,
+                ApplicationUnderTest::main,
+                new String[0] );
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[0] );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.hasContent( errOs.toString() ) );
+        assertTrue( StringUtil.hasContent( err.toString() ) );
     }
 }
