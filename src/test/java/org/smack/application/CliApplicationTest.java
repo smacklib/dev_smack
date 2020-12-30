@@ -134,24 +134,18 @@ public class CliApplicationTest
     @Test
     public void testHelpDefault() throws IOException
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
+        execCli(
+                out,
+                err,
+                ApplicationUnderTestDefault::main,
+                new String[0] );
 
-        ApplicationUnderTestDefault.main( new String[0] );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
+        assertEquals( 0, out.length() );
 
         String expectedString =
                 "ApplicationUnderTestDefault\n" +
@@ -166,7 +160,7 @@ public class CliApplicationTest
                         new StringReader( expectedString ) );
         List<String> receivedLines =
                 FileUtil.readLines(
-                        new StringReader( errOs.toString() ) );
+                        new StringReader( err.toString() ) );
 
         assertEquals(
                 expectedLines,
@@ -176,25 +170,18 @@ public class CliApplicationTest
     @Test
     public void testArgListNotUnique() throws IOException
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
+        assertEquals( 0, out.length() );
 
-        ApplicationUnderTestOverload.main(
+        execCli(
+                out,
+                err,
+                ApplicationUnderTestOverload::main,
                 "cmdoverload 1 2 3 4".split( " " ) );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
 
         String expectedString =
                 "Parameter count does not match. Available alternatives:\n" +
@@ -208,7 +195,7 @@ public class CliApplicationTest
                         new StringReader( expectedString ) );
         List<String> receivedLines =
                 FileUtil.readLines(
-                        new StringReader( errOs.toString() ) );
+                        new StringReader( err.toString() ) );
 
         assertEquals(
                 expectedLines,
@@ -221,39 +208,28 @@ public class CliApplicationTest
             String expectedCommand,
             String expectedArg )
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[]{ command, argument } );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
+        execCli( out, err,
+                ApplicationUnderTest::main,
+                command,
+                argument );
 
         assertEquals(
                 StringUtil.EMPTY_STRING,
-                errOs.toString() );
+                err.toString() );
 
         String expected =
-                String.format( "%s:%s\n",
+                String.format( "%s:%s%n",
                         expectedCommand,
                         expectedArg );
-        String outOss =
-                outOs.toString();
 
         assertEquals(
                 expected,
-                outOss );
+                out.toString() );
     }
 
     private void testType( String command, String expectedCommand )
