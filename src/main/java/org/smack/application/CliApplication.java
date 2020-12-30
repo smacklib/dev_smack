@@ -62,7 +62,7 @@ abstract public class CliApplication
     }
 
     /**
-     * Used to mark cli command operations.
+     * Used to mark cli properties.
      */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.FIELD )

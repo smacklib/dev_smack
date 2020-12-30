@@ -25,6 +25,11 @@ public class TestAppProperties extends CliApplication
     @Property( name = "level" )
     public Level levelProperty = Level.ALL;
 
+    public void c_booleanProperty()
+    {
+        out( "%s%n", booleanProperty );
+    }
+
     @Command
     public void hello()
     {

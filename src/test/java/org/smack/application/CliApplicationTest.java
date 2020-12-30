@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.smack.util.FileUtil;
@@ -14,10 +15,54 @@ import org.smack.util.StringUtil;
 
 public class CliApplicationTest
 {
-    @Test
-    public void testHelp() throws IOException
+    static void execCli(
+            List<String> out,
+            List<String> err,
+            Consumer<String[]> cliApplicationMain,
+            String ... argv  )
     {
-        PrintStream originalErrOut =
+        StringBuilder outb =
+                out == null ? null : new StringBuilder();
+        StringBuilder errb =
+                err == null ? null : new StringBuilder();
+
+        execCli(
+                outb,
+                errb,
+                cliApplicationMain,
+                argv );
+
+        if ( out != null )
+        {
+            var outx = outb.toString();
+            if ( out != null && StringUtil.hasContent( outx ) )
+                for ( String c : outx.split( StringUtil.EOL ) )
+                    out.add( c );
+        }
+        if ( err != null )
+        {
+            var errx = errb.toString();
+            if ( StringUtil.hasContent( errx ) )
+                for ( String c : errx.split( StringUtil.EOL ) )
+                    out.add( c );
+        }
+    }
+
+    /**
+     * Get results as strings holding all lines.
+     *
+     * @param out
+     * @param err
+     * @param cliApplicationMain
+     * @param argv
+     */
+    static void execCli(
+            StringBuilder out,
+            StringBuilder err,
+            Consumer<String[]> cliApplicationMain,
+            String ... argv  )
+    {
+        PrintStream originalErr =
                 System.err;
         ByteArrayOutputStream errOs =
                 new ByteArrayOutputStream();
@@ -29,12 +74,34 @@ public class CliApplicationTest
                 new ByteArrayOutputStream();
         System.setOut( new PrintStream( outOs ) );
 
-        ApplicationUnderTest.main( new String[0] );
+        cliApplicationMain.accept( argv );
 
         System.err.flush();
-        System.setErr( originalErrOut );
+        System.setErr( originalErr );
         System.out.flush();
         System.setOut( originalOut );
+
+        if ( out != null )
+            out.append( outOs.toString() );
+        if ( err != null )
+            err.append( errOs.toString() );
+    }
+
+    @Test
+    public void testHelp() throws IOException
+    {
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
+
+        execCli(
+                out,
+                err,
+                ApplicationUnderTest::main,
+                new String[0] );
+
+        assertEquals( 0, out.length() );
 
         String expectedString =
                 "ApplicationUnderTest\n" +
@@ -51,12 +118,13 @@ public class CliApplicationTest
                         "cmdLong: long\n" +
                         "cmdShort: short\n" +
                         "cmdString: String\n";
+
         List<String> expectedLines =
                 FileUtil.readLines(
                         new StringReader( expectedString ) );
         List<String> receivedLines =
                 FileUtil.readLines(
-                        new StringReader( errOs.toString() ) );
+                        new StringReader( err.toString() ) );
 
         assertEquals(
                 expectedLines,
@@ -130,11 +198,11 @@ public class CliApplicationTest
 
         String expectedString =
                 "Parameter count does not match. Available alternatives:\n" +
-                "cmdOverload\n" +
-                "cmdOverload: String\n" +
-                "cmdOverload: String, String\n" +
-                "cmdOverload: String, String, String\n" +
-                "\n";
+                        "cmdOverload\n" +
+                        "cmdOverload: String\n" +
+                        "cmdOverload: String, String\n" +
+                        "cmdOverload: String, String, String\n" +
+                        "\n";
         List<String> expectedLines =
                 FileUtil.readLines(
                         new StringReader( expectedString ) );
