@@ -2,7 +2,7 @@ package org.smack.application;
 
 import java.util.logging.Level;
 
-public class TestAppProperties extends CliApplication
+public class ApplicationUnderTestProperties extends CliApplication
 {
     enum Ducks { TICK, TRICK, TRACK };
 
@@ -57,6 +57,6 @@ public class TestAppProperties extends CliApplication
                     }
                 });
 
-        launch( TestAppProperties::new, argv );
+        launch( ApplicationUnderTestProperties::new, argv );
     }
 }
