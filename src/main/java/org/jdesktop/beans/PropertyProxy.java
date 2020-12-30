@@ -1,4 +1,4 @@
-/* $Id: aa29f85a667f429517af51e7e74f1eb8b9947aad $
+/* $Id$
  *
  * Laboratory.
  *
