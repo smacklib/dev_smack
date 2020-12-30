@@ -142,10 +142,6 @@ abstract public class CliApplication
     {
         T convert( String s ) throws Exception;
     }
-    public interface ConsumerX<T>
-    {
-        void consume( T s ) throws Exception;
-    }
 
     private static final HashMap<Class<?>,StringConverter<?>> _converters =
             new HashMap<>();
