@@ -11,7 +11,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -23,10 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jdesktop.util.ReflectionUtil;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
@@ -49,7 +53,24 @@ abstract public class CliApplication
     @Target( ElementType.METHOD )
     protected @interface Command {
         String name() default StringUtil.EMPTY_STRING;
+        /**
+         * Use Named.
+         */
+        @Deprecated
         String[] argumentNames() default {};
+        String shortDescription() default StringUtil.EMPTY_STRING;
+    }
+
+    /**
+     * Used to mark cli properties.
+     */
+    @Retention( RetentionPolicy.RUNTIME )
+    @Target( ElementType.FIELD )
+    protected @interface Property {
+        /**
+         * Single dash arg.
+         */
+        String name() default StringUtil.EMPTY_STRING;
         String shortDescription() default StringUtil.EMPTY_STRING;
     }
 
@@ -113,6 +134,9 @@ abstract public class CliApplication
      */
     private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
             getCommandMap( getClass() );
+
+    private final Map<String,PropertyHolder> _propertyMap =
+            getPropertyMap( this );
 
     public interface StringConverter<T>
     {
@@ -196,6 +220,8 @@ abstract public class CliApplication
             return;
         }
 
+        argv = processProperties( argv );
+
         var ciName =
                 new CaseIndependent( argv[0] );
 
@@ -243,6 +269,84 @@ abstract public class CliApplication
         defaultCmd( argv );
     }
 
+    private void processProperty( String property )
+        throws Exception
+    {
+        String value = null;
+        var equals =
+                property.indexOf( "=" );
+        if ( equals > 0 )
+        {
+            value = property.substring( equals+1 );
+            property = property.substring( 0, equals );
+        }
+
+        var setter = _propertyMap.get(
+                property );
+        if ( setter == null )
+            throw new Exception( "Unknown property: " + property );
+
+        if ( setter.isBooleanType() && value == null )
+            value = "true";
+
+        setter.set( value );
+    }
+
+    /**
+     * Check if the argument is a possible property name.
+     * This filters arguments like '-313' which is *not*
+     * an allowed property name.
+     *
+     * @param candidate A property name candidate.
+     * @return A valid property name or null if the
+     * passed candidate was not an allowed property name.
+     */
+    private String getNameIfProperty( String candidate )
+    {
+        if ( StringUtil.isEmpty( candidate ) )
+            return null;
+
+        if ( ! candidate.startsWith( "-" ) )
+            return null;
+
+        try {
+            Double.parseDouble( candidate );
+        }
+        catch ( NumberFormatException e )
+        {
+            return StringUtil.trim( candidate, "-" );
+        }
+
+        return null;
+    }
+
+    /**
+     * Processes the properties in the passed command line arguments.
+     * Properties are qualified by a '-' or '--' prefix.
+     *
+     * @param argv The command line arguments.
+     * @return A newly allocated set of command line arguments with
+     * properties removed.
+     * @throws Exception In case the conversion fails.
+     */
+    private String[] processProperties( String[] argv )
+        throws Exception
+    {
+        var result = new ArrayList<String>();
+
+        for ( var c : argv )
+        {
+            var propertyName = getNameIfProperty( c );
+
+            if ( propertyName != null )
+                processProperty( propertyName );
+            else
+                result.add( c );
+        }
+
+        return result.toArray( new String[result.size()] );
+    }
+
     /**
      * Start execution of the console command. This implicitly parses
      * the parameters and dispatches the call to the matching operation.
@@ -270,9 +374,9 @@ abstract public class CliApplication
      */
     static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
-            launch(
-                    new DefaultCtorReflection<>( cl ),
-                    argv );
+        launch(
+                new DefaultCtorReflection<>( cl ),
+                argv );
     }
 
     /**
@@ -367,6 +471,18 @@ abstract public class CliApplication
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
             result.append( command.usage() );
 
+        if ( ! _propertyMap.isEmpty() )
+        {
+            result.append( StringUtil.EOL );
+            result.append( "Properties:" );
+            result.append( StringUtil.EOL );
+            _propertyMap.values().stream().sorted().forEach( c ->
+            {
+                result.append( c.usage() );
+                result.append( StringUtil.EOL );
+            } );
+        }
+
         return result.toString();
     }
 
@@ -394,50 +510,87 @@ abstract public class CliApplication
         MultiMap<CaseIndependent,Integer,CommandHolder> result =
                 new MultiMap<>();
 
-        for ( Method c : targetClass.getDeclaredMethods() )
-        {
-            Command commandAnnotation =
-                c.getAnnotation( Command.class );
-            if ( commandAnnotation == null )
-                continue;
+        processAnnotation(
+                Command.class,
+                targetClass::getDeclaredMethods,
+                (c,a) -> {
+                    String name = a.name();
+                    if ( StringUtil.isEmpty( name ) )
+                        name = c.getName();
 
-            String name = commandAnnotation.name();
-            if ( StringUtil.isEmpty( name ) )
-                name = c.getName();
+                    for ( Class<?> current : c.getParameterTypes() )
+                    {
+                        if ( current.isEnum() )
+                            continue;
 
-            for ( Class<?> current : c.getParameterTypes() )
-            {
-                if ( current.isEnum() )
-                    continue;
+                        Objects.requireNonNull(
+                                _converters.get( current ),
+                                "No mapper for " + current );
+                    }
 
-                Objects.requireNonNull(
-                        _converters.get( current ),
-                        "No mapper for " + current );
-            }
+                    Integer numberOfArgs =
+                            Integer.valueOf( c.getParameterTypes().length );
 
-            Integer numberOfArgs =
-                    Integer.valueOf( c.getParameterTypes().length );
+                    var currentName =
+                            new CaseIndependent( name );
+                    // Check if we already have this command with the same parameter
+                    // list length. This is an implementation error.
+                    if (result.get(currentName, numberOfArgs) != null) {
+                        throw new InternalError(
+                                "Implementation error. Operation " +
+                                name +
+                                " with " +
+                                numberOfArgs +
+                                " parameters is not unique.");
+                    }
 
-            var currentName =
-                    new CaseIndependent( name );
-            // Check if we already have this command with the same parameter
-            // list length. This is an implementation error.
-            if (result.get(currentName, numberOfArgs) != null) {
-                throw new InternalError(
-                        "Implementation error. Operation " +
-                        name +
-                        " with " +
-                        numberOfArgs +
-                        " parameters is not unique.");
-            }
-
-            result.put(
-                    currentName,
-                    numberOfArgs,
-                    new CommandHolder( c ) );
-        }
+                    result.put(
+                            currentName,
+                            numberOfArgs,
+                            new CommandHolder( c ) );
+                } );
 
         return result;
+    }
+
+    /**
+     * Get a map of all commands that allows to access a single command based on
+     * its name and argument list.
+     */
+    private Map<String, PropertyHolder> getPropertyMap(
+            Object targetInstance )
+    {
+        var targetClass =
+                targetInstance.getClass();
+        var result =
+                new HashMap<String, PropertyHolder>();
+
+        processAnnotation(
+                Property.class,
+                targetClass::getDeclaredFields,
+                (f,a) -> {
+                    var p = new PropertyHolder( f );
+                    result.put(
+                            p.getName(),
+                            p );
+                } );
+
+        return result;
+    }
+
+    // Pure orgasm ...
+    private static <
+        T extends AccessibleObject,
+        A extends java.lang.annotation.Annotation> void processAnnotation(
+            Class<A> classs,
+            Supplier<T[]> x,
+            BiConsumer<T, A>c)
+    {
+        Arrays.asList( x.get() )
+            .stream()
+            .filter(
+                s -> s.isAnnotationPresent( classs ) )
+            .forEach( s -> c.accept( s, s.getAnnotation( classs ) ) );
     }
 
     /**
@@ -646,7 +799,7 @@ abstract public class CliApplication
      * a special mapping for enums and the type map
      * for all other types.
      */
-    private final Object transformArgument(
+    private static final Object transformArgument(
             Class<?> targetType,
             String argument )
         throws Exception
@@ -671,7 +824,7 @@ abstract public class CliApplication
     /**
      * Convert an argument to an enum instance.
      */
-    private final Object transformEnum(
+    private static final Object transformEnum(
             Class<?> targetEnum,
             String argument )
         throws IllegalArgumentException
@@ -777,6 +930,80 @@ abstract public class CliApplication
             catch (Exception e) {
                 throw new IllegalArgumentException(e);
             }
+        }
+    }
+
+    /**
+     * Encapsulates a command.
+     */
+    private class PropertyHolder implements Comparable<PropertyHolder>
+    {
+        private final Field _field;
+        private final Property _property;
+
+        PropertyHolder( Field field )
+        {
+            _field = field;
+            _property = Objects.requireNonNull(
+                    field.getAnnotation( Property.class ) );
+        }
+
+        String getName()
+        {
+            String name = _property.name();
+
+            if ( StringUtil.hasContent( name ) )
+                return name;
+
+            return _field.getName();
+        }
+
+        void set( String value )
+                throws Exception
+        {
+            var self = CliApplication.this;
+
+            _field.set(
+                    self,
+                    transformArgument(
+                            _field.getType(),
+                            value ) );
+        }
+
+        boolean isBooleanType()
+        {
+            return
+                    ReflectionUtil.normalizePrimitives( _field.getType() ) == Boolean.class;
+        }
+
+        String usage()
+        {
+            var type =
+                    _field.getType();
+            var typeDoc = type.isEnum() ?
+                    getEnumDocumentation( type ) :
+                    type.getSimpleName();
+
+            var result = String.format(
+                    "-%s=(%s)",
+                    getName(),
+                    typeDoc );
+
+            var description =
+                    _property.shortDescription();
+            if ( StringUtil.isEmpty( description ) )
+                return result;
+
+            return result + " : " + description;
+        }
+
+        @Override
+        public int compareTo( PropertyHolder o )
+        {
+            int result =
+                    getName().compareTo( o.getName() );
+
+            return result;
         }
     }
 
@@ -905,7 +1132,7 @@ abstract public class CliApplication
             if ( _commandAnnotation.argumentNames().length > 0 )
             {
                 if ( _commandAnnotation.argumentNames().length != parameterTypes.length )
-                    LOG.warning( "Command.argumentNames in consistent with " + _op );
+                    LOG.warning( "Command.argumentNames inconsistent with " + _op );
 
                 return _commandAnnotation.argumentNames();
             }

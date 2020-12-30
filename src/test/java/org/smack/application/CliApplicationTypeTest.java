@@ -3,9 +3,7 @@ package org.smack.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 
 import org.junit.Test;
 import org.smack.util.StringUtil;
@@ -26,38 +24,29 @@ public class CliApplicationTypeTest
 
     private void TestType( String command, String argument, String exp )
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[]{ command, argument } );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
+        CliApplicationTest.execCli(
+                out,
+                err,
+                ApplicationUnderTest::main,
+                command, argument );
 
         assertEquals(
                 StringUtil.EMPTY_STRING,
-                errOs.toString() );
+                err.toString() );
 
         String expected =
                 String.format( "%s:%s\n", command, exp );
-        String outOss =
-                outOs.toString();
 
         assertEquals(
                 expected,
-                outOss );
+                out.toString() );
     }
+
     private void TestType( String command, String argument )
     {
         TestType( command, argument, argument );
@@ -142,45 +131,35 @@ public class CliApplicationTypeTest
     @Test
     public void TestTypeFile() throws Exception
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
-
         File tmpFile = File.createTempFile( "tmp", "bah" );
         tmpFile.createNewFile();
         tmpFile.deleteOnExit();
 
         try {
-            PrintStream originalOut =
-                    System.out;
-            ByteArrayOutputStream outOs =
-                    new ByteArrayOutputStream();
-            System.setOut( new PrintStream( outOs ) );
-
             assertTrue( tmpFile.exists() );
 
-            ApplicationUnderTest.main( new String[]{ "cmdFile", tmpFile.getPath() } );
+            final var err =
+                    new StringBuilder();
+            final var out =
+                    new StringBuilder();
 
-            System.err.flush();
-            System.setErr( originalErrOut );
-            System.out.flush();
-            System.setOut( originalOut );
+            CliApplicationTest.execCli(
+                    out,
+                    err,
+                    ApplicationUnderTest::main,
+                    "cmdFile",
+                    tmpFile.getPath() );
 
-            assertTrue( StringUtil.isEmpty( errOs.toString() ) );
+            assertTrue( StringUtil.isEmpty( err.toString() ) );
 
             String expected =
                     "cmdFile:" +
                             tmpFile.getPath() +
                             "\n";
-            String outOss =
-                    outOs.toString();
 
             assertEquals(
                     expected,
-                    outOss );
-            assertTrue( tmpFile.exists() );
+                    out.toString() );
         }
         finally
         {
@@ -191,26 +170,17 @@ public class CliApplicationTypeTest
     @Test
     public void TestUnknownType() throws Exception
     {
-        PrintStream originalErrOut =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
+        final var err =
+                new StringBuilder();
+        final var out =
+                new StringBuilder();
 
+        CliApplicationTest.execCli(
+                out,
+                err,
+                ApplicationUnderTest::main,
+                new String[0] );
 
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        ApplicationUnderTest.main( new String[0] );
-
-        System.err.flush();
-        System.setErr( originalErrOut );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        assertTrue( StringUtil.hasContent( errOs.toString() ) );
+        assertTrue( StringUtil.hasContent( err.toString() ) );
     }
 }

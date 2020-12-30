@@ -9,6 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.LineNumberReader;
+import java.io.StringReader;
+
 import org.junit.Test;
 
 /**
@@ -55,8 +58,22 @@ public class StringUtilTest
 
     @Test
     public void testEmptyString() {
-        assertNotNull( StringUtil.EMPTY_STRING.length() );
+        assertNotNull( StringUtil.EMPTY_STRING );
         assertEquals( 0, StringUtil.EMPTY_STRING.length() );
+        assertTrue( StringUtil.EMPTY_STRING.isEmpty() );
+    }
+
+    @Test
+    public void testEol() throws Exception {
+        assertNotNull( StringUtil.EOL );
+        String twoLines = "1" + StringUtil.EOL + "2" + StringUtil.EOL;
+
+        var sr = new LineNumberReader(
+                new StringReader( twoLines ) );
+
+        assertEquals( "1", sr.readLine() );
+        assertEquals( "2", sr.readLine() );
+        assertNull( sr.readLine() );
     }
 
     @Test
