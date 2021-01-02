@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>micbinz</groupId>
   <artifactId>smack</artifactId>
-  <version>11.398</version>
+  <version>11.399</version>
   <name>Smack</name>
   <description>Framework</description>
   
@@ -12,7 +12,7 @@
    <repository>
      <id>github</id>
      <name>GitHub Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/michab66/dev_smack</url>
+     <url>https://maven.pkg.github.com/smacklib/dev_smack</url>
    </repository>
   </distributionManagement>
   
