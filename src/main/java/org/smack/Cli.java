@@ -13,6 +13,7 @@ import java.io.Writer;
 
 import org.smack.application.CliApplication;
 import org.smack.application.CliApplication.Named;
+import org.smack.util.StringUtil;
 import org.smack.util.xml.XmlUtil;
 
 /**
@@ -43,12 +44,13 @@ public final class Cli extends CliApplication
     public void xsl(
             @Named( value="stylesheet" ) File stylesheet,
             @Named( value="xml-file") File xml,
-            @Named( value="target-file") File target
+            @Named( value="target-file") String target
             ) throws Exception
     {
         try ( Writer w = new FileWriter( target ) )
         {
             w.write( XmlUtil.transform( stylesheet, xml ) );
+            w.write( StringUtil.EOL );
         }
     }
 
