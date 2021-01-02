@@ -1074,9 +1074,9 @@ abstract public class CliApplication
                 String msg = e.getMessage();
 
                 if ( StringUtil.isEmpty( msg ) )
-                    err( e.getClass().getSimpleName() );
-                else
-                    err( msg );
+                    msg = e.getClass().getSimpleName();
+
+                err( "%s%n", msg );
 
                 return;
             }
