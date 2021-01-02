@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -251,5 +252,36 @@ public class CliApplicationTest
         testType( act, act );
         testType( "cmdbyte", act );
         testType( "CMDBYTE", act );
+    }
+
+
+    @Test
+    public void testUnknownCommand()
+    {
+        final var err =
+                new ArrayList<String>();
+        final var out =
+                new ArrayList<String>();
+        final var badName =
+                "unknown-command";
+
+        execCli( out, err,
+                ApplicationUnderTest::main,
+                badName );
+
+        assertEquals(
+                0,
+                out.size() );
+        assertEquals(
+                1,
+                err.size() );
+
+        String expected =
+                String.format( "Unknown command '%s'.",
+                        badName );
+
+        assertEquals(
+                expected,
+                err.get( 0 ) );
     }
 }
