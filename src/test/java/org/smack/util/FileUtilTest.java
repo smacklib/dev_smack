@@ -17,19 +17,32 @@ import org.junit.Test;
  */
 public class FileUtilTest
 {
+    private String concat( String ... lines )
+    {
+        return StringUtil.concatenate(
+                StringUtil.EOL,
+                lines );
+    }
+
     @Test
     public void testReadLines() throws Exception
     {
+        var lines =
+                new String[]
+                {
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        StringUtil.EMPTY_STRING
+                };
         var toTrim =
-                "1\n"
-                        + "2\n"
-                        + "3\n"
-                        + "4\n";
+                concat( lines );
         var sr =
                 new StringReader( toTrim );
         var list =
                 FileUtil.readLines( sr );
-        assertEquals( 4, list.size() );
+        assertEquals( lines.length-1, list.size() );
 
         // Assert that the reader got closed.
         try
@@ -45,11 +58,18 @@ public class FileUtilTest
     @Test
     public void testReadLines2() throws Exception
     {
+        var lines =
+                new String[]
+                {
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        StringUtil.EMPTY_STRING,
+                        StringUtil.EMPTY_STRING
+                };
         var toTrim =
-                "1\n"
-                        + "2\n"
-                        + "3\n"
-                        + "4\n\n";
+                concat( lines );
         var sr =
                 new StringReader( toTrim );
 
@@ -80,12 +100,11 @@ public class FileUtilTest
                         "1",
                         "2",
                         "3",
-                        "4"
+                        "4",
+                        StringUtil.EMPTY_STRING
                 };
         var toTrim =
-                StringUtil.concatenate(
-                        StringUtil.EOL,
-                        lines );
+                concat( lines );
         boolean isClosed[] =
                 new boolean[] {false};
         var sr =
@@ -103,7 +122,7 @@ public class FileUtilTest
         var list =
                 FileUtil.readLines( sr );
         assertEquals(
-                lines.length,
+                lines.length-1,
                 list.size() );
         assertTrue( isClosed[0] );
     }
