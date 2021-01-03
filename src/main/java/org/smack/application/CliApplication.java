@@ -245,9 +245,9 @@ abstract public class CliApplication
                 _commandMap.getAll( ciName );
         if ( possibleCommands.size() > 0 )
         {
-            System.err.println(
+            err( "%s%n",
                     "Parameter count does not match. Available alternatives:" );
-            System.err.println(
+            err( "%s%n",
                     getCommandsUsage(possibleCommands, argv));
             return;
         }
@@ -265,8 +265,8 @@ abstract public class CliApplication
             return;
         }
 
-        // Nothing matched, we forward this to default handling.
-        defaultCmd( argv );
+        // No match.
+        err( "Unknown command '%s'.%n", ciName );
     }
 
     private void processProperty( String property )
@@ -1074,9 +1074,9 @@ abstract public class CliApplication
                 String msg = e.getMessage();
 
                 if ( StringUtil.isEmpty( msg ) )
-                    err( e.getClass().getSimpleName() );
-                else
-                    err( msg );
+                    msg = e.getClass().getSimpleName();
+
+                err( "%s%n", msg );
 
                 return;
             }
