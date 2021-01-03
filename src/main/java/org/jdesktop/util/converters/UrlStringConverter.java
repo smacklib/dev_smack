@@ -6,6 +6,7 @@ import java.net.URL;
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
 
+@Deprecated
 public class UrlStringConverter extends ResourceConverter {
 
     public UrlStringConverter() {

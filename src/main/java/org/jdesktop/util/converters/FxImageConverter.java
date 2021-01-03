@@ -15,6 +15,7 @@ import org.jdesktop.util.ResourceMap;
 
 import javafx.scene.image.Image;
 
+@Deprecated
 public class FxImageConverter extends ResourceConverter
 {
     static private final Logger LOG =

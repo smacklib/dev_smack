@@ -30,6 +30,7 @@ import org.smack.util.StringUtil;
  *
  * @author Michael Binz
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {

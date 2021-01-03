@@ -3,6 +3,7 @@ package org.jdesktop.util.converters;
 import org.jdesktop.util.ResourceConverter;
 import org.jdesktop.util.ResourceMap;
 
+@Deprecated
 public class BooleanStringConverter extends ResourceConverter {
 
     public BooleanStringConverter() {

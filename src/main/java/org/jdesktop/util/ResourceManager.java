@@ -41,6 +41,7 @@ import javafx.util.Pair;
  * @version $Rev$
  * @author Michael Binz
  */
+@Deprecated
 public class ResourceManager
 {
     private final static Logger LOG =

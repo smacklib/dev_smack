@@ -1,6 +1,6 @@
 package org.jdesktop.util.converters;
 
-
+@Deprecated
 public class ByteStringConverter extends INumberStringConverter {
 
         public ByteStringConverter() {

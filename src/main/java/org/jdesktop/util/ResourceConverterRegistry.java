@@ -8,6 +8,7 @@ import java.util.HashMap;
  * @version $Revision$
  * @author Michael Binz
  */
+@Deprecated
 public final class ResourceConverterRegistry
 {
     private final HashMap<Class<?>, ResourceConverter> _registry =
