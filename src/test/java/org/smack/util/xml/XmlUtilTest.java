@@ -1,6 +1,7 @@
 package org.smack.util.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -9,8 +10,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
+import org.smack.util.FileUtil;
 import org.smack.util.StringUtil;
 
 public class XmlUtilTest
@@ -36,33 +41,82 @@ public class XmlUtilTest
     @Test
     public void testTransformStream() throws Exception
     {
-            var styleSheet =  new CheckableInputStream(
-                    getClass().getResourceAsStream( "cdd_did.xsl" ) );
-            var xml = new CheckableInputStream(
-                    getClass().getResourceAsStream( "example.cdd.xml" ) );
+        var styleSheet =  new CheckableInputStream(
+                getClass().getResourceAsStream( "complex.xsl" ) );
+        var xml = new CheckableInputStream(
+                getClass().getResourceAsStream( "complex.xml" ) );
+        var expected = FileUtil.readLines(
+                getClass().getResourceAsStream( "complex.out" ) );
 
-            String result = XmlUtil.transform(
-                    styleSheet,
-                    xml );
+        assertFalse( styleSheet.isClosed() );
+        assertFalse( xml.isClosed() );
 
-            assertTrue( styleSheet.isClosed() );
-            assertTrue( xml.isClosed() );
-            assertNotNull( result );
-            assertEquals( 15824, result.split( "\\R" ).length );
+        String result = XmlUtil.transform(
+                styleSheet,
+                xml );
+
+        assertTrue( styleSheet.isClosed() );
+        assertTrue( xml.isClosed() );
+        assertNotNull( result );
+
+        List<String> resultLines =
+                new ArrayList<String>(
+                        Arrays.asList( result.split( "\\R" ) ) );
+        assertEquals(
+                expected,
+                resultLines );
     }
 
     @Test
     public void testTransformFile() throws Exception
     {
         File styleSheet = makeFileFromStream(
-                getClass().getResourceAsStream( "cdd_did.xsl" ) );
+                getClass().getResourceAsStream( "complex.xsl" ) );
         File xml = makeFileFromStream(
-                getClass().getResourceAsStream( "example.cdd.xml" ) );
+                getClass().getResourceAsStream( "complex.xml" ) );
+        var expected = FileUtil.readLines(
+                getClass().getResourceAsStream( "complex.out" ) );
 
         String result = XmlUtil.transform( styleSheet, xml );
 
         assertNotNull( result );
-        assertEquals( 15824, result.split( "\\R" ).length );
+
+        List<String> resultLines =
+                new ArrayList<String>(
+                        Arrays.asList( result.split( "\\R" ) ) );
+        assertEquals(
+                expected,
+                resultLines );
+    }
+
+    @Test
+    public void testTransformStreamSimple() throws Exception
+    {
+        var styleSheet =  new CheckableInputStream(
+                getClass().getResourceAsStream( "simple.xsl" ) );
+        var xml = new CheckableInputStream(
+                getClass().getResourceAsStream( "simple.xml" ) );
+        var expected = FileUtil.readLines(
+                getClass().getResourceAsStream( "simple.out" ) );
+
+        assertFalse( styleSheet.isClosed() );
+        assertFalse( xml.isClosed() );
+
+        String result = XmlUtil.transform(
+                styleSheet,
+                xml );
+
+        assertNotNull( result );
+
+        List<String> resultLines =
+                new ArrayList<String>(
+                        Arrays.asList( result.split( "\\R" ) ) );
+
+        assertTrue( styleSheet.isClosed() );
+        assertTrue( xml.isClosed() );
+        assertEquals(
+                expected,
+                resultLines );
     }
 
     @Test
