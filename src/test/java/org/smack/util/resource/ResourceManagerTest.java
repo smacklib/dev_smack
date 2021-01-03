@@ -3,10 +3,10 @@ package org.smack.util.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.jdesktop.util.ResourceManager.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.smack.util.ServiceManager;
+import org.smack.util.resource.ResourceManager.Resource;
 
 /**
  *

@@ -3,8 +3,8 @@ package org.smack.util.converters;
 import java.awt.Dimension;
 import java.util.List;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 
 public class DimensionStringConverter extends ResourceConverter {

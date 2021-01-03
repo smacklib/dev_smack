@@ -1,7 +1,7 @@
 package org.smack.util.converters;
 
-import org.jdesktop.util.ResourceConverterExtension;
-import org.jdesktop.util.ResourceConverterRegistry;
+import org.smack.util.resource.ResourceConverterExtension;
+import org.smack.util.resource.ResourceConverterRegistry;
 
 /**
  * Installs ResourceConverters for primitive types.

@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
+
 
 public class ColorStringConverter extends ResourceConverter
 {

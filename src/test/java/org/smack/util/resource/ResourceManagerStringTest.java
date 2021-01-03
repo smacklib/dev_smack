@@ -2,11 +2,11 @@ package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
 
-import org.jdesktop.util.ResourceManager.Resource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.smack.util.ServiceManager;
+import org.smack.util.resource.ResourceManager.Resource;
 
 /**
  *
@@ -27,6 +27,8 @@ public class ResourceManagerStringTest
     @Before
     public void testInit()
     {
+        System.out.println( this );
+
         _rm.injectResources( this );
     }
 

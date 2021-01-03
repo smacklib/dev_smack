@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 import javafx.scene.image.Image;
 

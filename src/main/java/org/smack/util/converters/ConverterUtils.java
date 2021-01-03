@@ -6,8 +6,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import org.jdesktop.util.ResourceMap;
-
+import org.smack.util.resource.ResourceMap;
 
 class ConverterUtils
 {

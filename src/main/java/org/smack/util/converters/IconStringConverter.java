@@ -2,8 +2,8 @@ package org.smack.util.converters;
 
 import javax.swing.Icon;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 public class IconStringConverter extends ResourceConverter {
 

@@ -2,9 +2,9 @@ package org.smack.util.converters;
 
 import java.lang.reflect.Array;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
 import org.smack.util.StringUtil;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 /**
  * Converts string arrays, handles quoting.
