@@ -11,15 +11,18 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -164,7 +167,7 @@ public final class FileUtil
     }
 
     /**
-     * Read a file into an ordered line array.
+     * Read all lines from a reader into a list.  Closes the reader.
      *
      * @param in The reader to use.
      * @return The lines read.
@@ -172,22 +175,27 @@ public final class FileUtil
      */
     public static List<String> readLines( Reader in ) throws IOException
     {
-        BufferedReader din =
-                new BufferedReader( in );
-        ArrayList<String> result =
-                new ArrayList<>();
-
-        while ( true )
+        try ( BufferedReader din = new BufferedReader( in ) )
         {
-            String c = din.readLine();
-
-            if ( c == null )
-                break;
-
-            result.add( c );
+            return din.lines().collect( Collectors.toList() );
         }
+        catch ( UncheckedIOException e )
+        {
+            throw e.getCause();
+        }
+    }
 
-        return result;
+    /**
+     * Read all lines from an stream into a list. Closes the stream.
+     *
+     * @param in The reader to use.
+     * @return The lines read.
+     * @throws IOException In case of an error.
+     */
+    public static List<String> readLines( InputStream in ) throws IOException
+    {
+        return readLines(
+                new InputStreamReader( in ) );
     }
 
     /**

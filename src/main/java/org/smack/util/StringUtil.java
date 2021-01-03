@@ -214,7 +214,8 @@ public class StringUtil
      * elements 'Donald', 'Daisy' and 'Scrooge' and a delimiter of '+' this
      * will result in "Donald+Daisy+Scrooge".
      *
-     * @param delimiter The delimiter to use.  Must not be {@code null}.
+     * @param delimiter The delimiter to use.  {@code null} is allowed and
+     * results in a concatenation without delimiters.
      * @param array The array used for building the delimited list.
      * {@code null} is allowed, resulting in an empty string.
      * @param <T> Input array type.

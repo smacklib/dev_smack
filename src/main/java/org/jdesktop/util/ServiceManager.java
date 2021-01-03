@@ -17,7 +17,9 @@ import java.util.Map;
  *
  * @version $Rev$
  * @author Michael Binz
+ * @deprecated Moved.
  */
+@Deprecated
 public final class ServiceManager
 {
     /**
