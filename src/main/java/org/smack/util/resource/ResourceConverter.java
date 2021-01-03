@@ -3,7 +3,7 @@
  * Copyright (C) 2006 Sun Microsystems, Inc. All rights reserved. Use is
  * subject to license terms.
  */
-package org.jdesktop.util;
+package org.smack.util.resource;
 
 import java.util.Objects;
 
@@ -13,7 +13,6 @@ import java.util.Objects;
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see ResourceMap
  */
-@Deprecated
 public abstract class ResourceConverter
 {
     private final Class<?> _type;

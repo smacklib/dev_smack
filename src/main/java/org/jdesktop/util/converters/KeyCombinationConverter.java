@@ -1,7 +1,7 @@
-package org.smack.fx.converters;
+package org.jdesktop.util.converters;
 
-import org.smack.util.resource.ResourceConverter;
-import org.smack.util.resource.ResourceMap;
+import org.jdesktop.util.ResourceConverter;
+import org.jdesktop.util.ResourceMap;
 
 import javafx.scene.input.KeyCombination;
 

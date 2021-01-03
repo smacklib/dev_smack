@@ -3,19 +3,18 @@
  * Unpublished work.
  * Copyright © 2018 Michael G. Binz
  */
-package org.jdesktop.util.converters;
+package org.smack.util.converters;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 import javafx.scene.image.Image;
 
-@Deprecated
 public class FxImageConverter extends ResourceConverter
 {
     static private final Logger LOG =

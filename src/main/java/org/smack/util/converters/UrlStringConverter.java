@@ -1,12 +1,12 @@
-package org.jdesktop.util.converters;
+package org.smack.util.converters;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.jdesktop.util.ResourceConverter;
-import org.jdesktop.util.ResourceMap;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
-@Deprecated
+
 public class UrlStringConverter extends ResourceConverter {
 
     public UrlStringConverter() {

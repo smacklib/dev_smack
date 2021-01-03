@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright © 2017 Michael G. Binz
  */
-package org.jdesktop.util;
+package org.smack.util.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.smack.util.JavaUtil;
 import org.smack.util.ResourceUtil;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 
 
@@ -30,7 +32,6 @@ import org.smack.util.StringUtil;
  *
  * @author Michael Binz
  */
-@Deprecated
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {
