@@ -19,12 +19,13 @@ class ConverterUtils
      */
     public static ImageIcon loadImageIcon(String s, ResourceMap resourceMap)
             throws Exception {
-        String rPath = resourcePath(s, resourceMap);
-        if (rPath == null) {
-            String msg = String.format("invalid image/icon path \"%s\"", s);
-            throw new Exception(msg);
-        }
-        URL url = resourceMap.getClassLoader().getResource(rPath);
+//        String rPath = resourcePath(s, resourceMap);
+//        if (rPath == null) {
+//            String msg = String.format("invalid image/icon path \"%s\"", s);
+//            throw new Exception(msg);
+//        }
+//        URL url = resourceMap.getClassLoader().getResource(rPath);
+        URL url = new URL( s );
         if (url != null) {
             return new ImageIcon(url);
         } else {

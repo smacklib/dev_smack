@@ -13,12 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import org.smack.util.JavaUtil;
-import org.smack.util.ResourceUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
+import org.smack.util.resource.ResourceUtil.NamedResourceBundle;
 
 
 /**
@@ -41,15 +40,11 @@ public class ResourceMap extends HashMap<String, String>
 
     private final String _resourcePath;
 
-    public ResourceMap( Class<?> cl )
+    private ResourceMap( Class<?> cl, NamedResourceBundle crb )
     {
-        _class =
-                Objects.requireNonNull( cl );
-        String simpleName =
-                _class.getSimpleName();
+        _class = cl;
 
-        ResourceBundle crb =
-                ResourceUtil.getClassResources( cl );
+        var simpleName = cl.getSimpleName();
 
         if ( crb == null )
         {
@@ -69,7 +64,65 @@ public class ResourceMap extends HashMap<String, String>
                         simpleName.length() ).replace( '.', '/' );
 
         Map<String, String> bundle =
-                ResourceUtil.preprocessResourceBundle(
+                ResourceUtil.preprocessResourceBundleN(
+                        crb );
+
+        String classPrefix =
+                simpleName + ".";
+
+        for ( String ck : bundle.keySet() )
+        {
+            String value =
+                    bundle.get( ck );
+
+            if ( ck.equals( classPrefix ) )
+                throw new AssertionError( "Invalid property name: " + classPrefix );
+
+            put( ck, value );
+            if ( ck.startsWith( classPrefix ) )
+            {
+                put(
+                        ck.substring( classPrefix.length() ),
+                        value );
+            }
+            else
+            {
+                put(
+                        classPrefix + ck,
+                        value );
+            }
+        }
+    }
+
+    public ResourceMap( Class<?> cl )
+    {
+        _class =
+                Objects.requireNonNull( cl );
+        String simpleName =
+                _class.getSimpleName();
+
+        NamedResourceBundle crb =
+                ResourceUtil.getClassResourcesImpl( cl );
+
+        if ( crb == null )
+        {
+            _bundleName = StringUtil.EMPTY_STRING;
+            _resourcePath = StringUtil.EMPTY_STRING;
+            return;
+        }
+
+        _bundleName =
+                crb.getBaseBundleName();
+        JavaUtil.Assert(
+                _bundleName.endsWith( simpleName ) );
+
+        _resourcePath =
+                _bundleName.substring(
+                        0, _bundleName.length() -
+                        simpleName.length() ).replace( '.', '/' );
+
+        Map<String, String> bundle =
+                ResourceUtil.preprocessResourceBundleN(
                         crb );
 
         String classPrefix =

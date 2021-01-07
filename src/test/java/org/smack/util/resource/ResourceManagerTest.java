@@ -1,7 +1,10 @@
 package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.awt.Image;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,4 +61,14 @@ public class ResourceManagerTest
         // Works only on German locale.  Make better.
         assertEquals( "+49", stringCountryCode );
     }
+
+    @Resource
+    private Image image;
+
+    @Test
+    public void testImage()
+    {
+        assertNotNull( image );
+    }
+
 }
