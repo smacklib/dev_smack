@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -98,6 +99,39 @@ public class ResourceManager
             LOG.warning( "Duplicate resource converter for " + converter.getType() + ", " + converter.getClass() );
 
         _converters.put( converter.getType(), converter );
+    }
+
+    private static class DynamicResourceConverter<T> extends ResourceConverter
+    {
+        private final Function<String, T> _function;
+
+        DynamicResourceConverter( Class<T> cl, Function<String,T> f )
+        {
+            super( cl );
+
+            _function = f;
+        }
+
+        @Override
+        public Object parseString( String s, ResourceMap r ) throws Exception
+        {
+            return _function.apply( s );
+        }
+    }
+
+    /**
+     * @param converter A converter to add to the list of known converters.
+     */
+    public <T> void addConverter( Class<T> cl, Function<String, T> f )
+    {
+        if ( _converters.containsKey( cl ) )
+            LOG.warning( "Duplicate resource converter for " + cl + "." );
+
+        var dynamicConverter = new DynamicResourceConverter<T>( cl, f );
+
+        _converters.put(
+                dynamicConverter.getType(),
+                dynamicConverter );
     }
 
     /**

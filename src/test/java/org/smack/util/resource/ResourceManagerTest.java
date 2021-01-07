@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Image;
+import java.util.Currency;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,10 @@ public class ResourceManagerTest
     @Before
     public void testInit()
     {
+        _rm.addConverter(
+                Currency.class,
+                Currency::getInstance );
+
         _rm.injectResources( this );
     }
 
@@ -78,5 +83,14 @@ public class ResourceManagerTest
     public void testIcon()
     {
         assertNotNull( icon );
+    }
+
+    @Resource
+    private Currency currency;
+
+    @Test
+    public void testCurrency()
+    {
+        assertNotNull( currency );
     }
 }

@@ -111,10 +111,6 @@ public class ResourceUtil
         {
             Map<String, String> result = new HashMap<>();
 
-            // Preprocessing is currently limited to a single
-            // resource bundle. A broader context may be
-            // pretty confusing. michab.
-
             var urlPrefix = bundle.getUrl().toExternalForm();
 
             var lastSlash = urlPrefix.lastIndexOf( '/' );
@@ -340,8 +336,10 @@ public class ResourceUtil
      * @return The resource InputStream.  Note that this must be
      * closed after use. Never null, throws a RuntimeException if
      * the resource was not found.
+     * @deprecated Check if needed.
      */
-    public static InputStream getResourceAsStream(
+    @Deprecated
+    private static InputStream getResourceAsStream(
             Class<?> c1ass,
             String name )
     {
@@ -363,7 +361,9 @@ public class ResourceUtil
      * @param name The name of the resource.
      * @return The resource content. Never null, throws a
      * RuntimeException if the resource was not found.
+     * @deprecated Check if needed.
      */
+    @Deprecated
     public static byte[] loadResource(
             Class<?> c1ass,
             String name )

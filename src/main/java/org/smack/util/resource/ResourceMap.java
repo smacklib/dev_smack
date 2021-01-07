@@ -169,7 +169,7 @@ public class ResourceMap extends HashMap<String, String>
      * @param key The property key to convert.
      * @return The conversion result.
      */
-    public <T> T _getAs( String key, Class<T> targetType )
+    public <T> T getAs( String key, Class<T> targetType )
     {
         String resolved =
                 get( key );
