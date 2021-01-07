@@ -71,4 +71,12 @@ public class ResourceManagerTest
         assertNotNull( image );
     }
 
+    @Resource
+    private Image icon;
+
+    @Test
+    public void testIcon()
+    {
+        assertNotNull( icon );
+    }
 }

@@ -1,6 +1,9 @@
 package org.smack.util.converters;
 
 import java.awt.Image;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
 
 import org.smack.util.resource.ResourceConverter;
 import org.smack.util.resource.ResourceMap;
@@ -13,7 +16,7 @@ public class ImageStringConverter extends ResourceConverter {
 
     @Override
     public Object parseString(String s, ResourceMap resourceMap) throws Exception {
-        return ConverterUtils.loadImageIcon(s, resourceMap).getImage();
+        return new ImageIcon( new URL( s ) ).getImage();
     }
 }
 

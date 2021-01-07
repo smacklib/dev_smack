@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
@@ -72,6 +70,11 @@ public class ResourceUtil
         @Override
         public String getBaseBundleName()
         {
+            var bbn = super.getBaseBundleName();
+
+            if ( StringUtil.hasContent( bbn ) )
+                return bbn;
+
             return _name;
         }
 
@@ -90,73 +93,6 @@ public class ResourceUtil
         public Enumeration<String> getKeys()
         {
             return parent.getKeys();
-        }
-    }
-
-    /**
-     * Populates the passed Map with the preprocessed values from the named
-     * resource bundle.
-     *
-     * @param bundleName The resource bundle whose entries are processed.
-     * @param loc The locale to use.
-     * @param cl The classloader used to resolve the resource bundle.
-     * @return The requested resource bundle or {@code null} if the bundle
-     * did not exist.
-     */
-    public static Map<String, String> getPreprocessedResourceBundle(
-            String bundleName, Locale loc, ClassLoader cl )
-    {
-        try
-        {
-            ResourceBundle bundle = ResourceBundle.getBundle( bundleName, loc,
-                    cl ); /*,
-                    // We only want property resource bundles.
-                    Control.getControl( Control.FORMAT_PROPERTIES ) ); */
-
-            return preprocessResourceBundle( bundle );
-        }
-        catch ( MissingResourceException ignore )
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Populates the passed Map with the preprocessed values from the passed
-     * resource bundle.
-     *
-     * @param bundle The resource bundle whose entries are processed.
-     * @return The requested resource bundle or {@code null} if the bundle
-     * did not exist.
-     */
-    public static Map<String, String> preprocessResourceBundle(
-            ResourceBundle bundle )
-    {
-        try
-        {
-            Map<String, String> result = new HashMap<>();
-
-            // Preprocessing is currently limited to a single
-            // resource bundle. A broader context may be
-            // pretty confusing. michab.
-
-            for ( String key : bundle.keySet() )
-            {
-                result.put( key,
-                        // Note that we perform all preprocessing for the
-                        // string values in the resource bundle here.
-                        // Later stages of processing see only the evaluated
-                        // values.
-                        evaluateStringExpression(
-                                bundle.getString( key ),
-                                bundle ) );
-            }
-
-            return result;
-        }
-        catch ( MissingResourceException ignore )
-        {
-            return null;
         }
     }
 
@@ -378,21 +314,6 @@ public class ResourceUtil
      * @return A ResourceBundle. If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
-    public static ResourceBundle getClassResources( Class<?> c )
-    {
-        return getClassResourcesImpl( c );
-    }
-
-    /**
-     * Get class specific resources. If the passed classes full
-     * name is "org.good.Class" then this operation loads
-     * the resource bundle "org/good/resources/Class.properties".
-     * Prefer {@link #getClassResourceMap(Class)}.
-     *
-     * @param c The class for which the resources should be loaded.
-     * @return A ResourceBundle. If no resource bundle was found
-     * for the passed class, then the result is {@code null}.
-     */
     static NamedResourceBundle getClassResourcesImpl( Class<?> c )
     {
         String name = c.getName();
@@ -408,46 +329,6 @@ public class ResourceUtil
         {
             return null;
         }
-    }
-
-    /**
-     * Get class specific resources. If the passed classes full
-     * name is "org.good.Class" then this operation loads
-     * the resource bundle "org/good/resources/Class.properties".
-     *
-     * @param c The class for which the resources should be loaded.
-     * @return A map holding the resource strings. If no resources were
-     * found, then the result is an empty map.
-     */
-    public static Map<String,String> getClassResourceMap( Class<?> c )
-    {
-        var bundle = getClassResourcesImpl( c );
-
-        if ( bundle == null )
-            return Collections.emptyMap();
-
-        var result = bundle.keySet().stream().collect( Collectors.toMap(
-                s -> s,
-                s -> bundle.getString( s ) ) );
-
-        String url = bundle.getUrl().toString();
-        var lastSlash = url.lastIndexOf( '/' );
-        if ( lastSlash > 0 )
-            url = url.substring( 0, lastSlash+1 );
-
-        for ( String key : result.keySet() )
-        {
-            var value = result.get( key );
-            if ( value.startsWith( "@" ) )
-            {
-                value =
-                        url +
-                        value.substring( 1 );
-                result.put( key, value );
-            }
-        }
-
-        return result;
     }
 
     /**

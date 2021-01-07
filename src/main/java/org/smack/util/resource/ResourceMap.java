@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceUtil.NamedResourceBundle;
@@ -40,60 +39,6 @@ public class ResourceMap extends HashMap<String, String>
 
     private final String _resourcePath;
 
-    private ResourceMap( Class<?> cl, NamedResourceBundle crb )
-    {
-        _class = cl;
-
-        var simpleName = cl.getSimpleName();
-
-        if ( crb == null )
-        {
-            _bundleName = StringUtil.EMPTY_STRING;
-            _resourcePath = StringUtil.EMPTY_STRING;
-            return;
-        }
-
-        _bundleName =
-                crb.getBaseBundleName();
-        JavaUtil.Assert(
-                _bundleName.endsWith( simpleName ) );
-
-        _resourcePath =
-                _bundleName.substring(
-                        0, _bundleName.length() -
-                        simpleName.length() ).replace( '.', '/' );
-
-        Map<String, String> bundle =
-                ResourceUtil.preprocessResourceBundleN(
-                        crb );
-
-        String classPrefix =
-                simpleName + ".";
-
-        for ( String ck : bundle.keySet() )
-        {
-            String value =
-                    bundle.get( ck );
-
-            if ( ck.equals( classPrefix ) )
-                throw new AssertionError( "Invalid property name: " + classPrefix );
-
-            put( ck, value );
-            if ( ck.startsWith( classPrefix ) )
-            {
-                put(
-                        ck.substring( classPrefix.length() ),
-                        value );
-            }
-            else
-            {
-                put(
-                        classPrefix + ck,
-                        value );
-            }
-        }
-    }
-
     public ResourceMap( Class<?> cl )
     {
         _class =
@@ -112,10 +57,7 @@ public class ResourceMap extends HashMap<String, String>
         }
 
         _bundleName =
-                crb.getBaseBundleName();
-        JavaUtil.Assert(
-                _bundleName.endsWith( simpleName ) );
-
+                cl.getName();
         _resourcePath =
                 _bundleName.substring(
                         0, _bundleName.length() -
@@ -159,7 +101,7 @@ public class ResourceMap extends HashMap<String, String>
      * @param key The requested key.
      * @return The associated value.
      */
-    public Optional<String> getQualified( String key )
+    public Optional<String> _getQualified( String key )
     {
         return Optional.ofNullable(
                 get( _class.getSimpleName() + "." + key ) );
@@ -227,7 +169,7 @@ public class ResourceMap extends HashMap<String, String>
      * @param key The property key to convert.
      * @return The conversion result.
      */
-    public <T> T getAs( String key, Class<T> targetType )
+    public <T> T _getAs( String key, Class<T> targetType )
     {
         String resolved =
                 get( key );

@@ -1,53 +1,10 @@
 package org.smack.util.converters;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-
-import org.smack.util.resource.ResourceMap;
-
 class ConverterUtils
 {
-    /**
-     *
-     * @param s
-     * @param resourceMap
-     * @return
-     * @throws Exception
-     */
-    public static ImageIcon loadImageIcon(String s, ResourceMap resourceMap)
-            throws Exception {
-//        String rPath = resourcePath(s, resourceMap);
-//        if (rPath == null) {
-//            String msg = String.format("invalid image/icon path \"%s\"", s);
-//            throw new Exception(msg);
-//        }
-//        URL url = resourceMap.getClassLoader().getResource(rPath);
-        URL url = new URL( s );
-        if (url != null) {
-            return new ImageIcon(url);
-        } else {
-            String msg = String.format("couldn't find Icon resource \"%s\"", s);
-            throw new Exception(msg);
-        }
-    }
-
-    /**
-     * If path doesn't have a leading "/" then the resourcesDir
-     * is prepended, otherwise the leading "/" is removed.
-     */
-    private static String resourcePath(final String path, ResourceMap resourceMap) {
-        if (path == null) {
-            return null;
-        } else if (path.startsWith("/")) {
-            return (path.length() > 1) ? path.substring(1) : null;
-        } else {
-            return resourceMap.getResourceDir() + path;
-        }
-    }
-
     /**
      * String s is assumed to contain n number substrings separated by
      * commas.  Return a list of those integers or null if there are too
