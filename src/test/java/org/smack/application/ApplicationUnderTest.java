@@ -16,7 +16,7 @@ public class ApplicationUnderTest
     @Command
     private void cmdShort( short i )
     {
-        out( "%s:%d\n", currentCommand(), i );
+        out( "%s:%d%n", currentCommand(), i );
     }
 
     /**
@@ -26,55 +26,55 @@ public class ApplicationUnderTest
     @Command
     private void cmdByte( byte i )
     {
-        out( "%s:%d\n", currentCommand(), i );
+        out( "%s:%d%n", currentCommand(), i );
     }
 
     @Command
     private void cmdInt( int i )
     {
-        out( "%s:%d\n", currentCommand(), i );
+        out( "%s:%d%n", currentCommand(), i );
     }
 
     @Command
     private void cmdLong( long i )
     {
-        out( "%s:%d\n", currentCommand(), i );
+        out( "%s:%d%n", currentCommand(), i );
     }
 
     @Command
     private void cmdFloat( float i )
     {
-        out( "%s:%s\n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     @Command
     private void cmdDouble( double i )
     {
-        out( "%s:%s\n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     @Command
     private void cmdFile( File i )
     {
-        out( "%s:%s\n", currentCommand(), i.getPath() );
+        out( "%s:%s%n", currentCommand(), i.getPath() );
     }
 
     @Command
     private void cmdString( String i )
     {
-        out( "%s:%d\n", currentCommand(), i );
+        out( "%s:%d%n", currentCommand(), i );
     }
 
     @Command
     private void cmdBoolean( boolean i )
     {
-        out( "%s:%s\n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     @Command
     private void cmdEnum( Day i )
     {
-        out( "%s:%s\n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     public static void main( String[] argv )
