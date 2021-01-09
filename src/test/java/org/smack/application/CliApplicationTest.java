@@ -106,9 +106,7 @@ public class CliApplicationTest
 
         String expectedString =
                 "ApplicationUnderTest\n" +
-                        "\n" +
                         "The following commands are supported:\n" +
-                        "\n" +
                         "cmdBoolean: boolean\n" +
                         "cmdByte: byte\n" +
                         "cmdDouble: double\n" +
@@ -150,9 +148,7 @@ public class CliApplicationTest
 
         String expectedString =
                 "ApplicationUnderTestDefault\n" +
-                        "\n" +
                         "The following commands are supported:\n" +
-                        "\n" +
                         "*\n" +
                         "*: String\n" +
                         "*: String, String\n";

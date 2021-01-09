@@ -40,7 +40,7 @@ public class CliApplicationTypeTest
                 err.toString() );
 
         String expected =
-                String.format( "%s:%s\n", command, exp );
+                String.format( "%s:%s%n", command, exp );
 
         assertEquals(
                 expected,
@@ -155,7 +155,7 @@ public class CliApplicationTypeTest
             String expected =
                     "cmdFile:" +
                             tmpFile.getPath() +
-                            "\n";
+                            StringUtil.EOL;
 
             assertEquals(
                     expected,

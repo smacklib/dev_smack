@@ -8,7 +8,9 @@ import org.junit.Test;
 
 /**
  * @version $Id$
+ * @deprecated moved.
  */
+@Deprecated
 public class ReflectionUtilTest
 {
     private static final int ZERO = 0;

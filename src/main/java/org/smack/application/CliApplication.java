@@ -11,7 +11,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,13 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.util.ReflectionUtil;
 import org.smack.util.JavaUtil;
+import org.smack.util.ReflectionUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
 
@@ -466,7 +464,9 @@ abstract public class CliApplication
                 result.append(desc);
             }
         }
-        result.append( "\n\nThe following commands are supported:\n\n" );
+        result.append( StringUtil.EOL );
+        result.append( "The following commands are supported:" );
+        result.append( StringUtil.EOL );
 
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
             result.append( command.usage() );
@@ -510,7 +510,7 @@ abstract public class CliApplication
         MultiMap<CaseIndependent,Integer,CommandHolder> result =
                 new MultiMap<>();
 
-        processAnnotation(
+        ReflectionUtil.processAnnotation(
                 Command.class,
                 targetClass::getDeclaredMethods,
                 (c,a) -> {
@@ -565,7 +565,7 @@ abstract public class CliApplication
         var result =
                 new HashMap<String, PropertyHolder>();
 
-        processAnnotation(
+        ReflectionUtil.processAnnotation(
                 Property.class,
                 targetClass::getDeclaredFields,
                 (f,a) -> {
@@ -576,21 +576,6 @@ abstract public class CliApplication
                 } );
 
         return result;
-    }
-
-    // Pure orgasm ...
-    private static <
-        T extends AccessibleObject,
-        A extends java.lang.annotation.Annotation> void processAnnotation(
-            Class<A> classs,
-            Supplier<T[]> x,
-            BiConsumer<T, A>c)
-    {
-        Arrays.asList( x.get() )
-            .stream()
-            .filter(
-                s -> s.isAnnotationPresent( classs ) )
-            .forEach( s -> c.accept( s, s.getAnnotation( classs ) ) );
     }
 
     /**
@@ -613,13 +598,13 @@ abstract public class CliApplication
         if ( e instanceof RuntimeException || e instanceof Error )
         {
             // Special handling of implementation or VM errors.
-            err( "%s failed.\n",
+            err( "%s failed.%n",
                     commandName );
             e.printStackTrace();
         }
         else
         {
-            err( "%s failed: %s\n",
+            err( "%s failed: %s%n",
                     commandName,
                     msg );
         }
@@ -934,7 +919,7 @@ abstract public class CliApplication
     }
 
     /**
-     * Encapsulates a command.
+     * Encapsulates a property.
      */
     private class PropertyHolder implements Comparable<PropertyHolder>
     {
@@ -1173,7 +1158,7 @@ abstract public class CliApplication
                 info.append( ": " );
                 info.append( optional );
             }
-            info.append( "\n" );
+            info.append( StringUtil.EOL );
 
             optional =
                     getDescription();
@@ -1181,7 +1166,7 @@ abstract public class CliApplication
             {
                 info.append( "    " );
                 info.append( optional );
-                info.append( "\n" );
+                info.append( StringUtil.EOL );
             }
 
             return info.toString();
