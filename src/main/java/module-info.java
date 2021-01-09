@@ -72,4 +72,5 @@ module framework.smack {
 
     // Needed for testing.
     opens org.smack.util.resource;
+    opens org.smack;
 }

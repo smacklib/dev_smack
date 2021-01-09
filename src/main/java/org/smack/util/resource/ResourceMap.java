@@ -154,8 +154,9 @@ public class ResourceMap extends HashMap<String, String>
      * is org/jdesktop/resources/. Used for the resolution of
      * secondary resources like icons. If no underlying resource
      * bundle existed, then this is null.
-     *
+     * @deprecated Use @-notation.
      */
+    @Deprecated
     public String getResourceDir()
     {
         return _resourcePath;
