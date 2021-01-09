@@ -466,7 +466,9 @@ abstract public class CliApplication
                 result.append(desc);
             }
         }
-        result.append( "\n\nThe following commands are supported:\n\n" );
+        result.append( StringUtil.EOL );
+        result.append( "The following commands are supported:" );
+        result.append( StringUtil.EOL );
 
         for ( CommandHolder command : sort( _commandMap.getValues() ) )
             result.append( command.usage() );
@@ -613,13 +615,13 @@ abstract public class CliApplication
         if ( e instanceof RuntimeException || e instanceof Error )
         {
             // Special handling of implementation or VM errors.
-            err( "%s failed.\n",
+            err( "%s failed.%n",
                     commandName );
             e.printStackTrace();
         }
         else
         {
-            err( "%s failed: %s\n",
+            err( "%s failed: %s%n",
                     commandName,
                     msg );
         }
@@ -1173,7 +1175,7 @@ abstract public class CliApplication
                 info.append( ": " );
                 info.append( optional );
             }
-            info.append( "\n" );
+            info.append( StringUtil.EOL );
 
             optional =
                     getDescription();
@@ -1181,7 +1183,7 @@ abstract public class CliApplication
             {
                 info.append( "    " );
                 info.append( optional );
-                info.append( "\n" );
+                info.append( StringUtil.EOL );
             }
 
             return info.toString();
