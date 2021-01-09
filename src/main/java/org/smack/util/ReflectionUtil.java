@@ -6,37 +6,37 @@
  * Copyright © 2010 Michael G. Binz
  */
 
-package org.jdesktop.util;
+package org.smack.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javafx.util.Pair;
 
 /**
  * Reflection helpers.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated moved.
  */
-@Deprecated
 public final class ReflectionUtil
 {
     /**
      * The logger for this class.
      */
     private static final Logger LOG = Logger.getLogger(
-        ReflectionUtil.class.getName() );
+            ReflectionUtil.class.getName() );
 
     /**
      * Forbid instantiation.
@@ -136,7 +136,7 @@ public final class ReflectionUtil
         {
             types[i] = classes[i] == null ?
                     null :
-                    classes[i].getClass();
+                        classes[i].getClass();
         }
 
         for ( Constructor<?> c : constructors )
@@ -171,7 +171,7 @@ public final class ReflectionUtil
             // Null is matching always.
             boolean assignable =  toAssign == null ?
                     true :
-                    assignmentTargets[i].isAssignableFrom( toAssign[i] );
+                        assignmentTargets[i].isAssignableFrom( toAssign[i] );
 
             if ( ! assignable )
                 return false;
@@ -229,9 +229,9 @@ public final class ReflectionUtil
      * exceptions.
      */
     public static Object invokeQuiet(
-           Method method,
-           Object target,
-           Object... parameters )
+            Method method,
+            Object target,
+            Object... parameters )
     {
         try
         {
@@ -259,7 +259,7 @@ public final class ReflectionUtil
             Method method,
             Object target,
             Object... parameters )
-        throws Exception
+                    throws Exception
     {
         try
         {
@@ -288,8 +288,6 @@ public final class ReflectionUtil
             throw new IllegalArgumentException( e );
         }
     }
-
-
 
     /**
      * Clone the passed array.  Allows to clone only parts of the
@@ -320,8 +318,6 @@ public final class ReflectionUtil
         return result;
     }
 
-
-
     /**
      * Clone the passed array.
      *
@@ -334,8 +330,6 @@ public final class ReflectionUtil
     {
         return cloneArray( original, 0, original.length );
     }
-
-
 
     /**
      * Return the list of super classes for the passed class.
@@ -353,9 +347,9 @@ public final class ReflectionUtil
         List<Class<?>> result = new ArrayList<>();
 
         for (
-            Class<?> current = c ;
-            current != null ;
-            current = current.getSuperclass() )
+                Class<?> current = c ;
+                current != null ;
+                current = current.getSuperclass() )
         {
             result.add( current );
         }
@@ -364,107 +358,62 @@ public final class ReflectionUtil
     }
 
     /**
-     * Get all annotated fields defined on a class.
+     * Scan annotations on the passed class and call a handler for each.
+     * Allows to apply a predicate for additional filtering.
      *
-     * @param<T> An annotation type.
-     * @param source The class to search.
-     * @param annotation The annotation to look up.
-     * @param modifiers The required modifiers.
-     * @return Pairs of fields and field annotations.
-     * The empty list if no annotation was found.
+     * @param <T> The concrete annotatable type we are working with, for
+     * example a {@link java.lang.reflect.Method}.  Type of the first consumer
+     * argument.
+     * @param <A> The annotation type so search.  Type of the second consumer
+     * argument.
+     * @param annotationType The annotation class to look up.
+     * @param supplier A supplier that delivers the opbects to process.  For example
+     * getDeclareMethods().
+     * @param predicate A predicate that allows filtering.  This is only
+     * called if an annotation is present.
+     * @param c The consumer receiving the found elements.
      */
-    public static <T extends Annotation>
-    List<Pair<Field,T>> getAnnotatedFields(
-            Class<?> source,
-            Class<T> annotation,
-            int modifiers )
+    public static <T extends AccessibleObject, A extends Annotation>
+    void processAnnotation(
+            Class<A> annotationType,
+            Supplier<T[]> supplier,
+            Predicate<T> predicate,
+            BiConsumer<T, A>c)
     {
-        List<Pair<Field,T>> result = new ArrayList<>();
-
-        for ( Field c : source.getDeclaredFields() )
-        {
-            // Check for exact match of requested modifiers.
-            if ( modifiers != 0 && (c.getModifiers() & modifiers) != modifiers )
-                continue;
-
-            T a = c.getAnnotation( annotation );
-
-            if ( a == null )
-                continue;
-
-            result.add( new Pair<>( c, a ) );
-        }
-
-        return result;
+        Arrays.asList( supplier.get() )
+            .stream()
+            .filter( s -> s.isAnnotationPresent( annotationType ) )
+            .filter( predicate )
+            .forEach( s -> c.accept( s, s.getAnnotation( annotationType ) ) );
     }
 
     /**
-     * Get all annotated fields defined on a class.
+     * Scan annotations on the passed class and call a handler for each.
+     * Allows to apply a predicate for additional filtering.
      *
-     * @param<T> An annotation type.
-     * @param source The class to search.
-     * @param annotation The annotation to look up.
-     * @return Pairs of fields and field annotations.
-     * The empty list if no annotation was found.
+     * @param <T> The concrete annotatable type we are working with, for
+     * example a {@link java.lang.reflect.Method}.  Type of the first consumer
+     * argument.
+     * @param <A> The annotation type so search.  Type of the second consumer
+     * argument.
+     * @param annotationType The annotation class to look up.
+     * @param supplier A supplier that delivers the opbects to process.  For example
+     * getDeclareMethods().
+     * @param predicate A predicate that allows filtering.  This is only
+     * called if an annotation is present.
+     * @param c The consumer receiving the found elements.
      */
-    public static <T extends Annotation>
-    List<Pair<Field,T>> getAnnotatedFields(
-            Class<?> source,
-            Class<T> annotation )
+    public static <T extends AccessibleObject, A extends Annotation>
+    void processAnnotation(
+            Class<A> annotationType,
+            Supplier<T[]> supplier,
+            BiConsumer<T, A>c)
     {
-        return getAnnotatedFields( source, annotation, 0 );
-    }
-
-    /**
-     * Get all annotated fields defined on a class.
-     *
-     * @param<T> An annotation type.
-     * @param source The class to search.
-     * @param annotation The annotation to look up.
-     * @param modifiers The required modifiers.
-     * @return Pairs of methods and method annotations.
-     * The empty list if no annotation was found.
-     */
-    public static <T extends Annotation>
-    List<Pair<Method,T>> getAnnotatedMethods(
-            Class<?> source,
-            Class<T> annotation,
-            int modifiers )
-    {
-        List<Pair<Method,T>> result = new ArrayList<>();
-
-        for ( Method c : source.getDeclaredMethods() )
-        {
-            // Check for exact match of requested modifiers.
-            if ( modifiers != 0 && (c.getModifiers() & modifiers) != modifiers )
-                continue;
-
-            T a = c.getAnnotation( annotation );
-
-            if ( a == null )
-                continue;
-
-            result.add( new Pair<>( c, a ) );
-        }
-
-        return result;
-    }
-
-    /**
-     * Get all annotated fields defined on a class.
-     *
-     * @param<T> An annotation type.
-     * @param source The class to search.
-     * @param annotation The annotation to look up.
-     * @return Pairs of methods and method annotations.
-     * The empty list if no annotation was found.
-     */
-    public static <T extends Annotation>
-    List<Pair<Method,T>> getAnnotatedMethods(
-            Class<?> source,
-            Class<T> annotation )
-    {
-        return getAnnotatedMethods( source, annotation, 0 );
+        processAnnotation(
+                annotationType,
+                supplier,
+                s -> { return true; },
+                c );
     }
 
     /**
