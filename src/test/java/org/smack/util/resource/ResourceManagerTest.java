@@ -31,9 +31,12 @@ public class ResourceManagerTest
     @Before
     public void testInit()
     {
-        _rm.addConverter(
-                Currency.class,
-                Currency::getInstance );
+        if ( _rm.getConverter( Currency.class ) == null )
+        {
+            _rm.addConverter(
+                    Currency.class,
+                    Currency::getInstance );
+        }
 
         _rm.injectResources( this );
     }

@@ -132,6 +132,31 @@ public class ResourceManager
     }
 
     /**
+     * @param converter A converter to add to the list of known converters.
+     */
+    public <T> Function<String, T> getConverter( Class<T> cl )
+    {
+        ResourceConverter converter = _converters.get( cl );
+
+        if ( converter == null )
+            return null;
+
+        Function<String, T> result =
+                s -> {
+                    try
+                    {
+                        return cl.cast( converter.parseString( s, null ) );
+                    }
+                    catch ( Exception e )
+                    {
+                        throw new RuntimeException( e );
+                    }
+                };
+
+        return result;
+    }
+
+    /**
      * Inject the passed bean's properties from the passed map. The prefix is
      * used to find the configuration keys in the map. Keys in the
      * map have to look like prefix.propertyName. The dot is added to
