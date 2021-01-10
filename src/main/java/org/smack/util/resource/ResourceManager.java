@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -31,12 +30,10 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.util.ReflectionUtil;
+import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.WeakMapWithProducer;
-
-import javafx.util.Pair;
 
 /**
  * A ResourceManager.
@@ -230,13 +227,13 @@ public class ResourceManager
         if ( instance == null && staticInjectionDone.containsKey( cIass ) )
             return;
 
-        List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
-                cIass,
-                Resource.class,
-                instance == null ? Modifier.STATIC : 0 );
-
-        if ( fields.isEmpty() )
-            return;
+//        List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
+//                cIass,
+//                Resource.class,
+//                instance == null ? Modifier.STATIC : 0 );
+//
+//        if ( fields.isEmpty() )
+//            return;
 
         ResourceMap rb =
                 getResourceMap( cIass );
@@ -248,43 +245,85 @@ public class ResourceManager
             return;
         }
 
-        for ( Pair<Field, Resource> c : fields )
-        {
-            Field f = c.getKey();
+        ReflectionUtil.processAnnotation(
+                Resource.class,
+                cIass::getDeclaredFields,
+                s -> {
+                    if ( instance == null )
+                        return Modifier.isStatic( s.getModifiers() );
+                    return true;
+                },
+                (f, r) -> {
 
-            if ( Modifier.isStatic( f.getModifiers() ) &&
-                    staticInjectionDone.containsKey( cIass ) )
-                continue;
+                    if ( Modifier.isStatic( f.getModifiers() ) &&
+                            staticInjectionDone.containsKey( cIass ) )
+                        return;
 
-            Resource r = c.getValue();
+                    String name = r.name();
 
-            String name = r.name();
+                    if ( StringUtil.isEmpty( name ) )
+                        name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
 
-            if ( StringUtil.isEmpty( name ) )
-                name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
+                    String value = rb.get( name );
 
-            String value = rb.get( name );
+                    if ( value == null )
+                    {
+                        String message = String.format(
+                                "No resource key found for field '%s#%s'.",
+                                f.getDeclaringClass(),
+                                f.getName() );
+                        LOG.severe(
+                                message );
+                        return;
+                    }
 
-            if ( value == null )
-            {
-                String message = String.format(
-                        "No resource key found for field '%s#%s'.",
-                        f.getDeclaringClass(),
-                        f.getName() );
-                LOG.severe(
-                        message );
-                continue;
-            }
+                    try
+                    {
+                        performInjection( instance, f, value, rb );
+                    }
+                    catch ( Exception e )
+                    {
+                        LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
+                    }
+                } );
 
-            try
-            {
-                performInjection( instance, f, value, rb );
-            }
-            catch ( Exception e )
-            {
-                LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
-            }
-        }
+//        for ( Pair<Field, Resource> c : fields )
+//        {
+//            Field f = c.getKey();
+//
+//            if ( Modifier.isStatic( f.getModifiers() ) &&
+//                    staticInjectionDone.containsKey( cIass ) )
+//                continue;
+//
+//            Resource r = c.getValue();
+//
+//            String name = r.name();
+//
+//            if ( StringUtil.isEmpty( name ) )
+//                name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
+//
+//            String value = rb.get( name );
+//
+//            if ( value == null )
+//            {
+//                String message = String.format(
+//                        "No resource key found for field '%s#%s'.",
+//                        f.getDeclaringClass(),
+//                        f.getName() );
+//                LOG.severe(
+//                        message );
+//                continue;
+//            }
+//
+//            try
+//            {
+//                performInjection( instance, f, value, rb );
+//            }
+//            catch ( Exception e )
+//            {
+//                LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
+//            }
+//        }
 
         staticInjectionDone.put( cIass, rb );
     }
@@ -303,11 +342,9 @@ public class ResourceManager
             String value,
             ResourceMap map ) throws Exception
     {
-        boolean accessible = f.isAccessible();
-
         try
         {
-            if ( ! accessible )
+            if ( ! f.canAccess( instance ) )
                 f.setAccessible( true );
 
             performInjectionImpl( instance, f, value, map );
@@ -321,11 +358,6 @@ public class ResourceManager
 
             LOG.log(
                     Level.WARNING, msg, e );
-        }
-        finally
-        {
-            if ( f.isAccessible() != accessible )
-                f.setAccessible( accessible );
         }
     }
 
