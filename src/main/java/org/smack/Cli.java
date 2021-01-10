@@ -7,18 +7,13 @@
  */
 package org.smack;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 
 import org.smack.application.CliApplication;
 import org.smack.application.CliApplication.Named;
-import org.smack.util.JavaUtil;
-import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
-import org.smack.util.resource.ResourceManager;
-import org.smack.util.resource.ResourceManager.Resource;
 import org.smack.util.xml.XmlUtil;
 
 /**
@@ -57,18 +52,6 @@ public final class Cli extends CliApplication
             w.write( XmlUtil.transform( stylesheet, xml ) );
             w.write( StringUtil.EOL );
         }
-    }
-
-    @Resource
-    private Image image;
-
-    @Command
-    public void test()
-    {
-        var rm =
-                ServiceManager.getApplicationService( ResourceManager.class );
-        rm.injectResources( this );
-        JavaUtil.Assert( image != null );
     }
 
     public static void main( String[] argv )
