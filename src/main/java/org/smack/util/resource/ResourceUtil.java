@@ -128,7 +128,6 @@ public class ResourceUtil
                     value =
                             urlPrefix +
                             value.substring( 1 );
-                    System.out.println( value );
                 }
                 else
                 {
