@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Image;
 import java.util.Currency;
 
+import javax.swing.Icon;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.smack.util.ServiceManager;
@@ -77,7 +79,7 @@ public class ResourceManagerTest
     }
 
     @Resource
-    private Image icon;
+    private Icon icon;
 
     @Test
     public void testIcon()

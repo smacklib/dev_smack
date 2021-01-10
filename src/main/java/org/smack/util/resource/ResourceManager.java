@@ -283,7 +283,9 @@ public class ResourceManager
                     }
                     catch ( Exception e )
                     {
-                        LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
+                        var msg = "Injection failed for field " + f.getName();
+                        LOG.log( Level.SEVERE, msg, e );
+                        throw new RuntimeException( msg );
                     }
                 } );
 
