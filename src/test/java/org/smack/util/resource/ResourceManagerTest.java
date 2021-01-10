@@ -41,10 +41,6 @@ public class ResourceManagerTest
         _rm.injectResources( this );
     }
 
-    /**
-     * TODO: As soon as this works in Maven, we
-     * can re-enable the resource manager tests.
-     */
     @Test
     public void testModulePlacement()
     {
