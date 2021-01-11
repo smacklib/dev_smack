@@ -8,8 +8,8 @@ package org.jdesktop.beans;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 
-import org.jdesktop.application.ApplicationProperties;
-import org.jdesktop.util.ServiceManager;
+import org.smack.application.ApplicationProperties;
+import org.smack.util.ServiceManager;
 import org.smack.util.collections.OneToN;
 
 import javafx.beans.property.ObjectProperty;

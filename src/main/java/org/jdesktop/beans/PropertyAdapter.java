@@ -9,7 +9,7 @@ package org.jdesktop.beans;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 
-import org.jdesktop.util.ReflectionUtil;
+import org.smack.util.ReflectionUtil;
 
 /**
  * Wraps an object that offers a property change listener interface.

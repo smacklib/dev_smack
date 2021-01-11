@@ -10,7 +10,7 @@ package org.jdesktop.beans;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import org.jdesktop.util.ReflectionUtil;
+import org.smack.util.ReflectionUtil;
 
 
 /**
