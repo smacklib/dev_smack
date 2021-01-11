@@ -1,7 +1,13 @@
 package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.awt.Image;
+import java.util.Currency;
+
+import javax.swing.Icon;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +31,16 @@ public class ResourceManagerTest
     @Before
     public void testInit()
     {
+        if ( _rm.getConverter( Currency.class ) == null )
+        {
+            _rm.addConverter(
+                    Currency.class,
+                    Currency::getInstance );
+        }
+
         _rm.injectResources( this );
     }
 
-    /**
-     * TODO: As soon as this works in Maven, we
-     * can re-enable the resource manager tests.
-     */
     @Test
     public void testModulePlacement()
     {
@@ -57,5 +66,32 @@ public class ResourceManagerTest
     {
         // Works only on German locale.  Make better.
         assertEquals( "+49", stringCountryCode );
+    }
+
+    @Resource
+    private Image image;
+
+    @Test
+    public void testImage()
+    {
+        assertNotNull( image );
+    }
+
+    @Resource
+    private Icon icon;
+
+    @Test
+    public void testIcon()
+    {
+        assertNotNull( icon );
+    }
+
+    @Resource
+    private Currency currency;
+
+    @Test
+    public void testCurrency()
+    {
+        assertNotNull( currency );
     }
 }

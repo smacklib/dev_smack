@@ -2,31 +2,31 @@
  *
  * Copyright © 2014 Michael G. Binz
  */
-package org.smack.util;
+package org.smack.util.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+
+import org.smack.util.JavaUtil;
+import org.smack.util.StringUtil;
 
 /**
  * Resource Bundle helpers.
  *
  * @version $Rev$
  * @author Michael Binz
- * @deprecated Moved to util.resources
  */
-@Deprecated
 public class ResourceUtil
 {
-    private static final String RESOURCE_PACKAGE_NAME = "resources";
-
     /**
      * Unchecked exception thrown when resource lookup
      * fails, for example because string conversion fails.  This is
@@ -54,20 +54,33 @@ public class ResourceUtil
      * resources. The class is used in {@link ResourceUtil#getClassResources(Class)}
      * as the result.
      */
-    private static class NamedResourceBundle extends ResourceBundle
+    static class NamedResourceBundle extends ResourceBundle
     {
         private final String _name;
 
-        public NamedResourceBundle( String name, ResourceBundle parent )
+        private final URL _url;
+
+        public NamedResourceBundle( URL url, String name, ResourceBundle parent )
         {
             this.parent = parent;
             this._name = name;
+            _url = url;
         }
 
         @Override
         public String getBaseBundleName()
         {
+            var bbn = super.getBaseBundleName();
+
+            if ( StringUtil.hasContent( bbn ) )
+                return bbn;
+
             return _name;
+        }
+
+        public URL getUrl()
+        {
+            return _url;
         }
 
         @Override
@@ -84,34 +97,6 @@ public class ResourceUtil
     }
 
     /**
-     * Populates the passed Map with the preprocessed values from the named
-     * resource bundle.
-     *
-     * @param bundleName The resource bundle whose entries are processed.
-     * @param loc The locale to use.
-     * @param cl The classloader used to resolve the resource bundle.
-     * @return The requested resource bundle or {@code null} if the bundle
-     * did not exist.
-     */
-    public static Map<String, String> getPreprocessedResourceBundle(
-            String bundleName, Locale loc, ClassLoader cl )
-    {
-        try
-        {
-            ResourceBundle bundle = ResourceBundle.getBundle( bundleName, loc,
-                    cl ); /*,
-                    // We only want property resource bundles.
-                    Control.getControl( Control.FORMAT_PROPERTIES ) ); */
-
-            return preprocessResourceBundle( bundle );
-        }
-        catch ( MissingResourceException ignore )
-        {
-            return null;
-        }
-    }
-
-    /**
      * Populates the passed Map with the preprocessed values from the passed
      * resource bundle.
      *
@@ -119,27 +104,41 @@ public class ResourceUtil
      * @return The requested resource bundle or {@code null} if the bundle
      * did not exist.
      */
-    public static Map<String, String> preprocessResourceBundle(
-            ResourceBundle bundle )
+    static Map<String, String> preprocessResourceBundleN(
+            NamedResourceBundle bundle )
     {
         try
         {
             Map<String, String> result = new HashMap<>();
 
-            // Preprocessing is currently limited to a single
-            // resource bundle. A broader context may be
-            // pretty confusing. michab.
+            var urlPrefix = bundle.getUrl().toExternalForm();
+
+            var lastSlash = urlPrefix.lastIndexOf( '/' );
+            if ( lastSlash > 0 )
+                urlPrefix = urlPrefix.substring( 0, lastSlash+1 );
+
+            JavaUtil.Assert( urlPrefix.endsWith( "/" ) );
 
             for ( String key : bundle.keySet() )
             {
-                result.put( key,
-                        // Note that we perform all preprocessing for the
-                        // string values in the resource bundle here.
-                        // Later stages of processing see only the evaluated
-                        // values.
-                        evaluateStringExpression(
-                                bundle.getString( key ),
-                                bundle ) );
+                var value = bundle.getString( key );
+
+                if ( value.startsWith( "@" ) )
+                {
+                    value =
+                            urlPrefix +
+                            value.substring( 1 );
+                }
+                else
+                {
+                    value = evaluateStringExpression(
+                            value,
+                            bundle );
+                }
+
+                result.put(
+                        key,
+                        value );
             }
 
             return result;
@@ -226,6 +225,81 @@ public class ResourceUtil
         return result.toString();
     }
 
+    private static boolean stringsValid( String ... strings )
+    {
+        for ( var c : strings )
+        {
+            if ( StringUtil.isEmpty( c ) )
+                return false;
+        }
+        return true;
+    }
+
+    static URL findResourceBundle( String baseName, Module module )
+    {
+        if ( StringUtil.isEmpty( baseName ) )
+            throw new IllegalArgumentException( "basename" );
+        Objects.requireNonNull( module );
+
+        baseName = baseName.replace( ".", "/" );
+
+        Locale locale = Locale.getDefault();
+
+        var language = locale.getLanguage();
+        var script = locale.getScript();
+        var country = locale.getCountry();
+        var variant = locale.getVariant();
+
+        ArrayList<String> toCheck = new ArrayList<String>();
+
+//        baseName + "_" + language + "_" + script + "_" + country + "_" + variant
+        if ( stringsValid( language, script, country, variant ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language, script, country, variant } ) );
+
+//        baseName + "_" + language + "_" + script + "_" + country
+        if ( stringsValid( language, script, country ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language, script, country } ) );
+//        baseName + "_" + language + "_" + script
+        if ( stringsValid( language, script ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language, script } ) );
+
+//        baseName + "_" + language + "_" + country + "_" + variant
+        if ( stringsValid( language, country, variant ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language, country, variant } ) );
+//        baseName + "_" + language + "_" + country
+        if ( stringsValid( language, country ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language, country } ) );
+
+//        baseName + "_" + language
+        if ( stringsValid( language ) )
+            toCheck.add( StringUtil.concatenate(
+                    "_",
+                    new String[] {baseName, language } ) );
+
+        toCheck.add( baseName );
+
+        for ( var c : toCheck )
+        {
+            var name = c + ".properties";
+
+            var url = module.getClassLoader().getResource( name );
+            if ( url != null )
+                return url;
+        }
+
+        return null;
+    }
+
     /**
      * Get class specific resources. If the passed classes full
      * name is "org.good.Class" then this operation loads
@@ -236,22 +310,14 @@ public class ResourceUtil
      * @return A ResourceBundle. If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
-    public static ResourceBundle getClassResources( Class<?> c )
+    static NamedResourceBundle getClassResourcesImpl( Class<?> c )
     {
         String name = c.getName();
-
-        int lastDotIdx = name.lastIndexOf( '.' );
-
-        if ( lastDotIdx > 0 )
-        {
-            StringBuilder sb = new StringBuilder( name ) ;
-            sb.insert( lastDotIdx, "." + RESOURCE_PACKAGE_NAME );
-            name = sb.toString();
-        }
 
         try
         {
             return new NamedResourceBundle(
+                    findResourceBundle( name, c.getModule() ),
                     name,
                     ResourceBundle.getBundle( name, c.getModule() ) );
         }
@@ -259,27 +325,6 @@ public class ResourceUtil
         {
             return null;
         }
-    }
-
-    /**
-     * Get class specific resources. If the passed classes full
-     * name is "org.good.Class" then this operation loads
-     * the resource bundle "org/good/resources/Class.properties".
-     *
-     * @param c The class for which the resources should be loaded.
-     * @return A map holding the resource strings. If no resources were
-     * found, then the result is an empty map.
-     */
-    public static Map<String,String> getClassResourceMap( Class<?> c )
-    {
-        ResourceBundle bundle = getClassResources( c );
-
-        if ( bundle == null )
-            return Collections.emptyMap();
-
-        return bundle.keySet().stream().collect( Collectors.toMap(
-                s -> s,
-                s -> bundle.getString( s ) ) );
     }
 
     /**
@@ -291,19 +336,19 @@ public class ResourceUtil
      * @return The resource InputStream.  Note that this must be
      * closed after use. Never null, throws a RuntimeException if
      * the resource was not found.
+     * @deprecated Check if needed.
      */
-    public static InputStream getResourceAsStream(
+    @Deprecated
+    private static InputStream getResourceAsStream(
             Class<?> c1ass,
             String name )
     {
-        String packageName =
-                RESOURCE_PACKAGE_NAME + "/" + name;
         InputStream result =
-                c1ass.getResourceAsStream( packageName );
+                c1ass.getResourceAsStream( name );
 
         if ( result == null )
             throw new RuntimeException(
-                    "Resource not found: " + packageName );
+                    "Resource not found: " + name );
 
         return result;
     }
@@ -316,7 +361,9 @@ public class ResourceUtil
      * @param name The name of the resource.
      * @return The resource content. Never null, throws a
      * RuntimeException if the resource was not found.
+     * @deprecated Check if needed.
      */
+    @Deprecated
     public static byte[] loadResource(
             Class<?> c1ass,
             String name )

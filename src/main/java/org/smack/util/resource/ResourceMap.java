@@ -13,12 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
-import org.smack.util.JavaUtil;
-import org.smack.util.ResourceUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
+import org.smack.util.resource.ResourceUtil.NamedResourceBundle;
 
 
 /**
@@ -48,8 +46,8 @@ public class ResourceMap extends HashMap<String, String>
         String simpleName =
                 _class.getSimpleName();
 
-        ResourceBundle crb =
-                ResourceUtil.getClassResources( cl );
+        NamedResourceBundle crb =
+                ResourceUtil.getClassResourcesImpl( cl );
 
         if ( crb == null )
         {
@@ -59,17 +57,14 @@ public class ResourceMap extends HashMap<String, String>
         }
 
         _bundleName =
-                crb.getBaseBundleName();
-        JavaUtil.Assert(
-                _bundleName.endsWith( simpleName ) );
-
+                cl.getName();
         _resourcePath =
                 _bundleName.substring(
                         0, _bundleName.length() -
                         simpleName.length() ).replace( '.', '/' );
 
         Map<String, String> bundle =
-                ResourceUtil.preprocessResourceBundle(
+                ResourceUtil.preprocessResourceBundleN(
                         crb );
 
         String classPrefix =
@@ -106,7 +101,7 @@ public class ResourceMap extends HashMap<String, String>
      * @param key The requested key.
      * @return The associated value.
      */
-    public Optional<String> getQualified( String key )
+    public Optional<String> _getQualified( String key )
     {
         return Optional.ofNullable(
                 get( _class.getSimpleName() + "." + key ) );
@@ -159,8 +154,9 @@ public class ResourceMap extends HashMap<String, String>
      * is org/jdesktop/resources/. Used for the resolution of
      * secondary resources like icons. If no underlying resource
      * bundle existed, then this is null.
-     *
+     * @deprecated Use @-notation.
      */
+    @Deprecated
     public String getResourceDir()
     {
         return _resourcePath;

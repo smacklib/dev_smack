@@ -27,8 +27,6 @@ public class ResourceManagerStringTest
     @Before
     public void testInit()
     {
-        System.out.println( this );
-
         _rm.injectResources( this );
     }
 

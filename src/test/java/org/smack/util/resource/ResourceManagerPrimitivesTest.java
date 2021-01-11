@@ -58,16 +58,19 @@ public class ResourceManagerPrimitivesTest
     {
         assertEquals( 8, byteResource );
     }
+
     @Test
     public void testShortPrimitive()
     {
         assertEquals( 16, shortResource );
     }
+
     @Test
     public void testIntegerPrimitive()
     {
         assertEquals( 32, intResource );
     }
+
     @Test
     public void testLongPrimitive()
     {
