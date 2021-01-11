@@ -8,8 +8,8 @@ package org.jdesktop.beans;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.application.ApplicationProperties;
-import org.jdesktop.util.ServiceManager;
+import org.smack.application.ApplicationProperties;
+import org.smack.util.ServiceManager;
 
 import javafx.util.StringConverter;
 
