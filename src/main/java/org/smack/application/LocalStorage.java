@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.jdesktop.beans.AbstractBeanEdt;
 import org.jdesktop.util.PlatformType;
 import org.smack.util.StringUtil;
 
@@ -34,7 +33,7 @@ import org.smack.util.StringUtil;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public final class LocalStorage extends AbstractBeanEdt
+public final class LocalStorage // extends AbstractBeanEdt
 {
     private LocalIO localIO = null;
 
