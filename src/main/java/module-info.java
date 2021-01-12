@@ -27,7 +27,6 @@ module framework.smack {
         org.jdesktop.util.converters.FontStringConverter,
         org.jdesktop.util.converters.IconStringConverter,
         org.jdesktop.util.converters.ImageStringConverter,
-        org.jdesktop.util.converters.KeyCombinationConverter,
         org.jdesktop.util.converters.Point2dStringConverter,
         org.jdesktop.util.converters.PointStringConverter;
 

@@ -10,6 +10,7 @@ import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.Objects;
 
+import org.smack.util.ReflectionUtil;
 import org.smack.util.ResourceUtil;
 import org.smack.util.StringUtil;
 
