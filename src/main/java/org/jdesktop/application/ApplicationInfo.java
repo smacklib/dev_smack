@@ -7,12 +7,12 @@
  */
 package org.jdesktop.application;
 
+import java.awt.Image;
 import java.util.Objects;
 
 import org.jdesktop.util.ResourceManager;
 import org.jdesktop.util.ServiceManager;
 
-import javafx.scene.image.Image;
 
 /**
  * Application information.

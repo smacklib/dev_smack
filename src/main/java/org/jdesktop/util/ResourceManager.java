@@ -30,10 +30,9 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.smack.util.Pair;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.WeakMapWithProducer;
-
-import javafx.util.Pair;
 
 /**
  * A ResourceManager.
@@ -215,13 +214,13 @@ public class ResourceManager
 
         for ( Pair<Field, Resource> c : fields )
         {
-            Field f = c.getKey();
+            Field f = c.left;
 
             if ( Modifier.isStatic( f.getModifiers() ) &&
                     staticInjectionDone.containsKey( cIass ) )
                 continue;
 
-            Resource r = c.getValue();
+            Resource r = c.right;
 
             String name = r.name();
 

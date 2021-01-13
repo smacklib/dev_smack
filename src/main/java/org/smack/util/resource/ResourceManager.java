@@ -98,37 +98,14 @@ public class ResourceManager
         _converters.put( converter.getType(), converter );
     }
 
-    private static class DynamicResourceConverter<T> extends ResourceConverter
-    {
-        private final Function<String, T> _function;
-
-        DynamicResourceConverter( Class<T> cl, Function<String,T> f )
-        {
-            super( cl );
-
-            _function = f;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r ) throws Exception
-        {
-            return _function.apply( s );
-        }
-    }
-
     /**
      * @param converter A converter to add to the list of known converters.
      */
     public <T> void addConverter( Class<T> cl, Function<String, T> f )
     {
-        if ( _converters.containsKey( cl ) )
-            LOG.warning( "Duplicate resource converter for " + cl + "." );
-
-        var dynamicConverter = new DynamicResourceConverter<T>( cl, f );
-
         _converters.put(
-                dynamicConverter.getType(),
-                dynamicConverter );
+                cl,
+                f );
     }
 
     /**
@@ -404,43 +381,9 @@ public class ResourceManager
     {
         Class<?> targetType = f.getType();
 
-        ResourceConverter converter =
-                _converters.get( targetType );
-
-        if ( converter != null )
-        {
-            f.set(
-                    instance,
-                    converter.parseString( resource, map ) );
-
-            return;
-        }
-
-        // Check if we can synthesize an array resource converter.
-        if ( targetType.isArray() )
-        {
-            converter = _converters.get( targetType.getComponentType() );
-            if ( converter != null )
-            {
-                converter = new ArrayResourceConverter( converter, targetType );
-                f.set( instance, converter.parseString( resource, map ) );
-                return;
-            }
-        }
-
-        // Check if we can synthesize a constructor-based resource converter.
-        if ( ReflectionUtil.getConstructor( targetType, String.class ) != null )
-        {
-            converter = new ConstructorResourceConverter(
-                    targetType.getConstructor( String.class ),
-                    targetType );
-
-            f.set( instance, converter.parseString( resource, map ) );
-
-            return;
-        }
-
-        LOG.warning( "No resource converter found for type: " + targetType );
+        f.set(
+                instance,
+                convert( targetType, resource, null ) );
     }
 
     private static class ArrayResourceConverter extends ResourceConverter

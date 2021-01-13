@@ -26,9 +26,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.jdesktop.util.ResourceManager;
-import org.jdesktop.util.ServiceManager;
-
 /**
  * Security utilities.
  *
@@ -188,12 +185,6 @@ public class SecurityUtil
 
         return cipher.doFinal(
                 encryptedData );
-    }
-
-    static
-    {
-        ServiceManager.getApplicationService( ResourceManager.class )
-            .injectResources( SecurityUtil.class );
     }
 
     private SecurityUtil()

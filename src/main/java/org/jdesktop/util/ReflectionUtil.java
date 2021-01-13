@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.util.Pair;
+import org.smack.util.Pair;
 
 /**
  * Reflection helpers.

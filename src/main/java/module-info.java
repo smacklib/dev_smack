@@ -7,9 +7,6 @@ module framework.smack {
     requires transitive java.desktop;
     requires java.logging;
     requires java.prefs;
-    requires transitive javafx.base;
-    requires javafx.controls;
-    requires transitive javafx.graphics;
 
     uses org.jdesktop.util.ResourceConverter;
     uses org.jdesktop.util.ResourceConverterExtension;
@@ -28,10 +25,8 @@ module framework.smack {
         org.jdesktop.util.converters.ColorStringConverter,
         org.jdesktop.util.converters.DimensionStringConverter,
         org.jdesktop.util.converters.FontStringConverter,
-        org.jdesktop.util.converters.FxImageConverter,
         org.jdesktop.util.converters.IconStringConverter,
         org.jdesktop.util.converters.ImageStringConverter,
-        org.jdesktop.util.converters.KeyCombinationConverter,
         org.jdesktop.util.converters.Point2dStringConverter,
         org.jdesktop.util.converters.PointStringConverter;
 
@@ -52,19 +47,15 @@ module framework.smack {
         org.smack.util.converters.ColorStringConverter,
         org.smack.util.converters.DimensionStringConverter,
         org.smack.util.converters.FontStringConverter,
-        org.smack.util.converters.FxImageConverter,
         org.smack.util.converters.IconStringConverter,
         org.smack.util.converters.ImageStringConverter,
-        org.smack.fx.converters.KeyCombinationConverter,
         org.smack.util.converters.Point2dStringConverter,
         org.smack.util.converters.PointStringConverter;
 
     exports org.jdesktop.application;
-    exports org.jdesktop.beans;
     exports org.jdesktop.util;
     exports org.jdesktop.util.converters;
     exports org.smack.application;
-    exports org.smack.fx;
     exports org.smack.util;
     exports org.smack.util.collections;
     exports org.smack.util.resource;
