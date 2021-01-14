@@ -10,8 +10,8 @@ package org.smack.application;
 import java.awt.Image;
 import java.util.Objects;
 
-import org.jdesktop.util.ResourceManager;
-import org.jdesktop.util.ServiceManager;
+import org.smack.util.ServiceManager;
+import org.smack.util.resource.ResourceManager;
 
 /**
  * Application information.
@@ -40,7 +40,7 @@ public class ApplicationInfo
         ResourceManager rm =
                 ServiceManager.getApplicationService(
                         ResourceManager.class );
-        org.jdesktop.util.ResourceMap arm =
+        var arm =
                 rm.getResourceMap( _applicationClass );
 
         id = arm.get(

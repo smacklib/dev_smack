@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import org.jdesktop.util.JavaUtil;
+import org.smack.util.JavaUtil;
 
 /**
  * A simple pipe.  Write to the write end, read from the read end.

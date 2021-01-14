@@ -453,7 +453,7 @@ public final class ReflectionUtil
         Constructor<T> ctor =
                 clazz.getDeclaredConstructor();
 
-        if (!ctor.isAccessible()) {
+        if (!ctor.canAccess( null )) {
             try {
                 ctor.setAccessible(true);
             } catch (SecurityException ignore) {

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.jdesktop.util.PlatformType;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 
 /**
@@ -33,7 +34,7 @@ import org.smack.util.StringUtil;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-public final class LocalStorage // extends AbstractBeanEdt
+final class LocalStorage // extends AbstractBeanEdt
 {
     private LocalIO localIO = null;
 
@@ -48,7 +49,7 @@ public final class LocalStorage // extends AbstractBeanEdt
     LocalStorage()
     {
         ApplicationInfo a =
-                org.jdesktop.util.ServiceManager.getApplicationService( ApplicationInfo.class );
+                ServiceManager.getApplicationService( ApplicationInfo.class );
 
         String vendorId = a.getVendorId();
         String applicationId = a.getId();
