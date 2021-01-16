@@ -74,7 +74,7 @@ public class PrimitivesBundle extends ResourceConverterExtension
                 Icon.class,
                 PrimitivesBundle::iconFromUrl );
         registry.put( Color.class,
-                ColorStringConverter::parse );
+                ConverterUtils::parseColor );
 
     }
 }

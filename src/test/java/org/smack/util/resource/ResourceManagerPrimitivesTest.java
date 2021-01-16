@@ -25,6 +25,9 @@ public class ResourceManagerPrimitivesTest
     @Resource
     private byte byteResource;
     @Resource
+    private byte[] byteResourceArray;
+
+    @Resource
     private short shortResource;
     @Resource
     private int intResource;
@@ -57,6 +60,11 @@ public class ResourceManagerPrimitivesTest
     public void testBytePrimitive()
     {
         assertEquals( 8, byteResource );
+        byte[] values = {
+                -128, 8, 127
+        };
+
+        assertArrayEquals( values, byteResourceArray );
     }
 
     @Test
