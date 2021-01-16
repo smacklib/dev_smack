@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +33,7 @@ import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.WeakMapWithProducer;
+import org.smack.util.resource.ResourceConverterRegistry.Converter;
 
 /**
  * A ResourceManager.
@@ -84,24 +84,13 @@ public class ResourceManager
             c.extendTypeMap( _converters );
 
         for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-            addConverter( c );
+            _converters.put( c.getType(), c );
     }
 
     /**
      * @param converter A converter to add to the list of known converters.
      */
-    public void addConverter( ResourceConverter converter )
-    {
-        if ( _converters.containsKey( converter.getType() ) )
-            LOG.warning( "Duplicate resource converter for " + converter.getType() + ", " + converter.getClass() );
-
-        _converters.put( converter.getType(), converter );
-    }
-
-    /**
-     * @param converter A converter to add to the list of known converters.
-     */
-    public <T> void addConverter( Class<T> cl, Function<String, T> f )
+    public <T> void addConverter( Class<T> cl, Converter<String, T> f )
     {
         _converters.put(
                 cl,
@@ -111,26 +100,9 @@ public class ResourceManager
     /**
      * @param converter A converter to add to the list of known converters.
      */
-    public <T> Function<String, T> getConverter( Class<T> cl )
+    public <T> Converter<String, T> getConverter( Class<T> cl )
     {
-        ResourceConverter converter = _converters.get( cl );
-
-        if ( converter == null )
-            return null;
-
-        Function<String, T> result =
-                s -> {
-                    try
-                    {
-                        return cl.cast( converter.parseString( s, null ) );
-                    }
-                    catch ( Exception e )
-                    {
-                        throw new RuntimeException( e );
-                    }
-                };
-
-        return result;
+        return _converters.getConverter( cl );
     }
 
     /**
@@ -187,15 +159,14 @@ public class ResourceManager
                                 c.getPropertyType(),
                                 map.get( currentKey ),
                                 map ) );
-//                        map.get( currentKey, c.getPropertyType() ) );
-            }
-            catch ( IllegalAccessException e )
-            {
-                throw new RuntimeException( e );
             }
             catch ( InvocationTargetException e )
             {
                 throw new RuntimeException( e.getCause() );
+            }
+            catch ( Exception e )
+            {
+                throw new RuntimeException( e );
             }
 
             if ( definedKeys.size() == 0 )
@@ -290,44 +261,6 @@ public class ResourceManager
                         throw new RuntimeException( msg );
                     }
                 } );
-
-//        for ( Pair<Field, Resource> c : fields )
-//        {
-//            Field f = c.getKey();
-//
-//            if ( Modifier.isStatic( f.getModifiers() ) &&
-//                    staticInjectionDone.containsKey( cIass ) )
-//                continue;
-//
-//            Resource r = c.getValue();
-//
-//            String name = r.name();
-//
-//            if ( StringUtil.isEmpty( name ) )
-//                name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
-//
-//            String value = rb.get( name );
-//
-//            if ( value == null )
-//            {
-//                String message = String.format(
-//                        "No resource key found for field '%s#%s'.",
-//                        f.getDeclaringClass(),
-//                        f.getName() );
-//                LOG.severe(
-//                        message );
-//                continue;
-//            }
-//
-//            try
-//            {
-//                performInjection( instance, f, value, rb );
-//            }
-//            catch ( Exception e )
-//            {
-//                LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
-//            }
-//        }
 
         staticInjectionDone.put( cIass, rb );
     }
@@ -445,6 +378,7 @@ public class ResourceManager
 
     @SuppressWarnings("unchecked")
     <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
+        throws Exception
     {
         ResourceConverter converter =
                 _converters.get( targetType );

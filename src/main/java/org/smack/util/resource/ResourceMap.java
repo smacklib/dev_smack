@@ -171,6 +171,7 @@ public class ResourceMap extends HashMap<String, String>
      * @return The conversion result.
      */
     public <T> T getAs( String key, Class<T> targetType )
+        throws Exception
     {
         String resolved =
                 get( key );

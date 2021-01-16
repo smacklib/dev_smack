@@ -2,7 +2,6 @@ package org.smack.util.resource;
 
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -13,12 +12,35 @@ import java.util.logging.Logger;
  */
 public final class ResourceConverterRegistry
 {
+    @FunctionalInterface
+    public interface Converter<F,T>
+    {
+        T convert( F f )
+            throws Exception;
+    }
+
+    public static class DynamicResourceConverter<T> extends ResourceConverter
+    {
+        private final Converter<String, T> _function;
+
+        DynamicResourceConverter( Class<T> cl, Converter<String,T> f )
+        {
+            super( cl );
+
+            _function = f;
+        }
+
+        @Override
+        public Object parseString( String s, ResourceMap r ) throws Exception
+        {
+            return _function.convert( s );
+        }
+    }
+
     private final Logger LOG = Logger.getLogger(
             ResourceConverterRegistry.class.getName() );
 
-    private final HashMap<Class<?>, ResourceConverter> _registry =
-            new HashMap<>();
-    private final HashMap<Class<?>, Function<String, ?>> _registry2 =
+    private final HashMap<Class<?>, Converter<String, ?>> _registry =
             new HashMap<>();
 
     public ResourceConverterRegistry()
@@ -33,58 +55,59 @@ public final class ResourceConverterRegistry
     /**
      * @param converter A converter to add to the list of known converters.
      */
-    public <T> void put( Class<T> cl, Function<String, T> f )
+    public <T> void put( Class<T> cl, Converter<String, T> f )
     {
-        _registry2.put(
-                Objects.requireNonNull( cl ),
-                Objects.requireNonNull( f ) );
+        Objects.requireNonNull( cl );
+        Objects.requireNonNull( f );
 
         if ( _registry.containsKey( cl ) )
             LOG.warning( "Duplicate resource converter for " + cl + "." );
 
-        var dynamicConverter = new DynamicResourceConverter<T>( cl, f );
-
         _registry.put(
-                dynamicConverter.getType(),
-                dynamicConverter );
+                cl,
+                f );
+    }
+
+    @Deprecated
+    public <T> void put( Class<T> cl, ResourceConverter converter )
+    {
+        @SuppressWarnings("unchecked")
+        Converter<String, T> c =
+                s -> (T)converter.parseString( s, null );
+        put(
+                cl,
+                c );
 
     }
 
     @Deprecated
-    public void put( Class<?> cl, ResourceConverter converter )
+    public <T> ResourceConverter get( Class<T> cl )
     {
-        _registry2.put(
-                Objects.requireNonNull( cl ),
-                Objects.requireNonNull(
-                        s -> {
-                            try
-                            {
-                                return converter.parseString( s, null );
-                            }
-                            catch ( Exception e )
-                            {
-                                throw new RuntimeException( e );
-                            }
-                        } ) );
+        if ( ! containsKey( cl ) )
+            return null;
 
-        _registry.put(
-                Objects.requireNonNull( cl ),
-                Objects.requireNonNull( converter ) );
+        return new DynamicResourceConverter( cl, _registry.get( cl ) );
     }
 
-    @Deprecated
-    public ResourceConverter get( Class<?> cl )
+    /**
+     * Get a conversion function.
+     *
+     * @param cl
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Converter<String, T> getConverter( Class<T> cl )
     {
-        return _registry.get( cl );
+        return (Converter<String,T>)_registry.get( cl );
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T convert( Class<T> cl, String s )
+    public <T> T convert( Class<T> cl, String s ) throws Exception
     {
         if ( ! containsKey( cl ) )
             throw new RuntimeException(
                     String.format( "Cannot convert '%s' to %s.", s, cl ) );
 
-        return (T)_registry2.get( cl ).apply( s );
+        return (T)_registry.get( cl ).convert( s );
     }
 }

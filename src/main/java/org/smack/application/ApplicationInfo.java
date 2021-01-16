@@ -49,8 +49,15 @@ public class ApplicationInfo
                 "Application.title" );
         version = arm.get(
                 "Application.version" );
-        icon = arm.getAs(
-                "Application.icon", Image.class );
+        try
+        {
+            icon = arm.getAs(
+                    "Application.icon", Image.class );
+        }
+        catch ( Exception e )
+        {
+            icon = null;
+        }
         vendor = arm.get(
                 "Application.vendor" );
         vendorId = arm.get(
@@ -95,7 +102,7 @@ public class ApplicationInfo
         return version;
     }
 
-    private final Image icon;
+    private Image icon;
 
     /**
      * Return the application's icon as defined in the resources.

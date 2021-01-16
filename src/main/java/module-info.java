@@ -38,19 +38,6 @@ module framework.smack {
     // needed with the module system.
     provides org.smack.util.resource.ResourceConverterExtension with
         org.smack.util.converters.PrimitivesBundle;
-    provides org.smack.util.resource.ResourceConverter with
-        org.smack.util.converters.StringStringConverter,
-        org.smack.util.converters.StringStringBuilderConverter,
-        org.smack.util.converters.StringArrayRc,
-        org.smack.util.converters.UrlStringConverter,
-        org.smack.util.converters.UriStringConverter,
-        org.smack.util.converters.ColorStringConverter,
-        org.smack.util.converters.DimensionStringConverter,
-        org.smack.util.converters.FontStringConverter,
-        org.smack.util.converters.IconStringConverter,
-        org.smack.util.converters.ImageStringConverter,
-        org.smack.util.converters.Point2dStringConverter,
-        org.smack.util.converters.PointStringConverter;
 
     exports org.jdesktop.application;
     exports org.jdesktop.util;
