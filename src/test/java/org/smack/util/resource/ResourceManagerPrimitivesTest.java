@@ -30,6 +30,9 @@ public class ResourceManagerPrimitivesTest
     @Resource
     private short shortResource;
     @Resource
+    private short[] shortResourceArray;
+
+    @Resource
     private int intResource;
     @Resource
     private long longResource;
@@ -37,7 +40,12 @@ public class ResourceManagerPrimitivesTest
     @Resource
     private float floatResource;
     @Resource
+    private float floatResourceArray[];
+
+    @Resource
     private double doubleResource;
+    @Resource
+    private double doubleResourceArray[];
 
     @Before
     public void testInit()
@@ -60,6 +68,7 @@ public class ResourceManagerPrimitivesTest
     public void testBytePrimitive()
     {
         assertEquals( 8, byteResource );
+
         byte[] values = {
                 -128, 8, 127
         };
@@ -71,6 +80,12 @@ public class ResourceManagerPrimitivesTest
     public void testShortPrimitive()
     {
         assertEquals( 16, shortResource );
+
+        short[] values = {
+                0, 1, 15
+        };
+
+        assertArrayEquals( values, shortResourceArray );
     }
 
     @Test
@@ -89,11 +104,17 @@ public class ResourceManagerPrimitivesTest
     public void testFloatPrimitive()
     {
         assertEquals( 2.71f, floatResource, 0.0f );
+
+        assertEquals( -2.71f, floatResourceArray[0], 0.0f );
+        assertEquals( -3.14f, floatResourceArray[1], 0.0f );
     }
 
     @Test
     public void testDoublePrimitive()
     {
         assertEquals( 3.14159265, doubleResource, 0.0f );
+
+        assertEquals( 1e2, doubleResourceArray[0], 0.0f );
+        assertEquals( 1e3, doubleResourceArray[1], 0.0f );
     }
 }

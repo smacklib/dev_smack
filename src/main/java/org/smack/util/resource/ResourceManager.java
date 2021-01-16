@@ -314,9 +314,20 @@ public class ResourceManager
     {
         Class<?> targetType = f.getType();
 
-        f.set(
-                instance,
-                convert( targetType, resource, null ) );
+        try
+        {
+            f.set(
+                    instance,
+                    convert( targetType, resource, null ) );
+        }
+        catch ( Exception e )
+        {
+            throw new Exception( String.format(
+                    "Injecting %s: %s",
+                    f.toString(),
+                    e.getMessage() ),
+                    e );
+        }
     }
 
     private static class ArrayResourceConverter extends ResourceConverter
@@ -398,7 +409,12 @@ public class ResourceManager
         }
         catch ( Exception e )
         {
-            throw new IllegalArgumentException( "Conversion failed.", e );
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Cannot convert '%s' to %s.",
+                            toConvert,
+                            targetType.getName() ),
+                    e );
         }
     }
 
