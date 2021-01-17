@@ -145,7 +145,6 @@ public class ResourceManager
 
             try
             {
-                // This implicitly transforms the key's value.
                 setter.invoke(
                         bean,
                         convert(
@@ -167,7 +166,8 @@ public class ResourceManager
         }
 
         for ( String c : definedKeys )
-            LOG.warning( String.format( "Key '%s' defined in map does not match property.", c ) );
+            LOG.warning( String.format(
+                    "Key '%s' defined in map does not match property.", c ) );
     }
 
 
@@ -180,32 +180,32 @@ public class ResourceManager
     }
 
     /**
-     * @param clazz The class a resource map is requested for.
+     * @param clazz The class for which a resource map is requested.
      * @return The resource map for the passed class.
      */
-    public ResourceMap getResourceMap( Class<?> clazz )
+    public ResourceMap getResourceMap( Class<?> cl )
     {
-        return _resourceMapCache.get( clazz );
+        return _resourceMapCache.get( cl );
     }
 
-    public void injectResources( Object instance, Class<?> cIass )
+    public void injectResources( Object instance, Class<?> cl )
     {
-        if ( instance == null && staticInjectionDone.containsKey( cIass ) )
+        if ( instance == null && staticInjectionDone.containsKey( cl ) )
             return;
 
         ResourceMap rb =
-                getResourceMap( cIass );
+                getResourceMap( cl );
 
         if ( rb.isEmpty() )
         {
             // @Resource annotations exist, but no property file.
-            LOG.severe( "No resources found for class " + cIass.getName() );
+            LOG.severe( "No resources found for class " + cl.getName() );
             return;
         }
 
         ReflectionUtil.processAnnotation(
                 Resource.class,
-                cIass::getDeclaredFields,
+                cl::getDeclaredFields,
                 s -> {
                     if ( instance == null )
                         return Modifier.isStatic( s.getModifiers() );
@@ -214,13 +214,16 @@ public class ResourceManager
                 (f, r) -> {
 
                     if ( Modifier.isStatic( f.getModifiers() ) &&
-                            staticInjectionDone.containsKey( cIass ) )
+                            staticInjectionDone.containsKey( cl ) )
                         return;
 
                     String name = r.name();
 
                     if ( StringUtil.isEmpty( name ) )
-                        name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
+                        name = String.format(
+                                "%s.%s",
+                                cl.getSimpleName(),
+                                f.getName() );
 
                     String value = rb.get( name );
 
@@ -247,7 +250,7 @@ public class ResourceManager
                     }
                 } );
 
-        staticInjectionDone.put( cIass, rb );
+        staticInjectionDone.put( cl, rb );
     }
 
     /**
@@ -322,7 +325,8 @@ public class ResourceManager
                 _converters.getConverter( targetType );
 
         if ( converter == null )
-            throw new IllegalArgumentException( "No resource converter found for type: " + targetType );
+            throw new IllegalArgumentException(
+                    "No resource converter found for type: " + targetType );
 
         try
         {
