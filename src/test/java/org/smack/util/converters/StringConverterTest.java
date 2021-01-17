@@ -118,24 +118,22 @@ public class StringConverterTest
         assertEquals(
                 Month.SEPTEMBER,
                 _cvt.convert( Month.class, "SEPTEMBER" ) );
-        assertEquals(
-                Month.SEPTEMBER,
-                _cvt.convert( Month.class, "September" ) );
         try
         {
-            _cvt.convert( Month.class, "daisy" );
+            // Not case independent.
+            _cvt.convert( Month.class, "September" );
             assertTrue( false );
         }
         catch ( IllegalArgumentException e )
         {
             assertEquals(
-                    "Unknown enum value: 'daisy'.  Allowed values are JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER.",
+                    "Unknown enum value: 'September'.  Allowed values are JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER.",
                     e.getMessage() );
         }
 
         assertArrayEquals(
                 new Month[] { Month.MAY, Month.APRIL, Month.DECEMBER },
-                _cvt.convert( Month[].class, "may april december" ) );
+                _cvt.convert( Month[].class, "MAY  APRIL  DECEMBER" ) );
     }
 
     @Test

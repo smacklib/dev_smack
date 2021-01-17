@@ -8,21 +8,20 @@ package org.smack.util.converters;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smack.util.ReflectionUtil;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceConverter;
 import org.smack.util.resource.ResourceMap;
 
 /**
- * A string converter offering conversions services for strings to arbitrary
+ * Offers conversions services for strings to arbitrary
  * types.
  *
  * @version $Revision$
@@ -30,6 +29,9 @@ import org.smack.util.resource.ResourceMap;
  */
 public final class StringConverter
 {
+    private final Logger LOG = Logger.getLogger(
+            StringConverter.class.getName() );
+
     @FunctionalInterface
     public interface Converter<F,T>
     {
@@ -55,12 +57,14 @@ public final class StringConverter
         }
     }
 
-    private final Logger LOG = Logger.getLogger(
-            StringConverter.class.getName() );
 
     private final HashMap<Class<?>, Converter<String, ?>> _registry =
             new HashMap<>();
 
+    /**
+     * Create an instance.  Use with {@link ServiceManager} to get the common
+     * instance.
+     */
     public StringConverter()
     {
         LOG.setLevel( Level.WARNING );
@@ -72,6 +76,11 @@ public final class StringConverter
             put( c.getType(), c );
     }
 
+    /**
+     * Check if a converter for the passed class is available.
+     * @param cl The class to convert to.
+     * @return true if a converter is available.
+     */
     public boolean containsKey( Class<?> cl )
     {
         return getConverter( cl ) != null;
@@ -121,8 +130,8 @@ public final class StringConverter
     /**
      * Get a conversion function.
      *
-     * @param cl
-     * @return
+     * @param cl The conversion target class.
+     * @return A converter function or null if none is available.
      */
     @SuppressWarnings("unchecked")
     public <T> Converter<String, T> getConverter( Class<T> cl )
@@ -130,11 +139,20 @@ public final class StringConverter
         return (Converter<String,T>)_registry.computeIfAbsent( cl, this::synthesize );
     }
 
+    /**
+     * Convert a string to a target class.
+     * @param <T> The target type.
+     * @param cl The target type's class.
+     * @param s The string to convert.
+     * @return The conversion result.  This may be null, depending
+     * on the converter.
+     * @throws Exception In case of conversion failure.
+     */
     @SuppressWarnings("unchecked")
     public <T> T convert( Class<T> cl, String s ) throws Exception
     {
         if ( ! containsKey( cl ) )
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     String.format( "Cannot convert '%s' to %s.", s, cl ) );
 
         return (T)_registry.get( cl ).convert( s );
@@ -143,28 +161,7 @@ public final class StringConverter
     private <T> Converter<String, T> synthesizeEnum( Class<T> cl )
     {
         LOG.info( "Synthesize enum for: " + cl );
-
-        return s -> {
-            // Handle enums.
-            for (var c : cl.getEnumConstants()) {
-                if (c.toString().equalsIgnoreCase(s)) {
-                    return c;
-                }
-            }
-
-            // Above went wrong, generate a good message.
-            List<String> allowed = new ArrayList<>();
-            for (var c : cl.getEnumConstants()) {
-                allowed.add(c.toString());
-            }
-
-            String message = String.format(
-                    "Unknown enum value: '%s'.  Allowed values are %s.",
-                    s,
-                    StringUtil.concatenate(", ", allowed));
-
-            throw new IllegalArgumentException(message);
-        };
+        return s -> ReflectionUtil.getEnumElement( cl, s );
     }
 
     private <T> Converter<String, T> synthesizeStringCtor( Class<T> cl, Constructor<T> ctor )
@@ -201,7 +198,7 @@ public final class StringConverter
     }
 
     /**
-     * Sythesizes missing converters.
+     * Synthesizes missing converters.
      *
      * @param <T>
      * @param cl
