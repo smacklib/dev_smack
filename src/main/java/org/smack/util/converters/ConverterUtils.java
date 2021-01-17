@@ -13,56 +13,33 @@ class ConverterUtils
      * or the color plain names defined on {@link Color}.
      * @author Romain Guy
      */
-    static Color parseColor(String s) throws Exception {
-
-        // Implanted michab.
-        {
-            Color result = checkPlainColorName( s );
-            if ( result != null )
-                return result;
-        }
-        // TODO michab -- check code below for simplification.
-        final Color color;
+    static Color parseColor(String s) throws Exception
+    {
+        final Color result;
 
         if (s.startsWith("#")) {
             switch (s.length()) {
-                // RGB/hex color
+                // RGB
                 case 7:
-                    color = Color.decode(s);
+                    result = Color.decode(s);
                     break;
-                // ARGB/hex color
+                // ARGB
                 case 9:
                     int alpha = Integer.decode(s.substring(0, 3));
                     int rgb = Integer.decode("#" + s.substring(3));
-                    color = new Color(alpha << 24 | rgb, true);
+                    result = new Color(alpha << 24 | rgb, true);
                     break;
                 default:
                     throw new Exception("invalid #RRGGBB or #AARRGGBB color string: " + s);
             }
         } else {
-            String[] parts = s.split(",");
-            if (parts.length < 3 || parts.length > 4) {
-                throw new Exception("invalid R, G, B[, A] color string: " + s);
-            }
-            try {
-                // with alpha component
-                if (parts.length == 4) {
-                    int r = Integer.parseInt(parts[0].trim());
-                    int g = Integer.parseInt(parts[1].trim());
-                    int b = Integer.parseInt(parts[2].trim());
-                    int a = Integer.parseInt(parts[3].trim());
-                    color = new Color(r, g, b, a);
-                } else {
-                    int r = Integer.parseInt(parts[0].trim());
-                    int g = Integer.parseInt(parts[1].trim());
-                    int b = Integer.parseInt(parts[2].trim());
-                    color = new Color(r, g, b);
-                }
-            } catch (NumberFormatException e) {
-                throw new Exception("invalid R, G, B[, A] color string: " + s, e);
-            }
+            result = checkPlainColorName( s );
         }
-        return color;
+
+        if ( result == null )
+            throw new Exception("Use #RRGGBB or #AARRGGBB color string or plain color name: " + s);
+
+        return result;
     }
 
     private static Color checkPlainColorName( String name )
