@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -31,7 +30,8 @@ import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.WeakMapWithProducer;
-import org.smack.util.resource.ResourceConverterRegistry.Converter;
+import org.smack.util.converters.StringConverter;
+import org.smack.util.converters.StringConverter.Converter;
 
 /**
  * A ResourceManager.
@@ -64,8 +64,8 @@ public class ResourceManager
         String description() default StringUtil.EMPTY_STRING;
     }
 
-    private final ResourceConverterRegistry _converters =
-            ServiceManager.getApplicationService( ResourceConverterRegistry.class );
+    private final StringConverter _converters =
+            ServiceManager.getApplicationService( StringConverter.class );
 
     private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
             new WeakHashMap<>();
@@ -78,11 +78,6 @@ public class ResourceManager
      */
     public ResourceManager()
     {
-        for ( ResourceConverterExtension c : ServiceLoader.load( ResourceConverterExtension.class ) )
-            c.extendTypeMap( _converters );
-
-        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-            _converters.put( c.getType(), c );
     }
 
     /**

@@ -1,4 +1,10 @@
-package org.smack.util.resource;
+/**
+ * $Id$
+ *
+ * Unpublished work.
+ * Copyright © 2021 Michael G. Binz
+ */
+package org.smack.util.converters;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -6,19 +12,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smack.util.ReflectionUtil;
 import org.smack.util.StringUtil;
+import org.smack.util.resource.ResourceConverter;
+import org.smack.util.resource.ResourceMap;
 
 /**
- *
+ * A string converter offering conversions services for strings to arbitrary
+ * types.
  *
  * @version $Revision$
  * @author Michael Binz
  */
-public final class ResourceConverterRegistry
+public final class StringConverter
 {
     @FunctionalInterface
     public interface Converter<F,T>
@@ -46,14 +56,20 @@ public final class ResourceConverterRegistry
     }
 
     private final Logger LOG = Logger.getLogger(
-            ResourceConverterRegistry.class.getName() );
+            StringConverter.class.getName() );
 
     private final HashMap<Class<?>, Converter<String, ?>> _registry =
             new HashMap<>();
 
-    public ResourceConverterRegistry()
+    public StringConverter()
     {
         LOG.setLevel( Level.WARNING );
+
+        for ( StringConverterExtension c : ServiceLoader.load( StringConverterExtension.class ) )
+            c.extendTypeMap( this );
+
+        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
+            put( c.getType(), c );
     }
 
     public boolean containsKey( Class<?> cl )
@@ -157,6 +173,7 @@ public final class ResourceConverterRegistry
         return s -> ctor.newInstance( s );
     }
 
+    @SuppressWarnings("unchecked")
     private <T> Converter<String, T> synthesizeArray( Class<T> cl )
     {
         LOG.info( "Synthesize array for: " + cl );

@@ -12,7 +12,9 @@ import java.util.Objects;
  *
  * @author Hans Muller (Hans.Muller@Sun.COM)
  * @see ResourceMap
+ * @deprecated Will be removed.
  */
+@Deprecated
 public abstract class ResourceConverter
 {
     private final Class<?> _type;

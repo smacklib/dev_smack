@@ -1,3 +1,9 @@
+/**
+ * $Id$
+ *
+ * Unpublished work.
+ * Copyright © 2019 Michael G. Binz
+ */
 package org.smack.util.converters;
 
 import java.awt.Color;
@@ -10,8 +16,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.smack.util.StringUtil;
-import org.smack.util.resource.ResourceConverterExtension;
-import org.smack.util.resource.ResourceConverterRegistry;
 
 /**
  * Installs ResourceConverters for primitive types.
@@ -19,7 +23,7 @@ import org.smack.util.resource.ResourceConverterRegistry;
  * @version $Revision$
  * @author Michael Binz
  */
-public class PrimitivesBundle extends ResourceConverterExtension
+public class PrimitivesBundle extends StringConverterExtension
 {
 
     private static Icon iconFromUrl( String s ) throws MalformedURLException
@@ -33,7 +37,7 @@ public class PrimitivesBundle extends ResourceConverterExtension
     }
 
     @Override
-    public void extendTypeMap( ResourceConverterRegistry registry )
+    public void extendTypeMap( StringConverter registry )
     {
         // Primitives
 

@@ -1,3 +1,9 @@
+/**
+ * $Id$
+ *
+ * Unpublished work.
+ * Copyright © 2019 Michael G. Binz
+ */
 package org.smack.util.converters;
 
 import java.awt.Color;
