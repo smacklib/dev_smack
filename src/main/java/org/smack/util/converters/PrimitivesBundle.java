@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
 import org.smack.util.StringUtil;
 
 /**
- * Installs ResourceConverters for primitive types.
+ * Installs the default converters.
  *
  * @version $Revision$
  * @author Michael Binz
