@@ -16,8 +16,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -200,14 +198,6 @@ public class ResourceManager
         if ( instance == null && staticInjectionDone.containsKey( cIass ) )
             return;
 
-//        List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
-//                cIass,
-//                Resource.class,
-//                instance == null ? Modifier.STATIC : 0 );
-//
-//        if ( fields.isEmpty() )
-//            return;
-
         ResourceMap rb =
                 getResourceMap( cIass );
 
@@ -330,82 +320,18 @@ public class ResourceManager
         }
     }
 
-    private static class ArrayResourceConverter extends ResourceConverter
-    {
-        private final ResourceConverter _delegate;
-
-        ArrayResourceConverter( ResourceConverter delegate, Class<?> type )
-        {
-            super( type );
-
-            if ( ! type.isArray() )
-                throw new IllegalArgumentException();
-
-            _delegate = delegate;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r )
-                throws Exception
-        {
-            String[] split = StringUtil.splitQuoted( s );
-
-            Object result = Array.newInstance(
-                    getType().getComponentType(), split.length );
-
-            int idx = 0;
-            for ( String c : split )
-            {
-                Array.set(
-                        result,
-                        idx++,
-                        _delegate.parseString(
-                                c,
-                                r ) );
-            }
-
-            return result;
-        }
-    }
-
-    private static class ConstructorResourceConverter extends ResourceConverter
-    {
-        private final Constructor<?> _ctor;
-
-        ConstructorResourceConverter( Constructor<?> delegate, Class<?> type )
-        {
-            super( type );
-
-            _ctor = delegate;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r )
-            throws Exception
-        {
-            return _ctor.newInstance( s );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
         throws Exception
     {
-        ResourceConverter converter =
-                _converters.get( targetType );
-
-        if ( converter == null )
-            converter = synthArrayConverter( targetType );
-
-        if ( converter == null )
-            converter = synthConstructorConverter( targetType );
+        var converter =
+                _converters.getConverter( targetType );
 
         if ( converter == null )
             throw new IllegalArgumentException( "No resource converter found for type: " + targetType );
 
         try
         {
-            return (T)converter.parseString( toConvert, map );
+            return converter.convert( toConvert );
         }
         catch ( Exception e )
         {
@@ -416,32 +342,5 @@ public class ResourceManager
                             targetType.getName() ),
                     e );
         }
-    }
-
-    private ResourceConverter synthArrayConverter( Class<?> targetType )
-    {
-        if ( ! targetType.isArray() )
-            return null;
-
-        ResourceConverter rc = _converters.get(
-                targetType.getComponentType() );
-
-        if ( rc == null )
-            return null;
-
-        return new ArrayResourceConverter( rc, targetType );
-    }
-
-    private ResourceConverter synthConstructorConverter( Class<?> targetType )
-    {
-        Constructor<?> ctor =
-                ReflectionUtil.getConstructor( targetType, String.class );
-
-        if ( ctor == null )
-            return null;
-
-        return new ConstructorResourceConverter(
-                ctor,
-                targetType );
     }
 }

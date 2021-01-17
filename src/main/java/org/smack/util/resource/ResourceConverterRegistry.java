@@ -1,8 +1,16 @@
 package org.smack.util.resource;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.smack.util.ReflectionUtil;
+import org.smack.util.StringUtil;
 
 /**
  *
@@ -45,11 +53,12 @@ public final class ResourceConverterRegistry
 
     public ResourceConverterRegistry()
     {
+        LOG.setLevel( Level.WARNING );
     }
 
     public boolean containsKey( Class<?> cl )
     {
-        return _registry.containsKey( cl );
+        return getConverter( cl ) != null;
     }
 
     /**
@@ -60,6 +69,10 @@ public final class ResourceConverterRegistry
         Objects.requireNonNull( cl );
         Objects.requireNonNull( f );
 
+        LOG.info( "Adding rc for: " + cl );
+
+        // Directly ask the has table.  The outbound containsKey
+        // triggers creation of entries.
         if ( _registry.containsKey( cl ) )
             LOG.warning( "Duplicate resource converter for " + cl + "." );
 
@@ -98,7 +111,7 @@ public final class ResourceConverterRegistry
     @SuppressWarnings("unchecked")
     public <T> Converter<String, T> getConverter( Class<T> cl )
     {
-        return (Converter<String,T>)_registry.get( cl );
+        return (Converter<String,T>)_registry.computeIfAbsent( cl, this::synthesize );
     }
 
     @SuppressWarnings("unchecked")
@@ -109,5 +122,86 @@ public final class ResourceConverterRegistry
                     String.format( "Cannot convert '%s' to %s.", s, cl ) );
 
         return (T)_registry.get( cl ).convert( s );
+    }
+
+    private <T> Converter<String, T> synthesizeEnum( Class<T> cl )
+    {
+        LOG.info( "Synthesize enum for: " + cl );
+
+        return s -> {
+            // Handle enums.
+            for (var c : cl.getEnumConstants()) {
+                if (c.toString().equalsIgnoreCase(s)) {
+                    return c;
+                }
+            }
+
+            // Above went wrong, generate a good message.
+            List<String> allowed = new ArrayList<>();
+            for (var c : cl.getEnumConstants()) {
+                allowed.add(c.toString());
+            }
+
+            String message = String.format(
+                    "Unknown enum value: '%s'.  Allowed values are %s.",
+                    s,
+                    StringUtil.concatenate(", ", allowed));
+
+            throw new IllegalArgumentException(message);
+        };
+    }
+
+    private <T> Converter<String, T> synthesizeStringCtor( Class<T> cl, Constructor<T> ctor )
+    {
+        LOG.info( "Synthesize string ctor for: " + cl );
+        return s -> ctor.newInstance( s );
+    }
+
+    private <T> Converter<String, T> synthesizeArray( Class<T> cl )
+    {
+        LOG.info( "Synthesize array for: " + cl );
+
+        var componentConverter =
+                getConverter( cl.getComponentType() );
+
+        return s -> {
+            String[] split = StringUtil.splitQuoted( s );
+
+            var result = Array.newInstance(
+                    cl.getComponentType(), split.length );
+
+            int idx = 0;
+            for ( String c : split )
+            {
+                Array.set(
+                        result,
+                        idx++,
+                        componentConverter.convert( c ) );
+            }
+
+            return (T)result;
+        };
+    }
+
+    /**
+     * Sythesizes missing converters.
+     *
+     * @param <T>
+     * @param cl
+     * @return
+     */
+    private <T> Converter<String,T> synthesize( Class<T> cl )
+    {
+        if ( cl.isEnum() )
+            return synthesizeEnum( cl );
+
+        if ( cl.isArray() && getConverter( cl.getComponentType() ) != null )
+            return synthesizeArray( cl );
+
+        var stringCtor = ReflectionUtil.getConstructor( cl, String.class );
+        if ( stringCtor != null )
+            return synthesizeStringCtor( cl, stringCtor );
+
+        return null;
     }
 }
