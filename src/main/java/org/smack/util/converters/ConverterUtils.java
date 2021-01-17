@@ -36,14 +36,15 @@ class ConverterUtils
                     result = new Color(alpha << 24 | rgb, true);
                     break;
                 default:
-                    throw new Exception("invalid #RRGGBB or #AARRGGBB color string: " + s);
+                    result = null;
             }
         } else {
             result = checkPlainColorName( s );
         }
 
         if ( result == null )
-            throw new Exception("Use #RRGGBB or #AARRGGBB color string or plain color name: " + s);
+            throw new IllegalArgumentException(
+                    "Use #RRGGBB or #AARRGGBB color string or plain color name: " + s);
 
         return result;
     }
