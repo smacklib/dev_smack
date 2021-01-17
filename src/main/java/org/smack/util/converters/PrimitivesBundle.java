@@ -66,9 +66,6 @@ public class PrimitivesBundle extends StringConverterExtension
                 String[].class,
                 StringUtil::splitQuoted );
         registry.put(
-                StringBuilder.class,
-                StringBuilder::new );
-        registry.put(
                 Font.class,
                 Font::decode );
         registry.put(
