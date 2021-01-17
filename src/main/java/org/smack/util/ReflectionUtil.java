@@ -453,7 +453,7 @@ public final class ReflectionUtil
         Constructor<T> ctor =
                 clazz.getDeclaredConstructor();
 
-        if (!ctor.isAccessible()) {
+        if (!ctor.canAccess( null )) {
             try {
                 ctor.setAccessible(true);
             } catch (SecurityException ignore) {
@@ -494,5 +494,34 @@ public final class ReflectionUtil
         if ( e instanceof InvocationTargetException )
             return e.getCause();
         return e;
+    }
+
+    /**
+     * Get an enum element based on its name.
+     * @param <T> The enum type.
+     * @param cl The enum's class.
+     * @param name The name of the enum element.
+     * @return The element
+     * @throws IllegalArgumentException If the name does not match an element
+     * name.
+     */
+    public static <T> T getEnumElement( Class<T> cl, String name )
+    {
+        for (var c : cl.getEnumConstants())
+            if (c.toString().equals(name))
+                return c;
+
+        // Above went wrong, generate a good message.
+        List<String> allowed = new ArrayList<>();
+        for (var c : cl.getEnumConstants()) {
+            allowed.add(c.toString());
+        }
+
+        String message = String.format(
+                "Unknown enum value: '%s'.  Allowed values are %s.",
+                name,
+                StringUtil.concatenate(", ", allowed));
+
+        throw new IllegalArgumentException(message);
     }
 }

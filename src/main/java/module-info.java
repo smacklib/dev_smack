@@ -31,26 +31,13 @@ module framework.smack {
         org.jdesktop.util.converters.PointStringConverter;
 
     uses org.smack.util.resource.ResourceConverter;
-    uses org.smack.util.resource.ResourceConverterExtension;
+    uses org.smack.util.converters.StringConverterExtension;
 
     // All converters have to be registered here.  The ServiceLoader
     // uses this list. The ServiceLoader configuration file is not
     // needed with the module system.
-    provides org.smack.util.resource.ResourceConverterExtension with
+    provides org.smack.util.converters.StringConverterExtension with
         org.smack.util.converters.PrimitivesBundle;
-    provides org.smack.util.resource.ResourceConverter with
-        org.smack.util.converters.StringStringConverter,
-        org.smack.util.converters.StringStringBuilderConverter,
-        org.smack.util.converters.StringArrayRc,
-        org.smack.util.converters.UrlStringConverter,
-        org.smack.util.converters.UriStringConverter,
-        org.smack.util.converters.ColorStringConverter,
-        org.smack.util.converters.DimensionStringConverter,
-        org.smack.util.converters.FontStringConverter,
-        org.smack.util.converters.IconStringConverter,
-        org.smack.util.converters.ImageStringConverter,
-        org.smack.util.converters.Point2dStringConverter,
-        org.smack.util.converters.PointStringConverter;
 
     exports org.jdesktop.application;
     exports org.jdesktop.util;

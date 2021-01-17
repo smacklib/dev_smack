@@ -16,17 +16,13 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +30,8 @@ import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.WeakMapWithProducer;
+import org.smack.util.converters.StringConverter;
+import org.smack.util.converters.StringConverter.Converter;
 
 /**
  * A ResourceManager.
@@ -66,8 +64,8 @@ public class ResourceManager
         String description() default StringUtil.EMPTY_STRING;
     }
 
-    private final ResourceConverterRegistry _converters =
-            ServiceManager.getApplicationService( ResourceConverterRegistry.class );
+    private final StringConverter _converters =
+            ServiceManager.getApplicationService( StringConverter.class );
 
     private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
             new WeakHashMap<>();
@@ -80,28 +78,12 @@ public class ResourceManager
      */
     public ResourceManager()
     {
-        for ( ResourceConverterExtension c : ServiceLoader.load( ResourceConverterExtension.class ) )
-            c.extendTypeMap( _converters );
-
-        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-            addConverter( c );
     }
 
     /**
      * @param converter A converter to add to the list of known converters.
      */
-    public void addConverter( ResourceConverter converter )
-    {
-        if ( _converters.containsKey( converter.getType() ) )
-            LOG.warning( "Duplicate resource converter for " + converter.getType() + ", " + converter.getClass() );
-
-        _converters.put( converter.getType(), converter );
-    }
-
-    /**
-     * @param converter A converter to add to the list of known converters.
-     */
-    public <T> void addConverter( Class<T> cl, Function<String, T> f )
+    public <T> void addConverter( Class<T> cl, Converter<String, T> f )
     {
         _converters.put(
                 cl,
@@ -111,26 +93,9 @@ public class ResourceManager
     /**
      * @param converter A converter to add to the list of known converters.
      */
-    public <T> Function<String, T> getConverter( Class<T> cl )
+    public <T> Converter<String, T> getConverter( Class<T> cl )
     {
-        ResourceConverter converter = _converters.get( cl );
-
-        if ( converter == null )
-            return null;
-
-        Function<String, T> result =
-                s -> {
-                    try
-                    {
-                        return cl.cast( converter.parseString( s, null ) );
-                    }
-                    catch ( Exception e )
-                    {
-                        throw new RuntimeException( e );
-                    }
-                };
-
-        return result;
+        return _converters.getConverter( cl );
     }
 
     /**
@@ -180,22 +145,20 @@ public class ResourceManager
 
             try
             {
-                // This implicitly transforms the key's value.
                 setter.invoke(
                         bean,
                         convert(
                                 c.getPropertyType(),
                                 map.get( currentKey ),
                                 map ) );
-//                        map.get( currentKey, c.getPropertyType() ) );
-            }
-            catch ( IllegalAccessException e )
-            {
-                throw new RuntimeException( e );
             }
             catch ( InvocationTargetException e )
             {
                 throw new RuntimeException( e.getCause() );
+            }
+            catch ( Exception e )
+            {
+                throw new RuntimeException( e );
             }
 
             if ( definedKeys.size() == 0 )
@@ -203,7 +166,8 @@ public class ResourceManager
         }
 
         for ( String c : definedKeys )
-            LOG.warning( String.format( "Key '%s' defined in map does not match property.", c ) );
+            LOG.warning( String.format(
+                    "Key '%s' defined in map does not match property.", c ) );
     }
 
 
@@ -216,40 +180,32 @@ public class ResourceManager
     }
 
     /**
-     * @param clazz The class a resource map is requested for.
+     * @param clazz The class for which a resource map is requested.
      * @return The resource map for the passed class.
      */
-    public ResourceMap getResourceMap( Class<?> clazz )
+    public ResourceMap getResourceMap( Class<?> cl )
     {
-        return _resourceMapCache.get( clazz );
+        return _resourceMapCache.get( cl );
     }
 
-    public void injectResources( Object instance, Class<?> cIass )
+    public void injectResources( Object instance, Class<?> cl )
     {
-        if ( instance == null && staticInjectionDone.containsKey( cIass ) )
+        if ( instance == null && staticInjectionDone.containsKey( cl ) )
             return;
 
-//        List<Pair<Field, Resource>> fields = ReflectionUtil.getAnnotatedFields(
-//                cIass,
-//                Resource.class,
-//                instance == null ? Modifier.STATIC : 0 );
-//
-//        if ( fields.isEmpty() )
-//            return;
-
         ResourceMap rb =
-                getResourceMap( cIass );
+                getResourceMap( cl );
 
         if ( rb.isEmpty() )
         {
             // @Resource annotations exist, but no property file.
-            LOG.severe( "No resources found for class " + cIass.getName() );
+            LOG.severe( "No resources found for class " + cl.getName() );
             return;
         }
 
         ReflectionUtil.processAnnotation(
                 Resource.class,
-                cIass::getDeclaredFields,
+                cl::getDeclaredFields,
                 s -> {
                     if ( instance == null )
                         return Modifier.isStatic( s.getModifiers() );
@@ -258,13 +214,16 @@ public class ResourceManager
                 (f, r) -> {
 
                     if ( Modifier.isStatic( f.getModifiers() ) &&
-                            staticInjectionDone.containsKey( cIass ) )
+                            staticInjectionDone.containsKey( cl ) )
                         return;
 
                     String name = r.name();
 
                     if ( StringUtil.isEmpty( name ) )
-                        name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
+                        name = String.format(
+                                "%s.%s",
+                                cl.getSimpleName(),
+                                f.getName() );
 
                     String value = rb.get( name );
 
@@ -291,45 +250,7 @@ public class ResourceManager
                     }
                 } );
 
-//        for ( Pair<Field, Resource> c : fields )
-//        {
-//            Field f = c.getKey();
-//
-//            if ( Modifier.isStatic( f.getModifiers() ) &&
-//                    staticInjectionDone.containsKey( cIass ) )
-//                continue;
-//
-//            Resource r = c.getValue();
-//
-//            String name = r.name();
-//
-//            if ( StringUtil.isEmpty( name ) )
-//                name = String.format( "%s.%s", cIass.getSimpleName(), f.getName() );
-//
-//            String value = rb.get( name );
-//
-//            if ( value == null )
-//            {
-//                String message = String.format(
-//                        "No resource key found for field '%s#%s'.",
-//                        f.getDeclaringClass(),
-//                        f.getName() );
-//                LOG.severe(
-//                        message );
-//                continue;
-//            }
-//
-//            try
-//            {
-//                performInjection( instance, f, value, rb );
-//            }
-//            catch ( Exception e )
-//            {
-//                LOG.log( Level.SEVERE, "Injection failed for field " + f.getName(), e );
-//            }
-//        }
-
-        staticInjectionDone.put( cIass, rb );
+        staticInjectionDone.put( cl, rb );
     }
 
     /**
@@ -381,117 +302,44 @@ public class ResourceManager
     {
         Class<?> targetType = f.getType();
 
-        f.set(
-                instance,
-                convert( targetType, resource, null ) );
-    }
-
-    private static class ArrayResourceConverter extends ResourceConverter
-    {
-        private final ResourceConverter _delegate;
-
-        ArrayResourceConverter( ResourceConverter delegate, Class<?> type )
-        {
-            super( type );
-
-            if ( ! type.isArray() )
-                throw new IllegalArgumentException();
-
-            _delegate = delegate;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r )
-                throws Exception
-        {
-            String[] split = StringUtil.splitQuoted( s );
-
-            Object result = Array.newInstance(
-                    getType().getComponentType(), split.length );
-
-            int idx = 0;
-            for ( String c : split )
-            {
-                Array.set(
-                        result,
-                        idx++,
-                        _delegate.parseString(
-                                c,
-                                r ) );
-            }
-
-            return result;
-        }
-    }
-
-    private static class ConstructorResourceConverter extends ResourceConverter
-    {
-        private final Constructor<?> _ctor;
-
-        ConstructorResourceConverter( Constructor<?> delegate, Class<?> type )
-        {
-            super( type );
-
-            _ctor = delegate;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r )
-            throws Exception
-        {
-            return _ctor.newInstance( s );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
-    {
-        ResourceConverter converter =
-                _converters.get( targetType );
-
-        if ( converter == null )
-            converter = synthArrayConverter( targetType );
-
-        if ( converter == null )
-            converter = synthConstructorConverter( targetType );
-
-        if ( converter == null )
-            throw new IllegalArgumentException( "No resource converter found for type: " + targetType );
-
         try
         {
-            return (T)converter.parseString( toConvert, map );
+            f.set(
+                    instance,
+                    convert( targetType, resource, null ) );
         }
         catch ( Exception e )
         {
-            throw new IllegalArgumentException( "Conversion failed.", e );
+            throw new Exception( String.format(
+                    "Injecting %s: %s",
+                    f.toString(),
+                    e.getMessage() ),
+                    e );
         }
     }
 
-    private ResourceConverter synthArrayConverter( Class<?> targetType )
+    <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
+        throws Exception
     {
-        if ( ! targetType.isArray() )
-            return null;
+        var converter =
+                _converters.getConverter( targetType );
 
-        ResourceConverter rc = _converters.get(
-                targetType.getComponentType() );
+        if ( converter == null )
+            throw new IllegalArgumentException(
+                    "No resource converter found for type: " + targetType );
 
-        if ( rc == null )
-            return null;
-
-        return new ArrayResourceConverter( rc, targetType );
-    }
-
-    private ResourceConverter synthConstructorConverter( Class<?> targetType )
-    {
-        Constructor<?> ctor =
-                ReflectionUtil.getConstructor( targetType, String.class );
-
-        if ( ctor == null )
-            return null;
-
-        return new ConstructorResourceConverter(
-                ctor,
-                targetType );
+        try
+        {
+            return converter.convert( toConvert );
+        }
+        catch ( Exception e )
+        {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Cannot convert '%s' to %s.",
+                            toConvert,
+                            targetType.getName() ),
+                    e );
+        }
     }
 }

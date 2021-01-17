@@ -10,8 +10,8 @@ package org.smack.application;
 import java.awt.Image;
 import java.util.Objects;
 
-import org.jdesktop.util.ResourceManager;
-import org.jdesktop.util.ServiceManager;
+import org.smack.util.ServiceManager;
+import org.smack.util.resource.ResourceManager;
 
 /**
  * Application information.
@@ -40,7 +40,7 @@ public class ApplicationInfo
         ResourceManager rm =
                 ServiceManager.getApplicationService(
                         ResourceManager.class );
-        org.jdesktop.util.ResourceMap arm =
+        var arm =
                 rm.getResourceMap( _applicationClass );
 
         id = arm.get(
@@ -49,8 +49,15 @@ public class ApplicationInfo
                 "Application.title" );
         version = arm.get(
                 "Application.version" );
-        icon = arm.getAs(
-                "Application.icon", Image.class );
+        try
+        {
+            icon = arm.getAs(
+                    "Application.icon", Image.class );
+        }
+        catch ( Exception e )
+        {
+            icon = null;
+        }
         vendor = arm.get(
                 "Application.vendor" );
         vendorId = arm.get(
@@ -95,7 +102,7 @@ public class ApplicationInfo
         return version;
     }
 
-    private final Image icon;
+    private Image icon;
 
     /**
      * Return the application's icon as defined in the resources.

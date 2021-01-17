@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import org.jdesktop.util.ServiceManager;
+import org.smack.util.ServiceManager;
 
 /**
  * An application service that offers a simple means to store short-term,
