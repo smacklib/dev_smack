@@ -1,6 +1,5 @@
 /* $Id$
  *
- * Released under Gnu Public License
  * Copyright © 2013-2019 Michael G. Binz
  */
 package org.smack.application;
@@ -30,13 +29,15 @@ import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.ReflectionUtil;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.collections.MultiMap;
+import org.smack.util.converters.StringConverter;
+import org.smack.util.converters.StringConverter.Converter;
 
 /**
  * A base class for console applications.
  *
- * @author MICKARG
  * @author MICBINZ
  */
 abstract public class CliApplication
@@ -122,7 +123,7 @@ abstract public class CliApplication
      * A name to be used if the command should be callable without
      * a dedicated name.
      */
-    public static final CaseIndependent UNNAMED =
+    private static final CaseIndependent UNNAMED =
             new CaseIndependent( "*" );
 
     /**
@@ -136,15 +137,10 @@ abstract public class CliApplication
     private final Map<String,PropertyHolder> _propertyMap =
             getPropertyMap( this );
 
-    public interface StringConverter<T>
-    {
-        T convert( String s ) throws Exception;
-    }
+    private static final StringConverter _converters =
+            ServiceManager.getApplicationService( StringConverter.class );
 
-    private static final HashMap<Class<?>,StringConverter<?>> _converters =
-            new HashMap<>();
-
-    protected final static void addConverter( Class<?> cl, StringConverter<?> c )
+    protected final static <T> void addConverter( Class<T> cl, Converter<String,T> c )
     {
         _converters.put( cl, c );
     }
@@ -152,32 +148,8 @@ abstract public class CliApplication
     static
     {
         addConverter(
-                String.class,
-                (s) -> s );
-        addConverter(
-                Byte.TYPE,
-                CliApplication::stringToByte );
-        addConverter(
-                Short.TYPE,
-                CliApplication::stringToShort );
-        addConverter(
-                Integer.TYPE,
-                CliApplication::stringToInt );
-        addConverter(
-                Long.TYPE,
-                CliApplication::stringToLong );
-        addConverter(
                 File.class,
                 CliApplication::stringToFile );
-        addConverter(
-                Boolean.TYPE,
-                CliApplication::stringToBoolean );
-        addConverter(
-                Float.TYPE,
-                CliApplication::stringToFloat );
-        addConverter(
-                Double.TYPE,
-                CliApplication::stringToDouble );
     }
 
     private String _currentCommand =
@@ -520,11 +492,8 @@ abstract public class CliApplication
 
                     for ( Class<?> current : c.getParameterTypes() )
                     {
-                        if ( current.isEnum() )
-                            continue;
-
                         Objects.requireNonNull(
-                                _converters.get( current ),
+                                _converters.getConverter( current ),
                                 "No mapper for " + current );
                     }
 
@@ -611,81 +580,6 @@ abstract public class CliApplication
     }
 
     /**
-     * Transform function for a primitive byte.
-     */
-    private static byte stringToByte(String arg) throws Exception {
-        try {
-            return Byte.decode(arg).byteValue();
-        }
-        catch (NumberFormatException e) {
-            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
-        }
-    }
-
-    /**
-     * Transform function for a primitive short.
-     */
-    private static short stringToShort(String arg) throws Exception {
-        try {
-            return Short.decode(arg).shortValue();
-        }
-        catch (NumberFormatException e) {
-            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
-        }
-    }
-
-    /**
-     * Transform function for a primitive integer.
-     */
-    private static int stringToInt(String arg) throws Exception {
-        try {
-            // The long conversion is deliberately used
-            // to be able to convert 32bit unsigned integers
-            // like 0xffffffe8.
-            return Long.decode(arg).intValue();
-        }
-        catch (NumberFormatException e) {
-            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
-        }
-    }
-
-    /**
-     * Transform function for a primitive long.
-     */
-    private static long stringToLong(String arg) throws Exception {
-        try {
-            return Long.decode(arg).longValue();
-        }
-        catch (NumberFormatException e) {
-            throw new Exception("Decimal: [0-9]..., Hexadecimal: 0x[0-F]...");
-        }
-    }
-
-    /**
-     * Transform function for a primitive float.
-     */
-    private static float stringToFloat(String arg) throws Exception {
-        try {
-            return Float.parseFloat( arg );
-        }
-        catch (NumberFormatException e) {
-            throw new Exception( "Not a float: " + arg );
-        }
-    }
-
-    /**
-     * Transform function for a primitive double.
-     */
-    private static double stringToDouble(String arg) throws Exception {
-        try {
-            return Double.parseDouble( arg );
-        }
-        catch (NumberFormatException e) {
-            throw new Exception("Not a double: " + arg);
-        }
-    }
-
-    /**
      * Transform function for File. This ensures that the file exists.
      *
      * @param fileName The name of the file.
@@ -700,24 +594,6 @@ abstract public class CliApplication
             throw new Exception("File not found: " + file);
 
         return file;
-    }
-
-    /**
-     * Transform a string to a boolean.
-     *
-     * @param arg
-     *            Accepts case independent 'TRUE' and 'FALSE' as valid strings.
-     * @return The corresponding boolean.
-     * @throws Exception In case of a conversion error.
-     */
-    private static boolean stringToBoolean(String arg) throws Exception {
-        if (Boolean.TRUE.toString().equalsIgnoreCase(arg))
-            return true;
-        else if (Boolean.FALSE.toString().equalsIgnoreCase(arg))
-            return false;
-
-        throw new Exception(
-            "Expected boolean: true or false. Received '" + arg + "'.");
     }
 
     private String getEnumDocumentation( Class<?> c )
@@ -794,51 +670,12 @@ abstract public class CliApplication
         argument =
                 Objects.requireNonNull( argument );
 
-        // Special handling for enums.
-        if ( targetType.isEnum() )
-            return transformEnum( targetType, argument );
-
-        StringConverter<?> transformer =
+        var transformer =
                 Objects.requireNonNull(
-                        _converters.get( targetType ),
+                        _converters.getConverter( targetType ),
                         "No mapper for " + targetType.getSimpleName() );
 
         return transformer.convert( argument );
-    }
-
-    /**
-     * Convert an argument to an enum instance.
-     */
-    private static final Object transformEnum(
-            Class<?> targetEnum,
-            String argument )
-        throws IllegalArgumentException
-    {
-        if ( targetEnum == null )
-            throw new NullPointerException();
-        if ( argument == null )
-            throw new NullPointerException();
-        if ( ! targetEnum.isEnum() )
-            throw new AssertionError();
-
-        // Handle enums.
-        for ( Object c : targetEnum.getEnumConstants() )
-        {
-            if ( c.toString().equalsIgnoreCase( argument ) )
-                return c;
-        }
-
-        // Above went wrong, generate a good message.
-        List<String> allowed = new ArrayList<>();
-        for ( Object c : targetEnum.getEnumConstants() )
-            allowed.add( c.toString() );
-
-        String message = String.format(
-                "Unknown enum value: '%s'.  Allowed values are %s.",
-                argument,
-                StringUtil.concatenate( ", ", allowed ) );
-
-        throw new IllegalArgumentException( message );
     }
 
     /**

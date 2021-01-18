@@ -123,8 +123,6 @@ public class CliApplicationTypeTest
     {
         var EXPECTED = "FRIDAY";
 
-        TestType( "cmdEnum", "Friday", EXPECTED );
-        TestType( "cmdEnum", "friday", EXPECTED );
         TestType( "cmdEnum", "FRIDAY", EXPECTED );
     }
 
