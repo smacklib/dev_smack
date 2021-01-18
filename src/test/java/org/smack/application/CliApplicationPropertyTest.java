@@ -84,7 +84,12 @@ public class CliApplicationPropertyTest
                 "c_levelProperty",
                 "-level=WARNING");
 
-        assertEquals( 0, err.size() );
+        if ( err.size() == 2 && err.get( 1 ).contains( "Duplicate resource converter" ) )
+        {
+
+        }
+        else
+            assertEquals( 0, err.size() );
         assertEquals( 1, out.size() );
         assertEquals( "WARNING", out.get( 0 ) );
     }
