@@ -45,8 +45,9 @@ module framework.smack {
     exports org.smack.application;
     exports org.smack.util;
     exports org.smack.util.collections;
-    exports org.smack.util.resource;
+    exports org.smack.util.converters;
     exports org.smack.util.io;
+    exports org.smack.util.resource;
     exports org.smack.util.xml;
 
     // Needed for testing.
