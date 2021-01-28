@@ -71,7 +71,7 @@ public class ResourceManager
             new WeakHashMap<>();
 
     private final WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
-            new WeakMapWithProducer<>( ResourceMap::new );
+            new WeakMapWithProducer<>( ResourceMap::getResourceMap );
 
     /**
      * Create an instance.  Commonly done via the ServiceManager.

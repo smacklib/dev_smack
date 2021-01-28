@@ -9,14 +9,15 @@ package org.smack.util.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
+import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
-import org.smack.util.StringUtil;
-import org.smack.util.resource.ResourceUtil.NamedResourceBundle;
 
 
 /**
@@ -39,34 +40,32 @@ public class ResourceMap extends HashMap<String, String>
 
     private final String _resourcePath;
 
-    public ResourceMap( Class<?> cl )
+    public static ResourceMap getResourceMap( Class<?> cl )
+    {
+        Pair<URL, ResourceBundle> crb =
+                ResourceUtil.getClassResourcesImpl(
+                        Objects.requireNonNull( cl ) );
+        if ( crb == null )
+            return null;
+
+        return new ResourceMap( cl, crb.left, crb.right );
+    }
+
+    private ResourceMap( Class<?> cl, URL url, ResourceBundle rb )
     {
         _class =
                 Objects.requireNonNull( cl );
         String simpleName =
                 _class.getSimpleName();
-
-        NamedResourceBundle crb =
-                ResourceUtil.getClassResourcesImpl( cl );
-
-        if ( crb == null )
-        {
-            _bundleName = StringUtil.EMPTY_STRING;
-            _resourcePath = StringUtil.EMPTY_STRING;
-            return;
-        }
-
+        Map<String, String> bundle =
+                ResourceUtil.preprocessResourceBundle(
+                        url, rb );
         _bundleName =
                 cl.getName();
         _resourcePath =
                 _bundleName.substring(
                         0, _bundleName.length() -
                         simpleName.length() ).replace( '.', '/' );
-
-        Map<String, String> bundle =
-                ResourceUtil.preprocessResourceBundleN(
-                        crb );
-
         String classPrefix =
                 simpleName + ".";
 

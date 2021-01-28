@@ -86,7 +86,8 @@ public class CliApplicationPropertyTest
 
         if ( err.size() == 2 && err.get( 1 ).contains( "Duplicate resource converter" ) )
         {
-
+            // Only in test context we get the Duplicate resource converter warning.
+            // So skip this here.
         }
         else
             assertEquals( 0, err.size() );
