@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smack.util.ReflectionUtil;
@@ -48,12 +47,13 @@ public class ResourceManager
             Logger.getLogger( ResourceManager.class.getName() );
 
     /**
-     * The Resource annotation marks a field that is injected
-     * by the ResourceManager.
-     * If a field is annotated and no definition is found in
-     * the property file then this is an error.  If a deflt
-     * value is provided then this is used and no error is
-     * signaled.
+     * The Resource annotation marks a field that is injected by
+     * ResourceManager.
+     * If a field is annotated and no definition is found in the property file
+     * then this is an error and an exception is thrown.
+     * If a dflt value is provided then this is used and no error is
+     * signaled.  If dflt is set to the empty string, then no injection
+     * is performed.
      */
     @Target({FIELD})
     @Retention(RUNTIME)
@@ -97,7 +97,10 @@ public class ResourceManager
     }
 
     /**
-     * @param converter A converter to add to the list of known converters.
+     * Get a converter for a target class.
+     * @param <T> The target type.
+     * @param cl The target class.
+     * @return A converter, null if none is found.
      */
     public <T> Converter<String, T> getConverter( Class<T> cl )
     {
@@ -175,18 +178,10 @@ public class ResourceManager
                     "Key '%s' defined in map does not match property.", c ) );
     }
 
-
-    public void injectResources( Object o )
-    {
-        if ( o instanceof Class )
-            injectResources( null, (Class<?>)o );
-        else
-            injectResources( o, o.getClass() );
-    }
-
     /**
-     * @param clazz The class for which a resource map is requested.
-     * @return The resource map for the passed class.
+     * @param cl The class for which a resource map is requested.
+     * @return The resource map for the passed class. null if
+     * no resources are found.
      */
     public ResourceMap getResourceMap( Class<?> cl )
     {
@@ -194,7 +189,7 @@ public class ResourceManager
     }
 
     /**
-     * @param clazz The class for which a resource map is requested.
+     * @param cl The class for which a resource map is requested.
      * @return The resource map for the passed class. An empty
      * map if no resources were defined.
      */
@@ -205,6 +200,19 @@ public class ResourceManager
             return result;
 
         return Collections.emptyMap();
+    }
+
+    /**
+     * Inject fields annotated by @Resource on the passed object.
+     * @param o The target object for the injection.  If this is
+     * a class object, then only the static fields are injected.
+     */
+    public void injectResources( Object o )
+    {
+        if ( o instanceof Class )
+            injectResources( null, (Class<?>)o );
+        else
+            injectResources( o, o.getClass() );
     }
 
     public void injectResources( Object instance, Class<?> cl )
@@ -265,16 +273,7 @@ public class ResourceManager
                                 name);
                     }
 
-                    try
-                    {
-                        performInjection( instance, f, value );
-                    }
-                    catch ( Exception e )
-                    {
-                        var msg = "Injection failed for field " + f.getName();
-                        LOG.log( Level.SEVERE, msg, e );
-                        throw new RuntimeException( msg );
-                    }
+                    performInjection( instance, f, value );
                 } );
 
         staticInjectionDone.put( cl, Boolean.TRUE );
@@ -283,23 +282,23 @@ public class ResourceManager
     private void performInjection(
             Object instance,
             Field f,
-            String resource ) throws Exception
+            String resource )
     {
         Class<?> targetType = f.getType();
+
+        var value = convert( targetType, resource );
 
         try
         {
             if ( ! f.canAccess( instance ) )
                 f.setAccessible( true );
 
-            f.set(
-                    instance,
-                    convert( targetType, resource ) );
+            f.set( instance, value );
         }
         catch ( Exception e )
         {
-            throw new Exception( String.format(
-                    "Injecting %s: %s",
+            throw new RuntimeException( String.format(
+                    "Injecting %s failed: %s",
                     f.toString(),
                     e.getMessage() ),
                     e );
@@ -307,7 +306,6 @@ public class ResourceManager
     }
 
     <T> T convert( Class<T> targetType, String toConvert )
-        throws Exception
     {
         var converter =
                 _converters.getConverter( targetType );
