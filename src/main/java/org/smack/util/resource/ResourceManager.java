@@ -280,14 +280,6 @@ public class ResourceManager
         staticInjectionDone.put( cl, Boolean.TRUE );
     }
 
-    /**
-     *
-     * @param instance
-     * @param f
-     * @param resource
-     * @param map
-     * @throws Exception
-     */
     private void performInjection(
             Object instance,
             Field f,
