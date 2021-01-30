@@ -2,10 +2,13 @@ package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Image;
 import java.util.Currency;
+import java.util.MissingResourceException;
 
 import javax.swing.Icon;
 
@@ -93,5 +96,46 @@ public class ResourceManagerTest
     public void testCurrency()
     {
         assertNotNull( currency );
+    }
+
+    static class ResourcesDefault
+    {
+        @Resource( dflt = "string" )
+        public String string;
+
+        @Resource( dflt = "313" )
+        public int integer;
+    }
+
+    @Test
+    public void testDefaultInjection()
+    {
+        ResourcesDefault res = new ResourcesDefault();
+        assertNull( res.string );
+        assertEquals( 0, res.integer );
+        _rm.injectResources( res );
+        assertEquals( "string", res.string );
+        assertEquals( 313, res.integer );
+    }
+
+    static class ResourcesRequired
+    {
+        @Resource()
+        public String string;
+    }
+
+    @Test
+    public void testRequiredInjection()
+    {
+        ResourcesRequired res = new ResourcesRequired();
+        assertNull( res.string );
+        try
+        {
+            _rm.injectResources( res );
+            fail();
+        }
+        catch ( MissingResourceException expected )
+        {
+        }
     }
 }

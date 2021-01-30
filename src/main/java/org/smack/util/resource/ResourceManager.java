@@ -20,7 +20,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -45,9 +48,12 @@ public class ResourceManager
             Logger.getLogger( ResourceManager.class.getName() );
 
     /**
-     * The Resource annotation marks a resource that is needed
-     * by the application.  This annotation may be applied to an
-     * application component field. <p>
+     * The Resource annotation marks a field that is injected
+     * by the ResourceManager.
+     * If a field is annotated and no definition is found in
+     * the property file then this is an error.  If a deflt
+     * value is provided then this is used and no error is
+     * signaled.
      */
     @Target({FIELD})
     @Retention(RUNTIME)
@@ -59,15 +65,15 @@ public class ResourceManager
         String name() default StringUtil.EMPTY_STRING;
 
         /**
-         * @return Description of this resource.
+         * @return A default value for this resource.
          */
-        String description() default StringUtil.EMPTY_STRING;
+        String dflt() default DFLT_NULL;
     }
 
     private final StringConverter _converters =
             ServiceManager.getApplicationService( StringConverter.class );
 
-    private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
+    private WeakHashMap<Class<?>, Boolean> staticInjectionDone =
             new WeakHashMap<>();
 
     private final WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
@@ -149,8 +155,7 @@ public class ResourceManager
                         bean,
                         convert(
                                 c.getPropertyType(),
-                                map.get( currentKey ),
-                                map ) );
+                                map.get( currentKey ) ) );
             }
             catch ( InvocationTargetException e )
             {
@@ -188,20 +193,29 @@ public class ResourceManager
         return _resourceMapCache.get( cl );
     }
 
+    /**
+     * @param clazz The class for which a resource map is requested.
+     * @return The resource map for the passed class. An empty
+     * map if no resources were defined.
+     */
+    public Map<String,String> getResourceMap2( Class<?> cl )
+    {
+        var result =_resourceMapCache.get( cl );
+        if ( result != null )
+            return result;
+
+        return Collections.emptyMap();
+    }
+
     public void injectResources( Object instance, Class<?> cl )
     {
         if ( instance == null && staticInjectionDone.containsKey( cl ) )
             return;
 
-        ResourceMap rb =
-                getResourceMap( cl );
-
-        if ( rb.isEmpty() )
-        {
-            // @Resource annotations exist, but no property file.
-            LOG.severe( "No resources found for class " + cl.getName() );
-            return;
-        }
+        var map =
+                getResourceMap2( cl );
+        // Note that it may be valid that map is empty, as long
+        // as all @Resources offer a dflt value.
 
         ReflectionUtil.processAnnotation(
                 Resource.class,
@@ -225,22 +239,35 @@ public class ResourceManager
                                 cl.getSimpleName(),
                                 f.getName() );
 
-                    String value = rb.get( name );
+                    String value = map.get( name );
 
+                    // If we got no value, get the Resource default
+                    // definition.
                     if ( value == null )
                     {
-                        String message = String.format(
+                        value = getDefaultField( r );
+                        // If the resource default definition is set to
+                        // the empty string this means not to touch the field.
+                        if ( StringUtil.EMPTY_STRING.equals( value ) )
+                            return;
+                    }
+
+                    // If no value found bail out.
+                    if ( value == null )
+                    {
+                        var msg = String.format(
                                 "No resource key found for field '%s#%s'.",
                                 f.getDeclaringClass(),
                                 f.getName() );
-                        LOG.severe(
-                                message );
-                        return;
+                        throw new MissingResourceException(
+                                msg,
+                                f.getDeclaringClass().toString(),
+                                name);
                     }
 
                     try
                     {
-                        performInjection( instance, f, value, rb );
+                        performInjection( instance, f, value );
                     }
                     catch ( Exception e )
                     {
@@ -250,40 +277,7 @@ public class ResourceManager
                     }
                 } );
 
-        staticInjectionDone.put( cl, rb );
-    }
-
-    /**
-     *
-     * @param instance
-     * @param f
-     * @param value
-     * @param map
-     * @throws Exception
-     */
-    private void performInjection(
-            Object instance,
-            Field f,
-            String value,
-            ResourceMap map ) throws Exception
-    {
-        try
-        {
-            if ( ! f.canAccess( instance ) )
-                f.setAccessible( true );
-
-            performInjectionImpl( instance, f, value, map );
-        }
-        catch ( Exception e )
-        {
-            String msg =
-                    String.format(
-                            "Resource init for %s failed.",
-                            f.getName() );
-
-            LOG.log(
-                    Level.WARNING, msg, e );
-        }
+        staticInjectionDone.put( cl, Boolean.TRUE );
     }
 
     /**
@@ -294,19 +288,21 @@ public class ResourceManager
      * @param map
      * @throws Exception
      */
-    private void performInjectionImpl(
+    private void performInjection(
             Object instance,
             Field f,
-            String resource,
-            ResourceMap map ) throws Exception
+            String resource ) throws Exception
     {
         Class<?> targetType = f.getType();
 
         try
         {
+            if ( ! f.canAccess( instance ) )
+                f.setAccessible( true );
+
             f.set(
                     instance,
-                    convert( targetType, resource, null ) );
+                    convert( targetType, resource ) );
         }
         catch ( Exception e )
         {
@@ -318,7 +314,7 @@ public class ResourceManager
         }
     }
 
-    <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
+    <T> T convert( Class<T> targetType, String toConvert )
         throws Exception
     {
         var converter =
@@ -341,5 +337,26 @@ public class ResourceManager
                             targetType.getName() ),
                     e );
         }
+    }
+
+    /**
+     * Used as a default null value for the @Resource.dflt field. Never
+     * modify.
+     */
+    static final private String DFLT_NULL = "313544b196b54c29a26e43bdf204b023";
+
+    /**
+     * Get the normalized value of the annotation's dflt field.
+     * @param r The annotation reference.
+     * @return The normalized value which includes null if not set.
+     */
+    private static String getDefaultField( Resource r )
+    {
+        var result = r.dflt();
+
+        if ( DFLT_NULL.equals( result ))
+            return null;
+
+        return result;
     }
 }

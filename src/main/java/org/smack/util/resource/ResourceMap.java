@@ -182,7 +182,6 @@ public class ResourceMap extends HashMap<String, String>
 
         return rm.convert(
                 targetType,
-                get( key ),
-                this );
+                get( key ) );
     }
 }
