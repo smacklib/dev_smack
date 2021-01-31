@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>micbinz</groupId>
     <artifactId>smack</artifactId>
-    <version>11.402</version>
+    <version>11.403</version>
     <name>Smack</name>
     <description>Framework</description>
 
