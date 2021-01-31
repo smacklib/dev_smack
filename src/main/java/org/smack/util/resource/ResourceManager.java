@@ -20,10 +20,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smack.util.ReflectionUtil;
@@ -45,9 +47,13 @@ public class ResourceManager
             Logger.getLogger( ResourceManager.class.getName() );
 
     /**
-     * The Resource annotation marks a resource that is needed
-     * by the application.  This annotation may be applied to an
-     * application component field. <p>
+     * The Resource annotation marks a field that is injected by
+     * ResourceManager.
+     * If a field is annotated and no definition is found in the property file
+     * then this is an error and an exception is thrown.
+     * If a dflt value is provided then this is used and no error is
+     * signaled.  If dflt is set to the empty string, then no injection
+     * is performed.
      */
     @Target({FIELD})
     @Retention(RUNTIME)
@@ -59,15 +65,15 @@ public class ResourceManager
         String name() default StringUtil.EMPTY_STRING;
 
         /**
-         * @return Description of this resource.
+         * @return A default value for this resource.
          */
-        String description() default StringUtil.EMPTY_STRING;
+        String dflt() default DFLT_NULL;
     }
 
     private final StringConverter _converters =
             ServiceManager.getApplicationService( StringConverter.class );
 
-    private WeakHashMap<Class<?>, ResourceMap> staticInjectionDone =
+    private WeakHashMap<Class<?>, Boolean> staticInjectionDone =
             new WeakHashMap<>();
 
     private final WeakMapWithProducer<Class<?>, ResourceMap> _resourceMapCache =
@@ -91,7 +97,10 @@ public class ResourceManager
     }
 
     /**
-     * @param converter A converter to add to the list of known converters.
+     * Get a converter for a target class.
+     * @param <T> The target type.
+     * @param cl The target class.
+     * @return A converter, null if none is found.
      */
     public <T> Converter<String, T> getConverter( Class<T> cl )
     {
@@ -147,10 +156,9 @@ public class ResourceManager
             {
                 setter.invoke(
                         bean,
-                        convert(
+                        _converters.convert(
                                 c.getPropertyType(),
-                                map.get( currentKey ),
-                                map ) );
+                                map.get( currentKey ) ) );
             }
             catch ( InvocationTargetException e )
             {
@@ -170,7 +178,35 @@ public class ResourceManager
                     "Key '%s' defined in map does not match property.", c ) );
     }
 
+    /**
+     * @param cl The class for which a resource map is requested.
+     * @return The resource map for the passed class. null if
+     * no resources are found.
+     */
+    public ResourceMap getResourceMap( Class<?> cl )
+    {
+        return _resourceMapCache.get( cl );
+    }
 
+    /**
+     * @param cl The class for which a resource map is requested.
+     * @return The resource map for the passed class. An empty
+     * map if no resources were defined.
+     */
+    public Map<String,String> getResourceMap2( Class<?> cl )
+    {
+        var result =_resourceMapCache.get( cl );
+        if ( result != null )
+            return result;
+
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Inject fields annotated by @Resource on the passed object.
+     * @param o The target object for the injection.  If this is
+     * a class object, then only the static fields are injected.
+     */
     public void injectResources( Object o )
     {
         if ( o instanceof Class )
@@ -179,29 +215,15 @@ public class ResourceManager
             injectResources( o, o.getClass() );
     }
 
-    /**
-     * @param clazz The class for which a resource map is requested.
-     * @return The resource map for the passed class.
-     */
-    public ResourceMap getResourceMap( Class<?> cl )
-    {
-        return _resourceMapCache.get( cl );
-    }
-
     public void injectResources( Object instance, Class<?> cl )
     {
         if ( instance == null && staticInjectionDone.containsKey( cl ) )
             return;
 
-        ResourceMap rb =
-                getResourceMap( cl );
-
-        if ( rb.isEmpty() )
-        {
-            // @Resource annotations exist, but no property file.
-            LOG.severe( "No resources found for class " + cl.getName() );
-            return;
-        }
+        var map =
+                getResourceMap2( cl );
+        // Note that it may be valid that map is empty, as long
+        // as all @Resources offer a dflt value.
 
         ReflectionUtil.processAnnotation(
                 Resource.class,
@@ -225,121 +247,81 @@ public class ResourceManager
                                 cl.getSimpleName(),
                                 f.getName() );
 
-                    String value = rb.get( name );
+                    String value = map.get( name );
 
+                    // If we got no value, get the Resource default
+                    // definition.
                     if ( value == null )
                     {
-                        String message = String.format(
+                        value = getDefaultField( r );
+                        // If the resource default definition is set to
+                        // the empty string this means not to touch the field.
+                        if ( StringUtil.EMPTY_STRING.equals( value ) )
+                            return;
+                    }
+
+                    // If no value found bail out.
+                    if ( value == null )
+                    {
+                        var msg = String.format(
                                 "No resource key found for field '%s#%s'.",
                                 f.getDeclaringClass(),
                                 f.getName() );
-                        LOG.severe(
-                                message );
-                        return;
+                        throw new MissingResourceException(
+                                msg,
+                                f.getDeclaringClass().toString(),
+                                name);
                     }
 
-                    try
-                    {
-                        performInjection( instance, f, value, rb );
-                    }
-                    catch ( Exception e )
-                    {
-                        var msg = "Injection failed for field " + f.getName();
-                        LOG.log( Level.SEVERE, msg, e );
-                        throw new RuntimeException( msg );
-                    }
+                    performInjection( instance, f, value );
                 } );
 
-        staticInjectionDone.put( cl, rb );
+        staticInjectionDone.put( cl, Boolean.TRUE );
     }
 
-    /**
-     *
-     * @param instance
-     * @param f
-     * @param value
-     * @param map
-     * @throws Exception
-     */
     private void performInjection(
             Object instance,
             Field f,
-            String value,
-            ResourceMap map ) throws Exception
+            String resource )
     {
+        var value = _converters.convert(
+                f.getType(),
+                resource );
         try
         {
             if ( ! f.canAccess( instance ) )
                 f.setAccessible( true );
 
-            performInjectionImpl( instance, f, value, map );
+            f.set( instance, value );
         }
         catch ( Exception e )
         {
-            String msg =
-                    String.format(
-                            "Resource init for %s failed.",
-                            f.getName() );
-
-            LOG.log(
-                    Level.WARNING, msg, e );
-        }
-    }
-
-    /**
-     *
-     * @param instance
-     * @param f
-     * @param resource
-     * @param map
-     * @throws Exception
-     */
-    private void performInjectionImpl(
-            Object instance,
-            Field f,
-            String resource,
-            ResourceMap map ) throws Exception
-    {
-        Class<?> targetType = f.getType();
-
-        try
-        {
-            f.set(
-                    instance,
-                    convert( targetType, resource, null ) );
-        }
-        catch ( Exception e )
-        {
-            throw new Exception( String.format(
-                    "Injecting %s: %s",
+            throw new RuntimeException( String.format(
+                    "Injecting %s failed: %s",
                     f.toString(),
                     e.getMessage() ),
                     e );
         }
     }
 
-    <T> T convert( Class<T> targetType, String toConvert, ResourceMap map )
-        throws Exception
+    /**
+     * Used as a default null value for the @Resource.dflt field. Never
+     * modify.
+     */
+    static final private String DFLT_NULL = "313544b196b54c29a26e43bdf204b023";
+
+    /**
+     * Get the normalized value of the annotation's dflt field.
+     * @param r The annotation reference.
+     * @return The normalized value which includes null if not set.
+     */
+    private static String getDefaultField( Resource r )
     {
-        var converter =
-                _converters.getConverter( targetType );
+        var result = r.dflt();
 
-        if ( converter == null )
-            throw new IllegalArgumentException(
-                    "No resource converter found for type: " + targetType );
+        if ( DFLT_NULL.equals( result ))
+            return null;
 
-        try
-        {
-            return converter.convert( toConvert );
-        }
-        catch ( Exception e )
-        {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Cannot convert '%s' to %s.",
-                            toConvert,
-                            targetType.getName() ),
-                    e );
-        }
+        return result;
     }
 }

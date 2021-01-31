@@ -146,16 +146,32 @@ public final class StringConverter
      * @param s The string to convert.
      * @return The conversion result.  This may be null, depending
      * on the converter.
-     * @throws Exception In case of conversion failure.
+     * @throws IllegalArgumentException In case of conversion failure.
      */
     @SuppressWarnings("unchecked")
-    public <T> T convert( Class<T> cl, String s ) throws Exception
+    public <T> T convert( Class<T> cl, String s )
     {
         if ( ! containsKey( cl ) )
             throw new IllegalArgumentException(
-                    String.format( "Cannot convert '%s' to %s.", s, cl ) );
-
-        return (T)_registry.get( cl ).convert( s );
+                    "No resource converter found for type: " + cl );
+        try
+        {
+            return (T)_registry.get( cl ).convert( s );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            throw e;
+        }
+        catch ( Exception e )
+        {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Cannot convert '%s' to %s: %s",
+                            s,
+                            cl.getName(),
+                            e.getMessage()),
+                    e );
+        }
     }
 
     private <T> Converter<String, T> synthesizeEnum( Class<T> cl )

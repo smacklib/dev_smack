@@ -133,13 +133,13 @@ public class ReflectionUtilTest
     static class AnnotationClass
     {
         // Note that the deprecations below are part of the test!
-        @Resource( description = "private_i" )
+        @Resource( dflt = "private_i" )
         @Deprecated
-        private int private_i;
+        private String private_i;
 
-        @Resource( description = "public_i" )
+        @Resource( dflt = "public_i" )
         @Deprecated
-        public int public_i;
+        public String public_i;
 
         public void operation1()
         {
@@ -206,7 +206,7 @@ public class ReflectionUtilTest
                 (t) -> {
                     return Modifier.isPrivate( t.getModifiers() ); },
                 (a, b) -> {
-                    assertEquals( a.getName(), b.description() );
+                    assertEquals( a.getName(), b.dflt() );
                     count[0]++;
                     });
 
@@ -222,7 +222,7 @@ public class ReflectionUtilTest
                 Resource.class,
                 AnnotationClass.class::getDeclaredFields,
                 (a, b) -> {
-                    assertEquals( a.getName(), b.description() );
+                    assertEquals( a.getName(), b.dflt() );
                     count[0]++;
                     });
 
