@@ -156,7 +156,7 @@ public class ResourceManager
             {
                 setter.invoke(
                         bean,
-                        convert(
+                        _converters.convert(
                                 c.getPropertyType(),
                                 map.get( currentKey ) ) );
             }
@@ -284,10 +284,9 @@ public class ResourceManager
             Field f,
             String resource )
     {
-        Class<?> targetType = f.getType();
-
-        var value = convert( targetType, resource );
-
+        var value = _converters.convert(
+                f.getType(),
+                resource );
         try
         {
             if ( ! f.canAccess( instance ) )
@@ -301,30 +300,6 @@ public class ResourceManager
                     "Injecting %s failed: %s",
                     f.toString(),
                     e.getMessage() ),
-                    e );
-        }
-    }
-
-    <T> T convert( Class<T> targetType, String toConvert )
-    {
-        var converter =
-                _converters.getConverter( targetType );
-
-        if ( converter == null )
-            throw new IllegalArgumentException(
-                    "No resource converter found for type: " + targetType );
-
-        try
-        {
-            return converter.convert( toConvert );
-        }
-        catch ( Exception e )
-        {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Cannot convert '%s' to %s.",
-                            toConvert,
-                            targetType.getName() ),
                     e );
         }
     }

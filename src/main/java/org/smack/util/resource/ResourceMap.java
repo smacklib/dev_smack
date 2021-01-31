@@ -13,11 +13,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
+import org.smack.util.converters.StringConverter;
 
 
 /**
@@ -37,8 +37,6 @@ public class ResourceMap extends HashMap<String, String>
     private final String _bundleName;
 
     private final Class<?> _class;
-
-    private final String _resourcePath;
 
     public static ResourceMap getResourceMap( Class<?> cl )
     {
@@ -62,10 +60,6 @@ public class ResourceMap extends HashMap<String, String>
                         url, rb );
         _bundleName =
                 cl.getName();
-        _resourcePath =
-                _bundleName.substring(
-                        0, _bundleName.length() -
-                        simpleName.length() ).replace( '.', '/' );
         String classPrefix =
                 simpleName + ".";
 
@@ -91,19 +85,6 @@ public class ResourceMap extends HashMap<String, String>
                         value );
             }
         }
-    }
-
-    /**
-     * Looks up the value for the qualified name. For a key {@code x} and a
-     * map for {@code org.jdesktop.Test} the qualified name is {@code Test.x}.
-     *
-     * @param key The requested key.
-     * @return The associated value.
-     */
-    public Optional<String> _getQualified( String key )
-    {
-        return Optional.ofNullable(
-                get( _class.getSimpleName() + "." + key ) );
     }
 
     /**
@@ -148,20 +129,6 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * @return A resource dir, slash-separated, with a trailing slash.
-     * For class org.jdesktop.Test the resource dir
-     * is org/jdesktop/resources/. Used for the resolution of
-     * secondary resources like icons. If no underlying resource
-     * bundle existed, then this is null.
-     * @deprecated Use @-notation.
-     */
-    @Deprecated
-    public String getResourceDir()
-    {
-        return _resourcePath;
-    }
-
-    /**
      * Convert the passed key to a target type.
      *
      * @param <T> The expected target type.
@@ -177,10 +144,10 @@ public class ResourceMap extends HashMap<String, String>
         if ( resolved == null )
             throw new IllegalArgumentException( "Key not found: " + key );
 
-        ResourceManager rm = ServiceManager.getApplicationService(
-                ResourceManager.class );
+        var converter = ServiceManager.getApplicationService(
+                StringConverter.class );
 
-        return rm.convert(
+        return converter.convert(
                 targetType,
                 get( key ) );
     }
