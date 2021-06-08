@@ -237,6 +237,7 @@ public class ResourceUtil
         {
             var name = c + ".properties";
 
+            System.err.println( module.isOpen( name ) );
             var url = module.getClassLoader().getResource( name );
             if ( url != null )
                 return url;
@@ -252,17 +253,24 @@ public class ResourceUtil
      * Prefer {@link #getClassResourceMap(Class)}.
      *
      * @param c The class for which the resources should be loaded.
-     * @return A ResourceBundle and its URL. If no resource bundle was found
+     * @return A ResourceBundle and its corresponding URL.  If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
     static Pair<URL,ResourceBundle> getClassResourcesImpl( Class<?> c )
     {
-        String name = c.getName();
-
         try
         {
+            String name = c.getName();
+
+            var url = findResourceBundle(
+                    name,
+                    c.getModule() );
+
+            if ( url == null )
+                return null;
+
             return new Pair<>(
-                    findResourceBundle( name, c.getModule() ),
+                    url,
                     ResourceBundle.getBundle( name, c.getModule() ) );
         }
         catch ( MissingResourceException e )
