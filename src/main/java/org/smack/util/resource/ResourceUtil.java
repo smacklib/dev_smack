@@ -182,9 +182,13 @@ public class ResourceUtil
 
     private static URL findResourceBundle( String baseName, Module module )
     {
+        Objects.requireNonNull( module );
+
         if ( StringUtil.isEmpty( baseName ) )
             throw new IllegalArgumentException( "basename" );
-        Objects.requireNonNull( module );
+        if ( module.getClassLoader() == null )
+            throw new IllegalArgumentException( "bootstrap classloader" );
+
 
         baseName = baseName.replace( ".", "/" );
 
