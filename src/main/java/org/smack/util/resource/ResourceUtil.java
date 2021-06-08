@@ -237,7 +237,6 @@ public class ResourceUtil
         {
             var name = c + ".properties";
 
-            System.err.println( module.isOpen( name ) );
             var url = module.getClassLoader().getResource( name );
             if ( url != null )
                 return url;
