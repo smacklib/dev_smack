@@ -6,18 +6,16 @@ package org.smack.util.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.security.CodeSource;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
-import org.smack.util.StringUtil;
 
 /**
  * Resource Bundle helpers.
@@ -61,22 +59,19 @@ public class ResourceUtil
     {
         Map<String, String> result = new HashMap<>();
 
-        var urlPrefix = url.toExternalForm();
-
-        var lastSlash = urlPrefix.lastIndexOf( '/' );
-        if ( lastSlash > 0 )
-            urlPrefix = urlPrefix.substring( 0, lastSlash+1 );
-
-        JavaUtil.Assert( urlPrefix.endsWith( "/" ) );
-
         for ( String key : bundle.keySet() )
         {
             var value = bundle.getString( key );
 
             if ( value.startsWith( "@" ) )
             {
+                var urlPrefix = url.toExternalForm();
+
+                JavaUtil.Assert( urlPrefix.endsWith( "/" ) );
+
                 value =
                         urlPrefix +
+                        // Remove the '@'.
                         value.substring( 1 );
             }
             else
@@ -170,111 +165,83 @@ public class ResourceUtil
         return result.toString();
     }
 
-    private static boolean stringsValid( String ... strings )
+    /**
+     * Get the URL of the resource position of the passed class.  The URL
+     * always ends in a '/'.
+     *
+     * @param cl The class whose resource position is sought.
+     * @return The resource position or {@code null} if this could not be
+     * detected.
+     */
+    public static URL getResourceContainer( Class<?> cl )
     {
-        for ( var c : strings )
+        CodeSource codeSource =
+                cl
+                .getProtectionDomain()
+                .getCodeSource();
+
+        if ( codeSource == null )
+            return null;
+
+        URL classContainerUrl =
+                codeSource.getLocation();
+
+        if ( classContainerUrl == null )
+            return null;
+
+        String classContainer =
+                classContainerUrl.toExternalForm();
+
+        if ( classContainer.endsWith( ".jar" ) )
+            classContainer = String.format( "jar:%s!", classContainer );
+        if ( ! classContainer.endsWith( "/" ) )
+            classContainer += "/";
+
+        classContainer =
+                classContainer +
+                cl.getPackageName().replace( ".", "/" ) +
+                "/";
+
+        System.out.println( classContainer );
+
+        try
         {
-            if ( StringUtil.isEmpty( c ) )
-                return false;
+            return new URL( classContainer );
         }
-        return true;
-    }
-
-    private static URL findResourceBundle( String baseName, Module module )
-    {
-        Objects.requireNonNull( module );
-
-        if ( StringUtil.isEmpty( baseName ) )
-            throw new IllegalArgumentException( "basename" );
-        if ( module.getClassLoader() == null )
-            throw new IllegalArgumentException( "bootstrap classloader" );
-
-
-        baseName = baseName.replace( ".", "/" );
-
-        Locale locale = Locale.getDefault();
-
-        var language = locale.getLanguage();
-        var script = locale.getScript();
-        var country = locale.getCountry();
-        var variant = locale.getVariant();
-
-        ArrayList<String> toCheck = new ArrayList<String>();
-
-//        baseName + "_" + language + "_" + script + "_" + country + "_" + variant
-        if ( stringsValid( language, script, country, variant ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language, script, country, variant } ) );
-
-//        baseName + "_" + language + "_" + script + "_" + country
-        if ( stringsValid( language, script, country ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language, script, country } ) );
-//        baseName + "_" + language + "_" + script
-        if ( stringsValid( language, script ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language, script } ) );
-
-//        baseName + "_" + language + "_" + country + "_" + variant
-        if ( stringsValid( language, country, variant ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language, country, variant } ) );
-//        baseName + "_" + language + "_" + country
-        if ( stringsValid( language, country ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language, country } ) );
-
-//        baseName + "_" + language
-        if ( stringsValid( language ) )
-            toCheck.add( StringUtil.concatenate(
-                    "_",
-                    new String[] {baseName, language } ) );
-
-        toCheck.add( baseName );
-
-        for ( var c : toCheck )
+        catch ( MalformedURLException e )
         {
-            var name = c + ".properties";
-
-            var url = module.getClassLoader().getResource( name );
-            if ( url != null )
-                return url;
+            System.out.println( e.getMessage() );
+            return null;
         }
-
-        return null;
     }
 
     /**
-     * Get class specific resources. If the passed classes full
-     * name is "org.good.Class" then this operation loads
-     * the resource bundle "org/good/Class.properties".
+     * Get class specific resources. If the full name of the passed
+     * class is "org.good.Class" then this operation loads the resource
+     * bundle "org/good/Class.properties".
      * Prefer {@link #getClassResourceMap(Class)}.
      *
-     * @param c The class for which the resources should be loaded.
+     * @param cl The class for which the resources should be loaded.
      * @return A ResourceBundle and its corresponding URL.  If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
-    static Pair<URL,ResourceBundle> getClassResourcesImpl( Class<?> c )
+    static Pair<URL,ResourceBundle> getClassResourcesImpl( Class<?> cl )
     {
         try
         {
-            String name = c.getName();
+            String name = cl.getName();
 
-            var url = findResourceBundle(
-                    name,
-                    c.getModule() );
+            var resourceBundle =
+                    ResourceBundle.getBundle( name, cl.getModule() );
+            var url =
+                    getResourceContainer( cl );
 
             if ( url == null )
                 return null;
 
             return new Pair<>(
                     url,
-                    ResourceBundle.getBundle( name, c.getModule() ) );
+                    resourceBundle );
         }
         catch ( MissingResourceException e )
         {
@@ -286,16 +253,16 @@ public class ResourceUtil
      * Load a named resource from the resource package of the passed
      * class.
      *
-     * @param c1ass The class used to locate the resource package.
+     * @param cl The class used to locate the resource package.
      * @param name The name of the resource.
      * @return The resource content. Never null, throws a
      * RuntimeException if the resource was not found.
      */
     public static byte[] loadResource(
-            Class<?> c1ass,
+            Class<?> cl,
             String name )
     {
-        try ( InputStream is = c1ass.getResourceAsStream( name ) )
+        try ( InputStream is = cl.getResourceAsStream( name ) )
         {
             if ( is == null )
                 throw new RuntimeException(

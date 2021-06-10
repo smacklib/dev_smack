@@ -79,6 +79,7 @@ public class ResourceManagerTest
     public void testImage()
     {
         assertNotNull( image );
+        assertEquals( 33, image.getHeight( null ) );
     }
 
     @Resource
@@ -88,6 +89,7 @@ public class ResourceManagerTest
     public void testIcon()
     {
         assertNotNull( icon );
+        assertEquals( 33, icon.getIconHeight() );
     }
 
     @Resource
@@ -152,22 +154,14 @@ public class ResourceManagerTest
     @Test
     public void testGetResourceMapFailBootstrap()
     {
-        try
-        {
-            _rm.getResourceMap( String.class );
-            fail();
-        }
-        catch ( IllegalArgumentException e )
-        {
-            assertEquals( "bootstrap classloader", e.getMessage() );
-        }
+        var map = _rm.getResourceMap( String.class );
+        assertNull( map );
     }
 
     @Test
     public void testGetResourceMapFail()
     {
         var map = _rm.getResourceMap( Pair.class );
-
         assertNull( map );
     }
 }
