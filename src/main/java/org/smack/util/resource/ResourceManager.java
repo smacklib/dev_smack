@@ -1,9 +1,8 @@
 /* $Id$
  *
- * Utilities
+ * Smack Utilities
  *
- * Released under Gnu Public License
- * Copyright © 2017 Michael G. Binz
+ * Copyright © 2017-21 Michael G. Binz
  */
 package org.smack.util.resource;
 

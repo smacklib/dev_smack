@@ -23,7 +23,7 @@ import org.smack.util.Pair;
  * @version $Rev$
  * @author Michael Binz
  */
-public class ResourceUtil
+public final class ResourceUtil
 {
     /**
      * Unchecked exception thrown when resource lookup
@@ -173,7 +173,7 @@ public class ResourceUtil
      * @return The resource position or {@code null} if this could not be
      * detected.
      */
-    public static URL getResourceContainer( Class<?> cl )
+    private static URL getResourceContainer( Class<?> cl )
     {
         CodeSource codeSource =
                 cl
@@ -201,8 +201,6 @@ public class ResourceUtil
                 classContainer +
                 cl.getPackageName().replace( ".", "/" ) +
                 "/";
-
-        System.out.println( classContainer );
 
         try
         {
