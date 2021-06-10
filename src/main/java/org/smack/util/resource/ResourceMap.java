@@ -1,9 +1,8 @@
 /* $Id$
  *
- * Utilities
+ * Smack Utilities.
  *
- * Released under Gnu Public License
- * Copyright © 2017 Michael G. Binz
+ * Copyright © 2017-21 Michael G. Binz
  */
 package org.smack.util.resource;
 
@@ -38,6 +37,13 @@ public class ResourceMap extends HashMap<String, String>
 
     private final Class<?> _class;
 
+    /**
+     * Get a the resource map for a class.
+     *
+     * @param cl The class.
+     * @return The corresponding resource map or {@code null} if no
+     * resources were found.
+     */
     public static ResourceMap getResourceMap( Class<?> cl )
     {
         Pair<URL, ResourceBundle> crb =

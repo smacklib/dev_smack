@@ -14,6 +14,7 @@ import javax.swing.Icon;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
@@ -78,6 +79,7 @@ public class ResourceManagerTest
     public void testImage()
     {
         assertNotNull( image );
+        assertEquals( 33, image.getHeight( null ) );
     }
 
     @Resource
@@ -87,6 +89,7 @@ public class ResourceManagerTest
     public void testIcon()
     {
         assertNotNull( icon );
+        assertEquals( 33, icon.getIconHeight() );
     }
 
     @Resource
@@ -137,5 +140,28 @@ public class ResourceManagerTest
         catch ( MissingResourceException expected )
         {
         }
+    }
+
+    @Test
+    public void testGetResourceMap()
+    {
+        var map = _rm.getResourceMap( ResourceManagerTest.class );
+
+        assertNotNull( map );
+        assertNotNull( "TTD", map.get( "currency" ) );
+    }
+
+    @Test
+    public void testGetResourceMapFailBootstrap()
+    {
+        var map = _rm.getResourceMap( String.class );
+        assertNull( map );
+    }
+
+    @Test
+    public void testGetResourceMapFail()
+    {
+        var map = _rm.getResourceMap( Pair.class );
+        assertNull( map );
     }
 }

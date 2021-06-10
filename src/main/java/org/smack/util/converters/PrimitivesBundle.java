@@ -2,14 +2,13 @@
  * $Id$
  *
  * Unpublished work.
- * Copyright © 2019 Michael G. Binz
+ * Copyright © 2019-21 Michael G. Binz
  */
 package org.smack.util.converters;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -25,15 +24,26 @@ import org.smack.util.StringUtil;
  */
 public class PrimitivesBundle extends StringConverterExtension
 {
-
-    private static Icon iconFromUrl( String s ) throws MalformedURLException
+    private static ImageIcon imageIconFromUrl( String s ) throws Exception
     {
-        return new ImageIcon( new URL( s ) );
+        var url = new URL( s );
+
+        try ( var urlStream = url.openStream() )
+        {
+            // Note that the URL-based constructor is not used because
+            // it always succeeds, even in cases of a wrong URL.
+            return new ImageIcon( urlStream.readAllBytes() );
+        }
     }
 
-    private static Image imageFromUrl( String s ) throws MalformedURLException
+    private static Icon iconFromUrl( String s ) throws Exception
     {
-        return new ImageIcon( new URL( s ) ).getImage();
+        return imageIconFromUrl( s );
+    }
+
+    private static Image imageFromUrl( String s ) throws Exception
+    {
+        return imageIconFromUrl( s ).getImage();
     }
 
     @Override
