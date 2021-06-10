@@ -1,6 +1,6 @@
 /*
  * $Id$
- * Released under Gnu Public License
+ *
  * Copyright © 2019 Michael G. Binz
  */
 module framework.smack {
