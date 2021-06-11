@@ -196,11 +196,19 @@ public class ResourceMap extends HashMap<String, String>
 
     /**
      * Matches '${' if not preceeded by an '\' and not followed by any '}'.
-     * For example "hullaballoo${honkytonk".  This is an error match.
+     * For example "...${honkytonk".  This is an error match.
      */
     private final static Pattern UNCLOSED_MACRO = Pattern.compile("(?<!\\\\)\\$\\{(.*?)[^\\}]");
 
+    /**
+     * Matches '${group}' if not preceeded by an '\'.
+     * For example "...${honkytonk}".  This is a valid macro.
+     */
     private final static Pattern VALID_MACRO = Pattern.compile("(?<!\\\\)\\$\\{(.*?)\\}");
+
+    /**
+     * Matches '\${'.  This matches escaped macros.
+     */
     private final static Pattern ESCAPED_MACRO = Pattern.compile("\\\\\\$\\{");
 
     /**

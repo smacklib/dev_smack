@@ -27,5 +27,7 @@ public class ResourceMapPreprocessTest
         assertEquals( "123-123-123", map.get( "triple-dash.onetwothree" ) );
 
         assertEquals( "${", map.get( "escaped" ) );
+
+        assertEquals( "prefix3", map.get( "withprefix" ) );
     }
 }
