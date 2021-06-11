@@ -14,20 +14,22 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.smack.util.FormattedEx;
 import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
 import org.smack.util.converters.StringConverter;
 
-
 /**
  * A map holding all resources defined in the resources for
- * the passed class.  Resources for a class foo.bar.Elk are
- * defined in the property file foo.bar.resources.Elk.
+ * the passed class.  Resources for a class {@code foo.bar.Elk} are
+ * defined in the property file {@code Elk.property} in the same package.
  * <p>
  * A property named "color" in the above resource file is found
- * by the key 'color' and the key 'Elk.color'.
+ * by the key 'color' and the key 'Elk.color' or simply 'color'.
  * </p>
  *
  * @author Michael Binz
@@ -35,28 +37,16 @@ import org.smack.util.converters.StringConverter;
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {
+    /**
+     * The class corresponding to this map.  Never {@code null}.
+     */
     private final Class<?> _class;
 
     /**
-     * Unchecked exception thrown when resource lookup
-     * fails, for example because string conversion fails.  This is
-     * not a missing resource exception.  If a resource isn't defined
-     * for a particular key, no exception is thrown.
+     * The url of the resource package that contains {@link #_class}. In
+     * an empty ResourceMap this may be {@code null}.
      */
-    @SuppressWarnings("serial")
-    private static class LookupException extends RuntimeException {
-        /**
-         * Constructs an instance of this class with some useful information
-         * about the failure.
-         *
-         * @param msg the detail message
-         * @param type the type of the resource
-         * @param key the name of the resource
-         */
-        public LookupException(String msg, String key, Class<?> type) {
-            super(String.format("%s: resource %s, type %s", msg, key, type));
-        }
-    }
+    private final URL _url;
 
     /**
      * Populates the passed Map with the preprocessed values from the passed
@@ -66,8 +56,8 @@ public class ResourceMap extends HashMap<String, String>
      * @return The requested resource bundle or {@code null} if the bundle
      * did not exist.
      */
-    static Map<String, String> preprocessResourceBundle(
-            URL url, ResourceBundle bundle )
+    private Map<String, String> preprocessResourceBundle(
+            URL url, ResourceBundle bundle ) throws Exception
     {
         Map<String, String> result = new HashMap<>();
 
@@ -88,7 +78,8 @@ public class ResourceMap extends HashMap<String, String>
             }
             else
             {
-                value = evaluateStringExpression(
+                value = evaluateStringExpression2(
+                        key,
                         value,
                         bundle );
             }
@@ -120,18 +111,39 @@ public class ResourceMap extends HashMap<String, String>
      * @param env The resource bundle to use for token look-up.
      * @return The evaluated expression.
      */
-    private static String evaluateStringExpression(
+    private String evaluateStringExpression(
+            String key,
             String expr,
-            ResourceBundle env )
+            ResourceBundle env ) throws Exception
     {
         if ( !expr.contains( "${" ) )
             return expr;
 
         if ( expr.trim().equals( "${null}" ) )
             return null;
+        {
+            //            You want to use negative lookbehind like this:
+            //                \w*(?<!foo)bar
+            //                Where (?<!x) means "only if it doesn't have "x" before this point".
+
+            final Map<String, String> vars = new HashMap<String, String>();
+            vars.put("var", "313");
+            final String inputs = "lorem ${var} \\${var} dolor sit amet consectetur adipiscing elit";
+
+            //        final Matcher m = Pattern.compile("\\$\\{(.*?)\\}").matcher(inputs);
+            final Matcher m = Pattern.compile("(?<!\\\\)\\$\\{(.*?)\\}").matcher(inputs);
+
+            final StringBuffer b = new StringBuffer(inputs.length());
+            while (m.find())
+                m.appendReplacement(b, vars.get(m.group(1)));
+            m.appendTail(b);
+
+            System.out.println(b);
+        }
 
         StringBuilder result = new StringBuilder();
-        int i0 = 0, i1;
+        int i0 = 0;
+        int i1;
         while ( (i1 = expr.indexOf( "${", i0 )) != -1 )
         {
             if ( (i1 == 0) || ((i1 > 0) && (expr.charAt( i1 - 1 ) != '\\')) )
@@ -140,34 +152,39 @@ public class ResourceMap extends HashMap<String, String>
                 if ( (i2 != -1) && (i2 > i1 + 2) )
                 {
                     result.append( expr.substring( i0, i1 ) );
-                    String k = expr.substring( i1 + 2, i2 );
+                    String rightKey = expr.substring( i1 + 2, i2 );
 
-                    if ( env.containsKey( k ) )
+                    if ( env.containsKey( rightKey ) )
                     {
-                        String resolved = env.getObject( k ).toString();
+                        String resolved = env.getString( rightKey );
                         // The resolved string is again evaluated.
                         result.append( evaluateStringExpression(
+                                rightKey,
                                 resolved,
                                 env ) );
                     }
                     else
                     {
-                        String msg = String.format(
-                                "no value for \"%s\" in \"%s\"", k, expr );
-                        throw new LookupException( msg, k, String.class );
+                        throw new FormattedEx( "No value for '%s:${%s}' @ %s @ %s",
+                                key,
+                                rightKey,
+                                _class.getSimpleName(),
+                                _url );
                     }
-
-                    i0 = i2 + 1; // skip trailing "}"
+                    // skip trailing "}"
+                    i0 = i2 + 1;
                 }
                 else
                 {
-                    String msg =
-                            String.format( "no closing brace in \"%s\"", expr );
-                    throw new LookupException( msg, "<not found>", String.class );
+                    throw new FormattedEx( "No closing brace '%s' @ %s @ %s",
+                            key,
+                            _class.getSimpleName(),
+                            _url );
                 }
             }
             else
-            { // we've found an escaped variable - "\${"
+            {
+                // we've found an escaped variable - "\${"
                 result.append( expr.substring( i0, i1 - 1 ) );
                 result.append( "${" );
                 i0 = i1 + 2; // skip past "${"
@@ -175,6 +192,91 @@ public class ResourceMap extends HashMap<String, String>
         }
         result.append( expr.substring( i0 ) );
         return result.toString();
+    }
+
+    /**
+     * Matches '${' if not preceeded by an '\' and not followed by any '}'.
+     * For example "hullaballoo${honkytonk".  This is an error match.
+     */
+    private final static Pattern UNCLOSED_MACRO = Pattern.compile("(?<!\\\\)\\$\\{(.*?)[^\\}]");
+
+    private final static Pattern VALID_MACRO = Pattern.compile("(?<!\\\\)\\$\\{(.*?)\\}");
+    private final static Pattern ESCAPED_MACRO = Pattern.compile("\\\\\\$\\{");
+
+    /**
+     * Evaluates a string expression in the context of a passed environment used
+     * to look up token definitions.
+     *
+     * Given the following resources:
+     *
+     * <pre><code>
+     * hello = Hello
+     * world = World
+     * place = ${world}
+     * </code></pre>
+     *
+     * The value of evaluateStringExpression("${hello} ${place}") would be
+     * "Hello World". The value of ${null} is null.
+     *
+     * @param expr The expression to evaluate.
+     * @param env The resource bundle to use for token look-up.
+     * @return The evaluated expression.
+     */
+    private String evaluateStringExpression2(
+            String key,
+            String expr,
+            ResourceBundle env ) throws Exception
+    {
+        // Shortcut.  Anything to do?
+        if ( !expr.contains( "${" ) )
+            return expr;
+        // Special case.
+        if ( expr.trim().equals( "${null}" ) )
+            return null;
+        // Ensure that we have no unclosed macros.
+        if ( UNCLOSED_MACRO.matcher( expr ).matches() )
+        {
+            throw new FormattedEx( "No closing brace '%s' @ %s @ %s",
+                    key,
+                    _class.getSimpleName(),
+                    _url );
+        }
+
+        String result;
+
+        {
+            final StringBuilder b = new StringBuilder(expr.length());
+            // Match ${word} only if it is not after a backslash.
+            final Matcher m = VALID_MACRO.matcher(expr);
+
+            while (m.find())
+            {
+                var matched =
+                        m.group( 1 );
+                if ( !env.containsKey( matched ) )
+                {
+                    throw new FormattedEx( "No value for '%s:${%s}' @ %s @ %s",
+                            key,
+                            matched,
+                            _class.getSimpleName(),
+                            _url );
+                }
+
+                var replacement =
+                        evaluateStringExpression2(
+                                key,
+                                env.getString( matched ),
+                                env );
+
+                m.appendReplacement( b, replacement );
+            }
+
+            result = m.appendTail( b ).toString();
+        }
+
+        result = ESCAPED_MACRO.matcher(result).replaceAll( "${" );
+
+        return result;
     }
 
     /**
@@ -235,7 +337,7 @@ public class ResourceMap extends HashMap<String, String>
      * @return A ResourceBundle and its corresponding URL.  If no resource bundle was found
      * for the passed class, then the result is {@code null}.
      */
-    static Pair<URL,ResourceBundle> getClassResourcesImpl( Class<?> cl )
+    private static Pair<URL,ResourceBundle> getClassResourcesImpl( Class<?> cl )
     {
         try
         {
@@ -277,39 +379,98 @@ public class ResourceMap extends HashMap<String, String>
         return new ResourceMap( cl, crb.left, crb.right );
     }
 
+    /**
+     * Get a the resource map for a class.
+     *
+     * @param cl The class.
+     * @return The corresponding resource map or {@code null} if no
+     * resources were found.
+     */
+    public static ResourceMap getResourceMapExt( Class<?> cl )
+    {
+        try
+        {
+            String name = cl.getName();
+
+            var resourceBundle =
+                    ResourceBundle.getBundle( name, cl.getModule() );
+            var url =
+                    getResourceContainer( cl );
+
+            return new ResourceMap( cl, url, resourceBundle );
+        }
+        catch ( MissingResourceException e )
+        {
+            return new ResourceMap( cl );
+        }
+    }
+
+    /**
+     * Create an instance.
+     *
+     * @param cl The class for which the resource map is created.
+     * @param url The resource url of the class.
+     * @param rb The resource bundle of the class.
+     */
     private ResourceMap( Class<?> cl, URL url, ResourceBundle rb )
     {
         _class =
                 Objects.requireNonNull( cl );
-        Map<String, String> bundle =
-                preprocessResourceBundle(
-                        url, rb );
-
-        String classPrefix =
-                _class.getSimpleName() + ".";
-
-        for ( String ck : bundle.keySet() )
+        _url =
+                Objects.requireNonNull( url );
+        try
         {
-            String value =
-                    bundle.get( ck );
+            Map<String, String> bundle =
+                    preprocessResourceBundle(
+                            url, rb );
 
-            if ( ck.equals( classPrefix ) )
-                throw new AssertionError( "Invalid property name: " + classPrefix );
+            String classPrefix =
+                    _class.getSimpleName() + ".";
 
-            put( ck, value );
-            if ( ck.startsWith( classPrefix ) )
+            for ( String ckey : bundle.keySet() )
             {
-                put(
-                        ck.substring( classPrefix.length() ),
-                        value );
-            }
-            else
-            {
-                put(
-                        classPrefix + ck,
-                        value );
+                String value =
+                        bundle.get( ckey );
+
+                if ( ckey.equals( classPrefix ) )
+                    throw new FormattedEx( "Invalid key '%s' @ %s @ %s",
+                            classPrefix,
+                            _class.getSimpleName(),
+                            _url );
+
+                // Register the qualified and the unqualified name.
+
+                put( ckey, value );
+                if ( ckey.startsWith( classPrefix ) )
+                {
+                    put(
+                            ckey.substring( classPrefix.length() ),
+                            value );
+                }
+                else
+                {
+                    put(
+                            classPrefix + ckey,
+                            value );
+                }
             }
         }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e.getMessage() );
+        }
+    }
+
+    /**
+     * Create an empty instance.
+     *
+     * @param cl The class for which the resource map is created.
+     */
+    private ResourceMap( Class<?> cl )
+    {
+        _class =
+                Objects.requireNonNull( cl );
+        _url = null;
     }
 
     /**
@@ -329,7 +490,7 @@ public class ResourceMap extends HashMap<String, String>
      * @return The conversion result.
      */
     public <T> T getAs( String key, Class<T> targetType )
-        throws Exception
+            throws Exception
     {
         String resolved =
                 get( key );
