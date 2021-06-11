@@ -274,9 +274,7 @@ public class ResourceMap extends HashMap<String, String>
             result = m.appendTail( b ).toString();
         }
 
-        result = ESCAPED_MACRO.matcher(result).replaceAll( "${" );
-
-        return result;
+        return ESCAPED_MACRO.matcher(result).replaceAll( "\\$\\{" );
     }
 
     /**
@@ -457,7 +455,7 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( Exception e )
         {
-            throw new RuntimeException( e.getMessage() );
+            throw new RuntimeException( e.getMessage(), e );
         }
     }
 
