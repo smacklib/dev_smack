@@ -6,8 +6,6 @@
  */
 package org.smack.util.resource;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,8 +31,6 @@ import org.smack.util.converters.StringConverter;
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {
-    private final String _bundleName;
-
     private final Class<?> _class;
 
     /**
@@ -59,15 +55,12 @@ public class ResourceMap extends HashMap<String, String>
     {
         _class =
                 Objects.requireNonNull( cl );
-        String simpleName =
-                _class.getSimpleName();
         Map<String, String> bundle =
                 ResourceUtil.preprocessResourceBundle(
                         url, rb );
-        _bundleName =
-                cl.getName();
+
         String classPrefix =
-                simpleName + ".";
+                _class.getSimpleName() + ".";
 
         for ( String ck : bundle.keySet() )
         {
@@ -94,44 +87,11 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * @return The name of the underlying resource bundle.
-     */
-    public String getName()
-    {
-        return _bundleName;
-    }
-
-    /**
-     * @return The class loader of the associated class.
-     */
-    public ClassLoader getClassLoader()
-    {
-        return _class.getClassLoader();
-    }
-
-    /**
      * @return The class that this resource map holds resources for.
      */
     public Class<?> getResourceClass()
     {
         return _class;
-    }
-
-    /**
-     * @return A stream on the content of the result.
-     * @param name The resource name.
-     * @throws IOException In case of an error.
-     */
-    public InputStream getResourceAsStream( String name ) throws IOException
-    {
-        InputStream result = _class.getClassLoader().getResourceAsStream(
-                name );
-
-        if ( result != null )
-            return result;
-
-        return
-                _class.getModule().getResourceAsStream( name );
     }
 
     /**
@@ -155,6 +115,6 @@ public class ResourceMap extends HashMap<String, String>
 
         return converter.convert(
                 targetType,
-                get( key ) );
+                resolved );
     }
 }
