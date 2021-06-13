@@ -110,6 +110,12 @@ public class ResourceMap extends HashMap<String, String>
     private final static Pattern ESCAPED_MACRO = Pattern.compile("\\\\\\$\\{");
 
     /**
+     * Matches a string containing a whitespace.  To be used with
+     * String.match().
+     */
+    private final static String CONTAINS_WHITESPACE = ".*\\s+.*";
+
+    /**
      * Evaluates a string expression in the context of a passed environment used
      * to look up token definitions.
      *
@@ -158,7 +164,14 @@ public class ResourceMap extends HashMap<String, String>
             while (m.find())
             {
                 var matched =
-                        m.group( 1 );
+                        m.group( 1 ).strip();
+                if ( matched.matches( CONTAINS_WHITESPACE ) )
+                    throw new FormattedEx( "Invalid name '%s:${%s}' @ %s @ %s",
+                            key,
+                            matched,
+                            _class.getSimpleName(),
+                            _url );
+
                 if ( !env.containsKey( matched ) )
                 {
                     throw new FormattedEx( "No value for '%s:${%s}' @ %s @ %s",
