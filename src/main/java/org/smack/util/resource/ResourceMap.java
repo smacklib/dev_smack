@@ -165,6 +165,14 @@ public class ResourceMap extends HashMap<String, String>
             {
                 var matched =
                         m.group( 1 ).strip();
+
+                if ( matched.contentEquals( key ) )
+                    throw new FormattedEx( "Recursion detected '%s:${%s}' @ %s @ %s",
+                            key,
+                            matched,
+                            _class.getSimpleName(),
+                            _url );
+
                 if ( matched.matches( CONTAINS_WHITESPACE ) )
                     throw new FormattedEx( "Invalid name '%s:${%s}' @ %s @ %s",
                             key,
