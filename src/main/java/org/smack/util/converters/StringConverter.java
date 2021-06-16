@@ -17,8 +17,6 @@ import java.util.logging.Logger;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
-import org.smack.util.resource.ResourceConverter;
-import org.smack.util.resource.ResourceMap;
 
 /**
  * Offers conversions services for strings to arbitrary
@@ -39,25 +37,6 @@ public final class StringConverter
             throws Exception;
     }
 
-    public static class DynamicResourceConverter<T> extends ResourceConverter
-    {
-        private final Converter<String, T> _function;
-
-        DynamicResourceConverter( Class<T> cl, Converter<String,T> f )
-        {
-            super( cl );
-
-            _function = f;
-        }
-
-        @Override
-        public Object parseString( String s, ResourceMap r ) throws Exception
-        {
-            return _function.convert( s );
-        }
-    }
-
-
     private final HashMap<Class<?>, Converter<String, ?>> _registry =
             new HashMap<>();
 
@@ -71,9 +50,6 @@ public final class StringConverter
 
         for ( StringConverterExtension c : ServiceLoader.load( StringConverterExtension.class ) )
             c.extendTypeMap( this );
-
-        for ( ResourceConverter c : ServiceLoader.load( ResourceConverter.class ) )
-            put( c.getType(), c );
     }
 
     /**
@@ -96,7 +72,7 @@ public final class StringConverter
 
         LOG.info( "Adding rc for: " + cl );
 
-        // Directly ask the has table.  The outbound containsKey
+        // Directly ask the hash table.  The outbound containsKey
         // triggers creation of entries.
         if ( _registry.containsKey( cl ) )
             LOG.warning( "Duplicate resource converter for " + cl + "." );
@@ -104,27 +80,6 @@ public final class StringConverter
         _registry.put(
                 cl,
                 f );
-    }
-
-    @Deprecated
-    public <T> void put( Class<T> cl, ResourceConverter converter )
-    {
-        @SuppressWarnings("unchecked")
-        Converter<String, T> c =
-                s -> (T)converter.parseString( s, null );
-        put(
-                cl,
-                c );
-
-    }
-
-    @Deprecated
-    public <T> ResourceConverter get( Class<T> cl )
-    {
-        if ( ! containsKey( cl ) )
-            return null;
-
-        return new DynamicResourceConverter( cl, _registry.get( cl ) );
     }
 
     /**
