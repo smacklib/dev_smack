@@ -130,7 +130,10 @@ public class XmlUtil
     }
 
     /**
-     * This operation works on Java 8.  TODO(micbinz) integrate.
+     * Transform a file based on an XSLT transformation. Access to
+     * non-existent dtds is ignored.  This version of the operation
+     * internally sets the systemId of the xslt, so that access on the
+     * stylesheet via the xls 'document( '' )' operation works.
      *
      * @param stylesheet The stylesheet.
      * @param datafile The input to process.

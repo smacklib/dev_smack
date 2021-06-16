@@ -194,10 +194,9 @@ public class CliApplicationTest
         var act = "cmdByte";
 
         testType( act, act );
-        testType( "cmdbyte", act );
-        testType( "CMDBYTE", act );
+        testType( act.toLowerCase(), act );
+        testType( act.toUpperCase(), act );
     }
-
 
     @Test
     public void testUnknownCommand()
