@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.junit.Test;
 import org.smack.util.StringUtil;
@@ -25,9 +26,9 @@ public class CliApplicationTypeTest
     private void TestType( String command, String argument, String exp )
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
+                new ArrayList<String>();
 
         CliApplicationTest.execCli(
                 out,
@@ -36,15 +37,18 @@ public class CliApplicationTypeTest
                 command, argument );
 
         assertEquals(
-                StringUtil.EMPTY_STRING,
-                err.toString() );
+                0,
+                err.size() );
 
         String expected =
-                String.format( "%s:%s%n", command, exp );
+                String.format( "%s:%s", command, exp );
 
         assertEquals(
+                1,
+                out.size() );
+        assertEquals(
                 expected,
-                out.toString() );
+                out.get( 0 ) );
     }
 
     private void TestType( String command, String argument )
@@ -137,9 +141,9 @@ public class CliApplicationTypeTest
             assertTrue( tmpFile.exists() );
 
             final var err =
-                    new StringBuilder();
+                    new ArrayList<String>();
             final var out =
-                    new StringBuilder();
+                    new ArrayList<String>();
 
             CliApplicationTest.execCli(
                     out,
@@ -148,16 +152,18 @@ public class CliApplicationTypeTest
                     "cmdFile",
                     tmpFile.getPath() );
 
-            assertTrue( StringUtil.isEmpty( err.toString() ) );
+            assertTrue( err.isEmpty() );
 
             String expected =
                     "cmdFile:" +
-                            tmpFile.getPath() +
-                            StringUtil.EOL;
+                            tmpFile.getPath();
 
             assertEquals(
+                    1,
+                    out.size() );
+            assertEquals(
                     expected,
-                    out.toString() );
+                    out.get( 0 ) );
         }
         finally
         {
@@ -169,9 +175,9 @@ public class CliApplicationTypeTest
     public void TestUnknownType() throws Exception
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
+                new ArrayList<String>();
 
         CliApplicationTest.execCli(
                 out,
@@ -179,6 +185,7 @@ public class CliApplicationTypeTest
                 ApplicationUnderTest::main,
                 new String[0] );
 
-        assertTrue( StringUtil.hasContent( err.toString() ) );
+        assertEquals( 0, out.size() );
+        assertTrue( err.size() > 0 );
     }
 }

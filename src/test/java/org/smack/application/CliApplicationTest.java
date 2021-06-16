@@ -2,17 +2,16 @@ package org.smack.application;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Test;
-import org.smack.util.FileUtil;
+import org.smack.util.Disposer;
 import org.smack.util.StringUtil;
+import org.smack.util.io.Redirect;
 
 public class CliApplicationTest
 {
@@ -22,79 +21,31 @@ public class CliApplicationTest
             Consumer<String[]> cliApplicationMain,
             String ... argv  )
     {
-        StringBuilder outb =
-                out == null ? null : new StringBuilder();
-        StringBuilder errb =
-                err == null ? null : new StringBuilder();
-
-        execCli(
-                outb,
-                errb,
-                cliApplicationMain,
-                argv );
-
-        if ( out != null )
+        try ( Disposer d = new Disposer() )
         {
-            var outx = outb.toString();
-            if ( out != null && StringUtil.hasContent( outx ) )
-                for ( String c : outx.split( StringUtil.EOL ) )
-                    out.add( c );
+            final var errRedir = err != null ?
+                    d.register( new Redirect( Redirect.StdStream.err ) ) :
+                        null;
+            final var outRedir = out != null ?
+                    d.register( new Redirect( Redirect.StdStream.out ) ) :
+                        null;
+
+            cliApplicationMain.accept( argv );
+
+            if ( out != null )
+                out.addAll( outRedir.content() );
+            if ( err != null )
+                err.addAll( errRedir.content() );
         }
-        if ( err != null )
-        {
-            var errx = errb.toString();
-            if ( StringUtil.hasContent( errx ) )
-                for ( String c : errx.split( StringUtil.EOL ) )
-                    err.add( c );
-        }
-    }
-
-    /**
-     * Get results as strings holding all lines.
-     *
-     * @param out
-     * @param err
-     * @param cliApplicationMain
-     * @param argv
-     */
-    static void execCli(
-            StringBuilder out,
-            StringBuilder err,
-            Consumer<String[]> cliApplicationMain,
-            String ... argv  )
-    {
-        PrintStream originalErr =
-                System.err;
-        ByteArrayOutputStream errOs =
-                new ByteArrayOutputStream();
-        System.setErr( new PrintStream( errOs ) );
-
-        PrintStream originalOut =
-                System.out;
-        ByteArrayOutputStream outOs =
-                new ByteArrayOutputStream();
-        System.setOut( new PrintStream( outOs ) );
-
-        cliApplicationMain.accept( argv );
-
-        System.err.flush();
-        System.setErr( originalErr );
-        System.out.flush();
-        System.setOut( originalOut );
-
-        if ( out != null )
-            out.append( outOs.toString() );
-        if ( err != null )
-            err.append( errOs.toString() );
     }
 
     @Test
     public void testHelp() throws IOException
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
+                new ArrayList<String>();
 
         execCli(
                 out,
@@ -102,28 +53,26 @@ public class CliApplicationTest
                 ApplicationUnderTest::main,
                 new String[0] );
 
-        assertEquals( 0, out.length() );
+        assertEquals( 0, out.size() );
 
-        String expectedString =
-                "ApplicationUnderTest\n" +
-                        "The following commands are supported:\n" +
-                        "cmdBoolean: boolean\n" +
-                        "cmdByte: byte\n" +
-                        "cmdDouble: double\n" +
-                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]\n" +
-                        "cmdFile: File\n" +
-                        "cmdFloat: float\n" +
-                        "cmdInt: int\n" +
-                        "cmdLong: long\n" +
-                        "cmdShort: short\n" +
-                        "cmdString: String\n";
+        List<String> expectedLines = Arrays.asList( new String[] {
+                "ApplicationUnderTest",
+                        "The following commands are supported:",
+                        "cmdBoolean: boolean",
+                        "cmdByte: byte",
+                        "cmdDouble: double",
+                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]",
+                        "cmdFile: File",
+                        "cmdFloat: float",
+                        "cmdInt: int",
+                        "cmdLong: long",
+                        "cmdShort: short",
+                        "cmdString: String"
 
-        List<String> expectedLines =
-                FileUtil.readLines(
-                        new StringReader( expectedString ) );
+        } );
+
         List<String> receivedLines =
-                FileUtil.readLines(
-                        new StringReader( err.toString() ) );
+                err;
 
         assertEquals(
                 expectedLines,
@@ -134,9 +83,9 @@ public class CliApplicationTest
     public void testHelpDefault() throws IOException
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
+                new ArrayList<String>();
 
         execCli(
                 out,
@@ -144,20 +93,18 @@ public class CliApplicationTest
                 ApplicationUnderTestDefault::main,
                 new String[0] );
 
-        assertEquals( 0, out.length() );
+        assertEquals( 0, out.size() );
 
-        String expectedString =
-                "ApplicationUnderTestDefault\n" +
-                        "The following commands are supported:\n" +
-                        "*\n" +
-                        "*: String\n" +
-                        "*: String, String\n";
-        List<String> expectedLines =
-                FileUtil.readLines(
-                        new StringReader( expectedString ) );
+        List<String> expectedLines = Arrays.asList( new String[] {
+                "ApplicationUnderTestDefault",
+                "The following commands are supported:",
+                "*",
+                "*: String",
+                "*: String, String"
+        });
+
         List<String> receivedLines =
-                FileUtil.readLines(
-                        new StringReader( err.toString() ) );
+                err;
 
         assertEquals(
                 expectedLines,
@@ -168,11 +115,9 @@ public class CliApplicationTest
     public void testArgListNotUnique() throws IOException
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
-
-        assertEquals( 0, out.length() );
+                new ArrayList<String>();
 
         execCli(
                 out,
@@ -180,19 +125,19 @@ public class CliApplicationTest
                 ApplicationUnderTestOverload::main,
                 "cmdoverload 1 2 3 4".split( " " ) );
 
-        String expectedString =
-                "Parameter count does not match. Available alternatives:\n" +
-                        "cmdOverload\n" +
-                        "cmdOverload: String\n" +
-                        "cmdOverload: String, String\n" +
-                        "cmdOverload: String, String, String\n" +
-                        "\n";
-        List<String> expectedLines =
-                FileUtil.readLines(
-                        new StringReader( expectedString ) );
+        assertEquals( 0, out.size() );
+
+        List<String> expectedLines = Arrays.asList( new String[] {
+                "Parameter count does not match. Available alternatives:",
+                "cmdOverload",
+                "cmdOverload: String",
+                "cmdOverload: String, String",
+                "cmdOverload: String, String, String",
+                StringUtil.EMPTY_STRING
+        } );
+
         List<String> receivedLines =
-                FileUtil.readLines(
-                        new StringReader( err.toString() ) );
+                err;
 
         assertEquals(
                 expectedLines,
@@ -206,9 +151,9 @@ public class CliApplicationTest
             String expectedArg )
     {
         final var err =
-                new StringBuilder();
+                new ArrayList<String>();
         final var out =
-                new StringBuilder();
+                new ArrayList<String>();
 
         execCli( out, err,
                 ApplicationUnderTest::main,
@@ -216,17 +161,20 @@ public class CliApplicationTest
                 argument );
 
         assertEquals(
-                StringUtil.EMPTY_STRING,
-                err.toString() );
+                0,
+                err.size() );
 
         String expected =
-                String.format( "%s:%s%n",
+                String.format( "%s:%s",
                         expectedCommand,
                         expectedArg );
 
         assertEquals(
+                1,
+                out.size() );
+        assertEquals(
                 expected,
-                out.toString() );
+                out.get( 0 ) );
     }
 
     private void testType( String command, String expectedCommand )
