@@ -85,53 +85,18 @@ abstract public class CliApplication
             default StringUtil.EMPTY_STRING;
     }
 
-    private static class CaseIndependent
-    {
-        private final String _name;
-
-        CaseIndependent( String name )
-        {
-            _name =
-                    Objects.requireNonNull(  name );
-        }
-
-        @Override
-        public boolean equals( Object obj )
-        {
-            if ( null == obj )
-                return false;
-            if ( obj == this )
-                return true;
-
-            return _name.equalsIgnoreCase( obj.toString() );
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return _name.toLowerCase().hashCode();
-        }
-
-        @Override
-        public String toString()
-        {
-            return _name;
-        }
-    }
-
     /**
      * A name to be used if the command should be callable without
      * a dedicated name.
      */
-    private static final CaseIndependent UNNAMED =
-            new CaseIndependent( "*" );
+    private static final String UNNAMED = "*";
 
     /**
      * A map of all commands implemented by this cli. Keys are
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<CaseIndependent, Integer, CommandHolder> _commandMap =
+    private final MultiMap<String, Integer, CommandHolder> _commandMap =
             getCommandMap( getClass() );
 
     private final Map<String,PropertyHolder> _propertyMap =
@@ -192,11 +157,10 @@ abstract public class CliApplication
 
         argv = processProperties( argv );
 
-        var ciName =
-                new CaseIndependent( argv[0] );
+        var cmdName = argv[0].toLowerCase();
 
         CommandHolder selectedCommand = _commandMap.get(
-            ciName,
+            cmdName,
             Integer.valueOf(argv.length - 1) );
 
         if ( selectedCommand != null )
@@ -212,7 +176,7 @@ abstract public class CliApplication
         // No command matched, so we check if there are commands
         // where at least the command name matches.
         Map<Integer, CommandHolder> possibleCommands =
-                _commandMap.getAll( ciName );
+                _commandMap.getAll( cmdName );
         if ( possibleCommands.size() > 0 )
         {
             err( "%s%n",
@@ -236,7 +200,7 @@ abstract public class CliApplication
         }
 
         // No match.
-        err( "Unknown command '%s'.%n", ciName );
+        err( "Unknown command '%s'.%n", cmdName );
     }
 
     private void processProperty( String property )
@@ -476,10 +440,10 @@ abstract public class CliApplication
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private MultiMap<CaseIndependent, Integer, CommandHolder> getCommandMap(
+    private MultiMap<String, Integer, CommandHolder> getCommandMap(
             Class<?> targetClass )
     {
-        MultiMap<CaseIndependent,Integer,CommandHolder> result =
+        MultiMap<String,Integer,CommandHolder> result =
                 new MultiMap<>();
 
         ReflectionUtil.processAnnotation(
@@ -500,11 +464,10 @@ abstract public class CliApplication
                     Integer numberOfArgs =
                             Integer.valueOf( c.getParameterTypes().length );
 
-                    var currentName =
-                            new CaseIndependent( name );
+                    var keyName = name.toLowerCase();
                     // Check if we already have this command with the same parameter
                     // list length. This is an implementation error.
-                    if (result.get(currentName, numberOfArgs) != null) {
+                    if (result.get(keyName, numberOfArgs) != null) {
                         throw new InternalError(
                                 "Implementation error. Operation " +
                                 name +
@@ -514,7 +477,7 @@ abstract public class CliApplication
                     }
 
                     result.put(
-                            currentName,
+                            keyName,
                             numberOfArgs,
                             new CommandHolder( c ) );
                 } );
