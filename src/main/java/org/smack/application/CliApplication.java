@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.lang.model.SourceVersion;
+
 import org.smack.util.JavaUtil;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
@@ -246,15 +248,13 @@ abstract public class CliApplication
         if ( ! candidate.startsWith( "-" ) )
             return null;
 
-        try {
-            Double.parseDouble( candidate );
-        }
-        catch ( NumberFormatException e )
-        {
-            return StringUtil.trim( candidate, "-" );
-        }
+        candidate = candidate.substring( 1 );
 
-        return null;
+        var propertyName = candidate.split( "=" )[0];
+
+        return SourceVersion.isIdentifier( propertyName ) ?
+                candidate :
+                null;
     }
 
     /**
@@ -300,7 +300,7 @@ abstract public class CliApplication
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Foo.class, argv, true );
+     *         execute( Foo.class, argv );
      *     }
      * }
      * </code>
@@ -331,7 +331,7 @@ abstract public class CliApplication
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Duck.class, argv, true );
+     *         execute( Duck::new, argv );
      *     }
      * }
      * </code>
