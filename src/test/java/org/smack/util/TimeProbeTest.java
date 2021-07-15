@@ -25,7 +25,12 @@ public class TimeProbeTest
         TimeProbe tp = new TimeProbe().start();
         Thread.sleep( TIME );
         tp.stop();
-        assertTrue( tp.duration() >= TIME );
+
+        var duration = tp.duration();
+
+        assertTrue(
+                String.format( "duration %d less than TIME %d", duration, TIME ),
+                duration >= TIME );
         // One percent error seems generous.
 
         int MAX_DURATION = (TIME + (TIME/100));
