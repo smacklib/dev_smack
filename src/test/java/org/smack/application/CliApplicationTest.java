@@ -39,76 +39,62 @@ public class CliApplicationTest
         }
     }
 
-    @Test
-    public void testHelp() throws IOException
+    static void testHelpSupport(
+            Consumer<String[]> appEntry,
+            String ... expectedLines ) throws IOException
     {
         final var err =
                 new ArrayList<String>();
         final var out =
                 new ArrayList<String>();
 
-        execCli(
+        CliApplicationTest.execCli(
                 out,
                 err,
-                ApplicationUnderTest::main,
+                appEntry,
                 new String[0] );
 
         assertEquals( 0, out.size() );
-
-        List<String> expectedLines = Arrays.asList( new String[] {
-                "ApplicationUnderTest",
-                        "The following commands are supported:",
-                        "cmdBoolean: boolean",
-                        "cmdByte: byte",
-                        "cmdDouble: double",
-                        "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]",
-                        "cmdFile: File",
-                        "cmdFloat: float",
-                        "cmdInt: int",
-                        "cmdLong: long",
-                        "cmdShort: short",
-                        "cmdString: String"
-
-        } );
 
         List<String> receivedLines =
                 err;
 
         assertEquals(
-                expectedLines,
+                Arrays.asList( expectedLines ),
                 receivedLines );
+    }
+
+    @Test
+    public void testHelp() throws IOException
+    {
+        testHelpSupport(
+                ApplicationUnderTest::main,
+                "ApplicationUnderTest",
+                "The following commands are supported:",
+                "cmdBoolean: boolean",
+                "cmdByte: byte",
+                "cmdDouble: double",
+                "cmdEnum: [FRIDAY, MONDAY, SATURDAY, SUNDAY, THURSDAY, TUESDAY, WEDNESDAY]",
+                "cmdFile: File",
+                "cmdFloat: float",
+                "cmdInt: int",
+                "cmdLong: long",
+                "cmdShort: short",
+                "cmdString: String"
+                );
     }
 
     @Test
     public void testHelpDefault() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        execCli(
-                out,
-                err,
+        testHelpSupport(
                 ApplicationUnderTestDefault::main,
-                new String[0] );
-
-        assertEquals( 0, out.size() );
-
-        List<String> expectedLines = Arrays.asList( new String[] {
                 "ApplicationUnderTestDefault",
                 "The following commands are supported:",
                 "*",
                 "*: String",
                 "*: String, String"
-        });
-
-        List<String> receivedLines =
-                err;
-
-        assertEquals(
-                expectedLines,
-                receivedLines );
+        );
     }
 
     @Test

@@ -53,11 +53,14 @@ abstract public class CliApplication
     protected @interface Command {
         String name() default StringUtil.EMPTY_STRING;
         /**
-         * Use Named.
+         * @deprecated  Use the @Named annotation.
          */
-        @Deprecated
         String[] argumentNames() default {};
+        /**
+         * @deprecated Use Command.description.
+         */
         String shortDescription() default StringUtil.EMPTY_STRING;
+        String description() default StringUtil.EMPTY_STRING;
     }
 
     /**
@@ -70,7 +73,7 @@ abstract public class CliApplication
          * Single dash arg.
          */
         String name() default StringUtil.EMPTY_STRING;
-        String shortDescription() default StringUtil.EMPTY_STRING;
+        String description() default StringUtil.EMPTY_STRING;
     }
 
     /**
@@ -775,7 +778,7 @@ abstract public class CliApplication
                     typeDoc );
 
             var description =
-                    _property.shortDescription();
+                    _property.description();
             if ( StringUtil.isEmpty( description ) )
                 return result;
 
@@ -827,6 +830,11 @@ abstract public class CliApplication
 
         private String getDescription()
         {
+            String result = _commandAnnotation.description();
+
+            if ( StringUtil.hasContent( result ) )
+                return result;
+
             return _commandAnnotation.shortDescription();
         }
 
