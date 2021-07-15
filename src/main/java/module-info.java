@@ -7,6 +7,7 @@ module framework.smack {
     requires transitive java.desktop;
     requires java.logging;
     requires java.prefs;
+    requires java.compiler;
 
     uses org.jdesktop.util.ResourceConverter;
     uses org.jdesktop.util.ResourceConverterExtension;
