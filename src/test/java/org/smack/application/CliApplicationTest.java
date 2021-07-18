@@ -68,36 +68,13 @@ public class CliApplicationTest
         }
     }
 
-    static void testHelpSupport(
-            Consumer<String[]> appEntry,
-            String ... expectedLines ) throws IOException
-    {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        CliApplicationTest.execCli(
-                out,
-                err,
-                appEntry,
-                new String[0] );
-
-        assertEquals( 0, out.size() );
-
-        List<String> receivedLines =
-                err;
-
-        assertEquals(
-                Arrays.asList( expectedLines ),
-                receivedLines );
-    }
-
     @Test
     public void testHelp() throws IOException
     {
-        testHelpSupport(
-                ApplicationUnderTest::main,
+        execCli( ApplicationUnderTest::main,
+            new String[0],
+            null,
+            new String[] {
                 "ApplicationUnderTest",
                 "The following commands are supported:",
                 "cmdBoolean: boolean",
@@ -109,20 +86,24 @@ public class CliApplicationTest
                 "cmdInt: int",
                 "cmdLong: long",
                 "cmdShort: short",
-                "cmdString: String"
-                );
+                "cmdString: String" }
+            );
     }
 
     @Test
     public void testHelpDefault() throws IOException
     {
-        testHelpSupport(
-                ApplicationUnderTestDefault::main,
+        execCli(
+            ApplicationUnderTestDefault::main,
+            new String[0],
+            null,
+            new String[] {
                 "ApplicationUnderTestDefault",
                 "The following commands are supported:",
                 "*",
                 "*: String",
                 "*: String, String"
+            }
         );
     }
 
@@ -165,31 +146,15 @@ public class CliApplicationTest
             String expectedCommand,
             String expectedArg )
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        execCli( out, err,
-                ApplicationUnderTest::main,
-                command,
-                argument );
-
-        assertEquals(
-                0,
-                err.size() );
-
         String expected =
                 String.format( "%s:%s",
                         expectedCommand,
                         expectedArg );
 
-        assertEquals(
-                1,
-                out.size() );
-        assertEquals(
-                expected,
-                out.get( 0 ) );
+        execCli( ApplicationUnderTest::main,
+                new String[] { command, argument },
+                new String[] { expected },
+                null );
     }
 
     private void testType( String command, String expectedCommand )
@@ -216,30 +181,15 @@ public class CliApplicationTest
     @Test
     public void testUnknownCommand()
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
         final var badName =
                 "unknown-command";
 
-        execCli( out, err,
-                ApplicationUnderTest::main,
-                badName );
-
-        assertEquals(
-                0,
-                out.size() );
-        assertEquals(
-                1,
-                err.size() );
-
-        String expected =
+        execCli( ApplicationUnderTest::main,
+                new String[] { badName },
+                null,
+                new String[] {
                 String.format( "Unknown command '%s'.",
-                        badName );
-
-        assertEquals(
-                expected,
-                err.get( 0 ) );
+                        badName ) }
+        );
     }
 }

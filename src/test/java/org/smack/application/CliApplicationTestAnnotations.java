@@ -72,43 +72,55 @@ public class CliApplicationTestAnnotations
     @Test
     public void testHelpUnannotated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 UnderTest::main,
+                new String[0],
+                null,
+                new String[] {
                 "UnderTest",
                 "The following commands are supported:",
-                "add: int, int" );
+                "add: int, int" } );
     }
 
     @Test
     public void testHelpAnnotated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 AnnotatedUnderTest::main,
+                new String[0],
+                null,
+                new String[] {
                 "NamedName",
                 "The following commands are supported:",
                 "add: firstSummand, secondSummand",
-                "    description add" );
+                "    description add" } );
     }
 
     @Test
     public void testHelpDeprecated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 DeprecatedAnnotatedUnderTest::main,
+                new String[0],
+                null,
+                new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",
                 "add: int, int",
-                "    description add" );
+                "    description add" } );
     }
 
     @Test
     public void testHelpDouble() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 DoubleAnnotatedUnderTest::main,
+                new String[0],
+                null,
+                new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",
                 "add: int, int",
-                "    description add" );
+                "    description add" } );
     }
 }

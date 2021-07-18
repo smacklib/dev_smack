@@ -4,20 +4,30 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.smack.application.CallableModule.Command;
+import org.smack.application.CallableModule.Property;
+import org.smack.util.StringUtil;
 
 public class CliApplicationTest2
 {
     static class UnderTest
     {
+        @Property
+        public String nameProperty;
+
         @Command
         public void add( int a, int b )
         {
             System.out.format( "%s%n", a + b );
         }
-        @Command
+        @Command( name = "plus3" )
         public void add( int a, int b, int c )
         {
             System.out.format( "%s%n", a + b + c );
+        }
+        @Command
+        public void property()
+        {
+            System.out.format( "%s%n", nameProperty );
         }
         public static void main( String[] argv )
         {
@@ -37,13 +47,17 @@ public class CliApplicationTest2
                  "UnderTest",
                  "The following commands are supported:",
                  "add: int, int",
-                 "add: int, int, int"
+                 "plus3: int, int, int",
+                 "property",
+                 StringUtil.EMPTY_STRING,
+                 "Properties:",
+                 "-nameProperty=(String)"
              }
          );
     }
 
     @Test
-    public void testadd2() throws IOException
+    public void testAdd2() throws IOException
     {
          CliApplicationTest.execCli(
              UnderTest::main,
@@ -60,120 +74,39 @@ public class CliApplicationTest2
          );
     }
 
-//    @Test
-//    public void testArgListNotUnique() throws IOException
-//    {
-//        final var err =
-//                new ArrayList<String>();
-//        final var out =
-//                new ArrayList<String>();
-//
-//        execCli(
-//                out,
-//                err,
-//                ApplicationUnderTestOverload::main,
-//                "cmdoverload 1 2 3 4".split( " " ) );
-//
-//        assertEquals( 0, out.size() );
-//
-//        List<String> expectedLines = Arrays.asList( new String[] {
-//                "Parameter count does not match. Available alternatives:",
-//                "cmdOverload",
-//                "cmdOverload: String",
-//                "cmdOverload: String, String",
-//                "cmdOverload: String, String, String",
-//                StringUtil.EMPTY_STRING
-//        } );
-//
-//        List<String> receivedLines =
-//                err;
-//
-//        assertEquals(
-//                expectedLines,
-//                receivedLines );
-//    }
-//
-//    private void testType(
-//            String command,
-//            String argument,
-//            String expectedCommand,
-//            String expectedArg )
-//    {
-//        final var err =
-//                new ArrayList<String>();
-//        final var out =
-//                new ArrayList<String>();
-//
-//        execCli( out, err,
-//                ApplicationUnderTest::main,
-//                command,
-//                argument );
-//
-//        assertEquals(
-//                0,
-//                err.size() );
-//
-//        String expected =
-//                String.format( "%s:%s",
-//                        expectedCommand,
-//                        expectedArg );
-//
-//        assertEquals(
-//                1,
-//                out.size() );
-//        assertEquals(
-//                expected,
-//                out.get( 0 ) );
-//    }
-//
-//    private void testType( String command, String expectedCommand )
-//    {
-//        var dummy = "0";
-//
-//        testType(
-//                command,
-//                dummy,
-//                expectedCommand,
-//                dummy );
-//    }
-//
-//    @Test
-//    public void testNameUpperLowerCase()
-//    {
-//        var act = "cmdByte";
-//
-//        testType( act, act );
-//        testType( act.toLowerCase(), act );
-//        testType( act.toUpperCase(), act );
-//    }
-//
-//    @Test
-//    public void testUnknownCommand()
-//    {
-//        final var err =
-//                new ArrayList<String>();
-//        final var out =
-//                new ArrayList<String>();
-//        final var badName =
-//                "unknown-command";
-//
-//        execCli( out, err,
-//                ApplicationUnderTest::main,
-//                badName );
-//
-//        assertEquals(
-//                0,
-//                out.size() );
-//        assertEquals(
-//                1,
-//                err.size() );
-//
-//        String expected =
-//                String.format( "Unknown command '%s'.",
-//                        badName );
-//
-//        assertEquals(
-//                expected,
-//                err.get( 0 ) );
-//    }
+    @Test
+    public void testAdd3() throws IOException
+    {
+         CliApplicationTest.execCli(
+             UnderTest::main,
+             new String[] {
+                 "plus3",
+                 "300",
+                 "10",
+                 "3"
+             },
+             new String[]
+             {
+                 "313"
+             },
+             null
+         );
+    }
+
+    @Test
+    public void testProperty() throws IOException
+    {
+         CliApplicationTest.execCli(
+             UnderTest::main,
+             new String[] {
+                 "property",
+                 "-nameProperty=Donald"
+             },
+             new String[]
+             {
+                 "Donald"
+             },
+             null
+         );
+    }
 }
