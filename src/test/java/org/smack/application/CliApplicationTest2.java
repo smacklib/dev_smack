@@ -40,8 +40,8 @@ public class CliApplicationTest2
     {
          CliApplicationTest.execCli(
              UnderTest::main,
-             new String[0],
-             null,
+             CliApplicationTest.EMPTY_STRING_ARRAY,
+             CliApplicationTest.EMPTY_STRING_ARRAY,
              new String[]
              {
                  "UnderTest",

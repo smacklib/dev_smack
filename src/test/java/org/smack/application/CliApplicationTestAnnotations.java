@@ -74,8 +74,8 @@ public class CliApplicationTestAnnotations
     {
         CliApplicationTest.execCli(
                 UnderTest::main,
-                new String[0],
-                null,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
                 new String[] {
                 "UnderTest",
                 "The following commands are supported:",
@@ -87,8 +87,8 @@ public class CliApplicationTestAnnotations
     {
         CliApplicationTest.execCli(
                 AnnotatedUnderTest::main,
-                new String[0],
-                null,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
                 new String[] {
                 "NamedName",
                 "The following commands are supported:",
@@ -101,8 +101,8 @@ public class CliApplicationTestAnnotations
     {
         CliApplicationTest.execCli(
                 DeprecatedAnnotatedUnderTest::main,
-                new String[0],
-                null,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
                 new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",
@@ -115,8 +115,8 @@ public class CliApplicationTestAnnotations
     {
         CliApplicationTest.execCli(
                 DoubleAnnotatedUnderTest::main,
-                new String[0],
-                null,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
                 new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",

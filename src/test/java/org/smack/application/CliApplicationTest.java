@@ -3,9 +3,7 @@ package org.smack.application;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Test;
@@ -16,28 +14,12 @@ import org.smack.util.io.Redirect;
 
 public class CliApplicationTest
 {
-    static void execCli(
-            List<String> out,
-            List<String> err,
-            Consumer<String[]> cliApplicationMain,
-            String ... argv  )
+    static final String[] EMPTY_STRING_ARRAY = new String[0];
+    static final String[] IGNORE = new String[] { "ignore" };
+
+    static String[] s( String ... strings )
     {
-        try ( Disposer d = new Disposer() )
-        {
-            final var errRedir = err != null ?
-                    d.register( new Redirect( Redirect.StdStream.err ) ) :
-                        null;
-            final var outRedir = out != null ?
-                    d.register( new Redirect( Redirect.StdStream.out ) ) :
-                        null;
-
-            cliApplicationMain.accept( argv );
-
-            if ( out != null )
-                out.addAll( outRedir.content() );
-            if ( err != null )
-                err.addAll( errRedir.content() );
-        }
+        return strings;
     }
 
     static void execCli(
@@ -60,10 +42,10 @@ public class CliApplicationTest
 
             cliApplicationMain.accept( argv );
 
-            if ( outRedir != null )
+            if ( outRedir != null && out != IGNORE )
                 assertEquals( Arrays.asList( out ), outRedir.content() );
 
-            if ( errRedir != null )
+            if ( errRedir != null && err != IGNORE )
                 assertEquals( Arrays.asList( err ), errRedir.content() );
         }
     }
@@ -72,8 +54,8 @@ public class CliApplicationTest
     public void testHelp() throws IOException
     {
         execCli( ApplicationUnderTest::main,
-            new String[0],
-            null,
+            EMPTY_STRING_ARRAY,
+            EMPTY_STRING_ARRAY,
             new String[] {
                 "ApplicationUnderTest",
                 "The following commands are supported:",
@@ -95,8 +77,8 @@ public class CliApplicationTest
     {
         execCli(
             ApplicationUnderTestDefault::main,
-            new String[0],
-            null,
+            CliApplicationTest.EMPTY_STRING_ARRAY,
+            CliApplicationTest.EMPTY_STRING_ARRAY,
             new String[] {
                 "ApplicationUnderTestDefault",
                 "The following commands are supported:",
@@ -110,20 +92,11 @@ public class CliApplicationTest
     @Test
     public void testArgListNotUnique() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         execCli(
-                out,
-                err,
                 ApplicationUnderTestOverload::main,
-                "cmdoverload 1 2 3 4".split( " " ) );
-
-        assertEquals( 0, out.size() );
-
-        List<String> expectedLines = Arrays.asList( new String[] {
+                "cmdoverload 1 2 3 4".split( " " ),
+                EMPTY_STRING_ARRAY,
+                new String[] {
                 "Parameter count does not match. Available alternatives:",
                 "cmdOverload",
                 "cmdOverload: String",
@@ -131,13 +104,6 @@ public class CliApplicationTest
                 "cmdOverload: String, String, String",
                 StringUtil.EMPTY_STRING
         } );
-
-        List<String> receivedLines =
-                err;
-
-        assertEquals(
-                expectedLines,
-                receivedLines );
     }
 
     private void testType(
@@ -186,7 +152,7 @@ public class CliApplicationTest
 
         execCli( ApplicationUnderTest::main,
                 new String[] { badName },
-                null,
+                EMPTY_STRING_ARRAY,
                 new String[] {
                 String.format( "Unknown command '%s'.",
                         badName ) }

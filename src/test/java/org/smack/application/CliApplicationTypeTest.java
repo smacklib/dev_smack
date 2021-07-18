@@ -1,16 +1,19 @@
 package org.smack.application;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.junit.Test;
 import org.smack.util.StringUtil;
 
 public class CliApplicationTypeTest
 {
+    static String[] s( String ... strings )
+    {
+        return strings;
+    }
+
     private String hex( Number n )
     {
         return String.format(
@@ -25,30 +28,11 @@ public class CliApplicationTypeTest
 
     private void TestType( String command, String argument, String exp )
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
                 ApplicationUnderTest::main,
-                command, argument );
-
-        assertEquals(
-                0,
-                err.size() );
-
-        String expected =
-                String.format( "%s:%s", command, exp );
-
-        assertEquals(
-                1,
-                out.size() );
-        assertEquals(
-                expected,
-                out.get( 0 ) );
+                s( command, argument ),
+                s( String.format( "%s:%s", command, exp ) ),
+                CliApplicationTest.EMPTY_STRING_ARRAY );
     }
 
     private void TestType( String command, String argument )
@@ -140,52 +124,16 @@ public class CliApplicationTypeTest
         try {
             assertTrue( tmpFile.exists() );
 
-            final var err =
-                    new ArrayList<String>();
-            final var out =
-                    new ArrayList<String>();
-
             CliApplicationTest.execCli(
-                    out,
-                    err,
                     ApplicationUnderTest::main,
-                    "cmdFile",
-                    tmpFile.getPath() );
-
-            assertTrue( err.isEmpty() );
-
-            String expected =
-                    "cmdFile:" +
-                            tmpFile.getPath();
-
-            assertEquals(
-                    1,
-                    out.size() );
-            assertEquals(
-                    expected,
-                    out.get( 0 ) );
+                    s( "cmdFile", tmpFile.getPath() ),
+                    s( "cmdFile:" +
+                            tmpFile.getPath() ),
+                    CliApplicationTest.EMPTY_STRING_ARRAY );
         }
         finally
         {
             tmpFile.delete();
         }
-    }
-
-    @Test
-    public void TestUnknownType() throws Exception
-    {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTest::main,
-                new String[0] );
-
-        assertEquals( 0, out.size() );
-        assertTrue( err.size() > 0 );
     }
 }
