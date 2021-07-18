@@ -49,9 +49,11 @@ public class CliApplicationTest
     {
         try ( Disposer d = new Disposer() )
         {
+            @SuppressWarnings("resource")
             final var errRedir = ! JavaUtil.isEmptyArray( err ) ?
                     d.register( new Redirect( Redirect.StdStream.err ) ) :
                         null;
+            @SuppressWarnings("resource")
             final var outRedir = ! JavaUtil.isEmptyArray( out ) ?
                     d.register( new Redirect( Redirect.StdStream.out ) ) :
                         null;
