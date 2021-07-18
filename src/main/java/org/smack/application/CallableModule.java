@@ -42,10 +42,15 @@ import org.smack.util.converters.StringConverter.Converter;
  *
  * @author MICBINZ
  */
-abstract public class CliApplication
+public class CallableModule<T>
 {
     private static final Logger LOG =
-            Logger.getLogger( CliApplication.class.getName() );
+            Logger.getLogger( CallableModule.class.getName() );
+
+    /**
+     * The object that implements the cli functionality.
+     */
+    private final T _delegate;
 
     /**
      * Used to mark cli command operations.
@@ -61,6 +66,7 @@ abstract public class CliApplication
         /**
          * @deprecated Use Command.description.
          */
+        @Deprecated
         String shortDescription() default StringUtil.EMPTY_STRING;
         String description() default StringUtil.EMPTY_STRING;
     }
@@ -101,14 +107,22 @@ abstract public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<String, Integer, CommandHolder> _commandMap =
-            getCommandMap( getClass() );
+    private final MultiMap<String, Integer, CommandHolder> _commandMap;
 
-    private final Map<String,PropertyHolder> _propertyMap =
-            getPropertyMap( this );
+    private final Map<String,PropertyHolder> _propertyMap;
 
     private static final StringConverter _converters =
             ServiceManager.getApplicationService( StringConverter.class );
+
+    public CallableModule( T delegate )
+    {
+        _delegate =
+                delegate;
+        _commandMap =
+                getCommandMap( _delegate.getClass() );
+        _propertyMap =
+                getPropertyMap( _delegate );
+    }
 
     protected final static <T> void addConverter( Class<T> cl, Converter<String,T> c )
     {
@@ -119,7 +133,7 @@ abstract public class CliApplication
     {
         addConverter(
                 File.class,
-                CliApplication::stringToFile );
+                CallableModule::stringToFile );
     }
 
     private String _currentCommand =
@@ -147,7 +161,7 @@ abstract public class CliApplication
     /**
      * Perform the launch of the cli instance.
      */
-    private void launchInstance( String[] argv )
+    private void launch( String[] argv )
             throws Exception
     {
         if ( argv.length == 0 ) {
@@ -288,40 +302,7 @@ abstract public class CliApplication
      * Start execution of the console command. This implicitly parses
      * the parameters and dispatches the call to the matching operation.
      * <p>
-     * The main operation of an application using {@link #CliApplication()}
-     * usually looks like:
-     * </p>
-     *
-     * <pre>
-     * <code>
-     * public class Foo extends CliApplication
-     * {
-     *     ...
-     *
-     *     public static void main( String[] argv )
-     *     {
-     *         execute( Foo.class, argv );
-     *     }
-     * }
-     * </code>
-     * </pre>
-     *
-     * @param cl The implementation class of the console command.
-     * @param argv The unmodified parameter array.
-     * @deprecated Use {@link #launch(Supplier, String[])}
-     */
-    static public void launch( Class<? extends CliApplication> cl, String[] argv )
-    {
-        launch(
-                new DefaultCtorReflection<>( cl ),
-                argv );
-    }
-
-    /**
-     * Start execution of the console command. This implicitly parses
-     * the parameters and dispatches the call to the matching operation.
-     * <p>
-     * The main operation of an application using {@link #CliApplication()} usually looks like:
+     * The main operation of an application using {@link #CallableModule()} usually looks like:
      * </p>
      *
      * <pre>
@@ -341,11 +322,14 @@ abstract public class CliApplication
      * @param cl The implementation class of the console command.
      * @param argv The unmodified parameter array.
      */
-    static public void launch( Supplier<CliApplication> cl, String[] argv )
+    static public <T> void launch( Supplier<T> cl, String[] argv )
     {
         try
         {
-            cl.get().launchInstance( argv );
+            var m =
+                    new CallableModule<T>( cl.get() );
+
+            m.launch( argv );
         }
         catch (RuntimeException e)
         {
@@ -594,13 +578,15 @@ abstract public class CliApplication
      */
     public String getApplicationName()
     {
+        var delegateClass = _delegate.getClass();
+
         Named annotation =
-                getClass().getAnnotation( Named.class );
+                delegateClass.getAnnotation( Named.class );
 
         if ( annotation != null && StringUtil.hasContent( annotation.value() ) )
             return annotation.value();
 
-        return getClass().getSimpleName();
+        return delegateClass.getSimpleName();
     }
 
     /**
@@ -699,8 +685,8 @@ abstract public class CliApplication
         return System.in;
     }
 
-    private static class DefaultCtorReflection<T extends CliApplication>
-        implements Supplier<CliApplication>
+    private static class DefaultCtorReflection<T extends CallableModule>
+        implements Supplier<CallableModule>
     {
         private final Class<T> _class;
 
@@ -710,7 +696,7 @@ abstract public class CliApplication
         }
 
         @Override
-        public CliApplication get()
+        public CallableModule get()
         {
             try {
                 Constructor<T> c = _class.getDeclaredConstructor();
@@ -750,7 +736,7 @@ abstract public class CliApplication
         void set( String value )
                 throws Exception
         {
-            var self = CliApplication.this;
+            var self = CallableModule.this._delegate;
 
             _field.set(
                     self,
@@ -876,7 +862,7 @@ abstract public class CliApplication
             }
 
             try {
-                final var self = CliApplication.this;
+                final var self = CallableModule.this._delegate;
 
                 if ( ! _op.canAccess( self ) )
                     _op.setAccessible( true );

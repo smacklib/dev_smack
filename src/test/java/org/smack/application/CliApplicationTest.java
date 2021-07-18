@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.smack.util.Disposer;
+import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.io.Redirect;
 
@@ -36,6 +37,32 @@ public class CliApplicationTest
                 out.addAll( outRedir.content() );
             if ( err != null )
                 err.addAll( errRedir.content() );
+        }
+    }
+
+    static void execCli(
+            Consumer<String[]> cliApplicationMain,
+            String[] argv,
+            String[] out,
+            String[] err
+            )
+    {
+        try ( Disposer d = new Disposer() )
+        {
+            final var errRedir = ! JavaUtil.isEmptyArray( err ) ?
+                    d.register( new Redirect( Redirect.StdStream.err ) ) :
+                        null;
+            final var outRedir = ! JavaUtil.isEmptyArray( out ) ?
+                    d.register( new Redirect( Redirect.StdStream.out ) ) :
+                        null;
+
+            cliApplicationMain.accept( argv );
+
+            if ( outRedir != null )
+                assertEquals( Arrays.asList( out ), outRedir.content() );
+
+            if ( errRedir != null )
+                assertEquals( Arrays.asList( err ), errRedir.content() );
         }
     }
 
