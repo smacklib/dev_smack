@@ -42,10 +42,15 @@ import org.smack.util.converters.StringConverter.Converter;
  *
  * @author MICBINZ
  */
-abstract public class CliApplication
+public class CliApplication
 {
     private static final Logger LOG =
             Logger.getLogger( CliApplication.class.getName() );
+
+    /**
+     * The object that implements the cli functionality.
+     */
+    private final Object _delegate;
 
     /**
      * Used to mark cli command operations.
@@ -61,6 +66,7 @@ abstract public class CliApplication
         /**
          * @deprecated Use Command.description.
          */
+        @Deprecated
         String shortDescription() default StringUtil.EMPTY_STRING;
         String description() default StringUtil.EMPTY_STRING;
     }
@@ -101,14 +107,32 @@ abstract public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<String, Integer, CommandHolder> _commandMap =
-            getCommandMap( getClass() );
+    private final MultiMap<String, Integer, CommandHolder> _commandMap;
 
-    private final Map<String,PropertyHolder> _propertyMap =
-            getPropertyMap( this );
+    private final Map<String,PropertyHolder> _propertyMap;
 
     private static final StringConverter _converters =
             ServiceManager.getApplicationService( StringConverter.class );
+
+    public CliApplication( Object delegate )
+    {
+        _delegate =
+                delegate;
+        _commandMap =
+                getCommandMap( _delegate.getClass() );
+        _propertyMap =
+                getPropertyMap( _delegate );
+    }
+
+    public CliApplication()
+    {
+        _delegate =
+                this;
+        _commandMap =
+                getCommandMap( _delegate.getClass() );
+        _propertyMap =
+                getPropertyMap( _delegate );
+    }
 
     protected final static <T> void addConverter( Class<T> cl, Converter<String,T> c )
     {
@@ -147,7 +171,7 @@ abstract public class CliApplication
     /**
      * Perform the launch of the cli instance.
      */
-    private void launchInstance( String[] argv )
+    private void launch( String[] argv )
             throws Exception
     {
         if ( argv.length == 0 ) {
@@ -310,11 +334,26 @@ abstract public class CliApplication
      * @param argv The unmodified parameter array.
      * @deprecated Use {@link #launch(Supplier, String[])}
      */
+    @Deprecated
     static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
         launch(
                 new DefaultCtorReflection<>( cl ),
                 argv );
+    }
+
+    /**
+     * @param delegate A candidate for the delegate.
+     * @return If the passed object is already a CliApplication instance
+     * then this is returned.  Otherwise a CliApplication is constructed
+     * that uses the passed object as a delegate.
+     */
+    static private CliApplication wrapIfNeeded( Object delegate )
+    {
+        if ( CliApplication.class.isAssignableFrom( delegate.getClass() ) )
+            return CliApplication.class.cast( delegate );
+
+        return new CliApplication( delegate );
     }
 
     /**
@@ -341,11 +380,11 @@ abstract public class CliApplication
      * @param cl The implementation class of the console command.
      * @param argv The unmodified parameter array.
      */
-    static public void launch( Supplier<CliApplication> cl, String[] argv )
+    static public <T> void launch( Supplier<?> cl, String[] argv )
     {
         try
         {
-            cl.get().launchInstance( argv );
+            wrapIfNeeded( cl.get() ).launch( argv );
         }
         catch (RuntimeException e)
         {
@@ -594,13 +633,15 @@ abstract public class CliApplication
      */
     public String getApplicationName()
     {
+        var delegateClass = _delegate.getClass();
+
         Named annotation =
-                getClass().getAnnotation( Named.class );
+                delegateClass.getAnnotation( Named.class );
 
         if ( annotation != null && StringUtil.hasContent( annotation.value() ) )
             return annotation.value();
 
-        return getClass().getSimpleName();
+        return delegateClass.getSimpleName();
     }
 
     /**
@@ -614,7 +655,7 @@ abstract public class CliApplication
     protected String getApplicationDescription()
     {
         Named annotation =
-                getClass().getAnnotation( Named.class );
+                _delegate.getClass().getAnnotation( Named.class );
 
         if ( annotation != null && StringUtil.hasContent( annotation.description() ) )
             return annotation.description();
@@ -750,7 +791,7 @@ abstract public class CliApplication
         void set( String value )
                 throws Exception
         {
-            var self = CliApplication.this;
+            var self = CliApplication.this._delegate;
 
             _field.set(
                     self,
@@ -876,7 +917,7 @@ abstract public class CliApplication
             }
 
             try {
-                final var self = CliApplication.this;
+                final var self = CliApplication.this._delegate;
 
                 if ( ! _op.canAccess( self ) )
                     _op.setAccessible( true );

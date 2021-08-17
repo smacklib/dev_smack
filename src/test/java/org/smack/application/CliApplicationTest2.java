@@ -3,8 +3,8 @@ package org.smack.application;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.smack.application.CallableModule.Command;
-import org.smack.application.CallableModule.Property;
+import org.smack.application.CliApplication.Command;
+import org.smack.application.CliApplication.Property;
 import org.smack.util.StringUtil;
 
 public class CliApplicationTest2
@@ -31,7 +31,7 @@ public class CliApplicationTest2
         }
         public static void main( String[] argv )
         {
-            CallableModule.launch( UnderTest::new, argv );
+            CliApplication.launch( UnderTest::new, argv );
         }
     }
 
