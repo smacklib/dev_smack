@@ -146,9 +146,15 @@ public class CliApplication
                 CliApplication::stringToFile );
     }
 
+    /**
+     * The name of the currently executing command.
+     */
     private String _currentCommand =
             StringUtil.EMPTY_STRING;
 
+    /**
+     * @return The name of the currently executing command.
+     */
     protected final String currentCommand()
     {
         return _currentCommand;

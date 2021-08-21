@@ -22,6 +22,16 @@ public class CliApplicationTest
         return strings;
     }
 
+    /**
+     * An operation that supports cli testing.
+     *
+     * @param cliApplicationMain The main operation to call.
+     * @param argv The parameters to pass.
+     * @param out The expected lines on stdout. Pass {@link #IGNORE} if this is
+     * to be ignored.
+     * @param err The expected lines on stderr. Pass {@link #IGNORE} if this is
+     * to be ignored.
+     */
     static void execCli(
             Consumer<String[]> cliApplicationMain,
             String[] argv,
