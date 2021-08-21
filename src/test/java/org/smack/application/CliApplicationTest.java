@@ -3,72 +3,70 @@ package org.smack.application;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.smack.util.Disposer;
+import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.io.Redirect;
 
 public class CliApplicationTest
 {
+    static final String[] EMPTY_STRING_ARRAY = new String[0];
+    static final String[] IGNORE = new String[] { "ignore" };
+
+    static String[] s( String ... strings )
+    {
+        return strings;
+    }
+
+    /**
+     * An operation that supports cli testing.
+     *
+     * @param cliApplicationMain The main operation to call.
+     * @param argv The parameters to pass.
+     * @param out The expected lines on stdout. Pass {@link #IGNORE} if this is
+     * to be ignored.
+     * @param err The expected lines on stderr. Pass {@link #IGNORE} if this is
+     * to be ignored.
+     */
     static void execCli(
-            List<String> out,
-            List<String> err,
             Consumer<String[]> cliApplicationMain,
-            String ... argv  )
+            String[] argv,
+            String[] out,
+            String[] err
+            )
     {
         try ( Disposer d = new Disposer() )
         {
-            final var errRedir = err != null ?
+            @SuppressWarnings("resource")
+            final var errRedir = ! JavaUtil.isEmptyArray( err ) ?
                     d.register( new Redirect( Redirect.StdStream.err ) ) :
                         null;
-            final var outRedir = out != null ?
+            @SuppressWarnings("resource")
+            final var outRedir = ! JavaUtil.isEmptyArray( out ) ?
                     d.register( new Redirect( Redirect.StdStream.out ) ) :
                         null;
 
             cliApplicationMain.accept( argv );
 
-            if ( out != null )
-                out.addAll( outRedir.content() );
-            if ( err != null )
-                err.addAll( errRedir.content() );
+            if ( outRedir != null && out != IGNORE )
+                assertEquals( Arrays.asList( out ), outRedir.content() );
+
+            if ( errRedir != null && err != IGNORE )
+                assertEquals( Arrays.asList( err ), errRedir.content() );
         }
-    }
-
-    static void testHelpSupport(
-            Consumer<String[]> appEntry,
-            String ... expectedLines ) throws IOException
-    {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        CliApplicationTest.execCli(
-                out,
-                err,
-                appEntry,
-                new String[0] );
-
-        assertEquals( 0, out.size() );
-
-        List<String> receivedLines =
-                err;
-
-        assertEquals(
-                Arrays.asList( expectedLines ),
-                receivedLines );
     }
 
     @Test
     public void testHelp() throws IOException
     {
-        testHelpSupport(
-                ApplicationUnderTest::main,
+        execCli( ApplicationUnderTest::main,
+            EMPTY_STRING_ARRAY,
+            EMPTY_STRING_ARRAY,
+            new String[] {
                 "ApplicationUnderTest",
                 "The following commands are supported:",
                 "cmdBoolean: boolean",
@@ -80,40 +78,35 @@ public class CliApplicationTest
                 "cmdInt: int",
                 "cmdLong: long",
                 "cmdShort: short",
-                "cmdString: String"
-                );
+                "cmdString: String" }
+            );
     }
 
     @Test
     public void testHelpDefault() throws IOException
     {
-        testHelpSupport(
-                ApplicationUnderTestDefault::main,
+        execCli(
+            ApplicationUnderTestDefault::main,
+            CliApplicationTest.EMPTY_STRING_ARRAY,
+            CliApplicationTest.EMPTY_STRING_ARRAY,
+            new String[] {
                 "ApplicationUnderTestDefault",
                 "The following commands are supported:",
                 "*",
                 "*: String",
                 "*: String, String"
+            }
         );
     }
 
     @Test
     public void testArgListNotUnique() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         execCli(
-                out,
-                err,
                 ApplicationUnderTestOverload::main,
-                "cmdoverload 1 2 3 4".split( " " ) );
-
-        assertEquals( 0, out.size() );
-
-        List<String> expectedLines = Arrays.asList( new String[] {
+                "cmdoverload 1 2 3 4".split( " " ),
+                EMPTY_STRING_ARRAY,
+                new String[] {
                 "Parameter count does not match. Available alternatives:",
                 "cmdOverload",
                 "cmdOverload: String",
@@ -121,13 +114,6 @@ public class CliApplicationTest
                 "cmdOverload: String, String, String",
                 StringUtil.EMPTY_STRING
         } );
-
-        List<String> receivedLines =
-                err;
-
-        assertEquals(
-                expectedLines,
-                receivedLines );
     }
 
     private void testType(
@@ -136,31 +122,15 @@ public class CliApplicationTest
             String expectedCommand,
             String expectedArg )
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
-        execCli( out, err,
-                ApplicationUnderTest::main,
-                command,
-                argument );
-
-        assertEquals(
-                0,
-                err.size() );
-
         String expected =
                 String.format( "%s:%s",
                         expectedCommand,
                         expectedArg );
 
-        assertEquals(
-                1,
-                out.size() );
-        assertEquals(
-                expected,
-                out.get( 0 ) );
+        execCli( ApplicationUnderTest::main,
+                new String[] { command, argument },
+                new String[] { expected },
+                null );
     }
 
     private void testType( String command, String expectedCommand )
@@ -187,30 +157,15 @@ public class CliApplicationTest
     @Test
     public void testUnknownCommand()
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
         final var badName =
                 "unknown-command";
 
-        execCli( out, err,
-                ApplicationUnderTest::main,
-                badName );
-
-        assertEquals(
-                0,
-                out.size() );
-        assertEquals(
-                1,
-                err.size() );
-
-        String expected =
+        execCli( ApplicationUnderTest::main,
+                new String[] { badName },
+                EMPTY_STRING_ARRAY,
+                new String[] {
                 String.format( "Unknown command '%s'.",
-                        badName );
-
-        assertEquals(
-                expected,
-                err.get( 0 ) );
+                        badName ) }
+        );
     }
 }

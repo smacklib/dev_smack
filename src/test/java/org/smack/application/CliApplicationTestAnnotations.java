@@ -72,43 +72,55 @@ public class CliApplicationTestAnnotations
     @Test
     public void testHelpUnannotated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 UnderTest::main,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                new String[] {
                 "UnderTest",
                 "The following commands are supported:",
-                "add: int, int" );
+                "add: int, int" } );
     }
 
     @Test
     public void testHelpAnnotated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 AnnotatedUnderTest::main,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                new String[] {
                 "NamedName",
                 "The following commands are supported:",
                 "add: firstSummand, secondSummand",
-                "    description add" );
+                "    description add" } );
     }
 
     @Test
     public void testHelpDeprecated() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 DeprecatedAnnotatedUnderTest::main,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",
                 "add: int, int",
-                "    description add" );
+                "    description add" } );
     }
 
     @Test
     public void testHelpDouble() throws IOException
     {
-        CliApplicationTest.testHelpSupport(
+        CliApplicationTest.execCli(
                 DoubleAnnotatedUnderTest::main,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                CliApplicationTest.EMPTY_STRING_ARRAY,
+                new String[] {
                 "NamedName -- NamedName description",
                 "The following commands are supported:",
                 "add: int, int",
-                "    description add" );
+                "    description add" } );
     }
 }

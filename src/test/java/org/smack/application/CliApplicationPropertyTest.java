@@ -1,116 +1,146 @@
 package org.smack.application;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.junit.Test;
 
 
 public class CliApplicationPropertyTest
 {
+    public static class AutProperties extends CliApplication
+    {
+        enum Ducks { TICK, TRICK, TRACK };
+
+        @Property
+        public boolean booleanProperty;
+        @Property
+        public byte byteProperty;
+        @Property
+        public short shortProperty;
+        @Property
+        public int intProperty;
+        @Property
+        public long longProperty;
+        @Property
+        public float floatProperty;
+        @Property
+        public double doubleProperty;
+        @Property( name = "duck", description = "One of the nephews names." )
+        public Ducks duckProperty = Ducks.TRACK;
+        @Property( name = "level" )
+        public Level levelProperty = Level.ALL;
+
+        @Command
+        public void c_booleanProperty()
+        {
+            out( "%s%n", booleanProperty );
+        }
+
+        @Command
+        public void c_levelProperty()
+        {
+            out( "%s%n", levelProperty );
+        }
+
+        @Command
+        public void setIntExplicit( int value )
+        {
+            intProperty = value;
+            out( "%s%n", intProperty );
+        }
+
+        @Command
+        public void hello()
+        {
+            out( "booleanProperty=%s%n", booleanProperty );
+            out( "byteProperty=%d%n", byteProperty );
+            out( "shortProperty=%d%n", shortProperty );
+            out( "intProperty=%d%n", intProperty );
+            out( "longProperty=%d%n", longProperty );
+            out( "floatProperty=%f%n", floatProperty );
+            out( "doubleProperty=%f%n", doubleProperty );
+            out( "duckProperty=%s%n", duckProperty );
+            out( "levelProperty=%s%n", levelProperty );
+        }
+
+        public static void main( String[] argv )
+        {
+            addConverter( Level.class,
+                    s->{
+                        switch ( s )
+                        {
+                        case "INFO":
+                            return Level.INFO;
+                        case "WARNING":
+                            return Level.WARNING;
+                        default:
+                            return Level.OFF;
+                        }
+                    });
+
+            launch( AutProperties::new, argv );
+        }
+    }
+
+    private String[] s( String ... strings )
+    {
+        return strings;
+    }
+
     @Test
     public void testIntExplicit() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTestProperties::main,
-                "setIntExplicit",
-                "-313",
-                "-intProperty=1");
-
-        assertEquals( 0, err.size() );
-        assertEquals( 1, out.size() );
-        assertEquals( "-313", out.get( 0 ) );
+                AutProperties::main,
+                s(
+                        "setIntExplicit",
+                        "-313",
+                        "-intProperty=1"),
+                new String[] { "-313" },
+                CliApplicationTest.EMPTY_STRING_ARRAY );
     }
 
     @Test
     public void testBooleanSet() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTestProperties::main,
-                "c_booleanProperty",
-                "-booleanProperty=true");
-
-        assertEquals( 0, err.size() );
-        assertEquals( 1, out.size() );
-        assertEquals( "true", out.get( 0 ) );
+                AutProperties::main,
+                s( "c_booleanProperty",
+                        "-booleanProperty=true"),
+                s("true"),
+                CliApplicationTest.EMPTY_STRING_ARRAY );
     }
 
     @Test
     public void testBooleanUnset() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTestProperties::main,
-                "c_booleanProperty" );
-
-        assertEquals( 0, err.size() );
-        assertEquals( 1, out.size() );
-        assertEquals( "false", out.get( 0 ) );
+                AutProperties::main,
+                s( "c_booleanProperty"),
+                s("false"),
+                CliApplicationTest.EMPTY_STRING_ARRAY );
     }
+
     @Test
     public void testLevelSet() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTestProperties::main,
-                "c_levelProperty",
-                "-level=WARNING");
-
-        if ( err.size() == 2 && err.get( 1 ).contains( "Duplicate resource converter" ) )
-        {
-            // Only in test context we get the Duplicate resource converter warning.
-            // So skip this here.
-        }
-        else
-            assertEquals( 0, err.size() );
-        assertEquals( 1, out.size() );
-        assertEquals( "WARNING", out.get( 0 ) );
+                AutProperties::main,
+                s( "c_levelProperty",
+                "-level=WARNING"),
+                s( "WARNING" ),
+                // Ignore duplicate resource converter warnings.
+                CliApplicationTest.IGNORE );
     }
 
     @Test
     public void testLevelUnset() throws IOException
     {
-        final var err =
-                new ArrayList<String>();
-        final var out =
-                new ArrayList<String>();
-
         CliApplicationTest.execCli(
-                out,
-                err,
-                ApplicationUnderTestProperties::main,
-                "c_levelProperty" );
-
-        assertEquals( 0, err.size() );
-        assertEquals( 1, out.size() );
-        assertEquals( "ALL", out.get( 0 ) );
+                AutProperties::main,
+                s( "c_levelProperty" ),
+                s( "ALL" ),
+                CliApplicationTest.EMPTY_STRING_ARRAY );
     }
 }
