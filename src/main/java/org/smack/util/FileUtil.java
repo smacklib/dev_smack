@@ -1,9 +1,10 @@
 /* $Id$
  *
- * Utilities
+ * Smack utilities.
  *
- * Released under Gnu Public License
- * Copyright (c) 2008 Michael G. Binz
+ * For licensing see https://github.com/smacklib/dev_smack
+ *
+ * Copyright (c) 2008-2021 Michael G. Binz
  */
 package org.smack.util;
 
@@ -29,7 +30,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * A library of utility routines for file handling.
  *
- * @version $Rev$s
+ * @version $Rev$
  * @author Michael Binz
  */
 public final class FileUtil
@@ -74,25 +75,14 @@ public final class FileUtil
     }
 
     /**
-     * Silently closes the passed closeable.  In case the close
+     * Silently closes the passed Closeable.  In case the close
      * operation fails, the exception is written into the log.
      *
-     * @param closeable The object to close.  If {@code null} is passed
-     *          this operation does nothing.
+     * @param closeable The object to close.
      */
     public static void forceClose( Closeable closeable )
     {
-        if ( closeable == null )
-            return;
-
-        try
-        {
-            closeable.close();
-        }
-        catch (Exception e)
-        {
-            LOG.log( Level.FINE, e.getMessage(), e);
-        }
+        JavaUtil.force( closeable::close );
     }
 
     /**
@@ -162,15 +152,14 @@ public final class FileUtil
                 filename.getParent(),
                 replaceSuffix(
                         filename.getName(),
-                        newSuffix)
-                 );
+                        newSuffix) );
     }
 
     /**
      * Read all lines from a reader into a list.  Closes the reader.
      *
      * @param in The reader to use.
-     * @return The lines read.
+     * @return The lines read without EOL characters.
      * @throws IOException In case of an error.
      */
     public static List<String> readLines( Reader in ) throws IOException
@@ -189,13 +178,25 @@ public final class FileUtil
      * Read all lines from an stream into a list. Closes the stream.
      *
      * @param in The reader to use.
-     * @return The lines read.
+     * @return The lines read without EOL characters.
      * @throws IOException In case of an error.
      */
     public static List<String> readLines( InputStream in ) throws IOException
     {
         return readLines(
                 new InputStreamReader( in ) );
+    }
+
+    /**
+     * Read all lines from a file into a list.
+     *
+     * @param in The file to use.
+     * @return The lines read without EOL characters.
+     * @throws IOException In case of an error.
+     */
+    public static List<String> readLines( File in ) throws IOException
+    {
+        return Files.lines( in.toPath() ).collect( Collectors.toList() );
     }
 
     /**
