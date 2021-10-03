@@ -1,8 +1,7 @@
 /**
- * $Id$
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Unpublished work.
- * Copyright © 2019 Michael G. Binz
+ * Copyright © 2019-21 Michael G. Binz
  */
 package org.smack.util.converters;
 

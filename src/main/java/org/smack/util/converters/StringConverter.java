@@ -1,7 +1,6 @@
 /**
- * $Id$
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Unpublished work.
  * Copyright © 2021 Michael G. Binz
  */
 package org.smack.util.converters;
@@ -47,6 +46,11 @@ public final class StringConverter
     public StringConverter()
     {
         LOG.setLevel( Level.WARNING );
+
+        // If this is an unnamed module, for example when loaded from
+        // an executable jar, then we fall back to classic ServiceLoader
+        // plug-in resolution.
+        LOG.info( "Named:" + StringConverter.class.getModule().isNamed() );
 
         for ( StringConverterExtension c : ServiceLoader.load( StringConverterExtension.class ) )
             c.extendTypeMap( this );
