@@ -1,7 +1,6 @@
 /**
- * $Id$
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Unpublished work.
  * Copyright © 2019-21 Michael G. Binz
  */
 package org.smack.util.converters;
@@ -75,6 +74,8 @@ public class PrimitivesBundle extends StringConverterExtension
         registry.put(
                 String[].class,
                 StringUtil::splitQuoted );
+
+        // Desktop classes.
         registry.put(
                 Font.class,
                 Font::decode );

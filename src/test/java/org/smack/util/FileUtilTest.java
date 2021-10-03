@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.NoSuchFileException;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -182,6 +184,9 @@ public class FileUtilTest
     @Test
     public void testForceClose() throws Exception
     {
+        // Prevent JavaUtil.force() info log from spamming test output.
+        Logger.getLogger( JavaUtil.class.getName() ).setLevel( Level.WARNING );
+
         File testFile = File.createTempFile( "smack", null );
 
         var sr =
