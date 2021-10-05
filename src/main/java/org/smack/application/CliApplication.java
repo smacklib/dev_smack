@@ -1,6 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2013-2019 Michael G. Binz
+ * Copyright © 2013-2021 Michael G. Binz
  */
 package org.smack.application;
 
@@ -40,7 +41,7 @@ import org.smack.util.converters.StringConverter.Converter;
 /**
  * A base class for console applications.
  *
- * @author MICBINZ
+ * @author michab66
  */
 public class CliApplication
 {
@@ -57,7 +58,7 @@ public class CliApplication
      */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.METHOD )
-    protected @interface Command {
+    public @interface Command {
         String name() default StringUtil.EMPTY_STRING;
         /**
          * @deprecated  Use the @Named annotation.
@@ -76,7 +77,7 @@ public class CliApplication
      */
     @Retention( RetentionPolicy.RUNTIME )
     @Target( ElementType.FIELD )
-    protected @interface Property {
+    public @interface Property {
         /**
          * Single dash arg.
          */
@@ -330,7 +331,7 @@ public class CliApplication
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Foo.class, argv );
+     *         launch( Foo.class, argv );
      *     }
      * }
      * </code>
@@ -377,7 +378,7 @@ public class CliApplication
      *
      *     public static void main( String[] argv )
      *     {
-     *         execute( Duck::new, argv );
+     *         launch( Duck::new, argv );
      *     }
      * }
      * </code>
