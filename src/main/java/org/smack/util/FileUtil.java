@@ -1,10 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Smack utilities.
- *
- * For licensing see https://github.com/smacklib/dev_smack
- *
- * Copyright (c) 2008-2021 Michael G. Binz
+ * Copyright © 2008-21 Michael G. Binz
  */
 package org.smack.util;
 
@@ -28,9 +25,8 @@ import java.util.stream.Collectors;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * A library of utility routines for file handling.
+ * Utility routines for file handling.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public final class FileUtil
@@ -230,6 +226,24 @@ public final class FileUtil
         }
 
         return true;
+    }
+
+    /**
+     * @return The user's home directory.
+     */
+    public static File getUserHome()
+    {
+        var home = System.getProperty("user.home");
+        if ( home == null )
+            throw new AssertionError( "No 'user.home'." );
+
+        File result = new File( home );
+        if ( !result.exists() )
+            throw new AssertionError( "'user.home' does not exist." );
+        if ( !result.isDirectory() )
+            throw new AssertionError( "'user.home' not a directory." );
+
+        return result;
     }
 
     /**

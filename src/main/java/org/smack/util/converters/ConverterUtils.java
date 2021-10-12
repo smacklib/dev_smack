@@ -1,4 +1,4 @@
-/**
+/*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
  * Copyright © 2019-21 Michael G. Binz

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.function.Supplier;
+
 import org.junit.Test;
 
 public class ResourceMapTest
@@ -63,5 +65,55 @@ public class ResourceMapTest
             assertNotNull( val );
             assertEquals( 313, val );
         }
+    }
+
+    @Test
+    public void testGetAsDefault() throws Exception
+    {
+        var map =
+                ResourceMap.getResourceMap( getClass() );
+        assertNotNull( map );
+        assertTrue( map.size() > 0 );
+        {
+            var val = map.getAs( "unqualified", Short.class, (short)313 );
+            assertEquals( 313, val.shortValue() );
+        }
+        {
+            Supplier<Short> s = () -> { return 314; };
+            var val = map.getAs( "qualified", Short.class, s );
+            assertEquals( 314, val.shortValue() );
+        }
+        {
+            var val = map.getAs( "314", Short.class, (short)0 );
+            assertEquals( 314, val.shortValue() );
+        }
+    }
+
+    @Test
+    public void testResourcesExt() throws Exception
+    {
+        var map =
+                ResourceMap.getResourceMapExt( getClass() );
+        assertNotNull( map );
+        assertTrue( map.size() > 0 );
+        {
+            var val = map.get( "ResourceMapTest.unqualified" );
+            assertNotNull( val );
+            assertEquals( "unqualified", val );
+        }
+        {
+            var val = map.get( "unqualified" );
+            assertNotNull( val );
+            assertEquals( "unqualified", val );
+        }
+    }
+
+    @Test
+    public void testNoResourcesExt() throws Exception
+    {
+        var map =
+                ResourceMap.getResourceMapExt( String.class );
+        assertNotNull( map );
+        assertTrue( map.size() == 0 );
     }
 }
