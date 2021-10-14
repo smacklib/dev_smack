@@ -104,6 +104,7 @@ public class CliApplicationTypeTest
     public void TestTypeBoolean()
     {
         TestType( "cmdBoolean", "true" );
+        TestType( "cmdBoolean", "false" );
     }
 
     @Test

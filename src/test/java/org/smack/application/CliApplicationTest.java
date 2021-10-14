@@ -168,4 +168,55 @@ public class CliApplicationTest
                         badName ) }
         );
     }
+
+    @Test
+    public void testTypeConversionErrorInt() throws IOException
+    {
+        execCli(
+            ApplicationUnderTest::main,
+            new String[] {
+                "cmdInt",
+                "threethirteen"
+            },
+            null,
+            new String[]
+            {
+                 "Command 'cmdInt' failed: Could not convert 'threethirteen' to int."
+            }
+        );
+    }
+
+    @Test
+    public void testTypeConversionErrorFloat() throws IOException
+    {
+        execCli(
+            ApplicationUnderTest::main,
+            new String[] {
+                "cmdFloat",
+                "threethirteen"
+            },
+            null,
+            new String[]
+            {
+                 "Command 'cmdFloat' failed: Could not convert 'threethirteen' to float."
+            }
+        );
+    }
+
+    @Test
+    public void testTypeConversionErrorBoolean() throws IOException
+    {
+        execCli(
+            ApplicationUnderTest::main,
+            new String[] {
+                "cmdBoolean",
+                "threethirteen"
+            },
+            null,
+            new String[]
+            {
+                 "Command 'cmdBoolean' failed: Could not convert 'threethirteen' to boolean."
+            }
+        );
+    }
 }

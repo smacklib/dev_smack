@@ -910,16 +910,12 @@ public class CliApplication
                 arguments[j] = transformArgument(
                         params[j],
                         argv[j] );
-            } catch ( Exception e ) {
-                err("Parameter %s : ", argv[j]);
-
-                String msg = e.getMessage();
-
-                if ( StringUtil.isEmpty( msg ) )
-                    msg = e.getClass().getSimpleName();
-
-                err( "%s%n", msg );
-
+            }
+            catch ( Exception e ) {
+                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                        getName(),
+                        argv[j],
+                        params[j].getSimpleName());
                 return;
             }
 
