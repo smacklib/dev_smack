@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.net.URL;
+import java.util.Objects;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -45,13 +46,27 @@ public class PrimitivesBundle extends StringConverterExtension
         return imageIconFromUrl( s ).getImage();
     }
 
+    private static boolean parseBoolean( String s )
+    {
+        Objects.requireNonNull( s );
+
+        s = s.toLowerCase();
+
+        if ( Boolean.TRUE.toString().equals( s ) )
+            return true;
+        else if ( Boolean.FALSE.toString().equals( s ) )
+            return false;
+
+        throw new NumberFormatException( s );
+    }
+
     @Override
     public void extendTypeMap( StringConverter registry )
     {
         // Primitives
 
-        registry.put( boolean.class, Boolean::parseBoolean );
-        registry.put( Boolean.class, Boolean::parseBoolean );
+        registry.put( boolean.class, PrimitivesBundle::parseBoolean );
+        registry.put( Boolean.class, PrimitivesBundle::parseBoolean );
         registry.put( byte.class, Byte::decode );
         registry.put( Byte.class, Byte::decode );
         registry.put( short.class, Short::decode );
