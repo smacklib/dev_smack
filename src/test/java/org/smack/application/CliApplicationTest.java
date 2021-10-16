@@ -60,13 +60,40 @@ public class CliApplicationTest
         }
     }
 
+    static public class UnderTestDeprecated extends CliApplication
+    {
+        @Command
+        public void add( int a, int b )
+        {
+            out( "%s%n", a + b );
+        }
+        public static void main( String[] argv )
+        {
+            launch( UnderTestDeprecated.class, argv );
+        }
+    }
+
+
+    @Test
+    public void testHelpDeprecated() throws IOException
+    {
+        execCli( UnderTestDeprecated::main,
+            EMPTY_STRING_ARRAY,
+            EMPTY_STRING_ARRAY,
+            s(
+                "UnderTestDeprecated",
+                "The following commands are supported:",
+                "add: int, int" )
+            );
+    }
+
     @Test
     public void testHelp() throws IOException
     {
         execCli( ApplicationUnderTest::main,
             EMPTY_STRING_ARRAY,
             EMPTY_STRING_ARRAY,
-            new String[] {
+            s(
                 "ApplicationUnderTest",
                 "The following commands are supported:",
                 "cmdBoolean: boolean",
@@ -78,7 +105,7 @@ public class CliApplicationTest
                 "cmdInt: int",
                 "cmdLong: long",
                 "cmdShort: short",
-                "cmdString: String" }
+                "cmdString: String" )
             );
     }
 
@@ -106,14 +133,14 @@ public class CliApplicationTest
                 ApplicationUnderTestOverload::main,
                 "cmdoverload 1 2 3 4".split( " " ),
                 EMPTY_STRING_ARRAY,
-                new String[] {
+                s (
                 "Parameter count does not match. Available alternatives:",
                 "cmdOverload",
                 "cmdOverload: String",
                 "cmdOverload: String, String",
                 "cmdOverload: String, String, String",
                 StringUtil.EMPTY_STRING
-        } );
+        ) );
     }
 
     private void testType(
@@ -161,11 +188,11 @@ public class CliApplicationTest
                 "unknown-command";
 
         execCli( ApplicationUnderTest::main,
-                new String[] { badName },
+                s( badName ),
                 EMPTY_STRING_ARRAY,
-                new String[] {
+                s(
                 String.format( "Unknown command '%s'.",
-                        badName ) }
+                        badName ) )
         );
     }
 }

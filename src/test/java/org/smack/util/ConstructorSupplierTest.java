@@ -27,6 +27,15 @@ public class ConstructorSupplierTest
     }
 
     @Test
+    public void withCtorArguments() throws Exception
+    {
+        Supplier<String> s =
+                new ConstructorSupplier<String>( String.class, "313" );
+
+        assertEquals( "313", s.get() );
+    }
+
+    @Test
     public void error() throws Exception
     {
         try

@@ -80,6 +80,6 @@ public class ApplicationUnderTest
 
     public static void main( String[] argv )
     {
-        launch( ApplicationUnderTest::new, argv );
+        launch( ApplicationUnderTest.class, argv );
     }
 }
