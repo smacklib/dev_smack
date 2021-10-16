@@ -1,7 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Released under Gnu Public License
- * Copyright © 2019 Michael G. Binz
+ * Copyright © 2019-21 Michael G. Binz
  */
 package org.smack.util;
 
@@ -18,20 +18,26 @@ import java.util.function.Supplier;
 public class ConstructorSupplier<T>
     implements Supplier<T>
 {
-    private final Class<T> _class;
+    private final Constructor<T> _ctor;
 
-    public ConstructorSupplier( Class<T> claß )
+    public ConstructorSupplier( Class<T> cl )
     {
-        _class = claß;
+        try {
+            _ctor = cl.getDeclaredConstructor();
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "No default constructor.",
+                    e );
+        }
+
     }
 
     @Override
     public T get()
     {
         try {
-            Constructor<T> c =
-                    _class.getDeclaredConstructor();
-            return c.newInstance();
+            return _ctor.newInstance();
         }
         catch (Exception e) {
             throw new IllegalArgumentException(e);
