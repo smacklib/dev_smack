@@ -178,7 +178,7 @@ public class CliApplicationTest
                 "cmdInt",
                 "threethirteen"
             },
-            null,
+            EMPTY_STRING_ARRAY,
             new String[]
             {
                  "Command 'cmdInt' failed: Could not convert 'threethirteen' to int."
@@ -195,7 +195,7 @@ public class CliApplicationTest
                 "cmdFloat",
                 "threethirteen"
             },
-            null,
+            EMPTY_STRING_ARRAY,
             new String[]
             {
                  "Command 'cmdFloat' failed: Could not convert 'threethirteen' to float."
@@ -212,10 +212,62 @@ public class CliApplicationTest
                 "cmdBoolean",
                 "threethirteen"
             },
-            null,
+            EMPTY_STRING_ARRAY,
             new String[]
             {
                  "Command 'cmdBoolean' failed: Could not convert 'threethirteen' to boolean."
+            }
+        );
+    }
+
+    static class UnderTestNewLine extends CliApplication
+    {
+        @Command
+        public void outline()
+        {
+            out( "%n%n" );
+        }
+        @Command
+        public void errline()
+        {
+            err( "%n%n" );
+        }
+        public static void main( String[] argv )
+        {
+            launch( UnderTestNewLine::new, argv );
+        }
+    }
+
+    @Test
+    public void testOutNewLine() throws IOException
+    {
+        execCli(
+            UnderTestNewLine::main,
+            new String[] {
+                "outline"
+            },
+            new String[]
+            {
+                 StringUtil.EMPTY_STRING,
+                 StringUtil.EMPTY_STRING
+            },
+            EMPTY_STRING_ARRAY
+        );
+    }
+
+    @Test
+    public void testErrNewLine() throws IOException
+    {
+        execCli(
+            UnderTestNewLine::main,
+            new String[] {
+                "errline"
+            },
+            EMPTY_STRING_ARRAY,
+            new String[]
+            {
+                 StringUtil.EMPTY_STRING,
+                 StringUtil.EMPTY_STRING
             }
         );
     }

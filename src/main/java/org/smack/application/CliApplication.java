@@ -701,18 +701,19 @@ public class CliApplication
      */
     protected final void err( String fmt, Object ... argv )
     {
-        System.err.printf( fmt, argv );
+        System.err.format( fmt, argv );
     }
 
     /**
-     * Print to the standard error stream. Note that no
-     * line feed is added.
+     * Print to the standard error stream. Note that no line separator is
+     * added.  If a line separator is expected use '%n' to get the platform-
+     * specific new-line separator.
      *
      * @param msg The message to print.
      */
     protected final void err( String msg )
     {
-        System.err.print( msg );
+        System.err.format( msg );
     }
 
     /**
@@ -723,18 +724,19 @@ public class CliApplication
      */
     protected final void out( String fmt, Object ... argv )
     {
-        System.out.printf( fmt, argv );
+        System.out.format( fmt, argv );
     }
 
     /**
-     * Print to the standard output stream. Note that no
-     * line feed is added.
+     * Print to the standard output stream. Note that no line separator is
+     * added.  If a line separator is expected use '%n' to get the platform-
+     * specific new-line separator.
      *
      * @param msg The message to print.
      */
     protected final void out( String msg )
     {
-        System.out.print( msg );
+        System.out.format( msg );
     }
 
     /**
