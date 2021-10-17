@@ -22,6 +22,8 @@ public class ApplicationContext
 {
     private final Class<?> _applicationClass;
 
+    private final LoggingService _loggingService;
+
     /**
      * Catches automatic instantiation in ServiceManager, being not
      * allowed for this class.  Instead in {@code main} explicitly initialize
@@ -68,7 +70,8 @@ public class ApplicationContext
                 SC,
                 StringUtil.EMPTY_STRING );
 
-        LoggingService.init( this );
+        _loggingService =
+                new LoggingService( this );
     }
 
     public Class<?> getApplicationClass()
