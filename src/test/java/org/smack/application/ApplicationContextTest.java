@@ -25,7 +25,6 @@ public class ApplicationContextTest
         }
     }
 
-
     @Test
     public void testHelpDeprecated() throws IOException
     {

@@ -67,12 +67,12 @@ public class CliApplicationTest
         {
             out( "%s%n", a + b );
         }
+        @SuppressWarnings("deprecation")
         public static void main( String[] argv )
         {
             launch( UnderTestDeprecated.class, argv );
         }
     }
-
 
     @Test
     public void testHelpDeprecated() throws IOException

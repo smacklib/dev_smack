@@ -20,8 +20,10 @@ public class ApplicationUnderTestProperties extends CliApplication
     public float floatProperty;
     @Property
     public double doubleProperty;
+    @SuppressWarnings("exports")
     @Property( name = "duck", description = "One of the nephews names." )
     public Ducks duckProperty = Ducks.TRACK;
+    @SuppressWarnings("exports")
     @Property( name = "level" )
     public Level levelProperty = Level.ALL;
 
