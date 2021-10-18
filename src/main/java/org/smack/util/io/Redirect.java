@@ -108,11 +108,12 @@ public class Redirect implements Closeable
     {
         _outBufferPs.flush();
 
-        var result = _outBuffer.toByteArray();
-
-        _outBuffer.reset();
-
-        return result;
+        try {
+            return _outBuffer.toByteArray();
+        }
+        finally {
+            _outBuffer.reset();
+        }
     }
 
     /**
