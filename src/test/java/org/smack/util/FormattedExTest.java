@@ -1,5 +1,7 @@
 /*
- * Copyright © 2020 Michael Binz.
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2020-21 Michael G. Binz
  */
 package org.smack.util;
 

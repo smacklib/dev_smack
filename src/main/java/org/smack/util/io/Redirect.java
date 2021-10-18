@@ -1,7 +1,5 @@
 /*
- * $Id$
- *
- * Smack io
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
  * Copyright © 2021 Michael G. Binz
  */
@@ -11,9 +9,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.smack.util.FileUtil;
 
@@ -24,12 +22,61 @@ import org.smack.util.FileUtil;
  */
 public class Redirect implements Closeable
 {
-    private static Logger LOG = Logger.getLogger( Redirect.class.getName() );
+    /**
+     * @return A redirector corresponding to stdout.
+     */
+    public static Redirect out()
+    {
+        return new Redirect( StdStream.out );
+    }
+
+    /**
+     * @return A redirector corresponding to stderr.
+     */
+    public static Redirect err()
+    {
+        return new Redirect( StdStream.err );
+    }
 
     /**
      * The stream types that can be redirected.
      */
-    public enum StdStream { out, err };
+    public enum StdStream {
+        out( () -> { return System.out; }, System::setOut ),
+        err( () -> { return System.err; }, System::setErr );
+
+        StdStream( Supplier<PrintStream> s, Consumer<PrintStream> c )
+        {
+            _get = s;
+            _set = c;
+        }
+
+        /**
+         * Replaces the encapsulated standard stream by the passed stream.
+         * @param p The stream to be used instead of the encapsulated standard
+         * stream.
+         * @return The stream that was replaced.
+         */
+        public PrintStream replace( PrintStream p )
+        {
+            try {
+                return get();
+            }
+            finally {
+                _set.accept( p );
+            }
+        }
+
+        /**
+         * @return The currently set output stream.
+         */
+        public PrintStream get() {
+            return _get.get();
+        }
+
+        private final Consumer<PrintStream> _set;
+        private final Supplier<PrintStream> _get;
+    };
 
     private boolean _closed;
 
@@ -50,33 +97,28 @@ public class Redirect implements Closeable
     {
         _selector = streamSelector;
 
-        if ( _selector == StdStream.out )
-        {
-            _originalStream = System.out;
-            System.setOut( _outBufferPs );
-        }
-        else if ( _selector == StdStream.err )
-        {
-            _originalStream = System.err;
-            System.setErr( _outBufferPs );
-        }
-        else
-            throw new IllegalArgumentException();
+        _originalStream = streamSelector.replace( _outBufferPs );
     }
 
     /**
-     * @return The raw bytes that were received.
+     * @return The raw bytes that were received.  Note that this operation
+     * resets the content.
      */
     public byte[] contentRaw()
     {
         _outBufferPs.flush();
 
-        return _outBuffer.toByteArray();
+        var result = _outBuffer.toByteArray();
+
+        _outBuffer.reset();
+
+        return result;
     }
 
     /**
      * @return The received data, properly translated to lines. Empty
-     * lines are contained in the list as empty strings.
+     * lines are contained in the list as empty strings.  The operation
+     * resets the content.
      */
     public List<String> content()
     {
@@ -87,8 +129,7 @@ public class Redirect implements Closeable
         }
         catch ( Exception e )
         {
-            LOG.warning( "Unexpected: " + e.getMessage() );
-            return Collections.emptyList();
+            throw new AssertionError( "Unexpected.", e );
         }
     }
 
@@ -102,17 +143,7 @@ public class Redirect implements Closeable
             return;
         _closed = true;
 
-        if ( _selector == StdStream.out )
-        {
-            if ( System.out != _outBufferPs )
-                LOG.warning( "ConcurrentModification of System.out." );
-            System.setOut( _originalStream );
-        }
-        else if ( _selector == StdStream.err )
-        {
-            if ( System.err != _outBufferPs )
-                LOG.warning( "ConcurrentModification of System.err." );
-            System.setErr( _originalStream );
-        }
+        if ( _selector.replace( _originalStream ) !=  _outBufferPs )
+            throw new Error( "ConcurrentModification : " + _selector );
     }
 }
