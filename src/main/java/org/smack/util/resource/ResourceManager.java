@@ -1,6 +1,5 @@
-/* $Id$
- *
- * Smack Utilities
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
  * Copyright © 2017-21 Michael G. Binz
  */
@@ -19,9 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -192,13 +189,14 @@ public class ResourceManager
      * @return The resource map for the passed class. An empty
      * map if no resources were defined.
      */
-    public Map<String,String> getResourceMap2( Class<?> cl )
+    public ResourceMap getResourceMap2( Class<?> cl )
     {
         var result =_resourceMapCache.get( cl );
+
         if ( result != null )
             return result;
 
-        return Collections.emptyMap();
+        return ResourceMap.getResourceMapExt( cl );
     }
 
     /**

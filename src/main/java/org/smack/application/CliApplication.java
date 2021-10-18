@@ -11,7 +11,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +29,7 @@ import java.util.logging.Logger;
 
 import javax.lang.model.SourceVersion;
 
+import org.smack.util.ConstructorSupplier;
 import org.smack.util.JavaUtil;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.ServiceManager;
@@ -345,7 +345,7 @@ public class CliApplication
     static public void launch( Class<? extends CliApplication> cl, String[] argv )
     {
         launch(
-                new DefaultCtorReflection<>( cl ),
+                new ConstructorSupplier<>( cl ),
                 argv );
     }
 
@@ -747,29 +747,6 @@ public class CliApplication
     protected final InputStream in()
     {
         return System.in;
-    }
-
-    private static class DefaultCtorReflection<T extends CliApplication>
-        implements Supplier<CliApplication>
-    {
-        private final Class<T> _class;
-
-        public DefaultCtorReflection( Class<T> claß )
-        {
-            _class = claß;
-        }
-
-        @Override
-        public CliApplication get()
-        {
-            try {
-                Constructor<T> c = _class.getDeclaredConstructor();
-                return c.newInstance();
-            }
-            catch (Exception e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
     }
 
     /**

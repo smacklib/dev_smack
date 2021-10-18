@@ -226,4 +226,51 @@ public class FileUtilTest
         assertTrue( testFile.exists() );
         assertTrue( testFile.delete() );
     }
+
+    @Test
+    public void testUserHome() throws Exception
+    {
+        final var userHome = "user.home";
+
+        String originalUserHome = System.getProperty( userHome );
+        assertTrue( StringUtil.hasContent( originalUserHome ) );
+
+        File testFile = File.createTempFile( "smack", null );
+
+        File testDir = testFile.getParentFile();
+
+        assertTrue( testDir.isDirectory() );
+
+        try
+        {
+            System.setProperty( userHome, testDir.getPath() );
+            var userHomeDir = FileUtil.getUserHome();
+            assertTrue( userHomeDir.equals( testDir ) );
+
+            System.setProperty( userHome, testFile.getPath() );
+            try {
+                FileUtil.getUserHome();
+                fail();
+            }
+            catch ( AssertionError e )
+            {
+                // user.home is not a directory.
+            }
+
+            System.setProperty( userHome, "doesNotExist" );
+            try {
+                FileUtil.getUserHome();
+                fail();
+            }
+            catch ( AssertionError e )
+            {
+                // user.home does not exist.
+            }
+        }
+        finally
+        {
+            System.setProperty( userHome, originalUserHome );
+            assertTrue( testFile.delete() );
+        }
+    }
 }

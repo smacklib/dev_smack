@@ -1,0 +1,20 @@
+#
+# Smack Logging Configuration File
+#
+
+handlers=java.util.logging.ConsoleHandler, java.util.logging.FileHandler
+
+# Default global logging level.
+.level= INFO
+
+# File logger that logs into the application's home dir.
+# See the handling in the LoggingService implementation.
+java.util.logging.FileHandler.pattern = smack.logfile.path
+java.util.logging.FileHandler.limit = 1000000
+java.util.logging.FileHandler.count = 2
+java.util.logging.FileHandler.append = true
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+
+# We only print WARNING and worse to the console.
+java.util.logging.ConsoleHandler.level = WARNING
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter

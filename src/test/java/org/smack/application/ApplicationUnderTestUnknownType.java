@@ -20,6 +20,6 @@ public class ApplicationUnderTestUnknownType
 
     public static void main( String[] argv )
     {
-        launch( ApplicationUnderTestUnknownType.class, argv );
+        launch( ApplicationUnderTestUnknownType::new, argv );
     }
 }

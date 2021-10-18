@@ -1,6 +1,5 @@
-/* $Id$
- *
- * Smack Utilities.
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
  * Copyright © 2017-21 Michael G. Binz
  */
@@ -14,6 +13,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -308,8 +308,8 @@ public class ResourceMap extends HashMap<String, String>
      * Get a the resource map for a class.
      *
      * @param cl The class.
-     * @return The corresponding resource map or {@code null} if no
-     * resources were found.
+     * @return The corresponding resource map.  If no resources
+     * were found, the map is empty.
      */
     public static ResourceMap getResourceMapExt( Class<?> cl )
     {
@@ -428,5 +428,53 @@ public class ResourceMap extends HashMap<String, String>
         return converter.convert(
                 targetType,
                 resolved );
+    }
+
+    /**
+     * Convert the passed key to a target type.
+     *
+     * @param <T> The expected target type.
+     * @param targetType The expected result type.
+     * @param key The property key to convert.
+     * @return The conversion result.
+     */
+    public <T> T getAs( String key, Class<T> targetType, Supplier<T> orDefault )
+    {
+        String resolved =
+                get( key );
+        if ( resolved == null )
+            return orDefault.get();
+
+        try
+        {
+            var converter = ServiceManager.getApplicationService(
+                    StringConverter.class );
+
+            return converter.convert(
+                    targetType,
+                    resolved );
+        }
+        catch ( Exception e )
+        {
+            return orDefault.get();
+        }
+    }
+
+    /**
+     * Convert the passed key to a target type.
+     *
+     * @param <T> The expected target type.
+     * @param targetType The expected result type.
+     * @param key The property key to convert.
+     * @return The conversion result.
+     */
+    public <T> T getAs( String key, Class<T> targetType, T orDefault )
+    {
+        Supplier<T> defaultSupplier =
+                () -> {return orDefault;};
+        return getAs(
+                key,
+                targetType,
+                defaultSupplier );
     }
 }

@@ -1,3 +1,8 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2020-21 Michael G. Binz
+ */
 package org.smack.application;
 
 import java.io.IOException;
@@ -26,8 +31,10 @@ public class CliApplicationPropertyTest
         public float floatProperty;
         @Property
         public double doubleProperty;
+        @SuppressWarnings("exports")
         @Property( name = "duck", description = "One of the nephews names." )
         public Ducks duckProperty = Ducks.TRACK;
+        @SuppressWarnings("exports")
         @Property( name = "level" )
         public Level levelProperty = Level.ALL;
 
