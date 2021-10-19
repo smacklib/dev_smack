@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import org.smack.util.FileUtil;
 import org.smack.util.JavaUtil;
@@ -24,11 +23,8 @@ import org.smack.util.resource.ResourceUtil;
  *
  * @author michab66
  */
-public class LoggingService
+final class LoggingService
 {
-    private static final Logger LOG = Logger.getLogger(
-            LoggingService.class.getName() );
-
     private final String _groupId;
 
     private final String _applicationId;
@@ -116,8 +112,8 @@ public class LoggingService
             String applicationId ) throws Exception
     {
         // Replaces all entries from the configuration by the new entries.
-        // The exception is if the new entry is 'smack.logfile.path' then that gets
-        // replaced by a dynamically assembled value.
+        // The exception is if the new entry is 'smack.logfile.path' then this
+        // is replaced by a dynamically assembled value.
         Function<String, BiFunction<String,String,String>> consume =
                 (k) -> {
                     return (o,n) -> {

@@ -6,6 +6,7 @@
 package org.smack.application;
 
 import java.awt.Image;
+import java.io.File;
 import java.util.Objects;
 
 import org.smack.util.ServiceManager;
@@ -74,6 +75,17 @@ public class ApplicationContext
                 new LoggingService( this );
     }
 
+    /**
+     * @return The application log directory.
+     */
+    public File getLogDir()
+    {
+        return _loggingService.getLogDir();
+    }
+
+    /**
+     * @return The application class.
+     */
     public Class<?> getApplicationClass()
     {
         return _applicationClass;
@@ -82,8 +94,7 @@ public class ApplicationContext
     private final String id;
 
     /**
-     * Return the application's id as defined in the resources.
-     * @return The application's id.
+     * @return The application's id as defined in the resources.
      */
     public String getId()
     {
@@ -93,8 +104,7 @@ public class ApplicationContext
     private final String title;
 
     /**
-     * Return the application's title as defined in the resources.
-     * @return The application's title.
+     * @return The application's title as defined in the resources.
      */
     public String getTitle()
     {
@@ -104,8 +114,7 @@ public class ApplicationContext
     private final String version;
 
     /**
-     * Return the application's version as defined in the resources.
-     * @return The application's version.
+     * @return The application's version as defined in the resources.
      */
     public String getVersion()
     {
@@ -115,8 +124,7 @@ public class ApplicationContext
     private Image icon;
 
     /**
-     * Return the application's icon as defined in the resources.
-     * @return The application icon.
+     * @return The application's icon as defined in the resources.
      */
     public Image getIcon()
     {
@@ -126,8 +134,7 @@ public class ApplicationContext
     private final String vendor;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor as defined in the resources.
      */
     public String getVendor()
     {
@@ -137,8 +144,7 @@ public class ApplicationContext
     private final String vendorId;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor as defined in the resources.
      */
     public String getVendorId()
     {

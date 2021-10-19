@@ -26,15 +26,12 @@ import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 
 /**
- * Access to per application, per user, local file storage. The
- * shared instance can be received by calling
- * {@link Application#getApplicationService(Class)}.
+ * Access to per application, per user, local file storage.
  *
- * @version $Rev$
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-final class LocalStorage // extends AbstractBeanEdt
+final class LocalStorage
 {
     private LocalIO localIO = null;
 
@@ -44,7 +41,6 @@ final class LocalStorage // extends AbstractBeanEdt
 
     /**
      * Create an instance.
-     * @param a
      */
     LocalStorage()
     {
@@ -84,7 +80,7 @@ final class LocalStorage // extends AbstractBeanEdt
      * @deprecated Use {@link #openInputFile(File)}
      */
     @Deprecated
-    public InputStream openInputFile(String fileName) throws IOException {
+    private InputStream openInputFile(String fileName) throws IOException {
         checkFileName(fileName);
         return getLocalIO().openInputFile(fileName);
     }
@@ -119,7 +115,7 @@ final class LocalStorage // extends AbstractBeanEdt
      * @deprecated Use {@link #openInputFile(File)}
      */
     @Deprecated
-    public OutputStream openOutputFile(final String fileName) throws IOException {
+    private OutputStream openOutputFile(final String fileName) throws IOException {
         return openOutputFile(fileName, false);
     }
 
@@ -176,7 +172,7 @@ final class LocalStorage // extends AbstractBeanEdt
      *                     or an output stream cannot be opened
      */
     @Deprecated
-    public OutputStream openOutputFile(String fileName, boolean append) throws IOException {
+    private OutputStream openOutputFile(String fileName, boolean append) throws IOException {
         checkFileName(fileName);
         return getLocalIO().openOutputFile(fileName, append);
     }
@@ -190,7 +186,7 @@ final class LocalStorage // extends AbstractBeanEdt
      *                     or an internal entry cannot be deleted
      */
     @Deprecated
-    public boolean deleteFile(String fileName) throws IOException {
+    private boolean deleteFile(String fileName) throws IOException {
         checkFileName(fileName);
         return getLocalIO().deleteFile(fileName);
     }
@@ -302,8 +298,7 @@ final class LocalStorage // extends AbstractBeanEdt
     private final String _applicationId;
 
     /**
-     * Returns the directory where the local storage is located
-     * @return the directory where the local storage is located
+     * @return The directory where the local storage is located.
      */
     private File getDirectory() {
         if (directory == unspecifiedFile) {
@@ -346,16 +341,6 @@ final class LocalStorage // extends AbstractBeanEdt
         }
         return directory;
     }
-
-//    /**
-//     * Sets the location of the local storage
-//     * @param directory the location of the local storage
-//     */
-//    public void setDirectory(File directory) {
-//        File oldValue = this.directory;
-//        this.directory = directory;
-//        firePropertyChange("directory", oldValue, this.directory);
-//    }
 
     /* There are some (old) Java classes that aren't proper beans.  Rectangle
      * is one of these.  When running within the secure sandbox, writing a
