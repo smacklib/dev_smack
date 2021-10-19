@@ -160,19 +160,4 @@ public class LoggingService
             throw new RuntimeException( e );
         }
     }
-
-    public static void main( String[] args ) throws Exception
-    {
-
-        var ls = new LoggingService(
-                LoggingService.class.getSimpleName(),
-                LoggingService.class.getSimpleName() );
-
-        System.out.println( ls.getLogDir() );
-
-        LOG.info( "info2" );
-        LOG.warning( "warning2" );
-        LOG.severe( "severe2" );
-    }
 }
-
