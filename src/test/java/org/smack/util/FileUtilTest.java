@@ -273,4 +273,14 @@ public class FileUtilTest
             assertTrue( testFile.delete() );
         }
     }
+
+    @Test
+    public void deleteFile() throws Exception
+    {
+        var f = File.createTempFile( "test_", ".tmp" );
+
+        assertTrue( f.exists() );
+        FileUtil.delete( f );
+        assertFalse( f.exists() );
+    }
 }
