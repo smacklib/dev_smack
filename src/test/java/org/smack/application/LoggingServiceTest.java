@@ -34,25 +34,37 @@ public class LoggingServiceTest
         assertEquals( 0, d.list().length );
     }
 
+    private File createTestHome()
+    {
+        return ApplicationContext.createHomeDir( getClass().getSimpleName() );
+    }
+
+
     @Test
     public void plain() throws IOException
     {
+        var testHome = createTestHome();
+
         LoggingService ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
 
         assertTrue( ls.getLogDir().exists() );
         FileUtil.delete( ls.getLogDir() );
         assertFalse( ls.getLogDir().exists() );
 
         ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
         assertTrue( ls.getLogDir().exists() );
+
+        FileUtil.delete( testHome );
     }
 
     @Test
     public void logOutputStderr() throws IOException
     {
-        new LoggingService( "smacktest", getClass().getSimpleName() );
+        var testHome = createTestHome();
+
+        new LoggingService( testHome, getClass().getSimpleName() );
 
         var log = Logger.getLogger( getClass().getName() );
 
@@ -69,13 +81,17 @@ public class LoggingServiceTest
             // info messages are not printed to stderr.
             assertTrue( errout.isEmpty() );
         }
+
+        FileUtil.delete( testHome );
     }
 
     @Test
     public void logOutputFile() throws IOException
     {
+        var testHome = createTestHome();
+
         LoggingService ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
         clearDirectory( ls.getLogDir() );
 
         var log = Logger.getLogger( getClass().getName() );
@@ -101,5 +117,7 @@ public class LoggingServiceTest
         assertTrue( lines.contains( "SEVERE: severe" ) );
         assertTrue( lines.contains( "WARNING: warning" ) );
         assertTrue( lines.contains( "INFO: info" ) );
+
+        FileUtil.delete( testHome );
     }
 }

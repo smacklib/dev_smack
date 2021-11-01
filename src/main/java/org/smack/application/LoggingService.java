@@ -13,7 +13,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.LogManager;
 
-import org.smack.util.FileUtil;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceUtil;
@@ -23,10 +22,8 @@ import org.smack.util.resource.ResourceUtil;
  *
  * @author michab66
  */
-final class LoggingService
+class LoggingService
 {
-    private final String _groupId;
-
     private final String _applicationId;
 
     private final File _logDir;
@@ -40,30 +37,20 @@ final class LoggingService
         JavaUtil.Assert(
                 StringUtil.hasContent( _applicationId ),
                 "Application.id not set.");
-
-        var vendorId =
-                ac.getVendorId();
-        _groupId =
-                StringUtil.hasContent( vendorId ) ? vendorId : _applicationId;
         _logDir =
-                init( _groupId, _applicationId );
+                init( ac.getHome(), _applicationId );
     }
 
-    LoggingService( String groupId, String applicationId )
+    LoggingService( File applicationHome, String applicationId )
     {
-        JavaUtil.Assert(
-                StringUtil.hasContent( groupId ),
-                "group.id not set.");
         JavaUtil.Assert(
                 StringUtil.hasContent( applicationId ),
                 "application.id not set.");
 
-        _groupId =
-                groupId;
         _applicationId =
                 applicationId;
         _logDir =
-                init( _groupId, _applicationId );
+                init( applicationHome, _applicationId );
     }
 
     File getLogDir()
@@ -79,14 +66,16 @@ final class LoggingService
      * @return The respective log directory.  This directory
      * is created by this call if it does not exist.
      */
-    private static File createLogDir( String groupId )
+    private static File createLogDir( File applicationHome )
     {
         try
         {
-            // Check if the logging directory exists.
             var logDir = new File(
-                    FileUtil.getUserHome() + "/." + groupId + "/log/" );
+                    applicationHome,
+                    "log/" );
 
+            if ( logDir.exists() && ! logDir.isDirectory() )
+                Files.delete( logDir.toPath() );
             if ( !logDir.exists() )
                 Files.createDirectories( logDir.toPath() );
 
@@ -143,12 +132,12 @@ final class LoggingService
      * @param applicationId An application id.
      * @throws Exception
      */
-    private static File init( String groupId, String applicationId )
+    private static File init( File applicationHome, String applicationId )
     {
         try
         {
             return initImpl(
-                    createLogDir( groupId ),
+                    createLogDir( applicationHome ),
                     applicationId );
         }
         catch ( Exception e )

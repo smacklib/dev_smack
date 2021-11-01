@@ -7,8 +7,10 @@ package org.smack.application;
 
 import java.awt.Image;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Objects;
 
+import org.smack.util.FileUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceManager;
@@ -23,6 +25,7 @@ public class ApplicationContext
 {
     private final Class<?> _applicationClass;
 
+    private final File _applicationHome;
     private final LoggingService _loggingService;
 
     /**
@@ -71,8 +74,45 @@ public class ApplicationContext
                 SC,
                 StringUtil.EMPTY_STRING );
 
+        _applicationHome = createHomeDir( id );
+
         _loggingService =
                 new LoggingService( this );
+    }
+
+    public File getHome()
+    {
+        return _applicationHome;
+    }
+
+    /**
+     * Get the home directory for the passed application id.  This is
+     * $HOME/.appid.
+     *
+     * @param groupId An group id.
+     * @return The respective log directory.  This directory
+     * is created by this call if it does not exist.
+     */
+    static File createHomeDir( String groupId )
+    {
+        try
+        {
+            var result = new File(
+                    FileUtil.getUserHome() + "/." + groupId );
+
+            if ( result.exists() && ! result.isDirectory() )
+                Files.delete( result.toPath() );
+
+            if ( !result.exists() )
+                Files.createDirectories( result.toPath() );
+
+            return result;
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
