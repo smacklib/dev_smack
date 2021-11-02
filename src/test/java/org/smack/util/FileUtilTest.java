@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -275,12 +276,38 @@ public class FileUtilTest
     }
 
     @Test
-    public void deleteFile() throws Exception
+    public void testDeleteFile() throws Exception
     {
         var f = File.createTempFile( "test_", ".tmp" );
 
         assertTrue( f.exists() );
         FileUtil.delete( f );
         assertFalse( f.exists() );
+    }
+
+    @Test
+    public void testDeleteDir() throws Exception
+    {
+        var dp = Files.createTempDirectory( "smack_test_tmp_" );
+        var df = dp.toFile();
+
+        assertTrue( df.exists() );
+        assertTrue( df.isDirectory() );
+
+        for ( int i = 0 ; i < 10 ; i++ )
+        {
+            var newfile =
+                    new File( df, UUID.randomUUID().toString() );
+            newfile.createNewFile();
+            assertTrue(
+                    newfile.exists() );
+            assertTrue(
+                    df.equals( newfile.getParentFile() ) );
+        }
+
+        assertEquals( 10, df.listFiles().length );
+
+        FileUtil.delete( df );
+        assertFalse( df.exists() );
     }
 }

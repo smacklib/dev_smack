@@ -196,9 +196,9 @@ public final class FileUtil
     }
 
     /**
-     * Deletes a directory recursively.
+     * Deletes recursively.
      *
-     * @param dir The directory to delete.
+     * @param dir The file to delete. A directory is deleted recursively.
      * @return true if successful.
      */
     public static boolean delete( File dir )
@@ -206,15 +206,12 @@ public final class FileUtil
         if ( ! dir.exists() )
             return true;
 
-        if ( dir.isFile() )
-            return dir.delete();
-
         try
         {
             Files.walk( dir.toPath() )
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);
+                .sorted( Comparator.reverseOrder() )
+                .map( Path::toFile )
+                .forEach( File::delete );
         }
         catch ( Exception e )
         {

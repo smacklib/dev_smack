@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.smack.DisposeHook;
 import org.smack.util.FileUtil;
 import org.smack.util.collections.CollectionUtil;
 import org.smack.util.io.Redirect;
@@ -59,8 +61,7 @@ public class LoggingServiceTest
         FileUtil.delete( testHome );
     }
 
-    @Test
-    public void logOutputStderr() throws IOException
+    public void logOutputStderrImpl() throws IOException
     {
         var testHome = createTestHome();
 
@@ -86,7 +87,19 @@ public class LoggingServiceTest
     }
 
     @Test
-    public void logOutputFile() throws IOException
+    public void logOutputStderr() throws IOException
+    {
+        var originalLocale = Locale.getDefault();
+
+        try ( var cleanup = new DisposeHook(
+                () -> Locale.setDefault( originalLocale ) ) )
+        {
+            Locale.setDefault( Locale.US );
+            logOutputStderrImpl();
+        }
+    }
+
+    public void logOutputFileImpl() throws IOException
     {
         var testHome = createTestHome();
 
@@ -119,5 +132,18 @@ public class LoggingServiceTest
         assertTrue( lines.contains( "INFO: info" ) );
 
         FileUtil.delete( testHome );
+    }
+
+    @Test
+    public void logOutputFile() throws IOException
+    {
+        var originalLocale = Locale.getDefault();
+
+        try ( var cleanup = new DisposeHook(
+                () -> Locale.setDefault( originalLocale ) ) )
+        {
+            Locale.setDefault( Locale.US );
+            logOutputFileImpl();
+        }
     }
 }
