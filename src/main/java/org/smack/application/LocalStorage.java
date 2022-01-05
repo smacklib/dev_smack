@@ -31,7 +31,7 @@ import org.smack.util.StringUtil;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-final class LocalStorage
+public final class LocalStorage
 {
     private LocalIO localIO = null;
 

@@ -64,7 +64,7 @@ public class ApplicationContext
         id = arm.getAs(
                 "Application.id",
                 SC,
-                _applicationClass::getSimpleName );
+                _applicationClass.getSimpleName() );
         title = arm.getAs(
                 "Application.title",
                 SC,

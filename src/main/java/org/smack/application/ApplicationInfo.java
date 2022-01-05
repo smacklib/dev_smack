@@ -1,9 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Common.
- *
- * Released under Gnu Public License
- * Copyright © 2016 Michael G. Binz
+ * Copyright © 2016-2022 Michael G. Binz
  */
 package org.smack.application;
 
@@ -16,7 +14,6 @@ import org.smack.util.resource.ResourceManager;
 /**
  * Application information.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class ApplicationInfo
@@ -42,6 +39,16 @@ public class ApplicationInfo
                         ResourceManager.class );
         var arm =
                 rm.getResourceMap( _applicationClass );
+
+        if ( arm == null )
+        {
+            var msg = String.format(
+                    "Application resources not found."
+                    + " Missing 'opens %s;' in module-info.java?",
+                    applicationClass.getPackage().getName() );
+
+            throw new IllegalArgumentException( msg );
+        }
 
         id = arm.get(
                 "Application.id" );

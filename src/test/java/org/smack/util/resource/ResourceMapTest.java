@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.Supplier;
-
 import org.junit.Test;
 
 public class ResourceMapTest
@@ -77,11 +75,6 @@ public class ResourceMapTest
         {
             var val = map.getAs( "unqualified", Short.class, (short)313 );
             assertEquals( 313, val.shortValue() );
-        }
-        {
-            Supplier<Short> s = () -> { return 314; };
-            var val = map.getAs( "qualified", Short.class, s );
-            assertEquals( 314, val.shortValue() );
         }
         {
             var val = map.getAs( "314", Short.class, (short)0 );

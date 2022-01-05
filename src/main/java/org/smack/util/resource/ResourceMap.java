@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,9 @@ import org.smack.util.converters.StringConverter;
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {
+    private static final Logger LOG =
+            Logger.getLogger( ResourceMap.class.getName() );
+
     /**
      * The class corresponding to this map.  Never {@code null}.
      */
@@ -438,12 +442,13 @@ public class ResourceMap extends HashMap<String, String>
      * @param key The property key to convert.
      * @return The conversion result.
      */
-    public <T> T getAs( String key, Class<T> targetType, Supplier<T> orDefault )
+    public <T> T getAs( String key, Class<T> targetType, T orDefault )
     {
+        if ( ! containsKey( key ) )
+            return orDefault;
+
         String resolved =
                 get( key );
-        if ( resolved == null )
-            return orDefault.get();
 
         try
         {
@@ -456,25 +461,8 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( Exception e )
         {
-            return orDefault.get();
+            LOG.log( Level.INFO, "Got exception: " + e.getMessage(), e );
+            return orDefault;
         }
-    }
-
-    /**
-     * Convert the passed key to a target type.
-     *
-     * @param <T> The expected target type.
-     * @param targetType The expected result type.
-     * @param key The property key to convert.
-     * @return The conversion result.
-     */
-    public <T> T getAs( String key, Class<T> targetType, T orDefault )
-    {
-        Supplier<T> defaultSupplier =
-                () -> {return orDefault;};
-        return getAs(
-                key,
-                targetType,
-                defaultSupplier );
     }
 }
