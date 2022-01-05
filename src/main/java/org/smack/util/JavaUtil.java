@@ -5,6 +5,7 @@
  */
 package org.smack.util;
 
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -120,5 +121,33 @@ public class JavaUtil
         return new Exception(
                 String.format( fmt, args ),
                 cause );
+    }
+
+    /**
+     * Initialize and return an object.
+     *
+     *
+     * <pre>
+     * private static JTextArea ghEditWnd = init(
+     *   new JTextArea(),
+     *   n -> {
+     *     n.setEditable(
+     *            false );
+     *     n.setFont( new Font(
+     *            Font.MONOSPACED,
+     *            n.getFont().getStyle(),
+     *            n.getFont().getSize() ) );
+     *     return n;
+     *  } );
+     * </pre>
+     *
+     * @param <T> The object type.
+     * @param t The initial instance.
+     * @param makeit A function that initializes the object.
+     * @return The initialized instance.
+     */
+    public static <T> T init( T t, Function<T, T> makeit )
+    {
+        return makeit.apply( t );
     }
 }
