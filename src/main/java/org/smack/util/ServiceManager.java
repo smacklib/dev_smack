@@ -35,6 +35,14 @@ public final class ServiceManager
     }
 
     /**
+     * Used in testing.
+     */
+    public static synchronized void clear()
+    {
+        _singletons.clear();
+    }
+
+    /**
      * Get an application service of the specified type.
      *
      * @param <T> The service type.
@@ -43,7 +51,7 @@ public final class ServiceManager
      */
     public static synchronized <T> T getApplicationService( Class<T> singletonType )
     {
-        if ( !  _singletons.containsKey( singletonType ) )
+        if ( ! _singletons.containsKey( singletonType ) )
         {
             try
             {

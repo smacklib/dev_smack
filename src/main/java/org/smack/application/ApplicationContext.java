@@ -28,6 +28,18 @@ public class ApplicationContext
     private final File _applicationHome;
     private final LoggingService _loggingService;
 
+    public static ApplicationContext init( Class<?> applicationClass )
+    {
+        return ServiceManager.initApplicationService(
+                new ApplicationContext( applicationClass ) );
+    }
+
+    public static ApplicationContext get()
+    {
+        return ServiceManager.getApplicationService(
+                ApplicationContext.class );
+    }
+
     /**
      * Catches automatic instantiation in ServiceManager, being not
      * allowed for this class.  Instead in {@code main} explicitly initialize
@@ -74,8 +86,8 @@ public class ApplicationContext
                 SC,
                 StringUtil.EMPTY_STRING );
 
-        _applicationHome = createHomeDir( id );
-
+        _applicationHome =
+                createHomeDir( id );
         _loggingService =
                 new LoggingService( this );
     }
