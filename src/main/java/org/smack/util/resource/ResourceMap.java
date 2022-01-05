@@ -465,4 +465,39 @@ public class ResourceMap extends HashMap<String, String>
             return orDefault;
         }
     }
+
+    /**
+     * If no arguments are specified, return the String value
+     * of the resource named <tt>key</tt>.  This is
+     * equivalent to calling <tt>getObject(key, String.class)</tt>
+     * If arguments are provided, then the type of the resource
+     * named <tt>key</tt> is assumed to be
+     * {@link String#format(String, Object...) format} string,
+     * which is applied to the arguments if it's non null.
+     * For example, given the following resources
+     * <pre>
+     * hello = Hello %s
+     * </pre>
+     * then the value of <tt>getString("hello", "World")</tt> would
+     * be <tt>"Hello World"</tt>.
+     *
+     * @param key The resource key. null is not allowed.
+     * @param args
+     * @return the formatted String value of the resource named <tt>key</tt>.
+     * @see String#format(String, Object...)
+     */
+    public String getFormatted(String key, Object... args)
+    {
+        Objects.requireNonNull( key );
+
+        if ( ! containsKey( key ) )
+            return null;
+
+        var value = super.get( key );
+
+        if ( JavaUtil.isEmptyArray( args ) )
+            return value;
+
+        return String.format( value, args );
+    }
 }

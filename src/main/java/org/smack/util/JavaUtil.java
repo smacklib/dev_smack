@@ -1,9 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Common.
- *
- * Released under Gnu Public License
- * Copyright © 2011 Michael G. Binz
+ * Copyright © 2011-2022 Michael G. Binz
  */
 package org.smack.util;
 
@@ -79,14 +77,13 @@ public class JavaUtil
         }
     }
 
-
     /**
      * Test if an array is empty.
      *
      * @param <T> The array type.
      * @param array The array to test. {@code null} is allowed.
-     * @return {@code true} if the array is not null and has a length greater
-     * than zero.
+     * @return {@code true} if the array is {@code null} or has a length
+     * greater than zero.
      */
     public static <T> boolean isEmptyArray( T[] array )
     {
