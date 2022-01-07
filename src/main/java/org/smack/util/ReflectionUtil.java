@@ -367,8 +367,8 @@ public final class ReflectionUtil
      * @param <A> The annotation type so search.  Type of the second consumer
      * argument.
      * @param annotationType The annotation class to look up.
-     * @param supplier A supplier that delivers the opbects to process.  For example
-     * getDeclareMethods().
+     * @param supplier A supplier that delivers the objects to process.
+     * For example {@code Class#getDeclaredMethods()}.
      * @param predicate A predicate that allows filtering.  This is only
      * called if an annotation is present.
      * @param c The consumer receiving the found elements.

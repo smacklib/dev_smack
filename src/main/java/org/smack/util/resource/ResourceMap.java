@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -376,7 +375,7 @@ public class ResourceMap extends HashMap<String, String>
                             ckey.substring( classPrefix.length() ),
                             value );
                 }
-                else
+                else if ( ! ckey.contains( "." ) )
                 {
                     put(
                             classPrefix + ckey,
@@ -461,7 +460,6 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( Exception e )
         {
-            LOG.log( Level.INFO, "Got exception: " + e.getMessage(), e );
             return orDefault;
         }
     }
@@ -493,11 +491,29 @@ public class ResourceMap extends HashMap<String, String>
         if ( ! containsKey( key ) )
             return null;
 
-        var value = super.get( key );
+        var value = get( key );
 
         if ( JavaUtil.isEmptyArray( args ) )
             return value;
 
         return String.format( value, args );
+    }
+
+    /**
+     * Get the value the key is mapped.  The operation propagates along the
+     * superclass chain.
+     *
+     * @return The value associated with key, null if no mapping was found.
+     */
+    @Override
+    public String get( Object key )
+    {
+        if ( containsKey( key ) )
+            return super.get( key );
+
+        if ( _class.getSuperclass() == null )
+            return null;
+
+        return getResourceMapExt( _class.getSuperclass() ).get( key );
     }
 }

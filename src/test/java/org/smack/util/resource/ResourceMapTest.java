@@ -109,4 +109,15 @@ public class ResourceMapTest
         assertNotNull( map );
         assertTrue( map.size() == 0 );
     }
+
+    @Test
+    public void testGetFormatted() throws Exception
+    {
+        var map =
+                ResourceMap.getResourceMap( getClass() );
+        assertNotNull( map );
+
+        var val = map.getFormatted( "format_ss", "Don", "ald" );
+            assertEquals( "Donald", val );
+    }
 }
