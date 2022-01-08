@@ -258,8 +258,6 @@ public class ResourceManager
                                 f.getDeclaringClass().getSimpleName(),
                                 f.getName() );
 
-                    System.out.println( map.getResourceClass() );
-
                     String value = map.get( name );
 
                     // If we got no value, get the Resource default
