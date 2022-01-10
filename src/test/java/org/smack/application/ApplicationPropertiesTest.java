@@ -17,21 +17,21 @@ public class ApplicationPropertiesTest
     @Before
     public void setup()
     {
-
+        System.out.println( getClass().getName() + " : setup" );
     }
     @After
     public void cleanup()
     {
-
+        System.out.println( getClass().getName() + " : cleanup" );
     }
 
     @Test
     public void plain() throws IOException
     {
-        ServiceManager.clear();
-        ApplicationContext.init( getClass() );
-        var aps = ServiceManager.getApplicationService(
-                ApplicationProperties.class );
+//        ServiceManager.clear();
+//        ApplicationContext.init( getClass() );
+//        var aps = ServiceManager.getApplicationService(
+//                ApplicationProperties.class );
     }
 
     @Test( expected = java.lang.RuntimeException.class )

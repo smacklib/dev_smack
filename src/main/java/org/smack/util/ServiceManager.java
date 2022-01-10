@@ -7,6 +7,7 @@
  */
 package org.smack.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,19 @@ public final class ServiceManager
                 _singletons.put(
                         singletonType,
                         ReflectionUtil.createInstanceX( singletonType ) );
+            }
+            catch ( RuntimeException e )
+            {
+                throw e;
+            }
+            catch ( InvocationTargetException e )
+            {
+                var cause = e.getCause();
+
+                if ( cause instanceof RuntimeException )
+                    throw (RuntimeException)cause;
+
+                throw new RuntimeException( e );
             }
             catch ( Exception e )
             {

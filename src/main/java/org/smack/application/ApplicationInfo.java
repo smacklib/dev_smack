@@ -6,8 +6,11 @@
 package org.smack.application;
 
 import java.awt.Image;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Objects;
 
+import org.smack.util.FileUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 
@@ -27,7 +30,10 @@ public class ApplicationInfo
      */
     public ApplicationInfo()
     {
-        throw new IllegalStateException( "Init ServiceManager in main." );
+        throw new IllegalStateException(
+           "Init in main: " +
+            "ServiceManager.initApplicationService( " +
+            "new ApplicationInfo( yourApplication.class ) );" );
     }
 
     public static final String RESOURCE_KEY_ID = "Application.id";
@@ -74,6 +80,41 @@ public class ApplicationInfo
     public Class<?> getApplicationClass()
     {
         return _applicationClass;
+    }
+
+    /**
+     * Get the home directory for the passed application id.  This is
+     * $HOME/.appid.
+     *
+     * @param groupId An group id.
+     * @return The respective log directory.  This directory
+     * is created by this call if it does not exist.
+     */
+    public File getHomeDir()
+    {
+        var result = new File(
+                FileUtil.getUserHome() + "/." + id );
+
+        if ( result.exists() && result.isDirectory() )
+            return result;
+
+        try
+        {
+            var path = result.toPath();
+
+            if ( result.exists() && !result.isDirectory() )
+                Files.delete( path );
+
+            if ( !result.exists() )
+                Files.createDirectories( path );
+
+            return result;
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException(
+                    "Could not create home directory: " + result  );
+        }
     }
 
     private final String id;

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -38,9 +39,15 @@ public class LoggingServiceTest
 
     private File createTestHome()
     {
-        return ApplicationContext.createHomeDir( getClass().getSimpleName() );
+        try
+        {
+            return Files.createTempDirectory( getClass().getSimpleName() ).toFile();
+        }
+        catch ( IOException e )
+        {
+            throw new AssertionError( "Could not create temp dir." );
+        }
     }
-
 
     @Test
     public void plain() throws IOException
