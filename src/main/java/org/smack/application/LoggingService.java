@@ -1,7 +1,7 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2017-21 Michael G. Binz
+ * Copyright © 2017-2022 Michael G. Binz
  */
 package org.smack.application;
 

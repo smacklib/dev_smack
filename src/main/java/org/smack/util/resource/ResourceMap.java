@@ -439,6 +439,7 @@ public class ResourceMap extends HashMap<String, String>
      * @param <T> The expected target type.
      * @param targetType The expected result type.
      * @param key The property key to convert.
+     * @param orDefault The value to return if the key is not found.
      * @return The conversion result.
      */
     public <T> T getAs( String key, Class<T> targetType, T orDefault )

@@ -18,7 +18,6 @@ import org.smack.util.resource.ResourceManager;
 /**
  * Application information.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class ApplicationContext

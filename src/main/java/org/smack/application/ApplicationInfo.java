@@ -30,6 +30,13 @@ public class ApplicationInfo
         throw new IllegalStateException( "Init ServiceManager in main." );
     }
 
+    public static final String RESOURCE_KEY_ID = "Application.id";
+    public static final String RESOURCE_KEY_TITLE = "Application.title";
+    public static final String RESOURCE_KEY_VERSION = "Application.version";
+    public static final String RESOURCE_KEY_ICON = "Application.icon";
+    public static final String RESOURCE_KEY_VENDOR_ID = "Application.vendorId";
+    public static final String RESOURCE_KEY_VENDOR_NAME = "Application.vendor";
+
     public ApplicationInfo( Class<?> applicationClass )
     {
         _applicationClass =
@@ -51,24 +58,17 @@ public class ApplicationInfo
         }
 
         id = arm.get(
-                "Application.id" );
+                RESOURCE_KEY_ID );
         title = arm.get(
-                "Application.title" );
+                RESOURCE_KEY_TITLE );
         version = arm.get(
-                "Application.version" );
-        try
-        {
-            icon = arm.getAs(
-                    "Application.icon", Image.class );
-        }
-        catch ( Exception e )
-        {
-            icon = null;
-        }
+                RESOURCE_KEY_VERSION );
+        icon = arm.getAs(
+                RESOURCE_KEY_ICON, Image.class, null );
         vendor = arm.get(
-                "Application.vendor" );
+                RESOURCE_KEY_VENDOR_NAME );
         vendorId = arm.get(
-                "Application.vendorId" );
+                RESOURCE_KEY_VENDOR_ID );
     }
 
     public Class<?> getApplicationClass()
@@ -79,8 +79,7 @@ public class ApplicationInfo
     private final String id;
 
     /**
-     * Return the application's id as defined in the resources.
-     * @return The application's id.
+     * @return The application's id as defined in the resources.
      */
     public String getId()
     {
@@ -90,8 +89,7 @@ public class ApplicationInfo
     private final String title;
 
     /**
-     * Return the application's title as defined in the resources.
-     * @return The application's title.
+     * @return The application's title as defined in the resources.
      */
     public String getTitle()
     {
@@ -101,8 +99,7 @@ public class ApplicationInfo
     private final String version;
 
     /**
-     * Return the application's version as defined in the resources.
-     * @return The application's version.
+     * @return The application's version as defined in the resources.
      */
     public String getVersion()
     {
@@ -112,8 +109,7 @@ public class ApplicationInfo
     private Image icon;
 
     /**
-     * Return the application's icon as defined in the resources.
-     * @return The application icon.
+     * @return The application's icon as defined in the resources.
      */
     public Image getIcon()
     {
@@ -123,8 +119,7 @@ public class ApplicationInfo
     private final String vendor;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor name as defined in the resources.
      */
     public String getVendor()
     {
@@ -134,8 +129,7 @@ public class ApplicationInfo
     private final String vendorId;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor id as defined in the resources.
      */
     public String getVendorId()
     {
