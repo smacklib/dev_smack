@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -62,6 +64,19 @@ public class ApplicationInfoTest
         assertNotNull( homedir );
         assertTrue( homedir.isDirectory() );
         assertTrue( homedir.canWrite() );
+
+        var appDir = new File(
+                FileUtil.getUserHome(),
+                "." + ai.getId() );
+        assertEquals( appDir, homedir );
+
+        var dummyFile = new File( homedir, getClass().getSimpleName() );
+        dummyFile.createNewFile();
+        try ( FileWriter fw = new FileWriter( dummyFile ) )
+        {
+            fw.write( ai.getTitle() );
+            fw.flush();
+        }
 
         assertTrue( FileUtil.delete( homedir ) );
     }
