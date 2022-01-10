@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.logging.LogManager;
 
 import org.smack.util.JavaUtil;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceUtil;
 
@@ -22,13 +23,19 @@ import org.smack.util.resource.ResourceUtil;
  *
  * @author michab66
  */
-class LoggingService
+public class LoggingService
 {
     private final String _applicationId;
 
     private final File _logDir;
 
-    LoggingService( ApplicationContext ac )
+    public LoggingService()
+    {
+        this( ServiceManager.getApplicationService(
+                ApplicationInfo.class ) );
+    }
+
+    LoggingService( ApplicationInfo ac )
     {
         Objects.requireNonNull( ac );
 

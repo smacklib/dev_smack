@@ -60,7 +60,7 @@ public class ApplicationInfoTest
         var ai = new ApplicationInfo( TestApplication2.class );
         assertEquals( "UsbView2", ai.getTitle() );
 
-        var homedir = ai.getHomeDir();
+        var homedir = ai.getHome();
         assertNotNull( homedir );
         assertTrue( homedir.isDirectory() );
         assertTrue( homedir.canWrite() );

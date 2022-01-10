@@ -19,7 +19,7 @@ public class ApplicationContext
 {
     private final ApplicationInfo _applicationInfo;
 
-    private final LoggingService _loggingService;
+//    private final LoggingService _loggingService;
 
     public static ApplicationContext get()
     {
@@ -36,13 +36,13 @@ public class ApplicationContext
     {
         _applicationInfo =
                 ServiceManager.getApplicationService( ApplicationInfo.class );
-        _loggingService =
-                new LoggingService( this );
+//        _loggingService =
+//                new LoggingService( this );
     }
 
     public File getHome()
     {
-        return _applicationInfo.getHomeDir();
+        return _applicationInfo.getHome();
     }
 
     /**
@@ -50,7 +50,7 @@ public class ApplicationContext
      */
     public File getLogDir()
     {
-        return _loggingService.getLogDir();
+        return null; //_loggingService.getLogDir();
     }
 
     /**

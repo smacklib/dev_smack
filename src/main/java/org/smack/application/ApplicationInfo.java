@@ -83,14 +83,12 @@ public class ApplicationInfo
     }
 
     /**
-     * Get the home directory for the passed application id.  This is
-     * $HOME/.appid.
+     * Get the application's home directory.  This is $HOME/.appid.
      *
-     * @param groupId An group id.
-     * @return The respective log directory.  This directory
-     * is created by this call if it does not exist.
+     * @return The application's home directory.  This is created
+     * by this call if it does not exist.
      */
-    public File getHomeDir()
+    public File getHome()
     {
         var result = new File(
                 FileUtil.getUserHome() + "/." + id );
