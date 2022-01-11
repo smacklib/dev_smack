@@ -7,17 +7,11 @@ import org.junit.Test;
 
 public class JavaUtilTest
 {
-    @Test
+    @Test( expected = RuntimeException.class )
     public void assertPlain()
     {
-        try
-        {
-            JavaUtil.Assert( false );
-            fail();
-        }
-        catch ( Exception e )
-        {
-        }
+        JavaUtil.Assert( false );
+        fail();
     }
 
     @Test
