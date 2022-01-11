@@ -25,10 +25,14 @@ import org.smack.util.resource.ResourceUtil;
  */
 public class LoggingService
 {
-    private final String _applicationId;
-
     private final File _logDir;
 
+    /**
+     * Create an instance.  Requires that ApplicationInfo is available
+     * from the ServiceManager.
+     *
+     * @throws RuntimeException If no ApplicationInfo is found.
+     */
     public LoggingService()
     {
         this( ServiceManager.getApplicationService(
@@ -39,28 +43,27 @@ public class LoggingService
     {
         Objects.requireNonNull( ac );
 
-        _applicationId =
+        String applicationId =
                 ac.getId();
         JavaUtil.Assert(
-                StringUtil.hasContent( _applicationId ),
+                StringUtil.hasContent( applicationId ),
                 "Application.id not set.");
         _logDir =
-                init( ac.getHome(), _applicationId );
+                init( ac.getHome(), applicationId );
     }
 
     LoggingService( File applicationHome, String applicationId )
     {
+        Objects.requireNonNull(
+                applicationHome );
         JavaUtil.Assert(
                 StringUtil.hasContent( applicationId ),
                 "application.id not set.");
-
-        _applicationId =
-                applicationId;
         _logDir =
-                init( applicationHome, _applicationId );
+                init( applicationHome, applicationId );
     }
 
-    File getLogDir()
+    public File getLogDir()
     {
         return _logDir;
     }
@@ -69,7 +72,7 @@ public class LoggingService
      * Get the log directory for the passed application id.  This is
      * $HOME/.appid/log/.
      *
-     * @param groupId An group id.
+     * @param applicationHome An application id.
      * @return The respective log directory.  This directory
      * is created by this call if it does not exist.
      */
@@ -135,21 +138,39 @@ public class LoggingService
     /**
      * Initialize logging.
      *
-     * @param groupId A group id.
+     * @param applicationHome The application home directory.
      * @param applicationId An application id.
      * @throws Exception
      */
     private static File init( File applicationHome, String applicationId )
     {
+        Objects.requireNonNull( applicationHome );
+        JavaUtil.Assert(
+                applicationHome.exists(),
+                "applicationHome does not exist: %s",
+                applicationHome );
         try
         {
             return initImpl(
                     createLogDir( applicationHome ),
                     applicationId );
         }
+        catch ( RuntimeException e )
+        {
+            throw e;
+        }
         catch ( Exception e )
         {
             throw new RuntimeException( e );
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format(
+                "%s( _logDir='%s' )",
+                getClass().getSimpleName(),
+                _logDir );
     }
 }

@@ -19,23 +19,55 @@ public class JavaUtil
     private static final Logger LOG =
             Logger.getLogger( JavaUtil.class.getName() );
 
+    private static class AssertionException extends RuntimeException
+    {
+        private static final long serialVersionUID = -2923329590438227638L;
+
+        public AssertionException()
+        {
+        }
+        public AssertionException( String msg )
+        {
+            super( msg );
+        }
+    }
+
     private JavaUtil()
     {
-        throw new AssertionError();
+        throw new AssertionException();
     }
 
     public static void Assert( boolean condition, String message )
     {
         if ( condition )
             return;
-        throw new AssertionError( message );
+        throw new AssertionException( message );
+    }
+
+    /**
+     * Performs an Assertion with a formatted exception in case the
+     * assertion does not hold.
+     *
+     * @param condition A condition that is asserted to return true.
+     * @param message A format expression.
+     * @param args Format arguments.
+     */
+    public static void Assert(
+            boolean condition,
+            String format,
+            Object ... args )
+    {
+        if ( condition )
+            return;
+        throw new AssertionException(
+                String.format( format, args ) );
     }
 
     public static void Assert( boolean condition )
     {
         if ( condition )
             return;
-        throw new AssertionError();
+        throw new AssertionException();
     }
 
     /**
@@ -125,7 +157,6 @@ public class JavaUtil
 
     /**
      * Initialize and return an object.
-     *
      *
      * <pre>
      * private static JTextArea ghEditWnd = init(

@@ -1,11 +1,53 @@
 package org.smack.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 public class JavaUtilTest
 {
+    @Test
+    public void assertPlain()
+    {
+        try
+        {
+            JavaUtil.Assert( false );
+            fail();
+        }
+        catch ( Exception e )
+        {
+        }
+    }
+
+    @Test
+    public void assertMessage()
+    {
+        try
+        {
+            JavaUtil.Assert( false, "Donald" );
+            fail();
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Donald", e.getMessage() );
+        }
+    }
+
+    @Test
+    public void assertFormatted()
+    {
+        try
+        {
+            JavaUtil.Assert( false, "%s%d", "Donald", 313  );
+            fail();
+        }
+        catch ( Exception e )
+        {
+            assertEquals( "Donald313", e.getMessage() );
+        }
+    }
+
     @Test
     public void fmtX()
     {
