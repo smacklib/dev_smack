@@ -34,7 +34,7 @@ public class JavaUtil
 
     private JavaUtil()
     {
-        throw new AssertionException();
+        throw new AssertionError();
     }
 
     public static void Assert( boolean condition, String message )
