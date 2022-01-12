@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import java.time.Month;
 
 import org.junit.Test;
-import org.smack.util.EnumArray;
 
 public class EnumArrayTest
 {
