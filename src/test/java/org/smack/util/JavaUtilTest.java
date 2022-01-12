@@ -3,6 +3,8 @@ package org.smack.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import javax.swing.JButton;
+
 import org.junit.Test;
 
 public class JavaUtilTest
@@ -55,5 +57,20 @@ public class JavaUtilTest
         Exception e = JavaUtil.fmtX( cause, "%s%s", "mic", "binz" );
         assertEquals( "micbinz", e.getMessage() );
         assertEquals( cause, e.getCause() );
+    }
+
+    @Test
+    public void makeTest()
+    {
+        JButton b = JavaUtil.make(
+                () -> {
+                    var result = new JButton();
+                    result.setText( "text" );
+                    result.setName( "name" );
+                    return result;
+                });
+
+        assertEquals( "text", b.getText() );
+        assertEquals( "name", b.getName() );
     }
 }

@@ -5,7 +5,7 @@
  */
 package org.smack.util;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -156,12 +156,12 @@ public class JavaUtil
     }
 
     /**
-     * Initialize and return an object.
+     * Initialize and return an object in a closed scope.
      *
      * <pre>
-     * private static JTextArea ghEditWnd = init(
-     *   new JTextArea(),
-     *   n -> {
+     * private static JTextArea ghEditWnd = make(
+     *   () -> {
+     *     var n = new JTextArea(),
      *     n.setEditable(
      *            false );
      *     n.setFont( new Font(
@@ -177,8 +177,8 @@ public class JavaUtil
      * @param makeit A function that initializes the object.
      * @return The initialized instance.
      */
-    public static <T> T init( T t, Function<T, T> makeit )
+    public static <T> T make( Supplier<T> makeit )
     {
-        return makeit.apply( t );
+        return makeit.get();
     }
 }
