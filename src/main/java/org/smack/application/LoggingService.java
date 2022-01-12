@@ -1,7 +1,7 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2017-21 Michael G. Binz
+ * Copyright © 2017-2022 Michael G. Binz
  */
 package org.smack.application;
 
@@ -13,8 +13,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.LogManager;
 
-import org.smack.util.FileUtil;
 import org.smack.util.JavaUtil;
+import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceUtil;
 
@@ -23,50 +23,47 @@ import org.smack.util.resource.ResourceUtil;
  *
  * @author michab66
  */
-final class LoggingService
+public class LoggingService
 {
-    private final String _groupId;
-
-    private final String _applicationId;
-
     private final File _logDir;
 
-    LoggingService( ApplicationContext ac )
+    /**
+     * Create an instance.  Requires that ApplicationInfo is available
+     * from the ServiceManager.
+     *
+     * @throws RuntimeException If no ApplicationInfo is found.
+     */
+    public LoggingService()
+    {
+        this( ServiceManager.getApplicationService(
+                ApplicationInfo.class ) );
+    }
+
+    LoggingService( ApplicationInfo ac )
     {
         Objects.requireNonNull( ac );
 
-        _applicationId =
+        String applicationId =
                 ac.getId();
         JavaUtil.Assert(
-                StringUtil.hasContent( _applicationId ),
+                StringUtil.hasContent( applicationId ),
                 "Application.id not set.");
-
-        var vendorId =
-                ac.getVendorId();
-        _groupId =
-                StringUtil.hasContent( vendorId ) ? vendorId : _applicationId;
         _logDir =
-                init( _groupId, _applicationId );
+                init( ac.getHome(), applicationId );
     }
 
-    LoggingService( String groupId, String applicationId )
+    LoggingService( File applicationHome, String applicationId )
     {
-        JavaUtil.Assert(
-                StringUtil.hasContent( groupId ),
-                "group.id not set.");
+        Objects.requireNonNull(
+                applicationHome );
         JavaUtil.Assert(
                 StringUtil.hasContent( applicationId ),
                 "application.id not set.");
-
-        _groupId =
-                groupId;
-        _applicationId =
-                applicationId;
         _logDir =
-                init( _groupId, _applicationId );
+                init( applicationHome, applicationId );
     }
 
-    File getLogDir()
+    public File getLogDir()
     {
         return _logDir;
     }
@@ -75,18 +72,20 @@ final class LoggingService
      * Get the log directory for the passed application id.  This is
      * $HOME/.appid/log/.
      *
-     * @param groupId An group id.
+     * @param applicationHome An application id.
      * @return The respective log directory.  This directory
      * is created by this call if it does not exist.
      */
-    private static File createLogDir( String groupId )
+    private static File createLogDir( File applicationHome )
     {
         try
         {
-            // Check if the logging directory exists.
             var logDir = new File(
-                    FileUtil.getUserHome() + "/." + groupId + "/log/" );
+                    applicationHome,
+                    "log/" );
 
+            if ( logDir.exists() && ! logDir.isDirectory() )
+                Files.delete( logDir.toPath() );
             if ( !logDir.exists() )
                 Files.createDirectories( logDir.toPath() );
 
@@ -139,21 +138,39 @@ final class LoggingService
     /**
      * Initialize logging.
      *
-     * @param groupId A group id.
+     * @param applicationHome The application home directory.
      * @param applicationId An application id.
      * @throws Exception
      */
-    private static File init( String groupId, String applicationId )
+    private static File init( File applicationHome, String applicationId )
     {
+        Objects.requireNonNull( applicationHome );
+        JavaUtil.Assert(
+                applicationHome.exists(),
+                "applicationHome does not exist: %s",
+                applicationHome );
         try
         {
             return initImpl(
-                    createLogDir( groupId ),
+                    createLogDir( applicationHome ),
                     applicationId );
+        }
+        catch ( RuntimeException e )
+        {
+            throw e;
         }
         catch ( Exception e )
         {
             throw new RuntimeException( e );
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format(
+                "%s( _logDir='%s' )",
+                getClass().getSimpleName(),
+                _logDir );
     }
 }

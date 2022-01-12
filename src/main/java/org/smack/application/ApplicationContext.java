@@ -7,23 +7,25 @@ package org.smack.application;
 
 import java.awt.Image;
 import java.io.File;
-import java.util.Objects;
 
 import org.smack.util.ServiceManager;
-import org.smack.util.StringUtil;
-import org.smack.util.resource.ResourceManager;
 
 /**
  * Application information.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class ApplicationContext
 {
-    private final Class<?> _applicationClass;
+    private final ApplicationInfo _applicationInfo;
 
-    private final LoggingService _loggingService;
+//    private final LoggingService _loggingService;
+
+    public static ApplicationContext get()
+    {
+        return ServiceManager.getApplicationService(
+                ApplicationContext.class );
+    }
 
     /**
      * Catches automatic instantiation in ServiceManager, being not
@@ -32,47 +34,15 @@ public class ApplicationContext
      */
     public ApplicationContext()
     {
-        throw new IllegalStateException( "Init ServiceManager in main." );
+        _applicationInfo =
+                ServiceManager.getApplicationService( ApplicationInfo.class );
+//        _loggingService =
+//                new LoggingService( this );
     }
 
-    public ApplicationContext( Class<?> applicationClass )
+    public File getHome()
     {
-        _applicationClass =
-               Objects.requireNonNull( applicationClass );
-        ResourceManager rm =
-                ServiceManager.getApplicationService(
-                        ResourceManager.class );
-        var arm =
-                rm.getResourceMap2( _applicationClass );
-        var SC =
-                String.class;
-        id = arm.getAs(
-                "Application.id",
-                SC,
-                _applicationClass::getSimpleName );
-        title = arm.getAs(
-                "Application.title",
-                SC,
-                id );
-        version = arm.getAs(
-                "Application.version",
-                SC,
-                "0.0.0" );
-        icon = arm.getAs(
-                "Application.icon",
-                Image.class,
-                (Image)null );
-        vendor = arm.getAs(
-                "Application.vendor",
-                SC,
-                StringUtil.EMPTY_STRING );
-        vendorId = arm.getAs(
-                "Application.vendorId",
-                SC,
-                StringUtil.EMPTY_STRING );
-
-        _loggingService =
-                new LoggingService( this );
+        return _applicationInfo.getHome();
     }
 
     /**
@@ -80,7 +50,7 @@ public class ApplicationContext
      */
     public File getLogDir()
     {
-        return _loggingService.getLogDir();
+        return null; //_loggingService.getLogDir();
     }
 
     /**
@@ -88,66 +58,54 @@ public class ApplicationContext
      */
     public Class<?> getApplicationClass()
     {
-        return _applicationClass;
+        return _applicationInfo.getApplicationClass();
     }
-
-    private final String id;
 
     /**
      * @return The application's id as defined in the resources.
      */
     public String getId()
     {
-        return id;
+        return _applicationInfo.getId();
     }
-
-    private final String title;
 
     /**
      * @return The application's title as defined in the resources.
      */
     public String getTitle()
     {
-        return title;
+        return _applicationInfo.getTitle();
     }
-
-    private final String version;
 
     /**
      * @return The application's version as defined in the resources.
      */
     public String getVersion()
     {
-        return version;
+        return _applicationInfo.getVersion();
     }
-
-    private Image icon;
 
     /**
      * @return The application's icon as defined in the resources.
      */
     public Image getIcon()
     {
-        return icon;
+        return _applicationInfo.getIcon();
     }
-
-    private final String vendor;
 
     /**
      * @return The application's vendor as defined in the resources.
      */
     public String getVendor()
     {
-        return vendor;
+        return _applicationInfo.getVendor();
     }
-
-    private final String vendorId;
 
     /**
      * @return The application's vendor as defined in the resources.
      */
     public String getVendorId()
     {
-        return vendorId;
+        return _applicationInfo.getVendorId();
     }
 }

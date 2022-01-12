@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +37,9 @@ import org.smack.util.converters.StringConverter;
 @SuppressWarnings("serial")
 public class ResourceMap extends HashMap<String, String>
 {
+    private static final Logger LOG =
+            Logger.getLogger( ResourceMap.class.getName() );
+
     /**
      * The class corresponding to this map.  Never {@code null}.
      */
@@ -372,7 +375,7 @@ public class ResourceMap extends HashMap<String, String>
                             ckey.substring( classPrefix.length() ),
                             value );
                 }
-                else
+                else if ( ! ckey.contains( "." ) )
                 {
                     put(
                             classPrefix + ckey,
@@ -436,14 +439,16 @@ public class ResourceMap extends HashMap<String, String>
      * @param <T> The expected target type.
      * @param targetType The expected result type.
      * @param key The property key to convert.
+     * @param orDefault The value to return if the key is not found.
      * @return The conversion result.
      */
-    public <T> T getAs( String key, Class<T> targetType, Supplier<T> orDefault )
+    public <T> T getAs( String key, Class<T> targetType, T orDefault )
     {
+        if ( ! containsKey( key ) )
+            return orDefault;
+
         String resolved =
                 get( key );
-        if ( resolved == null )
-            return orDefault.get();
 
         try
         {
@@ -456,25 +461,60 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( Exception e )
         {
-            return orDefault.get();
+            return orDefault;
         }
     }
 
     /**
-     * Convert the passed key to a target type.
+     * If no arguments are specified, return the String value
+     * of the resource named <tt>key</tt>.  This is
+     * equivalent to calling <tt>getObject(key, String.class)</tt>
+     * If arguments are provided, then the type of the resource
+     * named <tt>key</tt> is assumed to be
+     * {@link String#format(String, Object...) format} string,
+     * which is applied to the arguments if it's non null.
+     * For example, given the following resources
+     * <pre>
+     * hello = Hello %s
+     * </pre>
+     * then the value of <tt>getString("hello", "World")</tt> would
+     * be <tt>"Hello World"</tt>.
      *
-     * @param <T> The expected target type.
-     * @param targetType The expected result type.
-     * @param key The property key to convert.
-     * @return The conversion result.
+     * @param key The resource key. null is not allowed.
+     * @param args
+     * @return the formatted String value of the resource named <tt>key</tt>.
+     * @see String#format(String, Object...)
      */
-    public <T> T getAs( String key, Class<T> targetType, T orDefault )
+    public String getFormatted(String key, Object... args)
     {
-        Supplier<T> defaultSupplier =
-                () -> {return orDefault;};
-        return getAs(
-                key,
-                targetType,
-                defaultSupplier );
+        Objects.requireNonNull( key );
+
+        if ( ! containsKey( key ) )
+            return null;
+
+        var value = get( key );
+
+        if ( JavaUtil.isEmptyArray( args ) )
+            return value;
+
+        return String.format( value, args );
+    }
+
+    /**
+     * Get the value the key is mapped.  The operation propagates along the
+     * superclass chain.
+     *
+     * @return The value associated with key, null if no mapping was found.
+     */
+    @Override
+    public String get( Object key )
+    {
+        if ( containsKey( key ) )
+            return super.get( key );
+
+        if ( _class.getSuperclass() == null )
+            return null;
+
+        return getResourceMapExt( _class.getSuperclass() ).get( key );
     }
 }

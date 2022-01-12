@@ -9,10 +9,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class ApplicationContextTest
+public class LocalStorageTest
 {
     @Test
     public void plain() throws IOException
     {
+        var ls = new LocalStorage( "smacktest", getClass().getSimpleName() );
+        System.out.println( ls.getDirectory() );
     }
 }

@@ -228,4 +228,14 @@ public class ReflectionUtilTest
 
         assertEquals( 2, count[0] );
     }
+
+    @Test
+    public void testGetInheritanceList() throws Exception
+    {
+        var il = ReflectionUtil.getInheritanceList( Short.class );
+        assertEquals( 3, il.size() );
+        assertEquals( Short.class, il.get(0) );
+        assertEquals( Number.class, il.get(1) );
+        assertEquals( Object.class, il.get(2) );
+    }
 }

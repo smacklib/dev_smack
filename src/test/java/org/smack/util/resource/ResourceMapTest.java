@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.Supplier;
-
 import org.junit.Test;
 
 public class ResourceMapTest
@@ -79,11 +77,6 @@ public class ResourceMapTest
             assertEquals( 313, val.shortValue() );
         }
         {
-            Supplier<Short> s = () -> { return 314; };
-            var val = map.getAs( "qualified", Short.class, s );
-            assertEquals( 314, val.shortValue() );
-        }
-        {
             var val = map.getAs( "314", Short.class, (short)0 );
             assertEquals( 314, val.shortValue() );
         }
@@ -115,5 +108,16 @@ public class ResourceMapTest
                 ResourceMap.getResourceMapExt( String.class );
         assertNotNull( map );
         assertTrue( map.size() == 0 );
+    }
+
+    @Test
+    public void testGetFormatted() throws Exception
+    {
+        var map =
+                ResourceMap.getResourceMap( getClass() );
+        assertNotNull( map );
+
+        var val = map.getFormatted( "format_ss", "Don", "ald" );
+            assertEquals( "Donald", val );
     }
 }

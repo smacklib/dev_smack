@@ -31,13 +31,29 @@ import org.smack.util.StringUtil;
  * @author Michael Binz
  * @author Hans Muller (Hans.Muller@Sun.COM)
  */
-final class LocalStorage
+public final class LocalStorage
 {
     private LocalIO localIO = null;
 
     private final File unspecifiedFile = new File("unspecified");
 
     private File directory = unspecifiedFile;
+
+    /**
+     * Create an instance.
+     */
+    LocalStorage( String appId, String vendorId )
+    {
+        _vendorId =
+                appId;
+        _applicationId =
+                vendorId;
+
+        if ( StringUtil.isEmpty( _vendorId ) )
+            throw new IllegalArgumentException("Empty vendorId");
+        if ( StringUtil.isEmpty( _applicationId ) )
+            throw new IllegalArgumentException("Empty applicationId");
+    }
 
     /**
      * Create an instance.
@@ -59,6 +75,14 @@ final class LocalStorage
                 vendorId.trim();
         _applicationId =
                 applicationId.trim();
+    }
+
+    /**
+     * Create an instance.
+     */
+    LocalStorage( ApplicationContext a )
+    {
+        this( a.getId(), a.getVendorId() );
     }
 
     private void checkFileName(String fileName) {
@@ -300,7 +324,7 @@ final class LocalStorage
     /**
      * @return The directory where the local storage is located.
      */
-    private File getDirectory() {
+    public File getDirectory() {
         if (directory == unspecifiedFile) {
             directory = null;
             String userHome = null;

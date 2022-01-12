@@ -18,7 +18,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -212,6 +215,17 @@ public class ResourceManager
             injectResources( o, o.getClass() );
     }
 
+    private Field[] getAllFields(Class<?> cl)
+    {
+        List<Field> result =
+                new ArrayList<>();
+
+        for ( ; cl != null ; cl = cl.getSuperclass() )
+            result.addAll(Arrays.asList(cl.getDeclaredFields()));
+
+        return result.toArray( new Field[result.size()] );
+    }
+
     public void injectResources( Object instance, Class<?> cl )
     {
         if ( instance == null && staticInjectionDone.containsKey( cl ) )
@@ -224,7 +238,7 @@ public class ResourceManager
 
         ReflectionUtil.processAnnotation(
                 Resource.class,
-                cl::getDeclaredFields,
+                () -> getAllFields(cl),
                 s -> {
                     if ( instance == null )
                         return Modifier.isStatic( s.getModifiers() );
@@ -241,7 +255,7 @@ public class ResourceManager
                     if ( StringUtil.isEmpty( name ) )
                         name = String.format(
                                 "%s.%s",
-                                cl.getSimpleName(),
+                                f.getDeclaringClass().getSimpleName(),
                                 f.getName() );
 
                     String value = map.get( name );

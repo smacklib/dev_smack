@@ -1,22 +1,22 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Common.
- *
- * Released under Gnu Public License
- * Copyright © 2016 Michael G. Binz
+ * Copyright © 2016-2022 Michael G. Binz
  */
 package org.smack.application;
 
 import java.awt.Image;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Objects;
 
+import org.smack.util.FileUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 
 /**
  * Application information.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class ApplicationInfo
@@ -30,8 +30,18 @@ public class ApplicationInfo
      */
     public ApplicationInfo()
     {
-        throw new IllegalStateException( "Init ServiceManager in main." );
+        throw new IllegalStateException(
+           "Init in main: " +
+            "ServiceManager.initApplicationService( " +
+            "new ApplicationInfo( yourApplication.class ) );" );
     }
+
+    public static final String RESOURCE_KEY_ID = "Application.id";
+    public static final String RESOURCE_KEY_TITLE = "Application.title";
+    public static final String RESOURCE_KEY_VERSION = "Application.version";
+    public static final String RESOURCE_KEY_ICON = "Application.icon";
+    public static final String RESOURCE_KEY_VENDOR_ID = "Application.vendorId";
+    public static final String RESOURCE_KEY_VENDOR_NAME = "Application.vendor";
 
     public ApplicationInfo( Class<?> applicationClass )
     {
@@ -43,25 +53,28 @@ public class ApplicationInfo
         var arm =
                 rm.getResourceMap( _applicationClass );
 
+        if ( arm == null )
+        {
+            var msg = String.format(
+                    "Application resources not found."
+                    + " Missing 'opens %s;' in module-info.java?",
+                    applicationClass.getPackage().getName() );
+
+            throw new IllegalArgumentException( msg );
+        }
+
         id = arm.get(
-                "Application.id" );
+                RESOURCE_KEY_ID );
         title = arm.get(
-                "Application.title" );
+                RESOURCE_KEY_TITLE );
         version = arm.get(
-                "Application.version" );
-        try
-        {
-            icon = arm.getAs(
-                    "Application.icon", Image.class );
-        }
-        catch ( Exception e )
-        {
-            icon = null;
-        }
+                RESOURCE_KEY_VERSION );
+        icon = arm.getAs(
+                RESOURCE_KEY_ICON, Image.class, null );
         vendor = arm.get(
-                "Application.vendor" );
+                RESOURCE_KEY_VENDOR_NAME );
         vendorId = arm.get(
-                "Application.vendorId" );
+                RESOURCE_KEY_VENDOR_ID );
     }
 
     public Class<?> getApplicationClass()
@@ -69,11 +82,43 @@ public class ApplicationInfo
         return _applicationClass;
     }
 
+    /**
+     * Get the application's home directory.  This is $HOME/.appid.
+     *
+     * @return The application's home directory.  This is created
+     * by this call if it does not exist.
+     */
+    public File getHome()
+    {
+        var result = new File(
+                FileUtil.getUserHome() + "/." + id );
+
+        if ( result.exists() && result.isDirectory() )
+            return result;
+
+        try
+        {
+            var path = result.toPath();
+
+            if ( result.exists() && !result.isDirectory() )
+                Files.delete( path );
+
+            if ( !result.exists() )
+                Files.createDirectories( path );
+
+            return result;
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException(
+                    "Could not create home directory: " + result  );
+        }
+    }
+
     private final String id;
 
     /**
-     * Return the application's id as defined in the resources.
-     * @return The application's id.
+     * @return The application's id as defined in the resources.
      */
     public String getId()
     {
@@ -83,8 +128,7 @@ public class ApplicationInfo
     private final String title;
 
     /**
-     * Return the application's title as defined in the resources.
-     * @return The application's title.
+     * @return The application's title as defined in the resources.
      */
     public String getTitle()
     {
@@ -94,8 +138,7 @@ public class ApplicationInfo
     private final String version;
 
     /**
-     * Return the application's version as defined in the resources.
-     * @return The application's version.
+     * @return The application's version as defined in the resources.
      */
     public String getVersion()
     {
@@ -105,8 +148,7 @@ public class ApplicationInfo
     private Image icon;
 
     /**
-     * Return the application's icon as defined in the resources.
-     * @return The application icon.
+     * @return The application's icon as defined in the resources.
      */
     public Image getIcon()
     {
@@ -116,8 +158,7 @@ public class ApplicationInfo
     private final String vendor;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor name as defined in the resources.
      */
     public String getVendor()
     {
@@ -127,8 +168,7 @@ public class ApplicationInfo
     private final String vendorId;
 
     /**
-     * Return the application's vendor as defined in the resources.
-     * @return The vendor name.
+     * @return The application's vendor id as defined in the resources.
      */
     public String getVendorId()
     {

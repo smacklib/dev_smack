@@ -11,13 +11,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.smack.DisposeHook;
 import org.smack.util.FileUtil;
 import org.smack.util.collections.CollectionUtil;
 import org.smack.util.io.Redirect;
@@ -34,25 +37,42 @@ public class LoggingServiceTest
         assertEquals( 0, d.list().length );
     }
 
+    private File createTestHome()
+    {
+        try
+        {
+            return Files.createTempDirectory( getClass().getSimpleName() ).toFile();
+        }
+        catch ( IOException e )
+        {
+            throw new AssertionError( "Could not create temp dir." );
+        }
+    }
+
     @Test
     public void plain() throws IOException
     {
+        var testHome = createTestHome();
+
         LoggingService ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
 
         assertTrue( ls.getLogDir().exists() );
         FileUtil.delete( ls.getLogDir() );
         assertFalse( ls.getLogDir().exists() );
 
         ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
         assertTrue( ls.getLogDir().exists() );
+
+        FileUtil.delete( testHome );
     }
 
-    @Test
-    public void logOutputStderr() throws IOException
+    public void logOutputStderrImpl() throws IOException
     {
-        new LoggingService( "smacktest", getClass().getSimpleName() );
+        var testHome = createTestHome();
+
+        new LoggingService( testHome, getClass().getSimpleName() );
 
         var log = Logger.getLogger( getClass().getName() );
 
@@ -69,13 +89,29 @@ public class LoggingServiceTest
             // info messages are not printed to stderr.
             assertTrue( errout.isEmpty() );
         }
+
+        FileUtil.delete( testHome );
     }
 
     @Test
-    public void logOutputFile() throws IOException
+    public void logOutputStderr() throws IOException
     {
+        var originalLocale = Locale.getDefault();
+
+        try ( var cleanup = new DisposeHook(
+                () -> Locale.setDefault( originalLocale ) ) )
+        {
+            Locale.setDefault( Locale.US );
+            logOutputStderrImpl();
+        }
+    }
+
+    public void logOutputFileImpl() throws IOException
+    {
+        var testHome = createTestHome();
+
         LoggingService ls =
-                new LoggingService( "smacktest", getClass().getSimpleName() );
+                new LoggingService( testHome, getClass().getSimpleName() );
         clearDirectory( ls.getLogDir() );
 
         var log = Logger.getLogger( getClass().getName() );
@@ -101,5 +137,20 @@ public class LoggingServiceTest
         assertTrue( lines.contains( "SEVERE: severe" ) );
         assertTrue( lines.contains( "WARNING: warning" ) );
         assertTrue( lines.contains( "INFO: info" ) );
+
+        FileUtil.delete( testHome );
+    }
+
+    @Test
+    public void logOutputFile() throws IOException
+    {
+        var originalLocale = Locale.getDefault();
+
+        try ( var cleanup = new DisposeHook(
+                () -> Locale.setDefault( originalLocale ) ) )
+        {
+            Locale.setDefault( Locale.US );
+            logOutputFileImpl();
+        }
     }
 }

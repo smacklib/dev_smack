@@ -164,4 +164,30 @@ public class ResourceManagerTest
         var map = _rm.getResourceMap( Pair.class );
         assertNull( map );
     }
+
+    @Test
+    public void testInject_T_1()
+    {
+        T_BaseClass c = new T_BaseClass();
+        _rm.injectResources( c );
+        assertEquals( "T_BaseClass", c.name );
+    }
+
+    @Test
+    public void testInject_T_2()
+    {
+        T_BaseClass c = new T_SuperClass();
+        _rm.injectResources( c );
+        assertEquals( "T_Overridden", c.name );
+    }
+
+    @Test
+    public void testInject_T_3()
+    {
+        T_SuperClass c = new T_SuperClass();
+        _rm.injectResources( c );
+        assertEquals( "T_SuperClass", c.name );
+        T_BaseClass b = c;
+        assertEquals( "T_Overridden", b.name );
+    }
 }

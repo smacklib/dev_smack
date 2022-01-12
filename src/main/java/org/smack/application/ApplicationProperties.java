@@ -5,6 +5,8 @@
 package org.smack.application;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,7 +41,6 @@ public class ApplicationProperties
     private static final Logger L =
             Logger.getLogger( ApplicationProperties.class.getName() );
 
-    private final LocalStorage _localStorage;
     private final File _fileName;
 
     private final Map<String, String> _storage;
@@ -49,32 +50,33 @@ public class ApplicationProperties
      *
      * @param application The application requesting the service.
      */
-    @SuppressWarnings("unchecked")
-    ApplicationProperties()
+    public ApplicationProperties()
     {
-        ApplicationInfo info =
-                ServiceManager.getApplicationService( ApplicationInfo.class );
+        var ctx =
+                ServiceManager.getApplicationService( ApplicationContext.class );
 
-        _fileName = new File( String.format( "%s_%s.aps",
-                info.getId(),
-                info.getVendorId() ) );
+        _fileName =
+                new File( ctx.getHome(), "application.props" );
+        _storage =
+                initStorage( _fileName );
+    }
 
-        _localStorage =
-                ServiceManager.getApplicationService( LocalStorage.class );
-
-        Map<String, String> localMap;
-
+    @SuppressWarnings("unchecked")
+    private static Map<String, String> initStorage( File from )
+    {
         try ( ObjectInputStream is = new ObjectInputStream(
-                    _localStorage.openInputFile( _fileName ) ) )
+                new FileInputStream( from ) ) )
         {
-            localMap = (Map<String, String>)is.readObject();
+            return (Map<String, String>)is.readObject();
         }
         catch ( Exception e )
         {
-            localMap = new HashMap<>();
+            L.log(
+                    Level.INFO,
+                    String.format( "Could not load '%s'.", from ),
+                    e );
+            return new HashMap<>();
         }
-
-        _storage = localMap;
     }
 
     /**
@@ -250,7 +252,7 @@ public class ApplicationProperties
     private void flush()
     {
         try ( ObjectOutputStream oos =
-                new ObjectOutputStream( _localStorage.openOutputFile( _fileName ) ) )
+                new ObjectOutputStream( new FileOutputStream( _fileName ) ) )
         {
             oos.writeObject( _storage );
             oos.flush();

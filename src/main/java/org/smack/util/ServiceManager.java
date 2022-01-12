@@ -7,6 +7,7 @@
  */
 package org.smack.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,14 @@ public final class ServiceManager
     }
 
     /**
+     * Used in testing.
+     */
+    public static synchronized void clear()
+    {
+        _singletons.clear();
+    }
+
+    /**
      * Get an application service of the specified type.
      *
      * @param <T> The service type.
@@ -43,13 +52,26 @@ public final class ServiceManager
      */
     public static synchronized <T> T getApplicationService( Class<T> singletonType )
     {
-        if ( !  _singletons.containsKey( singletonType ) )
+        if ( ! _singletons.containsKey( singletonType ) )
         {
             try
             {
                 _singletons.put(
                         singletonType,
                         ReflectionUtil.createInstanceX( singletonType ) );
+            }
+            catch ( RuntimeException e )
+            {
+                throw e;
+            }
+            catch ( InvocationTargetException e )
+            {
+                var cause = e.getCause();
+
+                if ( cause instanceof RuntimeException )
+                    throw (RuntimeException)cause;
+
+                throw new RuntimeException( e );
             }
             catch ( Exception e )
             {
