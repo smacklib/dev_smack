@@ -22,14 +22,12 @@ import java.util.Objects;
 
 import javax.crypto.Cipher;
 
-import org.smack.application.CliApplication;
-
 /**
  * Security utilities.
  *
  * @author Michael Binz
  */
-public class SecurityUtil extends CliApplication
+public class SecurityUtil
 {
     /**
      * The algorithm used by the sign/verify operations.
