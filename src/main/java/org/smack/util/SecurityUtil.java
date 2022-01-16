@@ -10,9 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -20,11 +18,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Objects;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 /**
  * Security utilities.
@@ -33,10 +29,15 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class SecurityUtil
 {
+    /**
+     * The algorithm used by the sign/verify operations.
+     */
+    public static final String SIGN_ALGORITHM = "RSA";
+
     private final static String ALGORITHM =
-            "SHA1withDSA";
+            "SHA1withRSA";
     private final static String PROVIDER =
-            "SUN";
+            "SunRsaSign";
 
     /**
      * Check if the passed data has a valid signature.
@@ -46,20 +47,27 @@ public class SecurityUtil
      * @param data The signed data.
      * @return True if the verification succeeded.
      */
-    public static boolean performVerify(
+    public static boolean verifySignature(
             PublicKey pub,
-            byte[] sign,
-            byte[] data )
+            byte[] data,
+            byte[] signature )
     {
+        Signature sig = JavaUtil.make( () -> {
+            try
+            {
+                return Signature.getInstance(ALGORITHM, PROVIDER);
+            }
+            catch (Exception e) {
+                throw new RuntimeException( e );
+            }
+        });
+
         try
         {
-            Signature signature =
-                    Signature.getInstance(ALGORITHM, PROVIDER);
+            sig.initVerify( pub );
+            sig.update( data );
 
-            signature.initVerify( pub );
-            signature.update( data );
-
-            return signature.verify( sign );
+            return sig.verify( signature );
         }
         catch ( Exception e )
         {
@@ -74,8 +82,11 @@ public class SecurityUtil
      * @param data The data to sign.
      * @return The binary signature.
      * @throws Exception In case of an error.
+     * @see #verifySignature(PublicKey, byte[], byte[])
      */
-    public static byte[] performSign( PrivateKey priv, byte[] data ) throws Exception
+    public static byte[] sign(
+            PrivateKey priv,
+            byte[] data ) throws Exception
     {
         Signature signature =
                 Signature.getInstance(ALGORITHM, PROVIDER);
@@ -156,35 +167,97 @@ public class SecurityUtil
         }
     }
 
-    public static byte[] encrypt(byte[] data, PrivateKey key)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            UnsupportedEncodingException, IllegalBlockSizeException,
-            BadPaddingException, InvalidKeyException
-    {
-        Cipher cipher =
-                Cipher.getInstance( "RSA" );
-        cipher.init(
-                Cipher.ENCRYPT_MODE, key );
+    /**
+     * The transformation used by the encrypt/decrypt operations.
+     */
+    public static final String CIPHER_ALGORITHM = "RSA";
 
-        return cipher.doFinal( data );
+    private static Cipher getCipher( String alg )
+    {
+        try {
+            return Cipher.getInstance( CIPHER_ALGORITHM );
+        }
+        catch ( Exception e )
+        {
+            // This is an implementation or config error.  Convert
+            // to runtime exceptions.
+            throw new RuntimeException( "No Cipher for: " + CIPHER_ALGORITHM, e );
+        }
     }
 
-    public static byte[] decrypt( byte[] encryptedData, PublicKey key )
+    /**
+     * Encrypt the passed data.
+     *
+     * @param data The payload to encrypt.
+     * @param key The encryption key.
+     * @return The encrypted data.
+     *
+     * @throws InvalidKeyException
+     * @see #decrypt(byte[], PublicKey)
+     */
+    public static byte[] encrypt( PrivateKey key, byte[] data )
+        throws
+            InvalidKeyException
+    {
+        Objects.requireNonNull( data );
+        Objects.requireNonNull( key );
+
+        Cipher cipher = getCipher( CIPHER_ALGORITHM );
+
+        cipher.init(
+                Cipher.ENCRYPT_MODE,
+                key );
+
+        try
+        {
+            return cipher.doFinal( data );
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * An exception thrown if decryption failed.
+     */
+    public static class DecryptionFailed extends Exception {
+        private static final long serialVersionUID = 7569124449541888813L;
+
+        DecryptionFailed( Exception cause )
+        {
+            super( cause );
+        }
+    }
+
+    /**
+     * Decrypt the passed data.
+     *
+     * @param encryptedData The data to decrypt.
+     * @param key The key used for decryption.
+     * @return The decrypted data.
+     * @throws InvalidKeyException If the passed key is invalid.
+     * @throws DecryptionFailed If the decryption step failed.
+     */
+    public static byte[] decrypt( PublicKey key, byte[] encryptedData )
             throws
                 InvalidKeyException,
-                UnsupportedEncodingException,
-                IllegalBlockSizeException,
-                BadPaddingException,
-                NoSuchAlgorithmException,
-                NoSuchPaddingException
+                DecryptionFailed
     {
-        Cipher cipher =
-                Cipher.getInstance( "RSA" );
-        cipher.init(
-                Cipher.DECRYPT_MODE, key );
+        Cipher cipher = getCipher( CIPHER_ALGORITHM );
 
-        return cipher.doFinal(
-                encryptedData );
+        cipher.init(
+                Cipher.DECRYPT_MODE, Objects.requireNonNull( key ) );
+
+        try {
+            return cipher.doFinal( encryptedData );
+        }
+        catch ( Exception e )
+        {
+            // Convert the technical exceptions to a simpler exception
+            // that signals that the decryption failed.
+            throw new DecryptionFailed( e );
+        }
     }
 
     private SecurityUtil()

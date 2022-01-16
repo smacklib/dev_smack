@@ -88,11 +88,24 @@ public class JavaUtil
     /**
      * A parameterless operation throwing an exception.
      */
+    @FunctionalInterface
     public interface Fx
     {
         void call()
             throws Exception;
     }
+
+    @FunctionalInterface
+    public interface SupplierX<T> {
+
+        /**
+         * Gets a result.
+         *
+         * @return a result
+         */
+        T get() throws Exception;
+    }
+
 
     /**
      * Calls the passed operation, ignoring an exception.
@@ -174,10 +187,26 @@ public class JavaUtil
      *
      * @param <T> The object type.
      * @param t The initial instance.
-     * @param makeit A function that initializes the object.
+     * @param makeit A supplier that creates the object.
      * @return The initialized instance.
+     * @see JavaUtil#makex(SupplierX)
      */
     public static <T> T make( Supplier<T> makeit )
+    {
+        return makeit.get();
+    }
+
+    /**
+     * Initialize and return an object in a closed scope. Use if
+     * the initialization may throw exceptions.
+     *
+     * @param <T> The object type.
+     * @param t The initial instance.
+     * @param makeit A supplier that creates the object.
+     * @return The initialized instance.
+     * @see #make(Supplier)
+     */
+    public static <T> T makex( SupplierX<T> makeit ) throws Exception
     {
         return makeit.get();
     }
