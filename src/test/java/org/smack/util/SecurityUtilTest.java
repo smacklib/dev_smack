@@ -242,6 +242,33 @@ public class SecurityUtilTest
     }
 
     @Test
+    public void signVerifyTest2048() throws Exception
+    {
+        // https://docs.oracle.com/javase/tutorial/security/apisign/step2.html
+        KeyPairGenerator keyGen =
+                KeyPairGenerator.getInstance( SecurityUtil.SIGN_ALGORITHM );
+        SecureRandom random =
+                SecureRandom.getInstanceStrong();
+
+        keyGen.initialize(2048, random);
+
+        KeyPair pair = keyGen.generateKeyPair();
+        PrivateKey priv = pair.getPrivate();
+        PublicKey pub = pair.getPublic();
+
+        byte[] signature = SecurityUtil.sign(
+                priv,
+                ThePayload.getBytes() );
+
+        var success = SecurityUtil.verifySignature(
+                pub,
+                ThePayload.getBytes(),
+                signature );
+
+        assertTrue( success );
+    }
+
+    @Test
     public void signVerifyTestFromKeystore() throws Exception
     {
         KeyStore ks = getKeystore();
