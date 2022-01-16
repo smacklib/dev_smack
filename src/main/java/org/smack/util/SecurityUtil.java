@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -111,6 +112,7 @@ public class SecurityUtil
     public static X509Certificate readCert( InputStream fis )
         throws Exception
     {
+        Objects.requireNonNull( fis, "stream is null." );
         try ( BufferedInputStream bis = new BufferedInputStream( fis ) )
         {
             CertificateFactory cf =
@@ -140,7 +142,21 @@ public class SecurityUtil
      */
     public static X509Certificate readCert( File f ) throws Exception
     {
+        Objects.requireNonNull( f, "file is null." );
         return readCert( new FileInputStream( f ) );
+    }
+
+    /**
+     * Read the first certificate from the passed URL.
+     *
+     * @param url The certificate URL.
+     * @return The certificate.
+     * @throws Exception In case of an error.
+     */
+    public static X509Certificate readCert( URL url ) throws Exception
+    {
+        Objects.requireNonNull( url, "url is null." );
+        return readCert( url.openStream() );
     }
 
     /**

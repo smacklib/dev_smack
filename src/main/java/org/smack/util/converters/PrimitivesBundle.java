@@ -9,11 +9,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.smack.util.SecurityUtil;
 import org.smack.util.StringUtil;
 
 /**
@@ -102,5 +104,10 @@ public class PrimitivesBundle extends StringConverterExtension
                 PrimitivesBundle::iconFromUrl );
         registry.put( Color.class,
                 ConverterUtils::parseColor );
+
+        // Security.
+        registry.put(
+                X509Certificate.class,
+                s -> SecurityUtil.readCert( new URL( s ) ) );
     }
 }

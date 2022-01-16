@@ -3,6 +3,7 @@ package org.smack.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -19,6 +20,8 @@ import java.security.cert.X509Certificate;
 
 import org.junit.Test;
 import org.smack.util.SecurityUtil.DecryptionFailed;
+import org.smack.util.resource.ResourceManager;
+import org.smack.util.resource.ResourceManager.Resource;
 
 /**
  * Create a keystore with a self-signed certificate:
@@ -125,6 +128,29 @@ public class SecurityUtilTest
         assertEquals(
                 expectedCert.getSerialNumber(),
                 certFromResources.getSerialNumber() );
+    }
+
+    @Resource
+    private X509Certificate certResource;
+
+    @Test
+    public void readAndCheckCertAsConverter() throws Exception
+    {
+        assertNull( certResource );
+        ResourceManager rm =
+                ServiceManager.getApplicationService( ResourceManager.class );
+        rm.injectResources( this );
+        assertNotNull( certResource );
+
+        KeyStore ks = getKeystore();
+
+        X509Certificate expectedCert =
+                (X509Certificate)ks.getCertificate(ALIAS_1);
+        assertNotNull( expectedCert );
+
+        assertEquals(
+                expectedCert.getSerialNumber(),
+                certResource.getSerialNumber() );
     }
 
     @Test
