@@ -174,6 +174,19 @@ public class SecurityUtil extends CliApplication
      */
     public static final String CIPHER_ALGORITHM = "RSA";
 
+    private static Cipher getCipher( String alg )
+    {
+        try {
+            return Cipher.getInstance( CIPHER_ALGORITHM );
+        }
+        catch ( Exception e )
+        {
+            // This is an implementation or config error.  Convert
+            // to runtime exceptions.
+            throw new RuntimeException( "No Cipher for: " + CIPHER_ALGORITHM, e );
+        }
+    }
+
     /**
      * Encrypt the passed data.
      *
@@ -191,17 +204,7 @@ public class SecurityUtil extends CliApplication
         Objects.requireNonNull( data );
         Objects.requireNonNull( key );
 
-        Cipher cipher = JavaUtil.make( () -> {
-            try {
-                return Cipher.getInstance( CIPHER_ALGORITHM );
-            }
-            catch ( Exception e )
-            {
-                // This is an implementation or config error.  Convert
-                // to runtime exceptions.
-                throw new RuntimeException( "No Cipher for: " + CIPHER_ALGORITHM, e );
-            }
-        });
+        Cipher cipher = getCipher( CIPHER_ALGORITHM );
 
         cipher.init(
                 Cipher.ENCRYPT_MODE,
@@ -243,17 +246,7 @@ public class SecurityUtil extends CliApplication
                 InvalidKeyException,
                 DecryptionFailed
     {
-        Cipher cipher = JavaUtil.make( () -> {
-            try {
-                return Cipher.getInstance( CIPHER_ALGORITHM );
-            }
-            catch ( Exception e )
-            {
-                // This is an implementation or config error.  Convert
-                // to runtime exceptions.
-                throw new RuntimeException( "No Cipher for: " + CIPHER_ALGORITHM, e );
-            }
-        });
+        Cipher cipher = getCipher( CIPHER_ALGORITHM );
 
         cipher.init(
                 Cipher.DECRYPT_MODE, Objects.requireNonNull( key ) );
