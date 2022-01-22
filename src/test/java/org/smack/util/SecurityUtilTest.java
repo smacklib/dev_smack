@@ -158,7 +158,7 @@ public class SecurityUtilTest
     {
         // https://docs.oracle.com/javase/tutorial/security/apisign/step2.html
         KeyPairGenerator keyGen =
-                KeyPairGenerator.getInstance( "RSA" );
+                KeyPairGenerator.getInstance( SecurityUtil.CIPHER_ALGORITHM );
         SecureRandom random =
                 SecureRandom.getInstanceStrong();
 
