@@ -140,7 +140,7 @@ public class FileUtilTest
     @Test
     public void testReadLinesFile() throws Exception
     {
-        File testFile = File.createTempFile( "smack", null );
+        File testFile = File.createTempFile( getClass().getSimpleName(), null );
 
         final var expectedLineEnd = ":marker";
 
@@ -188,7 +188,7 @@ public class FileUtilTest
         // Prevent JavaUtil.force() info log from spamming test output.
         Logger.getLogger( JavaUtil.class.getName() ).setLevel( Level.WARNING );
 
-        File testFile = File.createTempFile( "smack", null );
+        File testFile = File.createTempFile( getClass().getSimpleName(), null );
 
         var sr =
                 new FileInputStream( testFile )
@@ -288,7 +288,7 @@ public class FileUtilTest
     @Test
     public void testDeleteDir() throws Exception
     {
-        var dp = Files.createTempDirectory( "smack_test_tmp_" );
+        var dp = Files.createTempDirectory( getClass().getSimpleName() );
         var df = dp.toFile();
 
         assertTrue( df.exists() );
@@ -308,6 +308,31 @@ public class FileUtilTest
         assertEquals( 10, df.listFiles().length );
 
         FileUtil.delete( df );
+        assertFalse( df.exists() );
+    }
+
+    @Test
+    public void testDeleteDirWithOpenFile() throws Exception
+    {
+        var dp = Files.createTempDirectory( getClass().getSimpleName() );
+        var df = dp.toFile();
+
+        assertTrue( df.exists() );
+        assertTrue( df.isDirectory() );
+
+        File file = new File( df, "testDeleteDirWithOpenFile" );
+
+        // Open file.
+        try ( var fos = new FileWriter( file ) )
+        {
+            fos.write( "testDeleteDirWithOpenFile" );
+            fos.flush();
+            // File is open and cannot be deleted.
+            assertFalse( FileUtil.delete( df ) );
+        }
+
+        // File is now closed.
+        assertTrue( FileUtil.delete( df ) );
         assertFalse( df.exists() );
     }
 }
