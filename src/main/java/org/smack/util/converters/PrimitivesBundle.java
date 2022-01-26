@@ -63,7 +63,7 @@ public class PrimitivesBundle extends StringConverterExtension
         throw new NumberFormatException( s );
     }
 
-    private static Properties propertiesFromURl( String s ) throws Exception
+    private static Properties propertiesFromUrl( String s ) throws Exception
     {
         try ( var stream = new URL( s ).openStream() )
         {
@@ -105,7 +105,7 @@ public class PrimitivesBundle extends StringConverterExtension
                 StringUtil::splitQuoted );
         registry.put(
                 Properties.class,
-                PrimitivesBundle::propertiesFromURl );
+                PrimitivesBundle::propertiesFromUrl );
 
         // Desktop classes.
         registry.put(
