@@ -250,7 +250,7 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( MalformedURLException e )
         {
-            System.out.println( e.getMessage() );
+            LOG.info( e::getMessage );
             return null;
         }
     }

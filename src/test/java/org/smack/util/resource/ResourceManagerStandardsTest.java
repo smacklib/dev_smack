@@ -2,8 +2,10 @@ package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,11 +26,22 @@ public class ResourceManagerStandardsTest
     }
 
     @Resource
+    private Properties properties;
+    @Resource
     private String stringPlain;
     @Resource
     private String stringQuoted;
     @Resource
     private String[] stringArray;
+
+    @Test
+    public void testProperties()
+    {
+        assertNotNull( properties );
+        assertTrue( properties.size() > 0 );
+        assertEquals( "314", properties.getProperty( "314" ) );
+        assertEquals( "314", properties.get( "314" ) );
+    }
 
     @Test
     public void testString()

@@ -11,6 +11,7 @@ import java.awt.Image;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.Objects;
+import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -62,6 +63,17 @@ public class PrimitivesBundle extends StringConverterExtension
         throw new NumberFormatException( s );
     }
 
+    private static Properties propertiesFromURl( String s ) throws Exception
+    {
+        try ( var stream = new URL( s ).openStream() )
+        {
+            Properties result = new Properties();
+
+            result.load( stream );
+            return result;
+        }
+    }
+
     @Override
     public void extendTypeMap( StringConverter registry )
     {
@@ -91,6 +103,9 @@ public class PrimitivesBundle extends StringConverterExtension
         registry.put(
                 String[].class,
                 StringUtil::splitQuoted );
+        registry.put(
+                Properties.class,
+                PrimitivesBundle::propertiesFromURl );
 
         // Desktop classes.
         registry.put(
