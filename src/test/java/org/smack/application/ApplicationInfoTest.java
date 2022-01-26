@@ -78,7 +78,7 @@ public class ApplicationInfoTest
             fw.flush();
         }
 
-        assertTrue( FileUtil.delete( homedir ) );
+        FileUtil.delete( homedir );
     }
 
     /**

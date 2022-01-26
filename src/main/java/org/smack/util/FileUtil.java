@@ -222,7 +222,7 @@ public final class FileUtil
             return false;
         }
 
-        return true;
+        return ! dir.exists();
     }
 
     /**

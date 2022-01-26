@@ -29,7 +29,7 @@ import org.smack.util.converters.StringConverter;
  * defined in the property file {@code Elk.property} in the same package.
  * <p>
  * A property named "color" in the above resource file is found
- * by the key 'color' and the key 'Elk.color' or simply 'color'.
+ * by the key 'color' and the key 'Elk.color'.
  * </p>
  *
  * @author Michael Binz
@@ -250,7 +250,7 @@ public class ResourceMap extends HashMap<String, String>
         }
         catch ( MalformedURLException e )
         {
-            System.out.println( e.getMessage() );
+            LOG.info( e::getMessage );
             return null;
         }
     }
