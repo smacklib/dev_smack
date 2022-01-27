@@ -1,7 +1,7 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2017-21 Michael G. Binz
+ * Copyright © 2017-2022 Michael G. Binz
  */
 package org.smack.util.resource;
 
@@ -52,39 +52,42 @@ public class ResourceMap extends HashMap<String, String>
     private final URL _url;
 
     /**
-     * Populates the passed Map with the preprocessed values from the passed
-     * resource bundle.
+     * Creates a map containing preprocessed values from the passed
+     * ResourceBundle.
      *
+     * @param url The resource file URL of the ResourceBundle.
      * @param bundle The resource bundle whose entries are processed.
-     * @return The requested resource bundle or {@code null} if the bundle
-     * did not exist.
+     * @return A resource map with preprocessed values.
      */
-    private Map<String, String> preprocessResourceBundle(
-            URL url, ResourceBundle bundle ) throws Exception
+    private Map<String, String> preprocess(
+            URL url,
+            ResourceBundle bundle ) throws Exception
     {
+        Objects.requireNonNull(
+                url );
+        Objects.requireNonNull(
+                bundle );
+
+        final var urlPrefix =
+                url.toExternalForm();
+        JavaUtil.Assert( urlPrefix.endsWith( "/" ) );
+
         Map<String, String> result = new HashMap<>();
 
         for ( String key : bundle.keySet() )
         {
-            var value = bundle.getString( key );
+            var value = evalExpression(
+                    key,
+                    bundle.getString( key ),
+                    bundle );
 
-            if ( value.startsWith( "@" ) )
+            // Value may be null because of ${null}.
+            if ( value != null && value.startsWith( "@" ) )
             {
-                var urlPrefix = url.toExternalForm();
-
-                JavaUtil.Assert( urlPrefix.endsWith( "/" ) );
-
                 value =
                         urlPrefix +
                         // Remove the '@'.
                         value.substring( 1 );
-            }
-            else
-            {
-                value = evaluateStringExpression2(
-                        key,
-                        value,
-                        bundle );
             }
 
             result.put(
@@ -133,11 +136,12 @@ public class ResourceMap extends HashMap<String, String>
      * The value of evaluateStringExpression("${hello} ${place}") would be
      * "Hello World". The value of ${null} is null.
      *
+     * @param key The key to evaluate. This is used for syntax checks.
      * @param expr The expression to evaluate.
      * @param env The resource bundle to use for token look-up.
      * @return The evaluated expression.
      */
-    private String evaluateStringExpression2(
+    private String evalExpression(
             String key,
             String expr,
             ResourceBundle env ) throws Exception
@@ -193,7 +197,7 @@ public class ResourceMap extends HashMap<String, String>
                 }
 
                 var replacement =
-                        evaluateStringExpression2(
+                        evalExpression(
                                 key,
                                 env.getString( matched ),
                                 env );
@@ -349,7 +353,7 @@ public class ResourceMap extends HashMap<String, String>
         try
         {
             Map<String, String> bundle =
-                    preprocessResourceBundle(
+                    preprocess(
                             url, rb );
 
             String classPrefix =
@@ -413,8 +417,8 @@ public class ResourceMap extends HashMap<String, String>
      * Convert the passed key to a target type.
      *
      * @param <T> The expected target type.
-     * @param targetType The expected result type.
      * @param key The property key to convert.
+     * @param targetType The expected result type.
      * @return The conversion result.
      */
     public <T> T getAs( String key, Class<T> targetType )
@@ -437,8 +441,8 @@ public class ResourceMap extends HashMap<String, String>
      * Convert the passed key to a target type.
      *
      * @param <T> The expected target type.
-     * @param targetType The expected result type.
      * @param key The property key to convert.
+     * @param targetType The expected result type.
      * @param orDefault The value to return if the key is not found.
      * @return The conversion result.
      */
@@ -501,10 +505,11 @@ public class ResourceMap extends HashMap<String, String>
     }
 
     /**
-     * Get the value the key is mapped.  The operation propagates along the
-     * superclass chain.
+     * Get the value to which the key is mapped.  The operation propagates
+     * along the superclass chain.
      *
-     * @return The value associated with key, null if no mapping was found.
+     * @return The value associated with key, {@code null} if no mapping was
+     * found.
      */
     @Override
     public String get( Object key )

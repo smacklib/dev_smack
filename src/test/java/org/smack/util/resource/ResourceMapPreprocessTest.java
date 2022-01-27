@@ -3,6 +3,9 @@ package org.smack.util.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -29,5 +32,12 @@ public class ResourceMapPreprocessTest
         assertEquals( "${", map.get( "escaped" ) );
 
         assertEquals( "prefix3", map.get( "withprefix" ) );
+
+        assertTrue( map.containsKey( "atURL_1" ) );
+        assertTrue( map.containsKey( "atURL_2" ) );
+        new URL( map.get( "atURL_1" ) );
+        assertEquals(
+                map.get( "atURL_1" ),
+                map.get( "atURL_2" ) );
     }
 }
