@@ -289,4 +289,35 @@ public class StringUtilTest
         // Empty string.
         assertEquals( "micbinz", q );
     }
+
+    @Test
+    public void testFilledStringShort()
+    {
+        String one = "1";
+        String two = one + one;
+        String tri = two + one;
+
+        assertEquals( "", StringUtil.createFilledString( one, 0 ) );
+        assertEquals( one, StringUtil.createFilledString( one, 1 ) );
+        assertEquals( two, StringUtil.createFilledString( one, 2 ) );
+        assertEquals( tri, StringUtil.createFilledString( one, 3 ) );
+    }
+    @Test
+    public void testFilledStringLong()
+    {
+        String one = "313";
+        String two = one + one;
+        String tri = two + one;
+
+        assertEquals( "", StringUtil.createFilledString( one, 0 ) );
+        assertEquals( one, StringUtil.createFilledString( one, 1 ) );
+        assertEquals( two, StringUtil.createFilledString( one, 2 ) );
+        assertEquals( tri, StringUtil.createFilledString( one, 3 ) );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void testFilledError()
+    {
+        assertEquals( "", StringUtil.createFilledString( "1", -1 ) );
+    }
 }

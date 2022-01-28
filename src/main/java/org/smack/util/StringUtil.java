@@ -1,9 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Utilities
- *
- * Released under Gnu Public License
- * Copyright © 2009-2011 Michael G. Binz
+ * Copyright © 2008-2022 Michael G. Binz
  */
 package org.smack.util;
 
@@ -11,12 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-
-
 /**
  * Helper operations for strings.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class StringUtil
@@ -28,8 +23,6 @@ public class StringUtil
     {
         throw new AssertionError();
     }
-
-
 
     /**
      * Checks whether a string has content.
@@ -43,8 +36,6 @@ public class StringUtil
     {
         return hasContent( string, true );
     }
-
-
 
     /**
      * Checks whether a string has content.
@@ -64,8 +55,6 @@ public class StringUtil
         return string != null && string.length() > 0;
     }
 
-
-
     /**
      * Checks whether a string has content.
      *
@@ -78,8 +67,6 @@ public class StringUtil
     {
         return isEmpty( string, true );
     }
-
-
 
     /**
      * Checks whether a string has content.
@@ -143,7 +130,9 @@ public class StringUtil
      * @param filler The character used to fill the string.
      * @param count The required length of the string.
      * @return A string containing count filler characters.
+     * @deprecated Use {@link #createFilledString(String, int)}
      */
+    @Deprecated
     public static String createFilledString( char filler, int count )
     {
         if ( count <= 0 )
@@ -157,7 +146,29 @@ public class StringUtil
         return result.toString();
     }
 
+    /**
+     * Create a string consisting of n occurrences of a string.
+     *
+     * @param filler The character used to fill the string.
+     * @param count The number of occurrences of filler.  May be 0.
+     * @return A string containing count filler characters.
+     */
+    public static String createFilledString( String filler, int count )
+    {
+        Objects.nonNull( filler );
 
+        if ( count < 0 )
+            throw new IllegalArgumentException( "count < 0" );
+        if ( count == 0 )
+            return EMPTY_STRING;
+
+        StringBuilder result = new StringBuilder( count );
+
+        while ( count-- > 0 )
+            result.append( filler );
+
+        return result.toString();
+    }
 
     /**
      * The canonical empty string.  Can be used to keep the number of
@@ -249,8 +260,6 @@ public class StringUtil
 
         return firstChar.toUpperCase() + remaining;
     }
-
-
 
     /**
      * Makes a string from an object.  If the object is {@code null}
