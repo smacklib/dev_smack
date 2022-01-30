@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jdesktop.util.PlatformType;
 import org.junit.Test;
 
 /**
@@ -314,6 +315,8 @@ public class FileUtilTest
     @Test
     public void testDeleteDirWithOpenFile() throws Exception
     {
+        if ( PlatformType.getPlatform() != PlatformType.WINDOWS )
+            return;
         var dp = Files.createTempDirectory( getClass().getSimpleName() );
         var df = dp.toFile();
 
