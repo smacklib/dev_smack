@@ -139,6 +139,17 @@ public class FileUtilTest
     }
 
     @Test
+    public void testReadLinesEmptyStream() throws Exception
+    {
+        var list =
+                FileUtil.readLines(
+                        new StringReader( StringUtil.EMPTY_STRING ) );
+        assertEquals(
+                0,
+                list.size() );
+    }
+
+    @Test
     public void testReadLinesFile() throws Exception
     {
         File testFile = File.createTempFile( getClass().getSimpleName(), null );
