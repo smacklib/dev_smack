@@ -5,6 +5,9 @@
  */
 package org.smack.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,7 +132,7 @@ public class JavaUtil
      * @param <T> The array type.
      * @param array The array to test. {@code null} is allowed.
      * @return {@code true} if the array is {@code null} or has a length
-     * greater than zero.
+     * of zero.
      */
     public static <T> boolean isEmptyArray( T[] array )
     {
@@ -209,5 +212,87 @@ public class JavaUtil
     public static <T> T makex( SupplierX<T> makeit ) throws Exception
     {
         return makeit.get();
+    }
+
+    private static <T> T toRtx( SupplierX<T> s )
+    {
+        try
+        {
+            return s.get();
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * Execute the passed command line.
+     *
+     * @param stdOut The lines received on stdout.  {@code null} is allowed.
+     * @param stdErr The lines received on stderr.  {@code null} is allowed.
+     * @param argv The command to be executed, one parameter per slot.  An
+     * empty array is not allowed.
+     * @return The return code of the command. Per convention a zero means
+     * success.
+     * @throws InterruptedException If command execution got interrupted.
+     * @throws {@link RuntimeException} In case of errors.
+     */
+    public static int exec(
+            List<String> stdOut,
+            List<String> stdErr,
+            String ... argv ) throws InterruptedException
+    {
+        Assert( ! isEmptyArray( argv ) );
+
+        try ( Disposer d = new Disposer() )
+        {
+            var process = Runtime.getRuntime().exec(
+                    argv );
+
+            // See http://grep.codeconsult.ch/2005/02/01/better-cleanup-your-process-objects/
+            var out = d.register(
+                    process.getInputStream() );
+            var err = d.register(
+                    process.getErrorStream() );
+            d.register(
+                    process.getOutputStream() );
+
+
+            // Ensure that the output channels are unconditionally read, since
+            // this is required in some cases to not block the executed
+            // command.  Technically this needs to be done in the background.
+            List<String> outHolder = new ArrayList<String>();
+
+            new Thread( () -> toRtx( () ->
+            {
+                return outHolder.addAll( FileUtil.readLines( out ) );
+            } ) ).start();
+
+            List<String> errHolder = new ArrayList<String>();
+
+            new Thread( () -> toRtx( () ->
+                {
+                    return errHolder.addAll( FileUtil.readLines( err ) );
+                } ) ).start();
+
+            // Finally let the started process do its work.  Make sure that
+            // the resulting data is taken-over *after* the process finished.
+
+            try {
+                return process.waitFor();
+            }
+            finally
+            {
+                if ( stdOut != null )
+                    stdOut.addAll( outHolder );
+                if ( stdErr != null )
+                    stdErr.addAll( errHolder );
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
