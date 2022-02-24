@@ -1,3 +1,8 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2019-22 Michael G. Binz
+ */
 package org.smack.util.resource;
 
 import static org.junit.Assert.assertEquals;
@@ -8,32 +13,29 @@ import static org.junit.Assert.fail;
 
 import java.awt.Image;
 import java.util.Currency;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 import javax.swing.Icon;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-/**
- *
- *
- * @version $Revision$
- * @author Michael Binz
- */
-public class ResourceManagerTest
+public final class ResourceManagerTest
 {
-    private final ResourceManager _rm =
+    private static final ResourceManager _rm =
             ServiceManager.getApplicationService( ResourceManager.class );
 
-    @Resource
-    private String stringCountryCode;
+    private final static Locale originalDefaultLocale =
+            Locale.getDefault();
 
-    @Before
-    public void testInit()
+    @BeforeClass
+    public static void onceBeforeAll()
     {
         if ( _rm.getConverter( Currency.class ) == null )
         {
@@ -42,6 +44,18 @@ public class ResourceManagerTest
                     Currency::getInstance );
         }
 
+        Locale.setDefault( Locale.GERMAN );
+    }
+
+    @AfterClass
+    public static void onceAfterAll()
+    {
+        Locale.setDefault( originalDefaultLocale );
+    }
+
+    @Before
+    public void beforeEach()
+    {
         _rm.injectResources( this );
     }
 
@@ -65,10 +79,12 @@ public class ResourceManagerTest
         assertTrue( isIdentical );
     }
 
+    @Resource
+    private String stringCountryCode;
+
     @Test
     public void testLocalization()
     {
-        // Works only on German locale.  Make better.
         assertEquals( "+49", stringCountryCode );
     }
 
