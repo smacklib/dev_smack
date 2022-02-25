@@ -216,8 +216,7 @@ public class JavaUtil
     }
 
     /**
-     * Support operation that reads data from a stream in a List of lines.
-     * Errors are ignored and terminate line reading.
+     * Support operation that reads data from a stream into a List of lines.
      *
      * @param result The list of lines.  This is an out parameter and is
      * populated in the call.
@@ -228,11 +227,9 @@ public class JavaUtil
         try {
             result.addAll( FileUtil.readLines( s ) );
         }
-        catch ( IOException ignore )
+        catch ( IOException e )
         {
-            // Most probable is IOException "stream closed" on Linux.  This
-            // happens if readLines() above hangs on a stream that does not
-            // receive any data.
+            throw new RuntimeException( e );
         }
     }
 
@@ -273,31 +270,26 @@ public class JavaUtil
             // command.  Technically this needs to be done in the background.
             List<String> outHolder = new ArrayList<String>();
 
-            new Thread( () ->
+            // Read stdout in background ...
+            var tout = new Thread( () ->
             {
                 readStdStream( outHolder, out );
-            } ).start();
+            } );
+            tout.start();
 
+            // Since we have nothing better to do, we read stderr in foreground.
             List<String> errHolder = new ArrayList<String>();
+            readStdStream( errHolder, err );
 
-            new Thread( () ->
-            {
-                readStdStream( errHolder, err );
-            } ).start();
+            // Ensure the background job is done.
+            tout.join();
 
-            // Finally let the started process do its work.  Make sure that
-            // the resulting data is taken-over *after* the process finished.
+            if ( stdOut != null )
+                stdOut.addAll( outHolder );
+            if ( stdErr != null )
+                stdErr.addAll( errHolder );
 
-            try {
-                return process.waitFor();
-            }
-            finally
-            {
-                if ( stdOut != null )
-                    stdOut.addAll( outHolder );
-                if ( stdErr != null )
-                    stdErr.addAll( errHolder );
-            }
+            return process.waitFor();
         }
         catch (IOException e)
         {
