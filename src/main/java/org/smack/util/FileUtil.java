@@ -160,7 +160,11 @@ public final class FileUtil
      */
     public static List<String> readLines( Reader in ) throws IOException
     {
-        try ( BufferedReader din = new BufferedReader( in ) )
+        var wrappedIfNeeded = in instanceof BufferedReader ?
+                BufferedReader.class.cast(  in ) :
+                new BufferedReader( in );
+
+        try ( BufferedReader din = wrappedIfNeeded )
         {
             return din.lines().collect( Collectors.toList() );
         }

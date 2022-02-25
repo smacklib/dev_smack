@@ -6,6 +6,7 @@
 package org.smack.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -214,15 +215,24 @@ public class JavaUtil
         return makeit.get();
     }
 
-    private static <T> T toRtx( SupplierX<T> s )
+    /**
+     * Support operation that reads data from a stream in a List of lines.
+     * Errors are ignored and terminate line reading.
+     *
+     * @param result The list of lines.  This is an out parameter and is
+     * populated in the call.
+     * @param s The stream to read.
+     */
+    private static void readStdStream( List<String> result, InputStream s )
     {
-        try
-        {
-            return s.get();
+        try {
+            result.addAll( FileUtil.readLines( s ) );
         }
-        catch ( Exception e )
+        catch ( IOException ignore )
         {
-            throw new RuntimeException( e );
+            // Most probable is IOException "stream closed" on Linux.  This
+            // happens if readLines() above hangs on a stream that does not
+            // receive any data.
         }
     }
 
@@ -258,23 +268,22 @@ public class JavaUtil
             d.register(
                     process.getOutputStream() );
 
-
             // Ensure that the output channels are unconditionally read, since
             // this is required in some cases to not block the executed
             // command.  Technically this needs to be done in the background.
             List<String> outHolder = new ArrayList<String>();
 
-            new Thread( () -> toRtx( () ->
+            new Thread( () ->
             {
-                return outHolder.addAll( FileUtil.readLines( out ) );
-            } ) ).start();
+                readStdStream( outHolder, out );
+            } ).start();
 
             List<String> errHolder = new ArrayList<String>();
 
-            new Thread( () -> toRtx( () ->
-                {
-                    return errHolder.addAll( FileUtil.readLines( err ) );
-                } ) ).start();
+            new Thread( () ->
+            {
+                readStdStream( errHolder, err );
+            } ).start();
 
             // Finally let the started process do its work.  Make sure that
             // the resulting data is taken-over *after* the process finished.
