@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -144,6 +145,18 @@ public class FileUtilTest
         var list =
                 FileUtil.readLines(
                         new StringReader( StringUtil.EMPTY_STRING ) );
+        assertEquals(
+                0,
+                list.size() );
+    }
+
+    @Test
+    public void testReadLinesBufferedReader() throws Exception
+    {
+        var list =
+                FileUtil.readLines(
+                        new BufferedReader(
+                                new StringReader( StringUtil.EMPTY_STRING ) ) );
         assertEquals(
                 0,
                 list.size() );

@@ -5,6 +5,10 @@
  */
 package org.smack.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,7 +133,7 @@ public class JavaUtil
      * @param <T> The array type.
      * @param array The array to test. {@code null} is allowed.
      * @return {@code true} if the array is {@code null} or has a length
-     * greater than zero.
+     * of zero.
      */
     public static <T> boolean isEmptyArray( T[] array )
     {
@@ -209,5 +213,87 @@ public class JavaUtil
     public static <T> T makex( SupplierX<T> makeit ) throws Exception
     {
         return makeit.get();
+    }
+
+    /**
+     * Support operation that reads data from a stream into a List of lines.
+     *
+     * @param result The list of lines.  This is an out parameter and is
+     * populated in the call.
+     * @param s The stream to read.
+     */
+    private static void readStdStream( List<String> result, InputStream s )
+    {
+        try {
+            result.addAll( FileUtil.readLines( s ) );
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * Execute the passed command line.
+     *
+     * @param stdOut The lines received on stdout.  {@code null} is allowed.
+     * @param stdErr The lines received on stderr.  {@code null} is allowed.
+     * @param argv The command to be executed, one parameter per slot.  An
+     * empty array is not allowed.
+     * @return The return code of the command. Per convention a zero means
+     * success.
+     * @throws InterruptedException If command execution got interrupted.
+     * @throws {@link RuntimeException} In case of errors.
+     */
+    public static int exec(
+            List<String> stdOut,
+            List<String> stdErr,
+            String ... argv ) throws InterruptedException
+    {
+        Assert( ! isEmptyArray( argv ) );
+
+        try ( Disposer d = new Disposer() )
+        {
+            var process = Runtime.getRuntime().exec(
+                    argv );
+
+            // See http://grep.codeconsult.ch/2005/02/01/better-cleanup-your-process-objects/
+            var out = d.register(
+                    process.getInputStream() );
+            var err = d.register(
+                    process.getErrorStream() );
+            d.register(
+                    process.getOutputStream() );
+
+            // Ensure that the output channels are unconditionally read, since
+            // this is required in some cases to not block the executed
+            // command.  Technically this needs to be done in the background.
+            List<String> outHolder = new ArrayList<String>();
+
+            // Read stdout in background ...
+            var tout = new Thread( () ->
+            {
+                readStdStream( outHolder, out );
+            } );
+            tout.start();
+
+            // Since we have nothing better to do, we read stderr in foreground.
+            List<String> errHolder = new ArrayList<String>();
+            readStdStream( errHolder, err );
+
+            // Ensure the background job is done.
+            tout.join();
+
+            if ( stdOut != null )
+                stdOut.addAll( outHolder );
+            if ( stdErr != null )
+                stdErr.addAll( errHolder );
+
+            return process.waitFor();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }
