@@ -247,6 +247,23 @@ public class CliApplicationTest
         );
     }
 
+    @Test
+    public void testPrintPropertyLike()
+    {
+        execCli(
+            ApplicationUnderTest::main,
+            new String[] {
+                "cmdString",
+                "-a"
+            },
+            new String[]
+            {
+                "cmdString:-a"
+            },
+            EMPTY_STRING_ARRAY
+        );
+    }
+
     static class UnderTestNewLine extends CliApplication
     {
         @Command

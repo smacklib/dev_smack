@@ -108,6 +108,14 @@ public class CliApplicationTypeTest
     }
 
     @Test
+    public void TestTypeString()
+    {
+        var EXPECTED = "FRIDAY";
+
+        TestType( "cmdString", "FRIDAY", EXPECTED );
+    }
+
+    @Test
     public void TestTypeEnum()
     {
         var EXPECTED = "FRIDAY";

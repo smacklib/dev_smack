@@ -62,7 +62,7 @@ public class ApplicationUnderTest
     @Command
     private void cmdString( String i )
     {
-        out( "%s:%d%n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     @Command
