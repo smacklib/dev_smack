@@ -4,6 +4,9 @@ import java.io.File;
 
 /**
  * Tests type transformations.
+ *
+ * Do not add property annotations on this class, since some tests
+ * rely on the fact that none exist.
  */
 public class ApplicationUnderTest
     extends CliApplication
