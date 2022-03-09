@@ -247,6 +247,26 @@ public class CliApplicationTest
         );
     }
 
+    @Test
+    public void testPrintPropertyLike()
+    {
+        // The -a must simply be printed.  No error like 'unknown property -a'
+        // must be thrown, since the tested application does not define
+        // property annotations.
+        execCli(
+            ApplicationUnderTest::main,
+            new String[] {
+                "cmdString",
+                "-a"
+            },
+            new String[]
+            {
+                "cmdString:-a"
+            },
+            EMPTY_STRING_ARRAY
+        );
+    }
+
     static class UnderTestNewLine extends CliApplication
     {
         @Command

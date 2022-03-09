@@ -191,7 +191,8 @@ public class CliApplication
             return;
         }
 
-        argv = processProperties( argv );
+        if ( _propertyMap.size() > 0 )
+            argv = processProperties( argv );
 
         var cmdName = argv[0].toLowerCase();
 

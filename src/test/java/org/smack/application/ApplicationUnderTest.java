@@ -4,6 +4,9 @@ import java.io.File;
 
 /**
  * Tests type transformations.
+ *
+ * Do not add property annotations on this class, since some tests
+ * rely on the fact that none exist.
  */
 public class ApplicationUnderTest
     extends CliApplication
@@ -62,7 +65,7 @@ public class ApplicationUnderTest
     @Command
     private void cmdString( String i )
     {
-        out( "%s:%d%n", currentCommand(), i );
+        out( "%s:%s%n", currentCommand(), i );
     }
 
     @Command
