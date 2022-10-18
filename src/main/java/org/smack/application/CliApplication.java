@@ -210,6 +210,15 @@ public class CliApplication
             return;
         }
 
+        selectedCommand = _commandMap.get(
+                cmdName,
+                -1 );
+
+        if ( selectedCommand != null )
+        {
+
+        }
+
         // No command matched, so we check if there are commands
         // where at least the command name matches.
         Map<Integer, CommandHolder> possibleCommands =
@@ -830,16 +839,30 @@ public class CliApplication
     private class CommandHolder implements Comparable<CommandHolder>
     {
         private final Method _op;
+        private final Class<?>[] _parameterTypes;
+
         private final Command _commandAnnotation;
+        private final Class<?> _variadicElementType;
 
         CommandHolder( Method operation )
         {
             _op =
                     operation;
+            _parameterTypes =
+                    _op.getParameterTypes();
+
             _commandAnnotation =
                     Objects.requireNonNull(
                             _op.getAnnotation( Command.class ),
                             "@Command missing." );
+            if ( _parameterTypes.length < 0 &&
+                 _parameterTypes[_parameterTypes.length-1].isArray() )
+            {
+                _variadicElementType =
+                        _parameterTypes[_parameterTypes.length-1].getComponentType();
+            }
+            else
+                _variadicElementType = null;
         }
 
         String getName()
@@ -867,6 +890,49 @@ public class CliApplication
             return _commandAnnotation.shortDescription();
         }
 
+        private void execVariadic( String... argv )
+        {
+            if ( argv.length < _parameterTypes.length )
+                throw new IllegalArgumentException();
+
+            Object[] arguments =
+                    new Object[_parameterTypes.length];
+            int firstVariadicIdx =
+                    _parameterTypes.length -1;
+
+            for ( int i = 0; i < firstVariadicIdx ; i++ ) try {
+                arguments[i] = transformArgument(
+                        _parameterTypes[i],
+                        argv[i] );
+            }
+            catch ( Exception e ) {
+                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                        getName(),
+                        argv[i],
+                        _parameterTypes[i].getSimpleName());
+                return;
+            }
+
+            var variadicArray = ReflectionUtil.makeArray(
+                    _variadicElementType,
+                    argv.length - _parameterTypes.length );
+
+            for ( int i = firstVariadicIdx ; i < argv.length ; i++ ) try {
+                variadicArray[i-firstVariadicIdx] = transformArgument(
+                        _variadicElementType,
+                        argv[i] );
+            }
+            catch ( Exception e ) {
+                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                        getName(),
+                        argv[i],
+                        _parameterTypes[i].getSimpleName());
+                return;
+            }
+
+            arguments[arguments.length-1] = variadicArray;
+        }
+
         /**
          * Execute the passed command with the given passed arguments. Each parameter
          * is transformed to the expected type.
@@ -878,24 +944,28 @@ public class CliApplication
          */
         private void execute( String ... argv )
         {
+            if ( _variadicElementType != null )
+            {
+                execVariadic( argv );
+                return;
+            }
+
             Object[] arguments =
                     new Object[argv.length];
-            Class<?>[] params =
-                    _op.getParameterTypes();
 
-            if ( argv.length != params.length )
+            if ( argv.length != _parameterTypes.length )
                 throw new AssertionError();
 
-            for (int j = 0; j < params.length; j++) try {
+            for (int j = 0; j < _parameterTypes.length; j++) try {
                 arguments[j] = transformArgument(
-                        params[j],
+                        _parameterTypes[j],
                         argv[j] );
             }
             catch ( Exception e ) {
                 err( "Command '%s' failed: Could not convert '%s' to %s.%n",
                         getName(),
                         argv[j],
-                        params[j].getSimpleName());
+                        _parameterTypes[j].getSimpleName());
                 return;
             }
 
