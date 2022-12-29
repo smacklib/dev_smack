@@ -8,40 +8,38 @@ package org.smack.util;
 import java.util.Objects;
 
 /**
- * A generic holder class.
- *
- * @param <T> The held type.
+ * A long holder.
  *
  * @author MICBINZ
  */
-public class Holder<T>
+public class LongHolder
 {
-    private T value;
+    private long value;
 
     /**
      * Create an initialized instance.
      *
      * @param v The initial value.
      */
-    public Holder( T v )
+    public LongHolder( long v )
     {
         value = v;
     }
 
     /**
-     * Create a null-initialized instance.
-     * @param v The initial value.
+     * Create a zero-initialized instance.
      */
-    public Holder()
+    public LongHolder()
     {
-        this( null );
+        this( 0L );
     }
 
     /**
      * Set the holder's value.
+     *
      * @param v The value to set.
      */
-    public void set( T v )
+    public synchronized void set( long v )
     {
         value = v;
     }
@@ -49,7 +47,7 @@ public class Holder<T>
     /**
      * @return The holder's value.
      */
-    public T get()
+    public synchronized long get()
     {
         return value;
     }
