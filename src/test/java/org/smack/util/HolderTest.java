@@ -34,4 +34,15 @@ public class HolderTest
         assertEquals(
                 "null", i.toString() );
     }
+
+    @Test()
+    public void defaultEmpty()
+    {
+        Holder<Integer> i =
+                new Holder<Integer>();
+        assertNull(
+                i.get() );
+        assertEquals(
+                "null", i.toString() );
+    }
 }

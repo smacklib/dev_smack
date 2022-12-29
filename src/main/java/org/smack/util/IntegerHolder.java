@@ -8,40 +8,38 @@ package org.smack.util;
 import java.util.Objects;
 
 /**
- * A generic holder class.
- *
- * @param <T> The held type.
+ * An integer holder.
  *
  * @author MICBINZ
  */
-public class Holder<T>
+public class IntegerHolder
 {
-    private T value;
+    private int value;
 
     /**
      * Create an initialized instance.
      *
      * @param v The initial value.
      */
-    public Holder( T v )
+    public IntegerHolder( int v )
     {
         value = v;
     }
 
     /**
-     * Create a null-initialized instance.
-     * @param v The initial value.
+     * Create a zero-initialized instance.
      */
-    public Holder()
+    public IntegerHolder()
     {
-        this( null );
+        this( 0 );
     }
 
     /**
      * Set the holder's value.
+     *
      * @param v The value to set.
      */
-    public void set( T v )
+    public void set( int v )
     {
         value = v;
     }
@@ -49,7 +47,7 @@ public class Holder<T>
     /**
      * @return The holder's value.
      */
-    public T get()
+    public int get()
     {
         return value;
     }
