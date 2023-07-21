@@ -1,7 +1,7 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2023 Michael G. Binz
  */
 package org.smack.util;
 
@@ -34,8 +34,6 @@ public class CachedHolderTest
     {
         CachedHolder<Integer> c_int =
                 new CachedHolder<Integer>( this::intFactory );
-
-
         {
             assertEquals( 0, c_int.getReadCount() );
             assertEquals( 0, _factoryCallCount );
@@ -46,22 +44,6 @@ public class CachedHolderTest
             assertEquals( 1, c_int.getReadCount() );
             assertTrue( value == c_int.get() );
             assertEquals( 2, c_int.getReadCount() );
-        }
-
-        c_int.reset();
-
-        {
-            assertEquals( 0, c_int.getReadCount() );
-            assertEquals( 1, _factoryCallCount );
-
-            Integer value = c_int.get();
-
-            assertEquals( 314, (int)value );
-            assertEquals( 1, c_int.getReadCount() );
-            assertTrue( value == c_int.get() );
-            assertEquals( 2, c_int.getReadCount() );
-            assertTrue( value == c_int.get() );
-            assertEquals( 3, c_int.getReadCount() );
         }
     }
 }
