@@ -1,7 +1,7 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package org.smack.util;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * Encapsulates cached access to a single value,
+ * Encapsulates cached access to a single value.
  *
  * @author Michael G. Binz
  *
@@ -20,7 +20,7 @@ public class CachedHolder<T>
     /**
      * The supplier used to create the cached value.
      */
-    private final Supplier<T> _supplier;
+    private Supplier<T> _supplier;
 
     /**
      * The cached value;
@@ -47,8 +47,11 @@ public class CachedHolder<T>
      */
     public T get()
     {
-        if ( _readCount == 0 )
+        if ( _supplier != null )
+        {
             _value = _supplier.get();
+            _supplier = null;
+        }
 
         _readCount++;
 
@@ -62,20 +65,6 @@ public class CachedHolder<T>
                 "%s{readCount=%d}",
                 getClass().getSimpleName(),
                 _readCount );
-    }
-
-    /**
-     * Reset the holder so that the current value is removed and on the
-     * next call to the read operation a new value is requested from
-     * the supplier.
-     *
-     * @return The holder instance.
-     */
-    public CachedHolder<T> reset()
-    {
-        _readCount = 0;
-        _value = null;
-        return this;
     }
 
     /**
