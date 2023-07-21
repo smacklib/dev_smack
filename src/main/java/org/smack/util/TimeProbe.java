@@ -1,9 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Utilities
- *
- * Released under Gnu Public License
- * Copyright (c) 2009 Michael G. Binz
+ * Copyright © 2009-2023 Michael G. Binz
  */
 package org.smack.util;
 
@@ -12,7 +10,6 @@ package org.smack.util;
  * a millisecond timer that can be started and stopped, measuring the time
  * between these events.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class TimeProbe
@@ -82,6 +79,9 @@ public class TimeProbe
      */
     public TimeProbe stop()
     {
+        if ( ! isRunning() )
+            return this;
+
         _isStarted = false;
         _stop = System.currentTimeMillis();
 

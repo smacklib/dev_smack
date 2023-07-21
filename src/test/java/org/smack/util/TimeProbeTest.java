@@ -1,5 +1,6 @@
 package org.smack.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -37,5 +38,19 @@ public class TimeProbeTest
 
         System.out.println( MAX_DURATION - tp.duration() );
         assertTrue( tp.duration() <= MAX_DURATION );
+    }
+
+    @Test
+    public void repeatedStop() throws Exception
+    {
+        var tp = new TimeProbe().start();
+        Thread.sleep( 100 );
+        tp.stop();
+        var t1 = tp.duration();
+        Thread.sleep( 100 );
+        tp.stop();
+        var t2 = tp.duration();
+
+        assertEquals( t1, t2 );
     }
 }
