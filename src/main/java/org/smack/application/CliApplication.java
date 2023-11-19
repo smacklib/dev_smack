@@ -1036,6 +1036,8 @@ public class CliApplication
                     result[idx] = named.value();
                 else if ( c.getType().isEnum() )
                     result[idx] = getEnumDocumentation( c.getType() );
+                else if ( c.getType().isArray() )
+                    result[idx] = c.getType().getComponentType().getSimpleName() + "...";
                 else
                     result[idx] = c.getType().getSimpleName();
 
