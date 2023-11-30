@@ -16,17 +16,72 @@ public class CliApplicationVariadicTest
     static class UnderTestVariadic
     {
         @Command( name = "concatenate" )
-        public void add( String[] rest )
+        public void add( String ... rest )
         {
             System.out.format(
                     "%s%n",
                     StringUtil.concatenate( ".", rest ) );
         }
 
-        @Command( name = "total" )
-        public void add( int[] rest )
+        @Command( name = "totalIntegers" )
+        public void add( int ... rest )
         {
             int total = 0;
+
+            for ( var c : rest )
+                total += c;
+
+            System.out.format( "%s%n", total );
+        }
+
+        @Command( name = "totalBytes" )
+        public void add( byte ... rest )
+        {
+            byte total = 0;
+
+            for ( var c : rest )
+                total += c;
+
+            System.out.format( "%s%n", total );
+        }
+
+        @Command( name = "totalShorts" )
+        public void add( short ... rest )
+        {
+            short total = 0;
+
+            for ( var c : rest )
+                total += c;
+
+            System.out.format( "%s%n", total );
+        }
+
+        @Command( name = "totalLongs" )
+        public void add( long ... rest )
+        {
+            long total = 0;
+
+            for ( var c : rest )
+                total += c;
+
+            System.out.format( "%s%n", total );
+        }
+
+        @Command( name = "totalFloats" )
+        public void add( float ... rest )
+        {
+            float total = 0;
+
+            for ( var c : rest )
+                total += c;
+
+            System.out.format( "%s%n", total );
+        }
+
+        @Command( name = "totalDoubles" )
+        public void add( double ... rest )
+        {
+            double total = 0;
 
             for ( var c : rest )
                 total += c;
@@ -52,7 +107,12 @@ public class CliApplicationVariadicTest
                  "UnderTestVariadic",
                  "The following commands are supported:",
                  "concatenate: String...",
-                 "total: int...",
+                 "totalBytes: byte...",
+                 "totalDoubles: double...",
+                 "totalFloats: float...",
+                 "totalIntegers: int...",
+                 "totalLongs: long...",
+                 "totalShorts: short...",
              }
          );
     }
@@ -70,28 +130,123 @@ public class CliApplicationVariadicTest
              },
              new String[]
              {
-                 "313"
+                 "3.1.3"
              },
              null
          );
     }
 
     @Test
-    public void testTotal() throws IOException
+    public void testTotalBytes() throws IOException
     {
-         CliApplicationTest.execCli(
-             UnderTestVariadic::main,
-             new String[] {
-                 "total",
-                 "300",
-                 "10",
-                 "3"
-             },
-             new String[]
-             {
-                 "313"
-             },
-             null
-         );
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalBytes",
+                        "5",
+                        "1",
+                        "2"
+                },
+                new String[]
+                {
+                        "8"
+                },
+                null
+        );
+    }
+
+    @Test
+    public void testTotalShorts() throws IOException
+    {
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalShorts",
+                        "3",
+                        "10",
+                        "300"
+                },
+                new String[]
+                {
+                        "313"
+                },
+                null
+        );
+    }
+
+    @Test
+    public void testTotalIntegers() throws IOException
+    {
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalIntegers",
+                        "300",
+                        "10",
+                        "3"
+                },
+                new String[]
+                        {
+                                "313"
+                        },
+                        null
+                );
+    }
+
+    @Test
+    public void testTotalLongs() throws IOException
+    {
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalLongs",
+                        "" + (Integer.MAX_VALUE * 2),
+                        "" + (Integer.MAX_VALUE * 2),
+                        "" + (Integer.MAX_VALUE * 2),
+                },
+                new String[]
+                        {
+                                "" + (Integer.MAX_VALUE * 6),
+                        },
+                        null
+                );
+    }
+
+    @Test
+    public void testTotalFloats() throws IOException
+    {
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalFloats",
+                        "0.25",
+                        "0.75",
+                        "0.25",
+                },
+                new String[]
+                        {
+                                "1.25",
+                        },
+                        null
+                );
+    }
+
+    @Test
+    public void testTotalDoubles() throws IOException
+    {
+        CliApplicationTest.execCli(
+                UnderTestVariadic::main,
+                new String[] {
+                        "totalFloats",
+                        "0.25",
+                        "0.75",
+                        "0.25",
+                },
+                new String[]
+                        {
+                                "1.25",
+                        },
+                        null
+                );
     }
 }

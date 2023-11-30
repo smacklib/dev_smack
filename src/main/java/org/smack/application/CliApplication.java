@@ -11,6 +11,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -108,7 +109,12 @@ public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<String, Integer, CommandHolder> _commandMap;
+    private final MultiMap<String, Integer, CommandHolder> _commandMap =
+            new MultiMap<>();
+
+    // Name, holder
+    private final Map<String, CommandHolder> _commandMapVariadic =
+            new HashMap<>();
 
     private final Map<String,PropertyHolder> _propertyMap;
 
@@ -119,8 +125,9 @@ public class CliApplication
     {
         _delegate =
                 delegate;
-        _commandMap =
-                getCommandMap( _delegate.getClass() );
+
+        getCommandMap( _delegate.getClass() );
+
         _propertyMap =
                 getPropertyMap( _delegate );
     }
@@ -129,8 +136,9 @@ public class CliApplication
     {
         _delegate =
                 this;
-        _commandMap =
-                getCommandMap( _delegate.getClass() );
+
+        getCommandMap( _delegate.getClass() );
+
         _propertyMap =
                 getPropertyMap( _delegate );
     }
@@ -216,7 +224,9 @@ public class CliApplication
 
         if ( selectedCommand != null )
         {
-
+            selectedCommand.execute(
+                    Arrays.copyOfRange( argv, 1, argv.length ) );
+            return;
         }
 
         // No command matched, so we check if there are commands
@@ -497,52 +507,78 @@ public class CliApplication
     }
 
     /**
+     * Processes the annotations on the target class.
+     * Updates the _commandMap member variable.
+     *
+     * @param c
+     * @param a
+     */
+    private void processAnnotation( Method c, Command a )
+    {
+        String name = a.name();
+        if ( StringUtil.isEmpty( name ) )
+            name = c.getName();
+
+        var keyName = name.toLowerCase();
+
+        // Handle variadic argument lists.
+        {
+            if ( c.isVarArgs() )
+            {
+                if ( _commandMapVariadic.containsKey( keyName ) ) {
+                    throw new InternalError(
+                            "Implementation error. Variadic operation " +
+                            name +
+                            " is not unique.");
+                }
+
+                _commandMap.put(
+                        keyName,
+                        -1,
+                        new CommandHolder( c ) );
+
+                return;
+            }
+        }
+
+        for ( Class<?> current : c.getParameterTypes() )
+        {
+            Objects.requireNonNull(
+                    _converters.getConverter( current ),
+                    "No mapper for " + current );
+        }
+
+        Integer numberOfArgs =
+                Integer.valueOf( c.getParameterTypes().length );
+
+        // Check if we already have this command with the same parameter
+        // list length. This is an implementation error.
+        if (_commandMap.get(keyName, numberOfArgs) != null) {
+            throw new InternalError(
+                    "Implementation error. Operation " +
+                    name +
+                    " with " +
+                    numberOfArgs +
+                    " parameters is not unique.");
+        }
+
+        _commandMap.put(
+                keyName,
+                numberOfArgs,
+                new CommandHolder( c ) );
+    }
+
+    /**
      * Get a map of all commands that allows to access a single command based on
      * its name and argument list.
      */
-    private MultiMap<String, Integer, CommandHolder> getCommandMap(
+    private void getCommandMap(
             Class<?> targetClass )
     {
-        MultiMap<String,Integer,CommandHolder> result =
-                new MultiMap<>();
-
         ReflectionUtil.processAnnotation(
                 Command.class,
                 targetClass::getDeclaredMethods,
-                (c,a) -> {
-                    String name = a.name();
-                    if ( StringUtil.isEmpty( name ) )
-                        name = c.getName();
-
-                    for ( Class<?> current : c.getParameterTypes() )
-                    {
-                        Objects.requireNonNull(
-                                _converters.getConverter( current ),
-                                "No mapper for " + current );
-                    }
-
-                    Integer numberOfArgs =
-                            Integer.valueOf( c.getParameterTypes().length );
-
-                    var keyName = name.toLowerCase();
-                    // Check if we already have this command with the same parameter
-                    // list length. This is an implementation error.
-                    if (result.get(keyName, numberOfArgs) != null) {
-                        throw new InternalError(
-                                "Implementation error. Operation " +
-                                name +
-                                " with " +
-                                numberOfArgs +
-                                " parameters is not unique.");
-                    }
-
-                    result.put(
-                            keyName,
-                            numberOfArgs,
-                            new CommandHolder( c ) );
-                } );
-
-        return result;
+                this::processAnnotation );
     }
 
     /**
@@ -834,9 +870,42 @@ public class CliApplication
     }
 
     /**
+     * Converts the passed array into a primitive type array.
+     *
+     * @param type The primitive element type of the result array.
+     * @param elements The array to convert.
+     * @return An array of primitive type.
+     */
+    private Object toArray( Class<?> type, Object ... elements )
+    {
+        Objects.requireNonNull( type );
+        Objects.requireNonNull( elements );
+
+        if ( ! type.isPrimitive() )
+            throw new IllegalArgumentException(
+                    "Passed type must be primitive, is " + type.getSimpleName() );
+
+        final var PT =
+                type;
+        final var T =
+                ReflectionUtil.normalizePrimitives( PT );
+
+        JavaUtil.Assert(
+                elements.getClass().getComponentType().equals( T ) );
+
+        var r = Array.newInstance( PT, elements.length );
+        JavaUtil.Assert( r.getClass().isArray() );
+
+        for ( int i = 0 ; i < elements.length ; i++ )
+            Array.set( r, i, elements[i] );
+
+        return r;
+    }
+
+    /**
      * Encapsulates a command.
      */
-    private class CommandHolder implements Comparable<CommandHolder>
+    private final class CommandHolder implements Comparable<CommandHolder>
     {
         private final Method _op;
         private final Class<?>[] _parameterTypes;
@@ -855,8 +924,7 @@ public class CliApplication
                     Objects.requireNonNull(
                             _op.getAnnotation( Command.class ),
                             "@Command missing." );
-            if ( _parameterTypes.length < 0 &&
-                 _parameterTypes[_parameterTypes.length-1].isArray() )
+            if ( operation.isVarArgs() )
             {
                 _variadicElementType =
                         _parameterTypes[_parameterTypes.length-1].getComponentType();
@@ -913,9 +981,9 @@ public class CliApplication
                 return;
             }
 
-            var variadicArray = ReflectionUtil.makeArray(
+            var variadicArray = makeArray(
                     _variadicElementType,
-                    argv.length - _parameterTypes.length );
+                    argv.length - firstVariadicIdx );
 
             for ( int i = firstVariadicIdx ; i < argv.length ; i++ ) try {
                 variadicArray[i-firstVariadicIdx] = transformArgument(
@@ -930,7 +998,47 @@ public class CliApplication
                 return;
             }
 
-            arguments[arguments.length-1] = variadicArray;
+            Class<?> targetComponentType =
+                    _parameterTypes[ _parameterTypes.length -1 ].getComponentType();
+
+            JavaUtil.Assert(
+                    targetComponentType != null );
+
+            if ( targetComponentType.isPrimitive() )
+                arguments[arguments.length-1] = toArray( targetComponentType, variadicArray );
+            else
+                arguments[arguments.length-1] = variadicArray;
+
+            try {
+                final var self = CliApplication.this._delegate;
+
+                if ( ! _op.canAccess( self ) )
+                    _op.setAccessible( true );
+
+                _op.invoke(
+                        self,
+                        arguments);
+            }
+            catch ( InvocationTargetException e )
+            {
+                processCommandException( _op.getName(), e.getCause() );
+            }
+            catch ( Exception e )
+            {
+                // A raw exception must come from our implementation,
+                // so we present a less user friendly stacktrace.
+                e.printStackTrace();
+            }
+            finally
+            {
+                // In case a parameter conversion operation created
+                // 'closeable' objects, ensure that these get freed.
+                for ( Object c : arguments )
+                {
+                    if ( c instanceof AutoCloseable )
+                        JavaUtil.force( ((AutoCloseable)c)::close );
+                }
+            }
         }
 
         /**
@@ -1090,5 +1198,22 @@ public class CliApplication
                     getParameterCount() -
                     o.getParameterCount();
         }
+
+        @Override
+        public String toString()
+        {
+            return _op.toString();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] makeArray( Class<T> c, int length )
+    {
+        Objects.requireNonNull(
+                c );
+
+        return (T[])Array.newInstance(
+                ReflectionUtil.normalizePrimitives( c ),
+                length );
     }
 }

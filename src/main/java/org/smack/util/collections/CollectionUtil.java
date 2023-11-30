@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: 77f9197d0a57c03d3dd043592aab7ae45bc88b6f $
  *
  * Common.
  *
@@ -46,7 +46,7 @@ public class CollectionUtil
      * @return A newly allocated array of element type clazz.
      */
     @SuppressWarnings("unchecked")
-    static <T> T[] toArray( Collection<T> p, Class<T> clazz )
+    public static <T> T[] toArray( Collection<T> p, Class<T> clazz )
     {
         return p.toArray(
                 (T[]) Array.newInstance( clazz, p.size() ) );
