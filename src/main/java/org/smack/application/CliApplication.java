@@ -49,6 +49,14 @@ public class CliApplication
     private static final Logger LOG =
             Logger.getLogger( CliApplication.class.getName() );
 
+    static class ConversionFailed extends Exception
+    {
+        public ConversionFailed( String message )
+        {
+            super( message );
+        }
+    }
+
     /**
      * The object that implements the cli functionality.
      */
@@ -912,6 +920,7 @@ public class CliApplication
 
         private final Command _commandAnnotation;
         private final Class<?> _variadicElementType;
+        private final int _variadicIdx;
 
         CommandHolder( Method operation )
         {
@@ -926,11 +935,16 @@ public class CliApplication
                             "@Command missing." );
             if ( operation.isVarArgs() )
             {
+                _variadicIdx =
+                        _parameterTypes.length-1;
                 _variadicElementType =
-                        _parameterTypes[_parameterTypes.length-1].getComponentType();
+                        _parameterTypes[_variadicIdx].getComponentType();
             }
             else
+            {
                 _variadicElementType = null;
+                _variadicIdx = _parameterTypes.length;
+            }
         }
 
         String getName()
@@ -958,6 +972,62 @@ public class CliApplication
             return _commandAnnotation.shortDescription();
         }
 
+        private Object[] makeArguments( String... argv )
+            throws ConversionFailed
+        {
+            if ( argv.length < _parameterTypes.length )
+                throw new IllegalArgumentException();
+
+            Object[] arguments =
+                    new Object[_parameterTypes.length];
+
+            for ( int i = 0; i < _variadicIdx ; i++ ) try {
+                arguments[i] = transformArgument(
+                        _parameterTypes[i],
+                        argv[i] );
+            }
+            catch ( Exception e ) {
+                var msg = String.format( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                        getName(),
+                        argv[i],
+                        _parameterTypes[i].getSimpleName());
+                throw new ConversionFailed( msg );
+            }
+
+            if ( _variadicElementType == null )
+                return arguments;
+
+            var variadicArray = makeArray(
+                    _variadicElementType,
+                    argv.length - _variadicIdx );
+
+            for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
+                variadicArray[i-_variadicIdx] = transformArgument(
+                        _variadicElementType,
+                        argv[i] );
+            }
+            catch ( Exception e ) {
+                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                        getName(),
+                        argv[i],
+                        _parameterTypes[i].getSimpleName());
+                return null;
+            }
+
+            Class<?> targetComponentType =
+                    _parameterTypes[ _parameterTypes.length -1 ].getComponentType();
+
+            JavaUtil.Assert(
+                    targetComponentType != null );
+
+            if ( targetComponentType.isPrimitive() )
+                arguments[arguments.length-1] = toArray( targetComponentType, variadicArray );
+            else
+                arguments[arguments.length-1] = variadicArray;
+
+            return arguments;
+        }
+
         private void execVariadic( String... argv )
         {
             if ( argv.length < _parameterTypes.length )
@@ -965,10 +1035,8 @@ public class CliApplication
 
             Object[] arguments =
                     new Object[_parameterTypes.length];
-            int firstVariadicIdx =
-                    _parameterTypes.length -1;
 
-            for ( int i = 0; i < firstVariadicIdx ; i++ ) try {
+            for ( int i = 0; i < _variadicIdx ; i++ ) try {
                 arguments[i] = transformArgument(
                         _parameterTypes[i],
                         argv[i] );
@@ -983,10 +1051,10 @@ public class CliApplication
 
             var variadicArray = makeArray(
                     _variadicElementType,
-                    argv.length - firstVariadicIdx );
+                    argv.length - _variadicIdx );
 
-            for ( int i = firstVariadicIdx ; i < argv.length ; i++ ) try {
-                variadicArray[i-firstVariadicIdx] = transformArgument(
+            for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
+                variadicArray[i-_variadicIdx] = transformArgument(
                         _variadicElementType,
                         argv[i] );
             }
@@ -1214,6 +1282,7 @@ public class CliApplication
 
         return (T[])Array.newInstance(
                 ReflectionUtil.normalizePrimitives( c ),
+//                c,
                 length );
     }
 }
