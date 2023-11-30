@@ -1,9 +1,7 @@
-/* $Id: 77f9197d0a57c03d3dd043592aab7ae45bc88b6f $
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Common.
- *
- * Released under Gnu Public License
- * Copyright © 2012-17 Michael G. Binz
+ * Copyright © 2012-2023 Michael G. Binz
  */
 package org.smack.util.collections;
 
@@ -17,7 +15,6 @@ import java.util.Set;
 /**
  * Collection utilities.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class CollectionUtil
