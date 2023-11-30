@@ -1,9 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Common.
- *
- * Released under Gnu Public License
- * Copyright © 2012-17 Michael G. Binz
+ * Copyright © 2012-2023 Michael G. Binz
  */
 package org.smack.util.collections;
 
@@ -17,7 +15,6 @@ import java.util.Set;
 /**
  * Collection utilities.
  *
- * @version $Rev$
  * @author Michael Binz
  */
 public class CollectionUtil
@@ -46,7 +43,7 @@ public class CollectionUtil
      * @return A newly allocated array of element type clazz.
      */
     @SuppressWarnings("unchecked")
-    static <T> T[] toArray( Collection<T> p, Class<T> clazz )
+    public static <T> T[] toArray( Collection<T> p, Class<T> clazz )
     {
         return p.toArray(
                 (T[]) Array.newInstance( clazz, p.size() ) );

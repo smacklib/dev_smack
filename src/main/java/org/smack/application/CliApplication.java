@@ -11,6 +11,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -108,7 +109,8 @@ public class CliApplication
      * command name and number of arguments, the value represents
      * the respective method.
      */
-    private final MultiMap<String, Integer, CommandHolder> _commandMap;
+    private final MultiMap<String, Integer, CommandHolder> _commandMap =
+            new MultiMap<>();
 
     private final Map<String,PropertyHolder> _propertyMap;
 
@@ -119,8 +121,9 @@ public class CliApplication
     {
         _delegate =
                 delegate;
-        _commandMap =
-                getCommandMap( _delegate.getClass() );
+
+        initCommandMap( _delegate.getClass() );
+
         _propertyMap =
                 getPropertyMap( _delegate );
     }
@@ -129,8 +132,9 @@ public class CliApplication
     {
         _delegate =
                 this;
-        _commandMap =
-                getCommandMap( _delegate.getClass() );
+
+        initCommandMap( _delegate.getClass() );
+
         _propertyMap =
                 getPropertyMap( _delegate );
     }
@@ -205,6 +209,17 @@ public class CliApplication
             // We found a matching command.
             _currentCommand =
                     selectedCommand.getName() ;
+            selectedCommand.execute(
+                    Arrays.copyOfRange( argv, 1, argv.length ) );
+            return;
+        }
+
+        selectedCommand = _commandMap.get(
+                cmdName,
+                -1 );
+
+        if ( selectedCommand != null )
+        {
             selectedCommand.execute(
                     Arrays.copyOfRange( argv, 1, argv.length ) );
             return;
@@ -488,52 +503,77 @@ public class CliApplication
     }
 
     /**
-     * Get a map of all commands that allows to access a single command based on
-     * its name and argument list.
+     * Processes the annotations on the target class.
+     * Updates the _commandMap member variable.
+     *
+     * @param method
+     * @param command
      */
-    private MultiMap<String, Integer, CommandHolder> getCommandMap(
+    private void processAnnotation( Method method, Command command )
+    {
+        String name = command.name();
+        if ( StringUtil.isEmpty( name ) )
+            name = method.getName();
+
+        var keyName = name.toLowerCase();
+
+        // Handle variadic argument lists.
+        {
+            if ( method.isVarArgs() )
+            {
+                if ( _commandMap.containsKey( keyName, -1 ) ) {
+                    throw new InternalError(
+                            "Implementation error. Variadic operation " +
+                            name +
+                            " is not unique.");
+                }
+
+                _commandMap.put(
+                        keyName,
+                        -1,
+                        new CommandHolder( method ) );
+
+                return;
+            }
+        }
+
+        for ( Class<?> current : method.getParameterTypes() )
+        {
+            Objects.requireNonNull(
+                    _converters.getConverter( current ),
+                    "No mapper for " + current );
+        }
+
+        Integer numberOfArgs =
+                Integer.valueOf( method.getParameterTypes().length );
+
+        // Check if we already have this command with the same parameter
+        // list length. This is an implementation error.
+        if (_commandMap.get(keyName, numberOfArgs) != null) {
+            throw new InternalError(
+                    "Implementation error. Operation " +
+                    name +
+                    " with " +
+                    numberOfArgs +
+                    " parameters is not unique.");
+        }
+
+        _commandMap.put(
+                keyName,
+                numberOfArgs,
+                new CommandHolder( method ) );
+    }
+
+    /**
+     * Initialize the {@link #_commandMap}.
+     */
+    private void initCommandMap(
             Class<?> targetClass )
     {
-        MultiMap<String,Integer,CommandHolder> result =
-                new MultiMap<>();
-
         ReflectionUtil.processAnnotation(
                 Command.class,
                 targetClass::getDeclaredMethods,
-                (c,a) -> {
-                    String name = a.name();
-                    if ( StringUtil.isEmpty( name ) )
-                        name = c.getName();
-
-                    for ( Class<?> current : c.getParameterTypes() )
-                    {
-                        Objects.requireNonNull(
-                                _converters.getConverter( current ),
-                                "No mapper for " + current );
-                    }
-
-                    Integer numberOfArgs =
-                            Integer.valueOf( c.getParameterTypes().length );
-
-                    var keyName = name.toLowerCase();
-                    // Check if we already have this command with the same parameter
-                    // list length. This is an implementation error.
-                    if (result.get(keyName, numberOfArgs) != null) {
-                        throw new InternalError(
-                                "Implementation error. Operation " +
-                                name +
-                                " with " +
-                                numberOfArgs +
-                                " parameters is not unique.");
-                    }
-
-                    result.put(
-                            keyName,
-                            numberOfArgs,
-                            new CommandHolder( c ) );
-                } );
-
-        return result;
+                this::processAnnotation );
     }
 
     /**
@@ -827,19 +867,38 @@ public class CliApplication
     /**
      * Encapsulates a command.
      */
-    private class CommandHolder implements Comparable<CommandHolder>
+    private final class CommandHolder implements Comparable<CommandHolder>
     {
         private final Method _op;
+        private final Class<?>[] _parameterTypes;
+
         private final Command _commandAnnotation;
+        private final Class<?> _variadicElementType;
+        private final int _variadicIdx;
 
         CommandHolder( Method operation )
         {
             _op =
                     operation;
+            _parameterTypes =
+                    _op.getParameterTypes();
+
             _commandAnnotation =
                     Objects.requireNonNull(
                             _op.getAnnotation( Command.class ),
                             "@Command missing." );
+            if ( operation.isVarArgs() )
+            {
+                _variadicIdx =
+                        _parameterTypes.length-1;
+                _variadicElementType =
+                        _parameterTypes[_variadicIdx].getComponentType();
+            }
+            else
+            {
+                _variadicElementType = null;
+                _variadicIdx = _parameterTypes.length;
+            }
         }
 
         String getName()
@@ -867,36 +926,51 @@ public class CliApplication
             return _commandAnnotation.shortDescription();
         }
 
-        /**
-         * Execute the passed command with the given passed arguments. Each parameter
-         * is transformed to the expected type.
-         *
-         * @param command
-         *            Command to execute.
-         * @param argv
-         *            List of arguments.
-         */
-        private void execute( String ... argv )
+        private void execute( String... argv )
         {
+            if ( argv.length < _parameterTypes.length )
+                throw new IllegalArgumentException();
+
             Object[] arguments =
-                    new Object[argv.length];
-            Class<?>[] params =
-                    _op.getParameterTypes();
+                    new Object[_parameterTypes.length];
 
-            if ( argv.length != params.length )
-                throw new AssertionError();
-
-            for (int j = 0; j < params.length; j++) try {
-                arguments[j] = transformArgument(
-                        params[j],
-                        argv[j] );
+            for ( int i = 0; i < _variadicIdx ; i++ ) try {
+                arguments[i] = transformArgument(
+                        _parameterTypes[i],
+                        argv[i] );
             }
             catch ( Exception e ) {
                 err( "Command '%s' failed: Could not convert '%s' to %s.%n",
                         getName(),
-                        argv[j],
-                        params[j].getSimpleName());
+                        argv[i],
+                        _parameterTypes[i].getSimpleName());
                 return;
+            }
+
+            if ( _variadicElementType != null )
+            {
+                var variadicArray = Array.newInstance(
+                        _variadicElementType,
+                        argv.length - _variadicIdx );
+
+                int targetIdx = 0;
+                for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
+                    Array.set(
+                            variadicArray,
+                            targetIdx++,
+                            transformArgument(
+                                    _variadicElementType,
+                                    argv[i] ) );
+                }
+                catch ( Exception e ) {
+                    err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                            getName(),
+                            argv[i],
+                            _parameterTypes[i].getSimpleName());
+                    return;
+                }
+
+                arguments[_variadicIdx] = variadicArray;
             }
 
             try {
@@ -966,6 +1040,8 @@ public class CliApplication
                     result[idx] = named.value();
                 else if ( c.getType().isEnum() )
                     result[idx] = getEnumDocumentation( c.getType() );
+                else if ( c.getType().isArray() )
+                    result[idx] = c.getType().getComponentType().getSimpleName() + "...";
                 else
                     result[idx] = c.getType().getSimpleName();
 
@@ -1017,6 +1093,12 @@ public class CliApplication
             return
                     getParameterCount() -
                     o.getParameterCount();
+        }
+
+        @Override
+        public String toString()
+        {
+            return _op.toString();
         }
     }
 }

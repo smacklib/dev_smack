@@ -1,7 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Released under Gnu Public License
- * Copyright © 2008-2015 Michael G. Binz
+ * Copyright © 2008-2023 Michael G. Binz
  */
 package org.smack.util.collections;
 
@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * A double key map.  The map allows to store a single value for key pairs.
  *
- * @version $Revision$
  * @author Michael Binz
  */
 public class MultiMap<KT1, KT2, VT>
@@ -37,8 +37,7 @@ public class MultiMap<KT1, KT2, VT>
      */
     public VT put( KT1 k1, KT2 k2, VT pValue )
     {
-        if ( pValue == null )
-            throw new NullPointerException( "null value." );
+        Objects.requireNonNull( pValue );
 
         Map<KT2, VT> secondaryMap;
 
@@ -103,8 +102,6 @@ public class MultiMap<KT1, KT2, VT>
         return _secondaryMap.get( k2 );
     }
 
-
-
     /**
      * Get all values for the passed primary key.
      *
@@ -119,8 +116,6 @@ public class MultiMap<KT1, KT2, VT>
 
         return Collections.unmodifiableMap( _primaryMap.get( k1 ) );
     }
-
-
 
     /**
      * Get the set of primary keys.
@@ -153,5 +148,13 @@ public class MultiMap<KT1, KT2, VT>
     public void clear()
     {
         _primaryMap.clear();
+    }
+
+    /**
+     * @return {@code true} if the map contains an element for the passed keys.
+     */
+    public boolean containsKey( KT1 k1, KT2 k2 )
+    {
+        return null != get( k1, k2 );
     }
 }

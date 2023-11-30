@@ -97,6 +97,8 @@ public class JavaUtilTest
     }
 
     @Test
+// Fails in Eclipse on Mac.
+//  @Ignore
     public void execTestOutErr_out_content() throws Exception
     {
         List<String> out = new ArrayList<String>();
@@ -129,6 +131,8 @@ public class JavaUtilTest
     }
 
     @Test
+ // Fails in Eclipse on Mac.
+//  @Ignore
     public void execTestOutNull_out_content() throws Exception
     {
         List<String> out = new ArrayList<String>();
