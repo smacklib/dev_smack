@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,8 +37,7 @@ public class MultiMap<KT1, KT2, VT>
      */
     public VT put( KT1 k1, KT2 k2, VT pValue )
     {
-        if ( pValue == null )
-            throw new NullPointerException( "null value." );
+        Objects.requireNonNull( pValue );
 
         Map<KT2, VT> secondaryMap;
 
@@ -102,8 +102,6 @@ public class MultiMap<KT1, KT2, VT>
         return _secondaryMap.get( k2 );
     }
 
-
-
     /**
      * Get all values for the passed primary key.
      *
@@ -118,8 +116,6 @@ public class MultiMap<KT1, KT2, VT>
 
         return Collections.unmodifiableMap( _primaryMap.get( k1 ) );
     }
-
-
 
     /**
      * Get the set of primary keys.
