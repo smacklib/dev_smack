@@ -49,14 +49,6 @@ public class CliApplication
     private static final Logger LOG =
             Logger.getLogger( CliApplication.class.getName() );
 
-    static class ConversionFailed extends Exception
-    {
-        public ConversionFailed( String message )
-        {
-            super( message );
-        }
-    }
-
     /**
      * The object that implements the cli functionality.
      */
@@ -120,10 +112,6 @@ public class CliApplication
     private final MultiMap<String, Integer, CommandHolder> _commandMap =
             new MultiMap<>();
 
-    // Name, holder
-    private final Map<String, CommandHolder> _commandMapVariadic =
-            new HashMap<>();
-
     private final Map<String,PropertyHolder> _propertyMap;
 
     private static final StringConverter _converters =
@@ -134,7 +122,7 @@ public class CliApplication
         _delegate =
                 delegate;
 
-        getCommandMap( _delegate.getClass() );
+        initCommandMap( _delegate.getClass() );
 
         _propertyMap =
                 getPropertyMap( _delegate );
@@ -145,7 +133,7 @@ public class CliApplication
         _delegate =
                 this;
 
-        getCommandMap( _delegate.getClass() );
+        initCommandMap( _delegate.getClass() );
 
         _propertyMap =
                 getPropertyMap( _delegate );
@@ -518,22 +506,22 @@ public class CliApplication
      * Processes the annotations on the target class.
      * Updates the _commandMap member variable.
      *
-     * @param c
-     * @param a
+     * @param method
+     * @param command
      */
-    private void processAnnotation( Method c, Command a )
+    private void processAnnotation( Method method, Command command )
     {
-        String name = a.name();
+        String name = command.name();
         if ( StringUtil.isEmpty( name ) )
-            name = c.getName();
+            name = method.getName();
 
         var keyName = name.toLowerCase();
 
         // Handle variadic argument lists.
         {
-            if ( c.isVarArgs() )
+            if ( method.isVarArgs() )
             {
-                if ( _commandMapVariadic.containsKey( keyName ) ) {
+                if ( _commandMap.containsKey( keyName, -1 ) ) {
                     throw new InternalError(
                             "Implementation error. Variadic operation " +
                             name +
@@ -543,13 +531,13 @@ public class CliApplication
                 _commandMap.put(
                         keyName,
                         -1,
-                        new CommandHolder( c ) );
+                        new CommandHolder( method ) );
 
                 return;
             }
         }
 
-        for ( Class<?> current : c.getParameterTypes() )
+        for ( Class<?> current : method.getParameterTypes() )
         {
             Objects.requireNonNull(
                     _converters.getConverter( current ),
@@ -557,7 +545,7 @@ public class CliApplication
         }
 
         Integer numberOfArgs =
-                Integer.valueOf( c.getParameterTypes().length );
+                Integer.valueOf( method.getParameterTypes().length );
 
         // Check if we already have this command with the same parameter
         // list length. This is an implementation error.
@@ -573,14 +561,13 @@ public class CliApplication
         _commandMap.put(
                 keyName,
                 numberOfArgs,
-                new CommandHolder( c ) );
+                new CommandHolder( method ) );
     }
 
     /**
-     * Get a map of all commands that allows to access a single command based on
-     * its name and argument list.
+     * Initialize the {@link #_commandMap}.
      */
-    private void getCommandMap(
+    private void initCommandMap(
             Class<?> targetClass )
     {
         ReflectionUtil.processAnnotation(
@@ -878,39 +865,6 @@ public class CliApplication
     }
 
     /**
-     * Converts the passed array into a primitive type array.
-     *
-     * @param type The primitive element type of the result array.
-     * @param elements The array to convert.
-     * @return An array of primitive type.
-     */
-    private Object toArray( Class<?> type, Object ... elements )
-    {
-        Objects.requireNonNull( type );
-        Objects.requireNonNull( elements );
-
-        if ( ! type.isPrimitive() )
-            throw new IllegalArgumentException(
-                    "Passed type must be primitive, is " + type.getSimpleName() );
-
-        final var PT =
-                type;
-        final var T =
-                ReflectionUtil.normalizePrimitives( PT );
-
-        JavaUtil.Assert(
-                elements.getClass().getComponentType().equals( T ) );
-
-        var r = Array.newInstance( PT, elements.length );
-        JavaUtil.Assert( r.getClass().isArray() );
-
-        for ( int i = 0 ; i < elements.length ; i++ )
-            Array.set( r, i, elements[i] );
-
-        return r;
-    }
-
-    /**
      * Encapsulates a command.
      */
     private final class CommandHolder implements Comparable<CommandHolder>
@@ -972,63 +926,7 @@ public class CliApplication
             return _commandAnnotation.shortDescription();
         }
 
-        private Object[] makeArguments( String... argv )
-            throws ConversionFailed
-        {
-            if ( argv.length < _parameterTypes.length )
-                throw new IllegalArgumentException();
-
-            Object[] arguments =
-                    new Object[_parameterTypes.length];
-
-            for ( int i = 0; i < _variadicIdx ; i++ ) try {
-                arguments[i] = transformArgument(
-                        _parameterTypes[i],
-                        argv[i] );
-            }
-            catch ( Exception e ) {
-                var msg = String.format( "Command '%s' failed: Could not convert '%s' to %s.%n",
-                        getName(),
-                        argv[i],
-                        _parameterTypes[i].getSimpleName());
-                throw new ConversionFailed( msg );
-            }
-
-            if ( _variadicElementType == null )
-                return arguments;
-
-            var variadicArray = makeArray(
-                    _variadicElementType,
-                    argv.length - _variadicIdx );
-
-            for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
-                variadicArray[i-_variadicIdx] = transformArgument(
-                        _variadicElementType,
-                        argv[i] );
-            }
-            catch ( Exception e ) {
-                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
-                        getName(),
-                        argv[i],
-                        _parameterTypes[i].getSimpleName());
-                return null;
-            }
-
-            Class<?> targetComponentType =
-                    _parameterTypes[ _parameterTypes.length -1 ].getComponentType();
-
-            JavaUtil.Assert(
-                    targetComponentType != null );
-
-            if ( targetComponentType.isPrimitive() )
-                arguments[arguments.length-1] = toArray( targetComponentType, variadicArray );
-            else
-                arguments[arguments.length-1] = variadicArray;
-
-            return arguments;
-        }
-
-        private void execVariadic( String... argv )
+        private void execute( String... argv )
         {
             if ( argv.length < _parameterTypes.length )
                 throw new IllegalArgumentException();
@@ -1049,100 +947,30 @@ public class CliApplication
                 return;
             }
 
-            var variadicArray = makeArray(
-                    _variadicElementType,
-                    argv.length - _variadicIdx );
-
-            for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
-                variadicArray[i-_variadicIdx] = transformArgument(
-                        _variadicElementType,
-                        argv[i] );
-            }
-            catch ( Exception e ) {
-                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
-                        getName(),
-                        argv[i],
-                        _parameterTypes[i].getSimpleName());
-                return;
-            }
-
-            Class<?> targetComponentType =
-                    _parameterTypes[ _parameterTypes.length -1 ].getComponentType();
-
-            JavaUtil.Assert(
-                    targetComponentType != null );
-
-            if ( targetComponentType.isPrimitive() )
-                arguments[arguments.length-1] = toArray( targetComponentType, variadicArray );
-            else
-                arguments[arguments.length-1] = variadicArray;
-
-            try {
-                final var self = CliApplication.this._delegate;
-
-                if ( ! _op.canAccess( self ) )
-                    _op.setAccessible( true );
-
-                _op.invoke(
-                        self,
-                        arguments);
-            }
-            catch ( InvocationTargetException e )
-            {
-                processCommandException( _op.getName(), e.getCause() );
-            }
-            catch ( Exception e )
-            {
-                // A raw exception must come from our implementation,
-                // so we present a less user friendly stacktrace.
-                e.printStackTrace();
-            }
-            finally
-            {
-                // In case a parameter conversion operation created
-                // 'closeable' objects, ensure that these get freed.
-                for ( Object c : arguments )
-                {
-                    if ( c instanceof AutoCloseable )
-                        JavaUtil.force( ((AutoCloseable)c)::close );
-                }
-            }
-        }
-
-        /**
-         * Execute the passed command with the given passed arguments. Each parameter
-         * is transformed to the expected type.
-         *
-         * @param command
-         *            Command to execute.
-         * @param argv
-         *            List of arguments.
-         */
-        private void execute( String ... argv )
-        {
             if ( _variadicElementType != null )
             {
-                execVariadic( argv );
-                return;
-            }
+                var variadicArray = Array.newInstance(
+                        _variadicElementType,
+                        argv.length - _variadicIdx );
 
-            Object[] arguments =
-                    new Object[argv.length];
+                int targetIdx = 0;
+                for ( int i = _variadicIdx ; i < argv.length ; i++ ) try {
+                    Array.set(
+                            variadicArray,
+                            targetIdx++,
+                            transformArgument(
+                                    _variadicElementType,
+                                    argv[i] ) );
+                }
+                catch ( Exception e ) {
+                    err( "Command '%s' failed: Could not convert '%s' to %s.%n",
+                            getName(),
+                            argv[i],
+                            _parameterTypes[i].getSimpleName());
+                    return;
+                }
 
-            if ( argv.length != _parameterTypes.length )
-                throw new AssertionError();
-
-            for (int j = 0; j < _parameterTypes.length; j++) try {
-                arguments[j] = transformArgument(
-                        _parameterTypes[j],
-                        argv[j] );
-            }
-            catch ( Exception e ) {
-                err( "Command '%s' failed: Could not convert '%s' to %s.%n",
-                        getName(),
-                        argv[j],
-                        _parameterTypes[j].getSimpleName());
-                return;
+                arguments[_variadicIdx] = variadicArray;
             }
 
             try {
@@ -1272,17 +1100,5 @@ public class CliApplication
         {
             return _op.toString();
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T[] makeArray( Class<T> c, int length )
-    {
-        Objects.requireNonNull(
-                c );
-
-        return (T[])Array.newInstance(
-                ReflectionUtil.normalizePrimitives( c ),
-//                c,
-                length );
     }
 }

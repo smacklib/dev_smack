@@ -1,7 +1,7 @@
-/* $Id$
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Released under Gnu Public License
- * Copyright © 2008-2015 Michael G. Binz
+ * Copyright © 2008-2023 Michael G. Binz
  */
 package org.smack.util.collections;
 
@@ -14,7 +14,6 @@ import java.util.Set;
 /**
  * A double key map.  The map allows to store a single value for key pairs.
  *
- * @version $Revision$
  * @author Michael Binz
  */
 public class MultiMap<KT1, KT2, VT>
@@ -153,5 +152,13 @@ public class MultiMap<KT1, KT2, VT>
     public void clear()
     {
         _primaryMap.clear();
+    }
+
+    /**
+     * @return {@code true} if the map contains an element for the passed keys.
+     */
+    public boolean containsKey( KT1 k1, KT2 k2 )
+    {
+        return null != get( k1, k2 );
     }
 }
