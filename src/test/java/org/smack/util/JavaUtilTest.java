@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class JavaUtilTest
@@ -98,7 +97,8 @@ public class JavaUtilTest
     }
 
     @Test
-    @Ignore
+// Fails in Eclipse on Mac.
+//  @Ignore
     public void execTestOutErr_out_content() throws Exception
     {
         List<String> out = new ArrayList<String>();
@@ -112,7 +112,6 @@ public class JavaUtilTest
     }
 
     @Test
-    @Ignore
     public void execTestNullErr_err_content() throws Exception
     {
         List<String> err = new ArrayList<String>();
@@ -132,7 +131,8 @@ public class JavaUtilTest
     }
 
     @Test
-    @Ignore
+ // Fails in Eclipse on Mac.
+//  @Ignore
     public void execTestOutNull_out_content() throws Exception
     {
         List<String> out = new ArrayList<String>();
