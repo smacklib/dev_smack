@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>smacklib</groupId>
     <artifactId>smack</artifactId>
-    <version>${maven.compiler.release}.409-SNAPSHOT</version>
+    <version>${maven.compiler.release}.409</version>
     <name>Smack</name>
     <description>Framework</description>
 
