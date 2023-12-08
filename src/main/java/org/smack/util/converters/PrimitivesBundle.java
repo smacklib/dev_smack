@@ -77,7 +77,7 @@ public class PrimitivesBundle extends StringConverterExtension
         }
     }
 
-    private Font parseFont( String name )
+    static private Font parseFont( String name )
     {
         var result = Font.decode( name );
 
@@ -127,7 +127,7 @@ public class PrimitivesBundle extends StringConverterExtension
         // Desktop classes.
         registry.put(
                 Font.class,
-                this::parseFont );
+                PrimitivesBundle::parseFont );
         registry.put(
                 Image.class,
                 PrimitivesBundle::imageFromUrl );
