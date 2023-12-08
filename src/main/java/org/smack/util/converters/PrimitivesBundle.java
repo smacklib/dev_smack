@@ -7,9 +7,12 @@ package org.smack.util.converters;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -74,6 +77,20 @@ public class PrimitivesBundle extends StringConverterExtension
         }
     }
 
+    static private Font parseFont( String name )
+    {
+        var result = Font.decode( name );
+
+        HashSet<String> fontNames = new HashSet<>(
+                Arrays.asList(
+                        GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames() ));
+
+        if ( fontNames.contains( result.getName() ) )
+            return result;
+
+        throw new IllegalArgumentException( "Unknown font name: " + result.getName() );
+    }
+
     @Override
     public void extendTypeMap( StringConverter registry )
     {
@@ -110,7 +127,7 @@ public class PrimitivesBundle extends StringConverterExtension
         // Desktop classes.
         registry.put(
                 Font.class,
-                Font::decode );
+                PrimitivesBundle::parseFont );
         registry.put(
                 Image.class,
                 PrimitivesBundle::imageFromUrl );

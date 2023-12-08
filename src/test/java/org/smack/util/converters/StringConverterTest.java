@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.net.URL;
 import java.time.Month;
 import java.util.Locale;
@@ -154,5 +155,41 @@ public class StringConverterTest
         assertEquals(
                 new URL( urlTxt ),
                 _cvt.convert( URL.class, urlTxt ) );
+    }
+
+    @Test
+    public void testFont() throws Exception
+    {
+        var fontTxt = "Monospaced-PLAIN-12";
+        assertEquals(
+                new Font( Font.MONOSPACED, Font.PLAIN, 12 ),
+                _cvt.convert( Font.class, fontTxt ) );
+    }
+    @Test
+    public void testFont2() throws Exception
+    {
+        var fontTxt = "MOnospaced-PLAIN-12";
+        try {
+            _cvt.convert( Font.class, fontTxt );
+            fail();
+        }
+        catch ( IllegalArgumentException e )
+        {
+            assertEquals( "Unknown font name: MOnospaced", e.getMessage() );
+        }
+    }
+
+    @Test
+    public void testFont_non_existing() throws Exception
+    {
+        var fontTxt = "Donald-PLAIN-12";
+        try {
+            _cvt.convert( Font.class, fontTxt );
+            fail();
+        }
+        catch ( IllegalArgumentException e )
+        {
+            assertEquals( "Unknown font name: Donald", e.getMessage() );
+        }
     }
 }
