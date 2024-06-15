@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.smack.application.CliApplication.Named;
 
-public class CliApplicationTestAnnotations
+public class CliApplicationAnnotationsTest
 {
     static class UnderTest extends CliApplication
     {

@@ -1,17 +1,29 @@
 /*
- * $Id$
- * Released under Gnu Public License
- * Copyright © 2021 Michael G. Binz
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2022-2024 Michael G. Binz
  */
 package org.smack.util;
 
 import java.util.Objects;
 
-public class Pair<L,R>
+/**
+ * A general-purpose pair.
+ *
+ * @param <L>
+ * @param <R>
+ */
+public final class Pair<L,R>
 {
     public final R right;
     public final L left;
 
+    /**
+     * Create an instance.
+     *
+     * @param l The left element.
+     * @param r The right element.
+     */
     public Pair( L l, R r )
     {
         right = r;
@@ -41,5 +53,14 @@ public class Pair<L,R>
         return Objects.hash(
                 right != null ? right : Boolean.TRUE,
                 left != null ? left : Boolean.TRUE );
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format( "%s{%s, %s}",
+                getClass().getSimpleName(),
+                Objects.toString( left ),
+                Objects.toString( right ));
     }
 }
