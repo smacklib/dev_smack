@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>smacklib</groupId>
     <artifactId>smack</artifactId>
-    <version>${maven.compiler.release}.410-SNAPSHOT</version>
+    <version>${maven.compiler.release}.411-SNAPSHOT</version>
     <name>Smack</name>
     <description>Framework</description>
 
     <properties>
         <!-- Java version -->
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependencies versions -->
         <junit.version>5.8.2</junit.version>
