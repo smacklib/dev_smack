@@ -5,23 +5,24 @@
  */
 package org.smack.application;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.smack.util.FileUtil;
 import org.smack.util.ServiceManager;
 
 public class ApplicationInfoTest
 {
-    @Before
+    @BeforeEach
     public void setup()
     {
         ServiceManager.clear();
@@ -85,9 +86,13 @@ public class ApplicationInfoTest
      * Instantiation via ServiceManager as normal application
      * service must fail.
      */
-    @Test( expected = IllegalStateException.class )
+    @Test
     public void fromServiceManager()
     {
-        ServiceManager.getApplicationService( ApplicationInfo.class );
+        assertThrows(
+                IllegalStateException.class,
+                () -> {
+                    ServiceManager.getApplicationService( ApplicationInfo.class );
+                } );
     }
 }

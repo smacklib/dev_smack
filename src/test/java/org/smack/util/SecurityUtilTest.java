@@ -1,11 +1,16 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2022-2024 Michael G. Binz
+ */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -18,7 +23,7 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.smack.util.SecurityUtil.DecryptionFailed;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
@@ -210,9 +215,11 @@ public class SecurityUtilTest
         assertEquals( ThePayload, result );
     }
 
-    @Test( expected = DecryptionFailed.class )
+    @Test
     public void encryptDecryptTestFromKeystoreFail() throws Exception
     {
+        assertThrows( DecryptionFailed.class,
+                () -> {
         KeyStore ks = getKeystore();
 
         // We take the private key 1.
@@ -237,7 +244,7 @@ public class SecurityUtilTest
         SecurityUtil.decrypt(
                 pub,
                 encrypted );
-        fail();
+                });
     }
 
     @Test

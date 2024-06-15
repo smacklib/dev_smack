@@ -1,11 +1,17 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2022-2024 Michael G. Binz
+ */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MathUtilTest
 {
@@ -37,17 +43,14 @@ public class MathUtilTest
     @Test
     public void testComputePolynomialBad2()
     {
-        try
-        {
+        assertThrows(
+                Exception.class,
+                () -> {
             MathUtil.computePolynomial(
                     1,
                     null );
             fail( "No good." );
-        }
-        catch ( Exception ignore )
-        {
-
-        }
+        } );
     }
 
     @Test

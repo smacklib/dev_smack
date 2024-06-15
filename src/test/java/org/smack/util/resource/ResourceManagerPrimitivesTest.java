@@ -1,17 +1,18 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2019-2024 Michael G. Binz
+ */
 package org.smack.util.resource;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-/**
- *
- * @author Michael
- */
 public class ResourceManagerPrimitivesTest
 {
     private final ResourceManager _rm =
@@ -47,7 +48,7 @@ public class ResourceManagerPrimitivesTest
     @Resource
     private double doubleResourceArray[];
 
-    @Before
+    @BeforeEach
     public void testInit()
     {
         _rm.injectResources( this );

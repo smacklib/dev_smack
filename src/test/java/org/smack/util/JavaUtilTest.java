@@ -5,52 +5,45 @@
  */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JavaUtilTest
 {
-    @Test( expected = RuntimeException.class )
+    @Test
     public void assertPlain()
     {
-        JavaUtil.Assert( false );
-        fail();
+        assertThrows(
+                RuntimeException.class,
+                () -> { JavaUtil.Assert( false ); } );
     }
 
     @Test
     public void assertMessage()
     {
-        try
-        {
-            JavaUtil.Assert( false, "Donald" );
-            fail();
-        }
-        catch ( Exception e )
-        {
-            assertEquals( "Donald", e.getMessage() );
-        }
+        var ex = assertThrows(
+                Exception.class,
+                () -> { JavaUtil.Assert( false, "Donald" ); } );
+
+        assertEquals( "Donald", ex.getMessage() );
     }
 
     @Test
     public void assertFormatted()
     {
-        try
-        {
-            JavaUtil.Assert( false, "%s%d", "Donald", 313  );
-            fail();
-        }
-        catch ( Exception e )
-        {
-            assertEquals( "Donald313", e.getMessage() );
-        }
+        var ex = assertThrows(
+                Exception.class,
+                () -> { JavaUtil.Assert( false, "%s%d", "Donald", 313  ); } );
+
+        assertEquals( "Donald313", ex.getMessage() );
     }
 
     @Test
@@ -143,23 +136,28 @@ public class JavaUtilTest
         assertTrue( out.size() > 0 );
     }
 
-    @Test( expected = RuntimeException.class )
+    @Test
     public void execTestEmptyCommand() throws Exception
     {
-        List<String> out = new ArrayList<String>();
-        List<String> err = new ArrayList<String>();
+        assertThrows(
+                RuntimeException.class,
+                () -> {
+                    List<String> out = new ArrayList<String>();
+                    List<String> err = new ArrayList<String>();
 
-        JavaUtil.exec( out, err );
-        fail();
+                    JavaUtil.exec( out, err ); } );
     }
 
-    @Test( expected = RuntimeException.class )
+    @Test
     public void execTestUnknownCommand() throws Exception
     {
-        List<String> out = new ArrayList<String>();
-        List<String> err = new ArrayList<String>();
+        assertThrows(
+                RuntimeException.class,
+                () -> {
+                    List<String> out = new ArrayList<String>();
+                    List<String> err = new ArrayList<String>();
 
-        JavaUtil.exec( out, err, "_non_valid_executable_" );
-        fail();
+                    JavaUtil.exec( out, err, "_non_valid_executable_" );
+                } );
     }
 }

@@ -1,13 +1,18 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2019-2024 Michael G. Binz
+ */
 package org.smack.util.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResourceMapPreprocessTest
 {

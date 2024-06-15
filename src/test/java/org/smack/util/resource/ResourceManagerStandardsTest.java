@@ -1,21 +1,22 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2019-2024 Michael G. Binz
+ */
 package org.smack.util.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-/**
- *
- * @author Michael
- */
 public class ResourceManagerStandardsTest
 {
     private final ResourceManager _rm =
@@ -68,7 +69,7 @@ public class ResourceManagerStandardsTest
                 "Dezember"
         };
 
-        Assert.assertArrayEquals( values, stringArray );
+        assertArrayEquals( values, stringArray );
     }
 
     @Resource
@@ -104,7 +105,7 @@ public class ResourceManagerStandardsTest
         };
 
         for ( int i = 0 ; i < values.length ; i++ )
-            Assert.assertEquals(
+            assertEquals(
                     values[i],
                     stringBuilderArray[i].toString() );
     }

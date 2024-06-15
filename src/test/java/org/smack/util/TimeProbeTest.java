@@ -1,10 +1,10 @@
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TimeProbeTest
 {
@@ -30,8 +30,9 @@ public class TimeProbeTest
         var duration = tp.duration();
 
         assertTrue(
-                String.format( "duration %d less than TIME %d", duration, TIME ),
-                duration >= TIME );
+                duration >= TIME,
+                String.format( "duration %d less than TIME %d", duration, TIME )
+                );
         // One percent error seems generous.
 
         int MAX_DURATION = (TIME + (TIME/100));

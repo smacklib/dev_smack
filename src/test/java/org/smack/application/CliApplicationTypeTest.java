@@ -1,10 +1,11 @@
 package org.smack.application;
 
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.smack.util.StringUtil;
 
 public class CliApplicationTypeTest

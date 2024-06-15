@@ -1,15 +1,16 @@
 /*
  * Smack Java @ https://github.com/smacklib/dev_smack
  *
- * Copyright © 2019-22 Michael G. Binz
+ * Copyright © 2019-2024 Michael G. Binz
  */
 package org.smack.util.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.Image;
 import java.util.Currency;
@@ -18,10 +19,10 @@ import java.util.MissingResourceException;
 
 import javax.swing.Icon;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.smack.util.Pair;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
@@ -34,7 +35,7 @@ public final class ResourceManagerTest
     private final static Locale originalDefaultLocale =
             Locale.getDefault();
 
-    @BeforeClass
+    @BeforeAll
     public static void onceBeforeAll()
     {
         if ( _rm.getConverter( Currency.class ) == null )
@@ -47,13 +48,13 @@ public final class ResourceManagerTest
         Locale.setDefault( Locale.GERMAN );
     }
 
-    @AfterClass
+    @AfterAll
     public static void onceAfterAll()
     {
         Locale.setDefault( originalDefaultLocale );
     }
 
-    @Before
+    @BeforeEach
     public void beforeEach()
     {
         _rm.injectResources( this );

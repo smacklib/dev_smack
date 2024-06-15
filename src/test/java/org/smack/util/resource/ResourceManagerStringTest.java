@@ -1,19 +1,19 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2019-2024 Michael G. Binz
+ */
 package org.smack.util.resource;
 
-import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-/**
- *
- *
- * @version $Revision$
- * @author Michael Binz
- */
 public class ResourceManagerStringTest
 {
     private final ResourceManager _rm =
@@ -24,7 +24,7 @@ public class ResourceManagerStringTest
     @Resource
     private String[] stringArrayResource;
 
-    @Before
+    @BeforeEach
     public void testInit()
     {
         _rm.injectResources( this );
@@ -34,7 +34,7 @@ public class ResourceManagerStringTest
     public void testString()
     {
         // See https://stackoverflow.com/questions/2406975/how-to-escape-the-equals-sign-in-properties-files
-        // Also see my comments in StringStriongConverter.
+        // Also see comments in StringStringConverter.
         assertEquals( "\"Michael Binz\"", stringResource );
     }
 
@@ -56,6 +56,6 @@ public class ResourceManagerStringTest
                 "Dezember"
         };
 
-        Assert.assertArrayEquals( values, stringArrayResource );
+        assertArrayEquals( values, stringArrayResource );
     }
 }

@@ -8,7 +8,8 @@ package org.smack.application;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 
 public class CliApplicationPropertyTest

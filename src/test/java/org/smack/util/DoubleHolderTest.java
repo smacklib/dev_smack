@@ -5,13 +5,13 @@
  */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DoubleHolderTest
 {
-    @Test()
+    @Test
     public void basic()
     {
         double value = 313.0D;
@@ -26,7 +26,7 @@ public class DoubleHolderTest
         assertEquals( "314.0", i.toString() );
     }
 
-    @Test()
+    @Test
     public void empty()
     {
         DoubleHolder i =

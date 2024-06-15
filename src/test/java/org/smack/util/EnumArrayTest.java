@@ -1,11 +1,11 @@
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.Month;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EnumArrayTest
 {
@@ -23,6 +23,7 @@ public class EnumArrayTest
         assertEquals( Integer.MIN_VALUE,(int)array.get( Month.SEPTEMBER ) );
         assertEquals( Integer.MIN_VALUE,(int)array.getNull() );
     }
+
     @Test
     public void testEnumArray2()
     {

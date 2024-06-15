@@ -1,12 +1,13 @@
 package org.smack.application;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.smack.util.Disposer;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;

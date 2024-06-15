@@ -5,21 +5,23 @@
  */
 package org.smack.application;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.smack.util.ServiceManager;
 
 public class ApplicationPropertiesTest
 {
-    @Before
+    @BeforeEach
     public void setup()
     {
         System.out.println( getClass().getName() + " : setup" );
     }
-    @After
+    @AfterEach
     public void cleanup()
     {
         System.out.println( getClass().getName() + " : cleanup" );
@@ -34,11 +36,16 @@ public class ApplicationPropertiesTest
 //                ApplicationProperties.class );
     }
 
-    @Test( expected = java.lang.RuntimeException.class )
+    @Test
     public void plainFail() throws IOException
     {
-        ServiceManager.clear();
-        ServiceManager.getApplicationService(
-                ApplicationProperties.class );
+        assertThrows(
+                RuntimeException.class,
+                () -> {
+                    ServiceManager.clear();
+                    ServiceManager.getApplicationService(
+                            ApplicationProperties.class );
+                } );
     }
 }
+

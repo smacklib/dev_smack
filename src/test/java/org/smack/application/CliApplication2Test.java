@@ -7,7 +7,7 @@ package org.smack.application;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.smack.application.CliApplication.Command;
 import org.smack.application.CliApplication.Property;
 import org.smack.util.StringUtil;

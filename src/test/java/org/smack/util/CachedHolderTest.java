@@ -5,10 +5,11 @@
  */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CachedHolderTest
 {
@@ -23,10 +24,12 @@ public class CachedHolderTest
         return Integer.valueOf( _factoryCurrentValue++ );
     }
 
-    @Test( expected = NullPointerException.class )
+    @Test
     public void ctorNull()
     {
-        new CachedHolder<Integer>( null );
+        assertThrows( NullPointerException.class,
+                () ->
+        new CachedHolder<Integer>( null ) );
     }
 
     @Test()

@@ -1,21 +1,22 @@
+/*
+ * Smack Java @ https://github.com/smacklib/dev_smack
+ *
+ * Copyright © 2022-2024 Michael G. Binz
+ */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.BeanProperty;
 import java.lang.reflect.Modifier;
 
-import org.junit.Test;
-import org.smack.application.CliApplication;
+import org.junit.jupiter.api.Test;
 import org.smack.application.CliApplication.Named;
 import org.smack.util.resource.ResourceManager.Resource;
 
-/**
- * @version $Id$
- */
 public class ReflectionUtilTest
 {
     static class TestClass
@@ -127,7 +128,7 @@ public class ReflectionUtilTest
         }
     }
 
-    CliApplication c;
+    org.smack.application.CliApplication c;
 
     @Named
     static class AnnotationClass

@@ -5,13 +5,13 @@
  */
 package org.smack.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LongHolderTest
 {
-    @Test()
+    @Test
     public void basic()
     {
         LongHolder i =
@@ -23,7 +23,7 @@ public class LongHolderTest
         assertEquals( "314", i.toString() );
     }
 
-    @Test()
+    @Test
     public void empty()
     {
         LongHolder i =
