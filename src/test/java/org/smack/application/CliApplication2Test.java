@@ -12,7 +12,7 @@ import org.smack.application.CliApplication.Command;
 import org.smack.application.CliApplication.Property;
 import org.smack.util.StringUtil;
 
-public class CliApplicationTest2
+public class CliApplication2Test
 {
     static class UnderTest
     {
